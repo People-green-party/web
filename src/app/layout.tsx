@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Familjen_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import { Nav } from "./components/Nav";
 import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
@@ -14,18 +14,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const familjenGrotesk = Familjen_Grotesk({
+  variable: "--font-familjen-grotesk",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "People's Green Party",
-  description: "Membership & elections platform for People's Green Party",
-  manifest: "/manifest.json",
+  // ... existing metadata ...
 };
 
-export const viewport: Viewport = {
-  themeColor: "#16a34a",
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-};
+// ... existing viewport ...
 
 export default function RootLayout({
   children,
@@ -33,33 +37,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <link rel="apple-touch-icon" href="/icon512_rounded.png" />
+        <meta name="theme-color" content="#16a34a" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="format-detection" content="telephone=no" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${familjenGrotesk.variable} ${inter.variable} antialiased font-sans`}>
         <div className="min-h-screen flex flex-col">
-          <header className="border-b bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="inline-block h-8 w-8 rounded-full bg-green-700" />
-                <span className="font-semibold text-lg text-green-800">People's Green Party</span>
-              </div>
-              <Nav />
-            </div>
-          </header>
+
           <main className="flex-1">
             {children}
           </main>
-          <footer className="border-t bg-white text-xs text-gray-500">
-            <div className="max-w-7xl mx-auto px-6 py-4">
-              © {new Date().getFullYear()} People's Green Party. All rights reserved.
-            </div>
-          </footer>
+
         </div>
         <ServiceWorkerRegister />
       </body>

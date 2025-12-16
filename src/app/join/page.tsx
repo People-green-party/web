@@ -12,9 +12,45 @@ import {
   Play,
 } from "lucide-react";
 
+// --- Navbar Component ---
+const Navbar = () => (
+  <nav className="flex items-center justify-between px-6 py-4 bg-white sticky top-0 z-50 border-b border-gray-100">
+    <div className="flex flex-col items-center leading-none cursor-pointer">
+      <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[114px] h-[60px] object-cover" />
+    </div>
+    <div className="hidden lg:flex gap-8 items-center text-sm font-medium text-gray-600">
+      {['Home', 'About', 'Constitution', 'Donate', 'Declaration'].map((link) => {
+        const getHref = (linkName: string) => {
+          switch(linkName) {
+            case 'Home': return '/';
+            case 'About': return '/about';
+            case 'Constitution': return '/constitution';
+            case 'Donate': return '/donation';
+            case 'Declaration': return '/declaration';
+            default: return '#';
+          }
+        };
+        return (
+          <a key={link} href={getHref(link)} className="hover:text-green-700 transition-colors">{link}</a>
+        );
+      })}
+    </div>
+    <div className="flex items-center gap-3">
+      <div className="flex items-center border border-gray-300 rounded overflow-hidden h-8">
+        <button className="px-2 text-xs font-medium hover:bg-gray-50 h-full">हि</button>
+        <div className="w-px h-full bg-gray-300"></div>
+        <button className="px-2 text-xs font-bold bg-green-50 text-green-800 h-full">En</button>
+      </div>
+      <button className="px-5 py-1.5 bg-green-900 text-white text-sm font-medium rounded hover:bg-green-800">Join Us</button>
+      <button className="px-5 py-1.5 border border-gray-300 text-gray-700 text-sm font-medium rounded hover:bg-gray-50">Login</button>
+    </div>
+  </nav>
+);
+
 const JoinPage = () => {
   return (
     <div className="min-h-screen bg-white text-gray-800">
+      <Navbar />
       {/* MAIN CONTENT */}
       <main className="max-w-6xl mx-auto px-4 py-8 md:py-14">
         {/* Title */}
