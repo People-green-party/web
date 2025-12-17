@@ -125,12 +125,12 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white sticky top-0 z-50 w-full flex justify-center">
-      <div className="w-full max-w-[1320px] h-[92px] flex items-center justify-between px-4 lg:px-0 bg-white">
+    <nav className="bg-white fixed top-0 z-50 w-full flex justify-center">
+      <div className="w-full max-w-[1320px] lg:h-[92px] h-[70px] flex items-center justify-between px-4 lg:px-0 bg-white">
 
         <div className="flex items-center">
           <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
-            <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[114px] h-[60px] object-cover" />
+            <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
           </Link>
 
           <div className="hidden lg:flex items-center gap-[12px] ml-[131px] h-[46px]">
@@ -152,37 +152,37 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Right Side Actions: Width 366, Height 46, Gap 20 */}
-        <div className="flex items-center gap-[20px] w-[366px] h-[46px]">
+        {/* Right Side Actions: Mobile optimized */}
+        <div className="flex items-center gap-[10px] lg:gap-[20px]">
 
-          {/* Language Toggle: Width 84, Height 46, Gap 10, Border #B9D3C4, Padding 4px */}
+          {/* Language Toggle */}
           <div
-            className="relative w-[84px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[4px] flex bg-white cursor-pointer"
+            className="hidden lg:flex relative w-[84px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[4px] bg-white cursor-pointer"
             onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
           >
-            {/* Left Text (Hindi) - Only visible/styled if active */}
-            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'hi' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'
-              }`}
-            >
+            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'hi' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
               {language === 'hi' ? 'हि' : ''}
             </div>
-
-            {/* Right Text (English) - Only visible/styled if active */}
-            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'en' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'
-              }`}
-            >
+            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'en' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
               {language === 'en' ? 'En' : ''}
             </div>
           </div>
 
+          <div
+            className="flex lg:hidden relative w-[50px] h-[36px] rounded-[8px] border border-[#B9D3C4] items-center justify-center font-bold text-[#04330B] cursor-pointer text-sm"
+            onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
+          >
+            {language === 'en' ? 'HI' : 'EN'}
+          </div>
+
           <Link
             href="/join"
-            className="w-[124px] h-[46px] flex items-center justify-center bg-[#0D5229] text-white font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-[#0a4220] transition-colors whitespace-nowrap"
+            className="hidden lg:flex w-[124px] h-[46px] items-center justify-center bg-[#0D5229] text-white font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-[#0a4220] transition-colors whitespace-nowrap"
           >
             {t.nav.join}
           </Link>
           <button
-            className="w-[118px] h-[46px] flex items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-green-50 transition-colors whitespace-nowrap"
+            className="hidden lg:flex w-[118px] h-[46px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-green-50 transition-colors whitespace-nowrap"
           >
             {t.nav.login}
           </button>
@@ -198,15 +198,15 @@ const Navbar = () => {
 
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg">
+        <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg h-screen z-50">
           {links.map((link) => (
-            <a key={link.name} href={link.href} className="text-gray-700 font-medium py-2 border-b border-gray-50">{link.name}</a>
+            <a key={link.name} href={link.href} className="text-gray-700 font-medium py-2 border-b border-gray-50 text-lg">{link.name}</a>
           ))}
-          <div className="flex gap-4 mt-2">
-            <Link href="/join" className="flex-1 py-2 bg-green-900 text-white text-center rounded font-medium">
+          <div className="flex flex-col gap-4 mt-2">
+            <Link href="/join" className="w-full py-3 bg-green-900 text-white text-center rounded font-medium">
               {t.nav.join}
             </Link>
-            <button className="flex-1 py-2 border border-gray-300 text-gray-700 rounded font-medium">
+            <button className="w-full py-3 border border-gray-300 text-gray-700 rounded font-medium">
               {t.nav.login}
             </button>
           </div>
@@ -222,7 +222,7 @@ const ConstitutionPageContent = () => {
   const { language, t } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-800">
+    <div className="min-h-screen bg-white font-sans text-gray-800 pt-[70px] lg:pt-[92px]">
 
       <Navbar />
 
@@ -282,7 +282,7 @@ const ConstitutionPageContent = () => {
       </section>
 
       {/* 2. PREAMBLE SECTION (New Layout) */}
-      <section className="w-full flex flex-col items-center mt-[120px] relative min-h-[948px]">
+      <section className="w-full flex flex-col items-center mt-[40px] lg:mt-[120px] relative h-auto lg:min-h-[948px] pb-[40px] lg:pb-0">
 
         {/* Layer 1: Image (Z-Index 10) */}
         {/* Width 1240, Height 533, Radius 16, centered */}
@@ -295,22 +295,14 @@ const ConstitutionPageContent = () => {
         </div>
 
         {/* Layer 2: Green Background Section (Z-Index 0) */}
-        {/* Starts 314px from Top (Overlaps bottom 219px of image), Height 634px */}
-        <div className="absolute top-[314px] w-full h-[634px] bg-[#C6E0D1] -z-0"></div>
+        {/* Mobile: Top 100px, Bottom 0. Desktop: Top 314px, Height 634px. */}
+        <div className="absolute top-[100px] lg:top-[314px] bottom-0 lg:bottom-auto w-full lg:h-[634px] bg-[#C6E0D1] -z-0"></div>
 
         {/* Layer 3: Text Content (Z-Index 10) */}
-        {/* Starts 53px below the Image. Image Height is 533. 
-            So content starts at relative top 533 + 53 = 586px? 
-            Or just use flow: Div below Image with margin-top 53px. 
-        */}
-        <div className="relative z-10 mt-[53px] flex flex-col items-center w-full max-w-[972px] px-4 lg:px-0 text-center">
+        <div className="relative z-10 mt-[32px] lg:mt-[53px] flex flex-col items-center w-full max-w-[972px] px-4 lg:px-0 text-center">
 
           {/* Title & Subtitle Block */}
-          {/* Gap 44px mentioned for the section containing these? Or between them? 
-              User text: "isme ek text h ... gap: 44px". 
-              I'll apply gap between the Title block and Paragraph block. 
-          */}
-          <div className="flex flex-col items-center gap-[0px] mb-[44px]">
+          <div className="flex flex-col items-center gap-[0px] mb-[24px] lg:mb-[44px]">
             {/* Title */}
             <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#0D5229]">
               {t.preamble.title}
@@ -330,10 +322,10 @@ const ConstitutionPageContent = () => {
       </section>
 
       {/* 4. VISION SECTION (Article I-B) */}
-      <section className="w-full max-w-[1320px] mx-auto px-4 lg:px-0 flex flex-col mt-[120px]">
+      <section className="w-full max-w-[1320px] mx-auto px-4 lg:px-0 flex flex-col mt-[40px] lg:mt-[120px]">
 
-        {/* Header Block: Gap 29px below */}
-        <div className="flex flex-col gap-[0px] w-full text-left mb-[61px]">
+        {/* Header Block: Reduce gap on mobile */}
+        <div className="flex flex-col gap-[0px] w-full text-left mb-[24px] lg:mb-[61px]">
           <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
             {t.vision.title}
           </h2>
@@ -345,14 +337,14 @@ const ConstitutionPageContent = () => {
         {/* Content Block: Height 304, Width 1320 (Flex Container) */}
         {/* Left: Text (882px) + Right: Image (394px) + Gap 44px */}
         <div className="w-full flex flex-col lg:flex-row items-start">
-          {/* Left Column: Text & Buttons */}
-          <div className="flex flex-col w-full lg:max-w-[882px]">
+          {/* Left Column: Text & Buttons - Order 2 on Mobile */}
+          <div className="flex flex-col w-full lg:max-w-[882px] order-2 lg:order-1">
             {/* Item Title */}
             <h3 className="max-w-[490px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
               {t.vision.items[0].heading}
             </h3>
             {/* Item Description */}
-            <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] text-left min-h-[132px] flex items-center">
+            <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] text-left min-h-[132px] flex items-center mt-[12px] lg:mt-0">
               {t.vision.items[0].text}
             </p>
 
@@ -368,10 +360,10 @@ const ConstitutionPageContent = () => {
           </div>
 
           {/* Gap 44px */}
-          <div className="hidden lg:block w-[44px] shrink-0"></div>
+          <div className="hidden lg:block w-[44px] shrink-0 lg:order-2"></div>
 
-          {/* Right Column: Image */}
-          <div className="w-full lg:w-[394px] h-[304px] rounded-[8px] shadow-[0px_4px_20px_0px_#0000001A] overflow-hidden shrink-0 mt-8 lg:mt-0">
+          {/* Right Column: Image - Order 1 on Mobile */}
+          <div className="w-full lg:w-[394px] h-[304px] rounded-[8px] shadow-[0px_4px_20px_0px_#0000001A] overflow-hidden shrink-0 order-1 lg:order-3 mb-[24px] lg:mb-0">
             <img
               src="/Constitution/Constitution-2.svg"
               alt="Vision"
@@ -379,7 +371,6 @@ const ConstitutionPageContent = () => {
             />
           </div>
         </div>
-
       </section>
 
       {/* 5. FOOTER (FROM HOME PAGE) */}
@@ -387,12 +378,12 @@ const ConstitutionPageContent = () => {
         <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-0 flex flex-col lg:flex-row items-start">
 
           {/* Col 1: Logo & Socials */}
-          <div className="flex flex-col w-[255px]">
+          <div className="flex flex-col w-full lg:w-[255px]">
             <Link href="/">
               <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[255px] h-[136px] object-contain mb-[24px] cursor-pointer" />
             </Link>
 
-            <div className="flex flex-col gap-[20px] w-[228px]">
+            <div className="flex flex-col gap-[20px] w-full lg:w-[228px]">
               <h3 className="w-[228px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                 {t.footer.follow}
               </h3>
@@ -408,10 +399,10 @@ const ConstitutionPageContent = () => {
           </div>
 
           {/* 2. Middle Section: Useful & Additional Links (Width 380) */}
-          <div className="flex flex-col w-[380px] shrink-0 lg:ml-[152px] mt-10 lg:mt-0">
+          <div className="flex flex-col w-full lg:w-[380px] shrink-0 lg:ml-[152px] mt-10 lg:mt-0">
 
             {/* Useful Links Block */}
-            <div className="flex flex-col gap-[20px] w-[330px]">
+            <div className="flex flex-col gap-[20px] w-full lg:w-[330px]">
               <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                 {t.footer.useful}
               </h3>
@@ -434,7 +425,7 @@ const ConstitutionPageContent = () => {
             <div className="h-[48px]"></div>
 
             {/* Additional Links Block */}
-            <div className="flex flex-col gap-[20px] w-[312px]">
+            <div className="flex flex-col gap-[20px] w-full lg:w-[312px]">
               <h3 className="w-[200px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] whitespace-nowrap">
                 {t.footer.additional}
               </h3>
@@ -456,20 +447,20 @@ const ConstitutionPageContent = () => {
           </div>
 
           {/* 3. Right Section: Contact Us (Width 381) */}
-          <div className="flex flex-col w-[381px] shrink-0 lg:ml-auto mt-10 lg:mt-0">
+          <div className="flex flex-col w-full lg:w-[381px] shrink-0 lg:ml-auto mt-10 lg:mt-0">
             <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] mb-[20px]">
               {t.footer.contact}
             </h3>
 
             {/* Content Container */}
-            <div className="flex flex-col gap-[32px] w-[381px]">
+            <div className="flex flex-col gap-[32px] w-full lg:w-[381px]">
 
               {/* Address Section */}
-              <div className="flex items-start gap-[12px] w-[381px]">
+              <div className="flex items-start gap-[12px] w-full lg:w-[381px]">
                 <div className="w-[48px] h-[48px] shrink-0 rounded-[8px] border border-[#E4F2EA] bg-white flex items-center justify-center text-[#04330B] p-[12px]">
                   <MapPin size={24} strokeWidth={1.5} />
                 </div>
-                <p className="w-[321px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">
+                <p className="flex-1 lg:w-[321px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">
                   {t.footer.address || "Ham Badlenge Bhawan, 02 Mission Compound, Ajmer Puliya, Jaipur, Rajasthan"}
                 </p>
               </div>

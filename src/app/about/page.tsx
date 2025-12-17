@@ -182,12 +182,12 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white sticky top-0 z-50 w-full flex justify-center">
-      <div className="w-full max-w-[1320px] h-[92px] flex items-center justify-between px-4 lg:px-0 bg-white">
+    <nav className="bg-white fixed top-0 z-50 w-full flex justify-center">
+      <div className="w-full max-w-[1320px] lg:h-[92px] h-[70px] flex items-center justify-between px-4 lg:px-0 bg-white">
 
         <div className="flex items-center">
           <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
-            <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[114px] h-[60px] object-cover" />
+            <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
           </Link>
 
           <div className="hidden lg:flex items-center gap-[12px] ml-[131px] h-[46px]">
@@ -209,37 +209,37 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Right Side Actions: Width 366, Height 46, Gap 20 */}
-        <div className="flex items-center gap-[20px] w-[366px] h-[46px]">
+        {/* Right Side Actions: Mobile optimized */}
+        <div className="flex items-center gap-[10px] lg:gap-[20px]">
 
-          {/* Language Toggle: Width 84, Height 46, Gap 10, Border #B9D3C4, Padding 4px */}
+          {/* Language Toggle */}
           <div
-            className="relative w-[84px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[4px] flex bg-white cursor-pointer"
+            className="hidden lg:flex relative w-[84px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[4px] bg-white cursor-pointer"
             onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
           >
-            {/* Left Text (Hindi) - Only visible/styled if active */}
-            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'hi' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'
-              }`}
-            >
+            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'hi' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
               {language === 'hi' ? 'हि' : ''}
             </div>
-
-            {/* Right Text (English) - Only visible/styled if active */}
-            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'en' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'
-              }`}
-            >
+            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'en' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
               {language === 'en' ? 'En' : ''}
             </div>
           </div>
 
+          <div
+            className="flex lg:hidden relative w-[50px] h-[36px] rounded-[8px] border border-[#B9D3C4] items-center justify-center font-bold text-[#04330B] cursor-pointer text-sm"
+            onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
+          >
+            {language === 'en' ? 'HI' : 'EN'}
+          </div>
+
           <Link
             href="/join"
-            className="w-[124px] h-[46px] flex items-center justify-center bg-[#0D5229] text-white font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-[#0a4220] transition-colors whitespace-nowrap"
+            className="hidden lg:flex w-[124px] h-[46px] items-center justify-center bg-[#0D5229] text-white font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-[#0a4220] transition-colors whitespace-nowrap"
           >
             {t.nav.join}
           </Link>
           <button
-            className="w-[118px] h-[46px] flex items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-green-50 transition-colors whitespace-nowrap"
+            className="hidden lg:flex w-[118px] h-[46px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-green-50 transition-colors whitespace-nowrap"
           >
             {t.nav.login}
           </button>
@@ -255,15 +255,15 @@ const Navbar = () => {
 
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg">
+        <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg h-screen z-50">
           {links.map((link) => (
-            <a key={link.name} href={link.href} className="text-gray-700 font-medium py-2 border-b border-gray-50">{link.name}</a>
+            <a key={link.name} href={link.href} className="text-gray-700 font-medium py-2 border-b border-gray-50 text-lg">{link.name}</a>
           ))}
-          <div className="flex gap-4 mt-2">
-            <Link href="/join" className="flex-1 py-2 bg-green-900 text-white text-center rounded font-medium">
+          <div className="flex flex-col gap-4 mt-2">
+            <Link href="/join" className="w-full py-3 bg-green-900 text-white text-center rounded font-medium">
               {t.nav.join}
             </Link>
-            <button className="flex-1 py-2 border border-gray-300 text-gray-700 rounded font-medium">
+            <button className="w-full py-3 border border-gray-300 text-gray-700 rounded font-medium">
               {t.nav.login}
             </button>
           </div>
@@ -276,32 +276,32 @@ const Navbar = () => {
 // --- Helper Components ---
 
 const PrincipleItem = ({ iconUrl, text }: { iconUrl: string, text: string }) => (
-  <div className="w-[405px] h-[66px] flex items-center gap-[10px]">
+  <div className="w-full lg:w-[405px] min-h-[66px] flex items-center gap-[10px]">
     <div className="w-[48px] h-[48px] rounded-[8px] border border-[#B9D3C4] bg-white flex items-center justify-center p-[10px] shrink-0">
       <img src={iconUrl} alt="icon" className="w-[24px] h-[24px] object-contain" />
     </div>
-    <p className="w-[347px] h-[66px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] line-clamp-3">
+    <p className="flex-1 font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] lg:line-clamp-3">
       {text}
     </p>
   </div>
 );
 
 const VisionCard = ({ iconUrl, title, text }: { iconUrl: string, title: string, text: string }) => (
-  /* Card Layout: Width 377, Height 304, Padding 24, Gap 16 */
-  <div className="w-[377px] h-[304px] shrink-0 rounded-[8px] border border-[#B9D3C4] bg-white p-[24px] flex flex-col gap-[16px] hover:shadow-lg transition-shadow">
+  /* Card Layout: Responsive Width, Auto Height, Padding 24, Gap 16 */
+  <div className="w-full lg:w-[377px] min-h-[304px] shrink-0 rounded-[8px] border border-[#B9D3C4] bg-white p-[24px] flex flex-col gap-[16px] hover:shadow-lg transition-shadow">
     {/* Logo: Width 48, Height 48 */}
     <div className="w-[48px] h-[48px] rounded-[8px] bg-white text-green-700 flex items-center justify-center">
       <img src={iconUrl} alt="icon" className="w-[48px] h-[48px] object-contain" />
     </div>
 
-    {/* Text Section: Width 329, Height 170, Gap 8 */}
-    <div className="w-[329px] h-[170px] flex flex-col gap-[8px]">
-      {/* Title: Height 30 */}
-      <h3 className="w-[329px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
+    {/* Text Section */}
+    <div className="w-full flex flex-col gap-[8px]">
+      {/* Title */}
+      <h3 className="font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
         {title}
       </h3>
-      {/* Description: Height 132 */}
-      <p className="w-[329px] h-[132px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67]">
+      {/* Description */}
+      <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67]">
         {text}
       </p>
     </div>
@@ -312,16 +312,16 @@ const VisionCard = ({ iconUrl, title, text }: { iconUrl: string, title: string, 
 const Footer = () => {
   const { t } = useLanguage();
   return (
-    <footer className="bg-white pt-[120px] pb-[40px]">
+    <footer className="bg-white pt-[120px] pb-[40px] w-full">
       <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-0 flex flex-col lg:flex-row items-start">
 
         {/* Col 1: Logo & Socials */}
-        <div className="flex flex-col w-[255px]">
+        <div className="flex flex-col w-full lg:w-[255px]">
           <Link href="/">
             <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[255px] h-[136px] object-contain mb-[24px] cursor-pointer" />
           </Link>
 
-          <div className="flex flex-col gap-[20px] w-[228px]">
+          <div className="flex flex-col gap-[20px] w-full lg:w-[228px]">
             <h3 className="w-[228px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
               {t.footer.follow}
             </h3>
@@ -338,10 +338,10 @@ const Footer = () => {
 
         {/* 2. Middle Section: Useful & Additional Links (Width 380) */}
         {/* Gap from Left: 152px */}
-        <div className="flex flex-col w-[380px] shrink-0 lg:ml-[152px] mt-10 lg:mt-0">
+        <div className="flex flex-col w-full lg:w-[380px] shrink-0 lg:ml-[152px] mt-10 lg:mt-0">
 
           {/* Useful Links Block */}
-          <div className="flex flex-col gap-[20px] w-[330px]">
+          <div className="flex flex-col gap-[20px] w-full lg:w-[330px]">
             <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
               {t.footer.useful}
             </h3>
@@ -364,7 +364,7 @@ const Footer = () => {
           <div className="h-[48px]"></div>
 
           {/* Additional Links Block */}
-          <div className="flex flex-col gap-[20px] w-[312px]">
+          <div className="flex flex-col gap-[20px] w-full lg:w-[312px]">
             <h3 className="w-[200px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] whitespace-nowrap">
               {t.footer.additional}
             </h3>
@@ -387,20 +387,20 @@ const Footer = () => {
 
         {/* 3. Right Section: Contact Us (Width 381) */}
         {/* Gap from Middle: 152px (implied by flex spacing or explicit margin) */}
-        <div className="flex flex-col w-[381px] shrink-0 lg:ml-auto mt-10 lg:mt-0">
+        <div className="flex flex-col w-full lg:w-[381px] shrink-0 lg:ml-auto mt-10 lg:mt-0">
           <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] mb-[20px]">
             {t.footer.contact}
           </h3>
 
           {/* Content Container: Gap 32px */}
-          <div className="flex flex-col gap-[32px] w-[381px]">
+          <div className="flex flex-col gap-[32px] w-full lg:w-[381px]">
 
             {/* Address Section */}
-            <div className="flex items-start gap-[12px] w-[381px]">
+            <div className="flex items-start gap-[12px] w-full lg:w-[381px]">
               <div className="w-[48px] h-[48px] shrink-0 rounded-[8px] border border-[#E4F2EA] bg-white flex items-center justify-center text-[#04330B] p-[12px]">
                 <MapPin size={24} strokeWidth={1.5} />
               </div>
-              <p className="w-[321px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">
+              <p className="flex-1 lg:w-[321px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">
                 {t.footer.address}
               </p>
             </div>
@@ -451,7 +451,7 @@ const AboutPageContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-800 flex flex-col items-center">
+    <div className="min-h-screen bg-white font-sans text-gray-800 flex flex-col items-center pt-[70px] lg:pt-[92px]">
       <Navbar />
 
       {/* Main Content Wrapper - Centered, Width 1320 */}
@@ -544,7 +544,7 @@ const AboutPageContent = () => {
             {/* Margins handled by flex gap or rigid spacer div */}
             <div className="hidden lg:block w-[48px] shrink-0"></div>
 
-            <div className="w-full lg:w-[414px] h-[444px] rounded-[8px] overflow-hidden bg-gray-100 my-8 lg:my-0">
+            <div className="w-full lg:w-[414px] h-[300px] lg:h-[444px] rounded-[8px] overflow-hidden bg-gray-100 my-8 lg:my-0">
               <img
                 src="/About/about-2.svg"
                 alt="Principles Image"
@@ -586,10 +586,10 @@ const AboutPageContent = () => {
           {/* User asked for Section width: 3586, Height 304, Gap 24px */}
           {/* Used overflow-x-hidden for smooth custom scroll */}
           <div
-            className="w-full overflow-x-hidden pb-4 no-scrollbar"
+            className="w-full lg:overflow-x-hidden pb-4 no-scrollbar"
             ref={scrollContainerRef}
           >
-            <div className="w-max flex gap-[24px]">
+            <div className="flex flex-col lg:flex-row lg:w-max gap-[24px]">
               <VisionCard
                 iconUrl="/About/about-Icon-9.svg"
                 title={t.vision.cards[0].title}
@@ -624,7 +624,7 @@ const AboutPageContent = () => {
 
           {/* Navigation Arrows */}
           {/* Gap from text: 24px */}
-          <div className="mt-[24px] flex justify-center gap-[12px]">
+          <div className="hidden lg:flex mt-[24px] justify-center gap-[12px]">
             {/* Left Button */}
             <button
               onClick={() => scroll('left')}

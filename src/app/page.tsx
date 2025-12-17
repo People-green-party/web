@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState, useContext, createContext, useRef } from "react";
+import React, { useState, useContext, createContext, useRef, useEffect } from "react";
 import {
   Play, ChevronLeft, ChevronRight, Trophy, HandHeart, Globe, Leaf,
   MapPin, Phone, Mail, Linkedin, Facebook, Instagram, X, ArrowRight, ArrowLeft, Menu
@@ -252,12 +252,12 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white sticky top-0 z-50 w-full flex justify-center">
-      <div className="w-full max-w-[1320px] h-[92px] flex items-center justify-between px-4 lg:px-0 bg-white">
+    <nav className="bg-white fixed top-0 z-50 w-full flex justify-center">
+      <div className="w-full max-w-[1320px] lg:h-[92px] h-[70px] flex items-center justify-between px-4 lg:px-0 bg-white">
 
         <div className="flex items-center">
           <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
-            <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[114px] h-[60px] object-cover" />
+            <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
           </Link>
 
           <div className="hidden lg:flex items-center gap-[12px] ml-[131px] h-[46px]">
@@ -279,37 +279,37 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Right Side Actions: Width 366, Height 46, Gap 20 */}
-        <div className="flex items-center gap-[20px] w-[366px] h-[46px]">
+        {/* Right Side Actions: Mobile optimized */}
+        <div className="flex items-center gap-[10px] lg:gap-[20px]">
 
-          {/* Language Toggle: Width 84, Height 46, Gap 10, Border #B9D3C4, Padding 4px */}
+          {/* Language Toggle */}
           <div
-            className="relative w-[84px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[4px] flex bg-white cursor-pointer"
+            className="hidden lg:flex relative w-[84px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[4px] bg-white cursor-pointer"
             onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
           >
-            {/* Left Text (Hindi) - Only visible/styled if active */}
-            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'hi' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'
-              }`}
-            >
+            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'hi' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
               {language === 'hi' ? 'हि' : ''}
             </div>
-
-            {/* Right Text (English) - Only visible/styled if active */}
-            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'en' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'
-              }`}
-            >
+            <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'en' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
               {language === 'en' ? 'En' : ''}
             </div>
           </div>
 
+          <div
+            className="flex lg:hidden relative w-[50px] h-[36px] rounded-[8px] border border-[#B9D3C4] items-center justify-center font-bold text-[#04330B] cursor-pointer text-sm"
+            onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
+          >
+            {language === 'en' ? 'HI' : 'EN'}
+          </div>
+
           <Link
             href="/join"
-            className="w-[124px] h-[46px] flex items-center justify-center bg-[#0D5229] text-white font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-[#0a4220] transition-colors whitespace-nowrap"
+            className="hidden lg:flex w-[124px] h-[46px] items-center justify-center bg-[#0D5229] text-white font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-[#0a4220] transition-colors whitespace-nowrap"
           >
             {t.nav.join}
           </Link>
           <button
-            className="w-[118px] h-[46px] flex items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-green-50 transition-colors whitespace-nowrap"
+            className="hidden lg:flex w-[118px] h-[46px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-green-50 transition-colors whitespace-nowrap"
           >
             {t.nav.login}
           </button>
@@ -325,15 +325,15 @@ const Navbar = () => {
 
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg">
+        <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg h-screen z-50">
           {links.map((link) => (
-            <a key={link.name} href={link.href} className="text-gray-700 font-medium py-2 border-b border-gray-50">{link.name}</a>
+            <a key={link.name} href={link.href} className="text-gray-700 font-medium py-2 border-b border-gray-50 text-lg">{link.name}</a>
           ))}
-          <div className="flex gap-4 mt-2">
-            <Link href="/join" className="flex-1 py-2 bg-green-900 text-white text-center rounded font-medium">
+          <div className="flex flex-col gap-4 mt-2">
+            <Link href="/join" className="w-full py-3 bg-green-900 text-white text-center rounded font-medium">
               {t.nav.join}
             </Link>
-            <button className="flex-1 py-2 border border-gray-300 text-gray-700 rounded font-medium">
+            <button className="w-full py-3 border border-gray-300 text-gray-700 rounded font-medium">
               {t.nav.login}
             </button>
           </div>
@@ -343,20 +343,27 @@ const Navbar = () => {
   );
 };
 
-const SectionHeader = ({ title, sub }: { title: string, sub?: string }) => (
-  <div className="text-center mb-12 max-w-3xl mx-auto px-4">
-    <h2 className="text-3xl md:text-4xl font-bold text-green-950 mb-4">{title}</h2>
-    {sub && <p className="text-gray-500 text-sm md:text-base">{sub}</p>}
-  </div>
-);
-
 // --- 5. Main Page Component ---
 
 const LandingPageContent = () => {
   const { language, t } = useLanguage();
   const [rotatedCards, setRotatedCards] = useState<any[]>([]);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [offset, setOffset] = useState(-384); // Start at -384 to show the first "real" card (after the clone)
+  const [offset, setOffset] = useState(-384);
+  const [useMobileCards, setUseMobileCards] = useState(false);
+  const [desktopTransform, setDesktopTransform] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const isDesktop = window.innerWidth >= 1024;
+      setDesktopTransform(isDesktop);
+      setUseMobileCards(!isDesktop);
+    };
+
+    handleResize(); // Set initial client state
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Sync cards when language changes
   React.useEffect(() => {
@@ -366,7 +373,7 @@ const LandingPageContent = () => {
   const handleNext = () => {
     if (isAnimating) return;
     setIsAnimating(true);
-    setOffset(-768); // Slide Left
+    setOffset(-768);
     setTimeout(() => {
       setIsAnimating(false);
       setRotatedCards((prev) => {
@@ -375,14 +382,14 @@ const LandingPageContent = () => {
         if (first) copy.push(first);
         return copy;
       });
-      setOffset(-384); // Reset Position instantly
+      setOffset(-384);
     }, 500);
   };
 
   const handlePrev = () => {
     if (isAnimating) return;
     setIsAnimating(true);
-    setOffset(0); // Slide Right
+    setOffset(0);
     setTimeout(() => {
       setIsAnimating(false);
       setRotatedCards((prev) => {
@@ -391,79 +398,63 @@ const LandingPageContent = () => {
         if (last) copy.unshift(last);
         return copy;
       });
-      setOffset(-384); // Reset Position instantly
+      setOffset(-384);
     }, 500);
   };
 
-  // Prepare display cards: [Last, ...Cards, First] for seamless transition
   const displayCards = rotatedCards.length > 0
     ? [rotatedCards[rotatedCards.length - 1], ...rotatedCards, rotatedCards[0]]
     : [];
 
   const stats = getStats(language);
-  const committeeMembers = getCommitteeMembers(language);
   const overlapCards = translations[language as keyof typeof translations].overlappingSection.cards;
 
-  // List of news images for sequence mapping
-  const newsImages = [
-    "/news1.svg", "/news2.svg", "/news3.svg",
-    "/news4.svg", "/news5.svg", "/news6.svg",
-    "/news7.svg", "/news8.svg", "/news9.svg"
-  ];
-
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-800">
+    <div className="min-h-screen bg-white font-sans text-gray-800 overflow-x-hidden pt-[70px] lg:pt-[92px]">
 
       <Navbar />
 
       {/* 1. HERO SECTION */}
-      <section className="w-full flex justify-center mt-[12px]">
+      <section className="w-full flex justify-center mt-[24px] lg:mt-[12px]">
         <div className="w-full max-w-[1320px] relative px-4 lg:px-0 flex flex-col lg:flex-row">
+
+          {/* Header Text - Comes First on Mobile via natural DOM order */}
           <div className="flex flex-col w-full lg:w-[703px] shrink-0 lg:justify-between">
-            {/* Image 1: Width 703, Height 246, Radius 8 */}
-            <div className="flex flex-col gap-[16px] w-full mb-[48px] lg:mb-0">
-              <h1 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
-                {t.hero.titleLine1} {t.hero.titleLine2}
+            <div className="flex flex-col gap-[12px] lg:gap-[16px] w-full mb-[24px] lg:mb-0">
+              <h1 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
+                {t.hero.titleLine1} <br className="hidden lg:block" /> {t.hero.titleLine2}
               </h1>
               <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67] max-w-[476px]">
                 {t.hero.subtitle}
               </p>
             </div>
 
-            <div className="w-full h-[246px] rounded-[8px] overflow-hidden bg-gray-100">
+            <div className="w-full h-[200px] lg:h-[246px] rounded-[8px] overflow-hidden bg-gray-100">
               <img src="/herosection/hero1.svg" alt="Hero 1" className="w-full h-full object-cover" />
             </div>
           </div>
 
-          {/* Gap: 34px */}
           <div className="hidden lg:block w-[34px] shrink-0"></div>
 
-          {/* --- MIDDLE COLUMN: Width 291px --- 
-                Contains: Image 2 + Gap 24px + Image 3
-            */}
-          <div className="hidden lg:flex flex-col w-[291px] shrink-0 gap-[24px]">
-            {/* Image 2: Width 291, Height 256 */}
-            <div className="w-full h-[256px] rounded-[8px] overflow-hidden bg-gray-100">
+          {/* Other Hero Images - Stacked or hidden on mobile? 
+              User said "changes are only in mobile view desktop is perfect".
+              Standard mobile response: Show more images stacked below.
+          */}
+          <div className="flex flex-col w-full lg:w-[291px] shrink-0 gap-[16px] lg:gap-[24px] mt-[16px] lg:mt-0">
+            <div className="w-full h-[200px] lg:h-[256px] rounded-[8px] overflow-hidden bg-gray-100">
               <img src="/herosection/hero2.svg" alt="Hero 2" className="w-full h-full object-cover" />
             </div>
-            {/* Image 3: Width 291, Height 222 */}
-            <div className="w-full h-[222px] rounded-[8px] overflow-hidden bg-gray-100">
+            <div className="w-full h-[200px] lg:h-[222px] rounded-[8px] overflow-hidden bg-gray-100 hidden lg:block">
               <img src="/herosection/hero3.svg" alt="Hero 3" className="w-full h-full object-cover" />
             </div>
           </div>
 
-          {/* Gap: 24px */}
           <div className="hidden lg:block w-[24px] shrink-0"></div>
 
-          {/* --- RIGHT COLUMN: Width 278px --- 
-                Contains: Image 4 + Gap 24px + Image 5
-            */}
-          <div className="hidden lg:flex flex-col w-[278px] shrink-0 gap-[24px]">
-            {/* Image 4: Width 278, Height 230 */}
+          <div className="flex flex-col w-full lg:w-[278px] shrink-0 gap-[24px] mt-[16px] lg:mt-0 hidden lg:flex">
             <div className="w-full h-[230px] rounded-[8px] overflow-hidden bg-gray-100">
               <img src="/herosection/hero4.svg" alt="Hero 4" className="w-full h-full object-cover" />
             </div>
-            {/* Image 5: Width 278, Height 246 */}
             <div className="w-full h-[246px] rounded-[8px] overflow-hidden bg-gray-100">
               <img src="/herosection/hero5.svg" alt="Hero 5" className="w-full h-full object-cover" />
             </div>
@@ -472,51 +463,43 @@ const LandingPageContent = () => {
       </section>
 
       {/* 2. VISION FOR BETTER TOMORROW (Cards) */}
-      {/* Gap from Hero Section: 120px */}
-      <section className="bg-white px-4 mt-[120px]">
-        {/* Layout: Width 1320 (max), centered */}
+      <section className="bg-white px-4 mt-[60px] lg:mt-[120px]">
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
 
-          {/* Header Section: Width 1320, Height 112, Gap 16 */}
+          {/* Header */}
           <div className="flex flex-col gap-[16px] w-full items-center text-center">
-            {/* Title: Width 1010, Height 72 */}
-            <h2 className="w-full max-w-[1010px] font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
+            <h2 className="w-full max-w-[1010px] font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
               {t.visionSection.title}
             </h2>
-            {/* Subtitle: Width 1320, Height 24 */}
             <p className="w-full font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
               {t.visionSection.sub}
             </p>
           </div>
 
-          {/* Gap below header: 64px */}
-          <div className="w-full h-[64px]"></div>
+          <div className="w-full h-[32px] lg:h-[64px]"></div>
 
-          {/* Cards Section: Hidden Overflow Container */}
-          <div className="w-full overflow-hidden">
+          {/* Cards: Mobile = Vertical Stack, Desktop = Carousel */}
+          <div className="w-full lg:overflow-hidden">
             <div
-              className={`flex gap-[16px] ${isAnimating ? 'transition-transform duration-500 ease-in-out' : ''}`}
-              style={{ transform: `translateX(${offset}px)` }}
+              className={`flex flex-col lg:flex-row gap-[16px] ${isAnimating ? 'lg:transition-transform lg:duration-500 lg:ease-in-out' : ''}`}
+              style={{
+                // Only apply transform on Desktop
+                transform: desktopTransform ? `translateX(${offset}px)` : 'none'
+              }}
             >
-              {displayCards.slice(0, 6).map((card: any, idx: number) => (
-                /* Card Layout: Width 360, Height 364. Border #B9D3C4. Padding 24px. */
+              {/* On Mobile, just show the base cards without the duplicate buffer for infinite scroll */}
+              {(useMobileCards ? rotatedCards : displayCards.slice(0, 6)).map((card: any, idx: number) => (
                 <div
                   key={idx}
-                  className="w-[360px] h-[364px] border border-[#B9D3C4] rounded-[8px] p-[24px] flex flex-col items-start bg-white hover:shadow-lg transition-shadow shrink-0"
+                  className="w-full lg:w-[360px] h-auto lg:h-[364px] border border-[#B9D3C4] rounded-[8px] p-[24px] flex flex-col items-start bg-white hover:shadow-lg transition-shadow shrink-0"
                 >
-                  {/* Logo: Width 48, Height 48 */}
                   <div className="w-[48px] h-[48px] flex items-center justify-center mb-[16px]">
                     <img src={card.image} alt="icon" className="w-[48px] h-[48px] object-contain" />
                   </div>
-
-                  {/* Content Container: Width 312 */}
                   <div className="flex flex-col gap-[8px] w-full">
-                    {/* Title */}
-                    <h3 className="font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] min-h-[60px] lg:min-h-[90px]">
+                    <h3 className="font-['Familjen_Grotesk'] font-semibold text-[20px] lg:text-[24px] leading-[26px] lg:leading-[30px] tracking-[-0.3px] text-[#04330B] min-h-0 lg:min-h-[90px]">
                       {card.title}
                     </h3>
-
-                    {/* Desc */}
                     <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67]">
                       {card.desc}
                     </p>
@@ -526,18 +509,13 @@ const LandingPageContent = () => {
             </div>
           </div>
 
-          {/* Controls Section: Gap 48px from cards */}
-          <div className="w-full flex flex-col items-center mt-[48px]">
-            {/* Text: Width 415, Height 24 */}
-            <p className="w-[415px] text-center font-['Inter'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67] whitespace-nowrap">
+          {/* Controls: Hidden on Mobile */}
+          <div className="w-full flex flex-col items-center mt-[32px] lg:mt-[48px]">
+            <p className="w-full lg:w-[415px] text-center font-['Inter'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67] whitespace-normal lg:whitespace-nowrap">
               {t.visionSection.footerText}
             </p>
 
-            {/* Gap: 24px */}
-            <div className="h-[24px]"></div>
-
-            {/* Buttons: Width 104, Height 46 (gap 12) -> Two 46x46 buttons */}
-            <div className="flex gap-[12px]">
+            <div className="hidden lg:flex gap-[12px] mt-[24px]">
               <button
                 onClick={handlePrev}
                 className="w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] flex items-center justify-center text-[#04330B] hover:bg-green-50 transition-colors"
@@ -556,97 +534,65 @@ const LandingPageContent = () => {
       </section>
 
       {/* 3. OUR VISION (Overlapping Layout) */}
-      <section className="bg-white mt-[120px] w-full flex flex-col items-center">
-        {/* Header Container: Width 1320, Left Aligned with 16px Padding */}
-        <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-start pl-[16px]">
-          {/* Header Section: Width 631, Height 136, Gap 16 */}
+      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center">
+        {/* Text First */}
+        <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-start lg:pl-[16px]">
           <div className="flex flex-col gap-[16px] items-start text-left w-full max-w-[631px]">
-            {/* Title: Width 286, Height 72, Font 64px, Weight 600 */}
-            <h2 className="font-['Familjen_Grotesk'] font-semibold text-[64px] leading-[72px] tracking-[-0.3px] text-[#04330B]">
+            <h2 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
               {t.overlappingSection.title}
             </h2>
-            {/* Subtitle: Width 631, Height 48, Font 20px, Weight 600 */}
-            <p className="font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+            <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
               {t.overlappingSection.desc}
             </p>
           </div>
         </div>
 
-        {/* Gap: 64px */}
-        <div className="h-[64px]"></div>
+        <div className="h-[32px] lg:h-[64px]"></div>
 
-        {/* Main Content Area: Width 1320 */}
         <div className="w-full max-w-[1320px] relative px-4 lg:px-0">
 
-          {/* Container for Image + Overlap: Height 594 (Image 500 + Gap 48 + Button 46) */}
-          <div className="relative w-full h-[500px]">
-            {/* Image: Width 920, Height 500, Radius 8, Left Aligned (z-0) */}
-            <div className="absolute top-0 left-0 w-[920px] h-[500px] rounded-[8px] overflow-hidden bg-gray-100 z-0">
+          {/* Mobile: Stacked | Desktop: Absolute/Overlap */}
+          <div className="relative w-full h-auto lg:h-[500px] flex flex-col lg:block">
+            {/* Image */}
+            <div className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[500px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
               <img src="/ourvision/VisionImage.svg" alt="Vision" className="w-full h-full object-cover" />
             </div>
 
-            {/* Overlapping Cards Container: Width 636, Height 396 */}
-            {/* Position: Overlapping image. Aligned Right? User didn't specify X, apart from "overlap". 
-                Standard design suggests Right alignment with overlap.
-                Cards H: 396. Image H: 500. Centered Vertically? Or Top aligned?
-                "gap: 64px" from text above suggests Top of image starts there.
-                I will Vertically Center the cards relative to the Image (Top: (500-396)/2 = 52px).
-                And Right Align to container (Right: 0).
-                1320 - 920 = 400 space. Cards 636. Overlap = 236. Correct.
-            */}
-            <div className="absolute top-[52px] right-0 w-[636px] h-[396px] z-10 flex flex-col gap-[24px]">
+            {/* Cards */}
+            <div className="relative lg:absolute lg:top-[52px] lg:right-0 w-full lg:w-[636px] h-auto lg:h-[396px] z-10 flex flex-col gap-[16px] lg:gap-[24px]">
               {overlapCards.map((item: any, i: number) => (
-                /* Card: Width 636, Height 116. Padding 24y 20x. Border #E4F2EA. Shadow. */
                 <div
                   key={i}
-                  className="w-[636px] h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px]"
+                  className="w-full lg:w-[636px] h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px]"
                 >
-                  {/* Content */}
                   <div className="flex flex-col gap-[4px]">
-                    <h3 className="font-['Familjen_Grotesk'] font-bold text-[24px] text-[#04330B]">{item.title}</h3>
-                    <p className="font-['Familjen_Grotesk'] font-medium text-[16px] text-[#587E67]">{item.desc}</p>
+                    <h3 className="font-['Familjen_Grotesk'] font-bold text-[20px] lg:text-[24px] text-[#04330B]">{item.title}</h3>
+                    <p className="font-['Familjen_Grotesk'] font-medium text-[14px] lg:text-[16px] text-[#587E67]">{item.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Button: Below Image (Gap 48px). Width 153, Height 46. */}
-          {/* Since Image is absolute 500px, we place button relative below header+gap+50+gap */}
-          {/* Actually simpler: Put button inside a flex layout or absolute below? 
-              Let's use a spacer div since we are in flow for the section height.
-              The parent div height is driven by content? No, image is absolute.
-              I should make the container height explicit or use flow.
-              Let's use flow for the Container Main Block.
-          */}
         </div>
 
-        {/* Helper Div to maintain flow height since Image is absolute */}
-        {/* Image Height 500. + Gap 48 + Button 46 */}
-        <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-center">
-          <div className="h-[50px] w-full"></div> {/* Spacer for Absolute Image */}
-
-          {/* Gap: 48px */}
-          <div className="h-[1px]"></div>
-
-          {/* Button */}
-          <button className="w-[153px] h-[46px] rounded-[8px] border border-[#0D5229] flex items-center justify-center gap-[12px] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] hover:bg-green-50 transition-colors">
+        {/* Button */}
+        <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-center mt-[32px] lg:mt-[48px]">
+          {/* Spacer mostly for desktop logic, on mobile we use margin top */}
+          <div className="hidden lg:block h-[50px] w-full"></div>
+          <button className="w-full lg:w-[153px] h-[46px] rounded-[8px] border border-[#0D5229] flex items-center justify-center gap-[12px] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] hover:bg-green-50 transition-colors">
             {t.overlappingSection.button}
           </button>
         </div>
       </section>
 
       {/* 4. MEET YOUR IDEOLOGICAL LEADER */}
-      <section className="bg-white mt-[120px] w-full flex justify-center">
-        {/* Main Content Container: Width 1320 */}
-        <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col lg:flex-row items-end justify-between gap-[48px] lg:gap-0">
+      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center">
+        <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col lg:flex-row items-end justify-between gap-[32px] lg:gap-0">
 
-          {/* LEFT COLUMN: Text Content (Width ~800px based on previous reqs, or flex-1) */}
-          <div className="flex flex-col items-start text-left w-full lg:max-w-[810px] pb-[40px]">
-
-            {/* Title & Subtitle Block */}
-            <div className="flex flex-col gap-[16px] mb-[40px]">
-              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
+          {/* Text First on Mobile via flex-col order (DOM order) */}
+          <div className="flex flex-col items-start text-left w-full lg:max-w-[810px] pb-0 lg:pb-[40px]">
+            <div className="flex flex-col gap-[12px] lg:gap-[16px] mb-[24px] lg:mb-[40px] order-1 lg:order-none">
+              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
                 {t.leader.title}
               </h2>
               <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
@@ -654,9 +600,8 @@ const LandingPageContent = () => {
               </p>
             </div>
 
-            {/* Quote Block */}
-            <div className="flex flex-col gap-[4px] mb-[24px]">
-              <h3 className="font-['Familjen_Grotesk'] font-semibold text-[24px] lg:text-[32px] leading-[1.2] tracking-[-0.3px] text-[#0D5229]">
+            <div className="flex flex-col gap-[4px] mb-[16px] lg:mb-[24px] order-4 lg:order-none">
+              <h3 className="font-['Familjen_Grotesk'] font-semibold text-[20px] lg:text-[32px] leading-[1.2] tracking-[-0.3px] text-[#0D5229]">
                 {t.leader.quote}
               </h3>
               <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
@@ -664,50 +609,36 @@ const LandingPageContent = () => {
               </p>
             </div>
 
-            {/* Bio Block */}
-            <div className="w-full mb-[24px]">
-              <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[28px] tracking-[-0.3px] text-[#587E67] text-justify lg:text-left">
+            <div className="w-full mb-[24px] order-5 lg:order-none">
+              <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[26px] lg:leading-[28px] tracking-[-0.3px] text-[#587E67] text-justify lg:text-left">
                 {t.leader.bio}
               </p>
             </div>
 
-            {/* Social Icons: Width 114 (approx), Height 30. Gap 10. */}
-            <div className="flex gap-[10px]">
-              {/* Facebook */}
-              <a
-                href="https://www.facebook.com/sudhanshu.pgp1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-[40px] h-[40px] rounded-[8px] bg-white border border-[#E8F3EC] flex items-center justify-center text-[#04330B] shadow-[0px_4px_20px_0px_#0000001A] hover:bg-green-50 transition-colors"
-              >
+            <div className="flex gap-[10px] order-3 lg:order-none mb-[24px] lg:mb-0">
+              <a href="https://www.facebook.com/sudhanshu.pgp1" target="_blank" rel="noopener noreferrer" className="w-[40px] h-[40px] rounded-[8px] bg-white border border-[#E8F3EC] flex items-center justify-center text-[#04330B] shadow-sm hover:bg-green-50 transition-colors">
                 <img src="/leadersection/fb.svg" alt="Facebook" className="w-[29px] h-[29px]" />
               </a>
-              {/* Instagram */}
-              <a
-                href="https://www.instagram.com/drsudhanshu_green/?__pwa=1#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-[40px] h-[40px] rounded-[8px] bg-white border border-[#E8F3EC] flex items-center justify-center text-[#04330B] shadow-[0px_4px_20px_0px_#0000001A] hover:bg-green-50 transition-colors"
-              >
+              <a href="https://www.instagram.com/drsudhanshu_green/?__pwa=1#" target="_blank" rel="noopener noreferrer" className="w-[40px] h-[40px] rounded-[8px] bg-white border border-[#E8F3EC] flex items-center justify-center text-[#04330B] shadow-sm hover:bg-green-50 transition-colors">
                 <img src="/leadersection/insta.svg" alt="Instagram" className="w-[29px] h-[29px]" />
               </a>
-              {/* X */}
-              <a
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-[40px] h-[40px] rounded-[8px] bg-white border border-[#E8F3EC] flex items-center justify-center text-[#04330B] shadow-[0px_4px_20px_0px_#0000001A] hover:bg-green-50 transition-colors"
-              >
+              <a href="#" target="_blank" rel="noopener noreferrer" className="w-[40px] h-[40px] rounded-[8px] bg-white border border-[#E8F3EC] flex items-center justify-center text-[#04330B] shadow-sm hover:bg-green-50 transition-colors">
                 <img src="/leadersection/x.svg" alt="X" className="w-[25px] h-[25px]" />
               </a>
             </div>
+
+            {/* Mobile Image */}
+            <div className="order-2 lg:hidden w-full flex justify-center mb-[24px]">
+              <div className="relative w-full max-w-[400px] h-auto aspect-square">
+                <img src="Shudhanshu.svg" alt="Dr Sudhanshu" className="w-full h-full rounded-[8px] bg-white border border-[#E8F3EC] object-cover" />
+              </div>
+            </div>
           </div>
 
-          {/* RIGHT COLUMN: Image */}
-          {/* Dr Sudhanshu Image: Width 419, Height 444 */}
-          <div className="w-full lg:w-auto flex justify-center lg:justify-end">
-            <div className="relative w-[300px] h-[318px] lg:w-[419px] lg:h-[444px]">
-              <img src="Shudhanshu.svg" alt="Dr Sudhanshu" className="w-[440px] h-[400px] rounded-[8px] bg-white border border-[#E8F3EC] object-cover" />
+          {/* Image Second */}
+          <div className="hidden lg:flex w-full lg:w-auto justify-center lg:justify-end">
+            <div className="relative w-full max-w-[400px] h-auto aspect-square lg:w-[419px] lg:h-[444px]">
+              <img src="Shudhanshu.svg" alt="Dr Sudhanshu" className="w-full h-full rounded-[8px] bg-white border border-[#E8F3EC] object-cover" />
             </div>
           </div>
 
@@ -715,39 +646,29 @@ const LandingPageContent = () => {
       </section>
 
       {/* 5. IMPACT STATS */}
-      <section className="bg-white mt-[120px] w-full flex flex-col items-center">
-        {/* Header Section: Width 1320 (max), Gap 64px below header */}
+      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center">
         <div className="w-full max-w-[1320px] flex flex-col items-center px-4 lg:px-0">
 
-          {/* Text Container: Gap 16 between Title and Subtitle. Left Aligned. */}
-          <div className="w-full flex flex-col items-start text-left gap-[16px] mb-[64px]">
-            {/* Title: Width 1054, Font 64px */}
-            <h2 className="max-w-[1054px] font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
+          {/* Header First */}
+          <div className="w-full flex flex-col items-start text-left gap-[16px] mb-[32px] lg:mb-[64px]">
+            <h2 className="max-w-[1054px] font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
               {t.stats.header}
             </h2>
-            {/* Subtitle: Width 1039, Font 20px */}
             <p className="max-w-[1039px] font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
               {t.stats.sub}
             </p>
           </div>
 
-          {/* Cards Grid: Width 1320, Height 216, Gap 24 */}
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[24px]">
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[16px] lg:gap-[24px]">
             {stats.map((stat: any, idx: number) => (
-              <div key={idx} className="w-full lg:w-[312px] h-auto min-h-[216px] bg-white border border-[#B9D3C4] rounded-[8px] px-[24px] py-[20px] flex flex-col items-start hover:shadow-lg transition-shadow">
-
-                {/* Number: Height 54, Gap below 12 */}
-                <h3 className="font-[family-name:var(--font-inter)] font-semibold text-[40px] lg:text-[48px] leading-[54px] tracking-[-0.3px] text-[#0D5229] mb-[12px]">
+              <div key={idx} className="w-full h-auto min-h-[180px] lg:min-h-[216px] bg-white border border-[#B9D3C4] rounded-[8px] px-[24px] py-[20px] flex flex-col items-start hover:shadow-lg transition-shadow">
+                <h3 className="font-[family-name:var(--font-inter)] font-semibold text-[32px] lg:text-[48px] leading-[1.2] lg:leading-[54px] tracking-[-0.3px] text-[#0D5229] mb-[8px] lg:mb-[12px]">
                   {stat.number}
                 </h3>
-
-                {/* Label: Height 30, Gap below 8 */}
-                <h4 className="font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[20px] lg:text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] mb-[8px]">
+                <h4 className="font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[18px] lg:text-[24px] leading-[26px] lg:leading-[30px] tracking-[-0.3px] text-[#04330B] mb-[8px]">
                   {stat.label}
                 </h4>
-
-                {/* Description: Height 72 */}
-                <p className="font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                <p className="font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[14px] lg:text-[20px] leading-[20px] lg:leading-[24px] tracking-[-0.3px] text-[#587E67]">
                   {stat.sub}
                 </p>
               </div>
@@ -757,90 +678,78 @@ const LandingPageContent = () => {
         </div>
       </section>
 
-      {/* 6. NEWS AND PUBLICATIONS */}
-      <section className="bg-white mt-[120px] w-full flex justify-center">
-        {/* Main Relative Container: Width 1320, Height 600, No Border, Centered */}
-        <div className="relative w-full max-w-[1320px] h-[600px] rounded-[8px] px-0 lg:px-0 mx-4 lg:mx-0">
+      {/* 6. NEWS AND PUBLICATIONS - Responsive Fix */}
+      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center">
+        {/* On Mobile: Flex Col / Grid. On Desktop: Absolute. */}
+        <div className="relative w-full max-w-[1320px] h-auto lg:h-[600px] rounded-[8px] px-4 lg:px-0 mx-auto">
 
-          <div className="absolute top-0 left-0 flex flex-col items-start gap-[16px]">
-            {/* Title: Width 637, Height 72 */}
-            <h2 className="w-full max-w-[637px] font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B] text-left">
+          {/* Header Block - Relative/Static on Mobile, Absolute on Desktop */}
+          <div className="relative lg:absolute top-0 left-0 flex flex-col items-start gap-[12px] lg:gap-[16px] mb-[32px] lg:mb-0">
+            <h2 className="w-full max-w-[637px] font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B] text-left">
               {t.news.title}
             </h2>
-            {/* Subtitle: Width 572, Height 60 */}
-            <p className="w-full max-w-[572px] font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[18px] lg:text-[24px] leading-[30px] tracking-[-0.3px] text-[#587E67] text-left">
+            <p className="w-full max-w-[572px] font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[16px] lg:text-[24px] leading-[22px] lg:leading-[30px] tracking-[-0.3px] text-[#587E67] text-left">
               {t.news.sub}
             </p>
           </div>
 
-          {/* Image 1: Top 320, Left 0 */}
-          <div className="absolute top-[320px] left-0 w-[244px] h-[280px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-[0px_8px_12px_0px_#00000033]">
-            <img src="/news1.svg" className="w-full h-full object-fill" />
-          </div>
+          {/* Image Grid Wrapper for Mobile / Absolute Wrapper for Desktop */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:block">
 
-          {/* Image 2: Top 240, Left 268 */}
-          <div className="absolute top-[240px] left-[268px] w-[245px] h-[188px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-[0px_4px_20px_0px_#0000001A]">
-            <img src="/news2.svg" className="w-full h-full object-fill" />
-          </div>
+            <div className="relative w-full aspect-[244/280] lg:absolute lg:top-[320px] lg:left-0 lg:w-[244px] lg:h-[280px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+              <img src="/news1.svg" className="w-full h-full object-fill" />
+            </div>
 
-          {/* Image 3: Top 452, Left 268 */}
-          <div className="absolute top-[452px] left-[268px] w-[245px] h-[148px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-[0px_8px_12px_0px_#00000033]">
-            <img src="/news3.svg" className="w-full h-full object-fill" />
-          </div>
+            <div className="relative w-full aspect-[245/188] lg:absolute lg:top-[240px] lg:left-[268px] lg:w-[245px] lg:h-[188px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_4px_20px_0px_#0000001A]">
+              <img src="/news2.svg" className="w-full h-full object-fill" />
+            </div>
 
-          {/* Image 4: Top 160, Left 537 */}
-          <div className="absolute top-[160px] left-[537px] w-[245px] h-[141px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-[0px_8px_12px_0px_#00000033]">
-            <img src="/news4.svg" className="w-full h-full object-fill" />
-          </div>
+            <div className="relative w-full aspect-[245/148] lg:absolute lg:top-[452px] lg:left-[268px] lg:w-[245px] lg:h-[148px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+              <img src="/news3.svg" className="w-full h-full object-fill" />
+            </div>
 
-          {/* Image 5: Top 325, Left 537 */}
-          <div className="absolute top-[325px] left-[537px] w-[245px] h-[275px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-[0px_8px_12px_0px_#00000033]">
-            <img src="/news5.svg" className="w-full h-full object-fill" />
-          </div>
+            <div className="relative w-full aspect-[245/141] lg:absolute lg:top-[160px] lg:left-[537px] lg:w-[245px] lg:h-[141px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+              <img src="/news4.svg" className="w-full h-full object-fill" />
+            </div>
 
-          {/* Image 6: Top 80, Left 806 */}
-          <div className="absolute top-[80px] left-[806px] w-[245px] h-[350px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-[0px_8px_12px_0px_#00000033]">
-            <img src="/news6.svg" className="w-full h-full object-fill" />
-          </div>
+            <div className="relative w-full aspect-[245/275] lg:absolute lg:top-[325px] lg:left-[537px] lg:w-[245px] lg:h-[275px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+              <img src="/news5.svg" className="w-full h-full object-fill" />
+            </div>
 
-          {/* Image 7: Top 454, Left 806 */}
-          <div className="absolute top-[454px] left-[806px] w-[245px] h-[146px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-[0px_8px_12px_0px_#00000033]">
-            <img src="/news7.svg" className="w-full h-full object-fill" />
-          </div>
+            <div className="relative w-full aspect-[245/350] lg:absolute lg:top-[80px] lg:left-[806px] lg:w-[245px] lg:h-[350px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+              <img src="/news6.svg" className="w-full h-full object-fill" />
+            </div>
 
-          {/* Image 8: Top 0, Left 1075 */}
-          <div className="absolute top-[0px] left-[1075px] w-[245px] h-[178px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-[0px_8px_12px_0px_#00000033]">
-            <img src="/news8.svg" className="w-full h-full object-fill" />
-          </div>
+            <div className="relative w-full aspect-[245/146] lg:absolute lg:top-[454px] lg:left-[806px] lg:w-[245px] lg:h-[146px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+              <img src="/news7.svg" className="w-full h-full object-fill" />
+            </div>
 
-          {/* Image 9: Top 202, Left 1075 */}
-          <div className="absolute top-[202px] left-[1075px] w-[245px] h-[398px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-[0px_8px_12px_0px_#00000033]">
-            <img src="/news9.svg" className="w-full h-full object-fill" />
-          </div>
+            <div className="relative w-full aspect-[245/178] lg:absolute lg:top-[0px] lg:left-[1075px] lg:w-[245px] lg:h-[178px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+              <img src="/news8.svg" className="w-full h-full object-fill" />
+            </div>
 
+            <div className="relative w-full aspect-[245/398] lg:absolute lg:top-[202px] lg:left-[1075px] lg:w-[245px] lg:h-[398px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+              <img src="/news9.svg" className="w-full h-full object-fill" />
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* 7. COMMITTEE MEMBERS - REFINE: Text Top, Image Bottom, Socials, Specific Data */}
-      <section className="bg-white mt-[120px] w-full flex justify-center">
-        {/* Main Container: 1320px Wide, Centered */}
-        <div className="w-full max-w-[1320px] px-0 lg:px-0 mx-4 lg:mx-0 flex flex-col items-center">
+      {/* 7. COMMITTEE MEMBERS */}
+      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center">
+        <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-center">
 
-          {/* Header Section: Gap 64px to grid */}
-          <div className="flex flex-col items-center gap-[16px] mb-[64px]">
-            {/* Title: Width 885, Height 72 */}
-
-            <h2 className="w-full text-center font-[family-name:var(--font-inter)] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B] whitespace-nowrap">
+          {/* Header First */}
+          <div className="flex flex-col items-center gap-[16px] mb-[32px] lg:mb-[64px]">
+            <h2 className="w-full text-center font-[family-name:var(--font-inter)] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B] whitespace-normal lg:whitespace-nowrap">
               {t.committee.title}
             </h2>
-            {/* Subtitle: Width 572, Height 60 */}
-            <p className="max-w-[572px] w-full text-center font-[family-name:var(--font-inter)] font-semibold text-[18px] lg:text-[24px] leading-[30px] tracking-[-0.3px] text-[#587E67]">
+            <p className="max-w-[572px] w-full text-center font-[family-name:var(--font-inter)] font-semibold text-[16px] lg:text-[24px] leading-[24px] lg:leading-[30px] tracking-[-0.3px] text-[#587E67]">
               {t.committee.sub}
             </p>
           </div>
 
-          {/* Grid Section: Width 1320, 4 Cols, Gap 24px Horiz, 48px Vert */}
-          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-[24px] gap-y-[48px]">
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[24px]">
             {[
               { name: "Dr. Sudhanshu", role: "President", image: "/Members/CM.png" },
               { name: "Bhanwar Lal Nayak", role: "Vice President", image: "/leadersection/Bhanwar-lal-ji.png" },
@@ -851,28 +760,17 @@ const LandingPageContent = () => {
               { name: "Satish Nagpal", role: "Pradesh Adhyaksh Rajasthan", image: "/Satish-removebg-preview.png" },
               { name: "Dr. Hari Singh Chauhan", role: "Vice President", image: "/hari-removebg-preview.png" }
             ].map((member, index) => (
-              /* Card: Width 312, Height 322 */
-              <div key={index} className="w-full max-w-[312px] h-[322px] rounded-[8px] border border-[#B9D3C4] p-[20px] flex flex-col justify-between transition-transform hover:-translate-y-1 bg-white">
-
-                {/* Text Layout (Top) */}
+              <div key={index} className="w-full mx-auto max-w-[312px] h-[322px] rounded-[8px] border border-[#B9D3C4] p-[20px] flex flex-col justify-between transition-transform hover:-translate-y-1 bg-white">
                 <div className="flex flex-col gap-[4px] mb-[20px]">
-                  {/* Name: 24px Familjen */}
                   <h3 className="font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                     {member.name}
                   </h3>
-                  {/* Role: 16px Familjen */}
                   <p className="font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67]">
                     {member.role}
                   </p>
                 </div>
-
-                {/* Image Placeholder (Bottom): 226px height */}
                 <div className="relative w-full h-[226px] rounded-[8px] overflow-hidden" style={{ background: 'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)' }}>
-                  {/* Member Image */}
                   <img src={member.image} alt={member.name} className="w-full h-full object-contain object-bottom" onError={(e) => (e.currentTarget.src = 'https://placehold.co/272x226/E8F3EC/587E67?text=Photo')} />
-
-
-                  {/* Social Icons Overlay (Bottom Left) */}
                   {index === 0 && (
                     <div className="absolute bottom-[16px] left-[16px] flex gap-[12px] z-10">
                       <div className="w-[32px] h-[32px] bg-white rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors">
@@ -887,14 +785,12 @@ const LandingPageContent = () => {
                     </div>
                   )}
                 </div>
-
               </div>
             ))}
           </div>
 
-          {/* View More Button */}
-          <div className="flex justify-center mt-[64px]">
-            <button className="w-[153px] h-[46px] flex items-center justify-center gap-[12px] bg-white border border-[#0D5229] rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#0D5229] hover:bg-green-50 transition-colors">
+          <div className="flex justify-center mt-[48px] lg:mt-[64px]">
+            <button className="w-full lg:w-[153px] h-[46px] flex items-center justify-center gap-[12px] bg-white border border-[#0D5229] rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#0D5229] hover:bg-green-50 transition-colors">
               {t.committee.button}
             </button>
           </div>
@@ -903,21 +799,20 @@ const LandingPageContent = () => {
       </section>
 
       {/* 8. FOOTER */}
-      <footer className="bg-white pt-[120px] pb-[40px]">
+      <footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]">
         <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-0 flex flex-col lg:flex-row items-start">
 
-          {/* Col 1: Logo & Socials */}
-          <div className="flex flex-col w-[255px]">
+          <div className="flex flex-col w-full lg:w-[255px]">
             <Link href="/">
-              <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[255px] h-[136px] object-contain mb-[24px] cursor-pointer" />
+              <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[150px] lg:w-[255px] h-auto lg:h-[136px] object-contain mb-[24px] cursor-pointer" />
             </Link>
 
-            <div className="flex flex-col gap-[20px] w-[228px]">
-              <h3 className="w-[228px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
+            <div className="flex flex-col gap-[20px] w-full lg:w-[228px]">
+              <h3 className="w-full h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                 {t.footer.follow}
               </h3>
 
-              <div className="w-[228px] h-[48px] flex gap-[12px]">
+              <div className="w-full h-[48px] flex gap-[12px]">
                 {[Linkedin, Facebook, Instagram, X].map((Icon, i) => (
                   <div key={i} className="w-[48px] h-[48px] rounded-[8px] border border-[#E4F2EA] bg-white p-[12px] flex items-center justify-center text-[#04330B] hover:bg-[#EAF7EE] transition-colors cursor-pointer">
                     <Icon size={24} strokeWidth={1.5} />
@@ -927,17 +822,12 @@ const LandingPageContent = () => {
             </div>
           </div>
 
-          {/* 2. Middle Section: Useful & Additional Links (Width 380) */}
-          {/* Gap from Left: 152px */}
-          <div className="flex flex-col w-[380px] shrink-0 lg:ml-[152px] mt-10 lg:mt-0">
-
-            {/* Useful Links Block */}
-            <div className="flex flex-col gap-[20px] w-[330px]">
+          <div className="flex flex-col w-full lg:w-[380px] shrink-0 lg:ml-[152px] mt-10 lg:mt-0">
+            <div className="flex flex-col gap-[20px] w-full lg:w-[330px]">
               <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                 {t.footer.useful}
               </h3>
-              {/* Links Row: Height 22, Gap 40 */}
-              <div className="w-[330px] h-[22px] flex gap-[40px] items-center">
+              <div className="w-full flex flex-col lg:flex-row gap-[16px] lg:gap-[40px] items-start lg:items-center">
                 {[
                   { label: t.nav.home, href: "/" },
                   { label: t.nav.about, href: "/about" },
@@ -951,17 +841,14 @@ const LandingPageContent = () => {
               </div>
             </div>
 
-            {/* Gap: 48px */}
-            <div className="h-[48px]"></div>
+            <div className="h-[32px] lg:h-[48px]"></div>
 
-            {/* Additional Links Block */}
-            <div className="flex flex-col gap-[20px] w-[312px]">
+            <div className="flex flex-col gap-[20px] w-full lg:w-[312px]">
               <h3 className="w-[200px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] whitespace-nowrap">
                 {t.footer.additional}
               </h3>
 
-              {/* Content Layout: 312x88 */}
-              <div className="w-[312px] flex flex-col gap-1">
+              <div className="w-full lg:w-[312px] flex flex-col gap-2 lg:gap-1">
                 {[
                   t.footer.audit,
                   t.footer.eci,
@@ -973,30 +860,23 @@ const LandingPageContent = () => {
                 ))}
               </div>
             </div>
-
           </div>
 
-          {/* 3. Right Section: Contact Us (Width 381) */}
-          {/* Gap from Middle: 152px (implied by flex spacing or explicit margin) */}
-          <div className="flex flex-col w-[381px] shrink-0 lg:ml-auto mt-10 lg:mt-0">
+          <div className="flex flex-col w-full lg:w-[381px] shrink-0 lg:ml-auto mt-10 lg:mt-0">
             <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] mb-[20px]">
               {t.footer.contact}
             </h3>
 
-            {/* Content Container: Gap 32px */}
-            <div className="flex flex-col gap-[32px] w-[381px]">
-
-              {/* Address Section */}
-              <div className="flex items-start gap-[12px] w-[381px]">
+            <div className="flex flex-col gap-[24px] lg:gap-[32px] w-full">
+              <div className="flex items-start gap-[12px] w-full">
                 <div className="w-[48px] h-[48px] shrink-0 rounded-[8px] border border-[#E4F2EA] bg-white flex items-center justify-center text-[#04330B] p-[12px]">
                   <MapPin size={24} strokeWidth={1.5} />
                 </div>
-                <p className="w-[321px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">
+                <p className="w-full lg:w-[321px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">
                   {t.footer.address || "Ham Badlenge Bhawan, 02 Mission Compound, Ajmer Puliya, Jaipur, Rajasthan"}
                 </p>
               </div>
 
-              {/* Phone Section */}
               <div className="flex items-start gap-[16px]">
                 <div className="w-[48px] h-[48px] shrink-0 rounded-[8px] border border-[#E4F2EA] bg-white flex items-center justify-center text-[#04330B] p-[12px]">
                   <Phone size={24} strokeWidth={1.5} />
@@ -1007,7 +887,6 @@ const LandingPageContent = () => {
                 </div>
               </div>
 
-              {/* Email Section */}
               <div className="flex items-center gap-[16px]">
                 <div className="w-[48px] h-[48px] shrink-0 rounded-[8px] border border-[#E4F2EA] bg-white flex items-center justify-center text-[#04330B] p-[12px]">
                   <Mail size={24} strokeWidth={1.5} />
@@ -1025,8 +904,6 @@ const LandingPageContent = () => {
     </div >
   );
 };
-
-// --- 6. Root Export ---
 
 export default function LandingPage() {
   const [language, setLanguage] = useState("en");
