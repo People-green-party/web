@@ -113,7 +113,9 @@ export const translations = {
                 status: "Status",
                 vote: "Your Vote",
                 voted: "Voted",
-                notVoted: "Not Voted"
+                notVoted: "Not Voted",
+                ongoing: "Ongoing",
+                demoElectionName: "XYZ Elections"
             }
         },
         footer: {
@@ -241,7 +243,9 @@ export const translations = {
                 status: "स्थिति",
                 vote: "आपका वोट",
                 voted: "वोट दिया",
-                notVoted: "वोट नहीं दिया"
+                notVoted: "वोट नहीं दिया",
+                ongoing: "चल रहा है",
+                demoElectionName: "XYZ चुनाव"
             }
         },
         footer: {

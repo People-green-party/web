@@ -1,52 +1,120 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
 import { LanguageProvider, useLanguage } from '../../components/LanguageContext';
+import { fetchApi } from '../../lib/api';
 
 // --- Table Component ---
 const ElectionTable = () => {
     const { t } = useLanguage();
+    const router = useRouter();
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const data = Array(5).fill({
-        name: "XYZ Elections",
-        candidates: 312,
-        start: "21-10-2025",
-        end: "31-10-2025",
-        status: "Ongoing",
-        vote: "Voted"
-    });
+    useEffect(() => {
+        const loadElections = async () => {
+            try {
+                const result = await fetchApi('elections');
+                const formatted = result.map((e: any) => ({
+                    id: e.id,
+                    name: e.position,
+                    candidates: "N/A",
+                    start: new Date(e.openedAt).toLocaleDateString('en-GB').replace(/\//g, '-'),
+                    end: e.closedAt ? new Date(e.closedAt).toLocaleDateString('en-GB').replace(/\//g, '-') : t.election.table.ongoing,
+                    status: e.status,
+                    vote: false
+                }));
+                setData(formatted);
+            } catch (err: any) {
+                console.warn("Failed to fetch elections (using demo data):", err);
+                // Fallback to demo/mock data if backend is offline or empty
+                const demoData = Array(5).fill(null).map((_, idx) => ({
+                    id: idx,
+                    name: t.election.table.demoElectionName,
+                    candidates: 312,
+                    start: "21-10-2025",
+                    end: "31-10-2025",
+                    status: t.election.table.ongoing,
+                    vote: idx === 1 ? false : true
+                }));
+                setData(demoData);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadElections();
+    }, [t]);
+
+    if (loading) {
+        return <div className="w-full text-center py-8 text-[#587E67]">Loading elections...</div>;
+    }
 
     return (
-        <div className="overflow-hidden border border-gray-200 rounded-xl mt-6">
-            <table className="w-full text-left text-sm text-gray-600">
-                <thead className="bg-white border-b border-gray-200 text-gray-500 font-semibold">
-                    <tr>
-                        <th className="px-6 py-4">{t.election.table.sno}</th>
-                        <th className="px-6 py-4">{t.election.table.name}</th>
-                        <th className="px-6 py-4 text-center">{t.election.table.candidates}</th>
-                        <th className="px-6 py-4">{t.election.table.startDate}</th>
-                        <th className="px-6 py-4">{t.election.table.endDate}</th>
-                        <th className="px-6 py-4">{t.election.table.status}</th>
-                        <th className="px-6 py-4">{t.election.table.vote}</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
+        <div className="w-full flex flex-col gap-[20px] rounded-[8px] border border-[#B9D3C4] overflow-hidden overflow-x-auto">
+            <div className="min-w-[1000px]">
+                {/* Header Row */}
+                <div className="w-full h-[64px] flex items-center px-[24px] py-[20px] border-b border-[#B9D3C4] bg-white gap-[67.67px]">
+                    <div style={{ width: '38px' }} className="shrink-0 font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                        {t.election.table.sno}
+                    </div>
+                    <div style={{ flex: 1 }} className="font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                        {t.election.table.name}
+                    </div>
+                    <div className="w-[120px] text-center font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                        {t.election.table.candidates}
+                    </div>
+                    <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                        {t.election.table.startDate}
+                    </div>
+                    <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                        {t.election.table.endDate}
+                    </div>
+                    <div className="w-[100px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                        {t.election.table.status}
+                    </div>
+                    <div className="w-[120px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                        {t.election.table.vote}
+                    </div>
+                </div>
+
+                {/* Rows Container */}
+                <div className="flex flex-col w-full px-[8px] pb-[20px] gap-[12px]">
                     {data.map((row, idx) => (
-                        <tr key={idx} className={`${idx === 1 ? 'bg-green-50/30' : 'bg-white'} hover:bg-gray-50 transition-colors`}>
-                            <td className="px-6 py-5 font-bold text-gray-800">{idx + 1}</td>
-                            <td className="px-6 py-5 font-semibold text-gray-800">{row.name}</td>
-                            <td className="px-6 py-5 text-center font-bold text-gray-800">{row.candidates}</td>
-                            <td className="px-6 py-5 font-bold text-gray-800">{row.start}</td>
-                            <td className="px-6 py-5 font-bold text-gray-800">{row.end}</td>
-                            <td className="px-6 py-5 font-semibold text-gray-800">{row.status}</td>
-                            <td className="px-6 py-5 font-semibold text-gray-800">{idx === 1 ? t.election.table.notVoted : t.election.table.voted}</td>
-                        </tr>
+                        <div
+                            key={idx}
+                            onClick={() => router.push(`/election/${row.id}`)}
+                            className={`w-full h-[54px] flex items-center px-[16px] rounded-[8px] border border-transparent hover:border-[#B9D3C4] transition-all group bg-transparent gap-[66.33px] cursor-pointer`}
+                        >
+                            <div style={{ width: '46px' }} className="shrink-0 font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                {idx + 1}
+                            </div>
+                            <div style={{ flex: 1 }} className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                {row.name}
+                            </div>
+                            <div className="w-[120px] text-center font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                {row.candidates}
+                            </div>
+                            <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                {row.start}
+                            </div>
+                            <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                {row.end}
+                            </div>
+                            <div className="w-[100px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                {row.status}
+                            </div>
+                            <div className="w-[120px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                {row.vote ? t.election.table.voted : t.election.table.notVoted}
+                            </div>
+                        </div>
                     ))}
-                </tbody>
-            </table>
+                </div>
+            </div>
         </div>
     );
 };
@@ -54,6 +122,11 @@ const ElectionTable = () => {
 // --- Main Page Component ---
 const ElectionPageContent = () => {
     const { t } = useLanguage();
+    const [isYearOpen, setIsYearOpen] = React.useState(false);
+    const [selectedYear, setSelectedYear] = React.useState<number | null>(null);
+
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 25 }, (_, i) => currentYear - i);
 
     const dashboardLinks = [
         { name: t.nav.dashboard, href: '/dashboard' },
@@ -68,7 +141,7 @@ const ElectionPageContent = () => {
 
                 {/* HERO SECTION (Matches Home Page Layout exactly) */}
                 <section className="w-full flex justify-center mt-[12px]">
-                    <div className="w-full relative flex flex-col lg:flex-row">
+                    <div className="w-full relative flex flex-col lg:flex-row gap-4 lg:gap-0">
 
                         {/* Header Text - Left Column */}
                         <div className="flex flex-col w-full lg:w-[703px] shrink-0 lg:justify-between">
@@ -113,15 +186,52 @@ const ElectionPageContent = () => {
                 </section>
 
                 {/* Election Table Section */}
-                <section className="mt-[60px] lg:mt-[120px] w-full max-w-[1320px] mx-auto flex flex-col gap-[40px]">
-                    <h2 className="text-4xl font-extrabold text-[#0D2F22] mb-3">{t.election.tableTitle}</h2>
-                    <p className="text-gray-500 font-medium text-lg">{t.election.tableSubtitle}</p>
-
-                    <div className="mt-8 flex items-center">
-                        <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 font-medium hover:bg-gray-50 transition-colors">
-                            {t.election.selectYear} <ChevronDown size={16} />
-                        </button>
+                <section className="mt-[60px] lg:mt-[120px] w-full max-w-[1320px] mx-auto flex flex-col">
+                    {/* Header Texts */}
+                    <div className="flex flex-col gap-[0px]">
+                        <h2 className="font-['Familjen_Grotesk'] font-semibold text-[64px] leading-[72px] tracking-[-0.3px] text-[#04330B] mb-0 h-[72px] flex items-center">
+                            {t.election.tableTitle}
+                        </h2>
+                        <p className="font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67] h-[24px] flex items-center">
+                            {t.election.tableSubtitle}
+                        </p>
                     </div>
+
+                    {/* Gap 40px */}
+                    <div className="h-[40px]" />
+
+                    {/* Select Year Dropdown */}
+                    <div className="relative w-[160px]">
+                        <button
+                            onClick={() => setIsYearOpen(!isYearOpen)}
+                            className="w-full h-[46px] flex items-center justify-between px-[16px] py-[12px] rounded-[8px] border border-[#B9D3C4] bg-white group hover:bg-gray-50 transition-colors"
+                        >
+                            <span className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67]">
+                                {selectedYear || t.election.selectYear}
+                            </span>
+                            <ChevronDown size={20} className={`text-[#587E67] transition-transform ${isYearOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {isYearOpen && (
+                            <div className="absolute top-[50px] left-0 w-full max-h-[200px] overflow-y-auto bg-white border border-[#B9D3C4] rounded-[8px] shadow-lg z-10 scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-transparent">
+                                {years.map((year) => (
+                                    <button
+                                        key={year}
+                                        onClick={() => {
+                                            setSelectedYear(year);
+                                            setIsYearOpen(false);
+                                        }}
+                                        className="w-full text-left px-[16px] py-[8px] hover:bg-[#EAF7EE] text-[#587E67] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors first:rounded-t-[8px] last:rounded-b-[8px]"
+                                    >
+                                        {year}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Gap 40px */}
+                    <div className="h-[40px]" />
 
                     <ElectionTable />
                 </section>

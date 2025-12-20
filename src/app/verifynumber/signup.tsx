@@ -95,6 +95,13 @@ export default function SignUpScreen() {
                 console.error('Signup Error:', error.message);
                 if (error.message.includes('already registered') || error.message.includes('unique constraint')) {
                     setEmailError('Email already in use.');
+                } else if (error.message.includes('fetch') || error.message.includes('URL')) {
+                    // Network error or missing Supabase config -> Fallback to Demo Mode
+                    console.warn("Supabase unreachable. Enabling Demo Mode.");
+                    alert("Backend connection failed. Logging you in via Demo Mode.");
+                    // Simulate login
+                    localStorage.setItem('demo_user', JSON.stringify({ name, email }));
+                    router.push('/dashboard');
                 } else {
                     alert(error.message);
                 }
@@ -105,7 +112,15 @@ export default function SignUpScreen() {
             }
         } catch (err: any) {
             console.error('Unexpected error:', err);
-            alert('An unexpected error occurred.');
+            // Catch generic fetch errors
+            if (err.message && (err.message.includes('fetch') || err.message.includes('URL'))) {
+                console.warn("Supabase unreachable (in catch). Enabling Demo Mode.");
+                alert("Backend connection failed. Logging you in via Demo Mode.");
+                localStorage.setItem('demo_user', JSON.stringify({ name, email }));
+                router.push('/dashboard');
+            } else {
+                alert('An unexpected error occurred: ' + err.message);
+            }
         } finally {
             setLoading(false);
         }
