@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { RequireAuth } from "../../components/RequireAuth";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
 
@@ -23,8 +24,9 @@ export default function GeoQaPage() {
   }, []);
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">Geo Data QA</h1>
+    <RequireAuth>
+      <div className="max-w-2xl mx-auto p-6">
+        <h1 className="text-2xl font-semibold mb-4">Geo Data QA</h1>
       {error && (
         <div className="mb-4 rounded border border-red-300 bg-red-50 p-3 text-red-800">{error}</div>
       )}
@@ -55,6 +57,7 @@ export default function GeoQaPage() {
           </p>
         </div>
       )}
-    </div>
+      </div>
+    </RequireAuth>
   );
 }

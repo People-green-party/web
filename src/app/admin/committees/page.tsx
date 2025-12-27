@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuthHeader } from "../../../lib/supabaseClient";
+import { RequireAuth } from "../../components/RequireAuth";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
 
@@ -84,22 +85,23 @@ export default function AdminCommitteesPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">Admin: Committees</h1>
+    <RequireAuth>
+      <div className="max-w-5xl mx-auto p-6">
+        <h1 className="text-2xl font-semibold mb-4">Admin: Committees</h1>
 
-      <div className="rounded border bg-white p-4 mb-6">
-        <h2 className="font-medium mb-2">Actor & Reason</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm mb-1">Actor User ID</label>
-            <input className="w-full border rounded px-3 py-2" value={actorUserId} onChange={(e) => setActorUserId(e.target.value)} placeholder="Admin user id" />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Reason</label>
-            <input className="w-full border rounded px-3 py-2" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Audit reason (required)" />
+        <div className="rounded border bg-white p-4 mb-6">
+          <h2 className="font-medium mb-2">Actor & Reason</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm mb-1">Actor User ID</label>
+              <input className="w-full border rounded px-3 py-2" value={actorUserId} onChange={(e) => setActorUserId(e.target.value)} placeholder="Admin user id" />
+            </div>
+            <div>
+              <label className="block text-sm mb-1">Reason</label>
+              <input className="w-full border rounded px-3 py-2" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Audit reason (required)" />
+            </div>
           </div>
         </div>
-      </div>
 
       <form onSubmit={onCreate} className="rounded border bg-white p-4 mb-6">
         <h2 className="font-medium mb-2">Create Committee</h2>
@@ -165,6 +167,8 @@ export default function AdminCommitteesPage() {
           </button>
         </div>
       </form>
-    </div>
+
+      </div>
+    </RequireAuth>
   );
 }

@@ -2,6 +2,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { RequireAuth } from "../components/RequireAuth";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
 
@@ -28,7 +29,8 @@ export default function ElectionsListPage() {
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <RequireAuth>
+      <div className="max-w-4xl mx-auto p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-semibold text-green-800">Elections</h1>
         <p className="text-sm text-gray-600 mt-1">
@@ -77,6 +79,7 @@ export default function ElectionsListPage() {
           ))}
         </ul>
       )}
-    </div>
+      </div>
+    </RequireAuth>
   );
 }

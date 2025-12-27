@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuthHeader } from "../../../lib/supabaseClient";
+import { RequireAuth } from "../../components/RequireAuth";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
 
@@ -44,17 +45,18 @@ export default function CwcMyTeamPage() {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">CWC: My Team</h1>
+    <RequireAuth>
+      <div className="max-w-3xl mx-auto p-6">
+        <h1 className="text-2xl font-semibold mb-4">My Committee</h1>
 
-      {loading && <div className="rounded border p-3 mb-3">Loading…</div>}
-      {error && (
-        <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3 mb-3">{error}</div>
-      )}
+        {loading && <div className="rounded border p-3 mb-3">Loading…</div>}
+        {error && (
+          <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3 mb-3">{error}</div>
+        )}
 
-      {!loading && !committee && (
-        <div className="rounded border bg-white p-4">No committee assigned as President.</div>
-      )}
+        {!loading && !committee && (
+          <div className="rounded border bg-white p-4">No committee assigned as President.</div>
+        )}
 
       {committee && (
         <div className="rounded border bg-white">
@@ -83,6 +85,7 @@ export default function CwcMyTeamPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </RequireAuth>
   );
 }

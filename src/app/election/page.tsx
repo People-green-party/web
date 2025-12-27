@@ -7,6 +7,7 @@ import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
 import { LanguageProvider, useLanguage } from '../../components/LanguageContext';
 import { fetchApi } from '../../lib/api';
+import { RequireAuth } from '../components/RequireAuth';
 
 // --- Table Component ---
 const ElectionTable = () => {
@@ -247,8 +248,10 @@ const ElectionPageContent = () => {
 
 export default function ElectionPage() {
     return (
-        <LanguageProvider>
-            <ElectionPageContent />
-        </LanguageProvider>
+        <RequireAuth>
+            <LanguageProvider>
+                <ElectionPageContent />
+            </LanguageProvider>
+        </RequireAuth>
     );
 }

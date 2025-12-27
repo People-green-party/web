@@ -2,6 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuthHeader } from "../../lib/supabaseClient";
+import { RequireAuth } from "../components/RequireAuth";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
 
@@ -82,8 +83,9 @@ export default function MyBallotPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">My Ballot</h1>
+    <RequireAuth>
+      <div className="max-w-xl mx-auto p-6">
+        <h1 className="text-2xl font-semibold mb-4">My Ballot</h1>
       {loading && <div className="rounded border p-3 mb-3">Loading…</div>}
       {error && (
         <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3 mb-3">{error}</div>
@@ -135,6 +137,7 @@ export default function MyBallotPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </RequireAuth>
   );
 }

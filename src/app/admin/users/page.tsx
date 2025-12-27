@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuthHeader } from "../../../lib/supabaseClient";
+import { RequireAuth } from "../../components/RequireAuth";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
 const ROLES = ["Admin","Founder","SSP","PPC","APC","CWC","CWCPresident","CWCMember","ExtendedMember","Worker"] as const;
@@ -75,28 +76,30 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-4">Admin: User Management</h1>
+    <RequireAuth>
+      <div className="max-w-6xl mx-auto p-6">
+        <h1 className="text-2xl font-semibold mb-4">Admin: Users Management</h1>
 
-      {error && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3 mb-3">{error}</div>}
+        {error && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3 mb-3">{error}</div>}
 
-      <div className="rounded border bg-white p-4 mb-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        <div className="md:col-span-2">
-          <label className="block text-sm mb-1">Search (name/phone/memberId)</label>
-          <input className="w-full border rounded px-3 py-2" value={q} onChange={(e) => setQ(e.target.value)} />
-        </div>
-        <div>
-          <label className="block text-sm mb-1">Actor User ID</label>
-          <input className="w-full border rounded px-3 py-2" value={actorUserId} onChange={(e) => setActorUserId(e.target.value)} />
-        </div>
-        <div>
-          <label className="block text-sm mb-1">Reason (required)</label>
-          <input className="w-full border rounded px-3 py-2" value={reason} onChange={(e) => setReason(e.target.value)} />
-        </div>
-        <div className="md:col-span-4">
-          <button onClick={search} className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded" disabled={loading}>
-            {loading ? "Searching…" : "Search"}
-          </button>
+        <div className="rounded border bg-white p-4 mb-4 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+          <div className="md:col-span-2">
+            <label className="block text-sm mb-1">Search (name/phone/memberId)</label>
+            <input className="w-full border rounded px-3 py-2" value={q} onChange={(e) => setQ(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm mb-1">Actor User ID</label>
+            <input className="w-full border rounded px-3 py-2" value={actorUserId} onChange={(e) => setActorUserId(e.target.value)} />
+          </div>
+          <div>
+            <label className="block text-sm mb-1">Reason (required)</label>
+            <input className="w-full border rounded px-3 py-2" value={reason} onChange={(e) => setReason(e.target.value)} />
+          </div>
+          <div className="md:col-span-4">
+            <button onClick={search} className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded" disabled={loading}>
+              {loading ? "Searching…" : "Search"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -146,6 +149,6 @@ export default function AdminUsersPage() {
           </div>
         )}
       </div>
-    </div>
+    </RequireAuth>
   );
 }

@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useContext, createContext } from "react";
+import React, { useState, useContext, createContext, useEffect, ChangeEvent } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { supabase } from '../../lib/supabaseClient';
+import { Eye, EyeOff } from 'lucide-react';
 import {
   MapPin,
   Phone,
@@ -55,6 +57,11 @@ const translations = {
         agreeJoin: "Do you agree to join the party?",
         agreeResponsibility: "Do you want to take any responsibility or position in the party?",
         submit: "Join Us"
+      },
+      options: {
+        states: ["Rajasthan", "Uttar Pradesh"],
+        districts: ["Jaipur", "Agra"],
+        constituencies: ["Constituency 1", "Constituency 2"]
       }
     }
   },
@@ -96,6 +103,11 @@ const translations = {
         agreeJoin: "क्या आप पार्टी में शामिल होने के लिए सहमत हैं?",
         agreeResponsibility: "क्या आप पार्टी में कोई जिम्मेदारी या पद लेना चाहते हैं?",
         submit: "जुड़ें"
+      },
+      options: {
+        states: ["राजस्थान", "उत्तर प्रदेश"],
+        districts: ["जयपुर", "आगरा"],
+        constituencies: ["निर्वाचन क्षेत्र 1", "निर्वाचन क्षेत्र 2"]
       }
     }
   }
@@ -118,19 +130,19 @@ const Navbar = () => {
     { name: t.nav.about, href: '/about' },
     { name: t.nav.constitution, href: '/constitution' },
     { name: t.nav.donate, href: '/donation' },
-    { name: t.nav.declaration, href: '/declaration' },
+    // { name: t.nav.declaration, href: '/declaration' },
   ];
 
   return (
     <nav className="bg-white fixed top-0 z-50 w-full flex justify-center">
-      <div className="w-full max-w-[1320px] lg:h-[92px] h-[70px] flex items-center justify-between px-4 lg:px-0 bg-white">
+      <div className="w-full max-w-[1320px] lg:h-[92px] h-[70px] relative flex items-center justify-between px-4 lg:px-0 bg-white">
 
         <div className="flex items-center">
           <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
             <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
           </Link>
 
-          <div className="hidden lg:flex items-center gap-[12px] ml-[131px] h-[46px]">
+          <div className="hidden lg:flex items-center gap-[12px] absolute left-1/2 -translate-x-1/2 h-[46px]">
             {links.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -336,8 +348,294 @@ const Footer = () => {
 
 // --- Join Page Content ---
 
+// --- Mock Data ---
+const MOCK_STATES_DATA = [
+  "Rajasthan",
+  "Uttar Pradesh",
+  "Madhya Pradesh",
+  "Delhi",
+  "Maharashtra"
+];
+
 const JoinPageContent = () => {
   const { t } = useLanguage();
+  const router = useRouter();
+  const [loksabhas, setLoksabhas] = useState<any[]>([]);
+  const [vidhansabhas, setVidhansabhas] = useState<any[]>([]);
+  const [localUnits, setLocalUnits] = useState<any[]>([]);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    mobile: '',
+    password: '',
+    state: '',
+    loksabhaId: '',
+    vidhansabhaId: '',
+    localUnitId: '',
+    zip: '',
+    agreeJoin: false,
+    agreeResponsibility: false
+  });
+  const [loading, setLoading] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [otpError, setOtpError] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [showOtpField, setShowOtpField] = useState(false);
+
+  // Load Loksabhas on mount
+  useEffect(() => {
+    import('../../lib/api').then(({ fetchApi }) => {
+      fetchApi('locations/loksabhas')
+        .then(data => setLoksabhas(data))
+        .catch(err => console.error("Failed to load Loksabhas", err));
+    });
+  }, []);
+
+  useEffect(() => {
+    const vidhansabhaId = formData.vidhansabhaId;
+    if (!vidhansabhaId) {
+      setLocalUnits([]);
+      return;
+    }
+
+    import('../../lib/api').then(({ fetchApi }) => {
+      fetchApi(`locations/vidhansabhas/${vidhansabhaId}/local-units`)
+        .then((data) => setLocalUnits(Array.isArray(data) ? data : []))
+        .catch((err) => {
+          console.error('Failed to load Local Units', err);
+          setLocalUnits([]);
+        });
+    });
+  }, [formData.vidhansabhaId]);
+
+
+  async function handleSubmit() {
+    // Validate form data
+    if (!formData.firstName || !formData.lastName || !formData.mobile || !formData.password) {
+      setOtpError('Please fill all required fields');
+      return;
+    }
+
+    if (!formData.agreeJoin || !formData.agreeResponsibility) {
+      setOtpError('Please agree to all terms and conditions');
+      return;
+    }
+
+    setLoading(true);
+    setOtpError('');
+
+    try {
+      // Import Supabase client
+      const { supabase } = await import('../../lib/supabaseClient');
+      
+      // Format phone number with country code if needed
+      const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
+      
+      // Create user in Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        phone: phoneNumber,
+        password: formData.password,
+        options: {
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            full_name: `${formData.firstName} ${formData.lastName}`,
+          },
+        },
+      });
+
+      const isPhoneSignupDisabled =
+        !!authError &&
+        (authError.message.includes('Phone signups are disabled') ||
+          authError.message.includes('Phone signups disabled'));
+
+      if (authError) {
+        // Dev bypass: allow onboarding even when Supabase phone signup is disabled
+        if (isPhoneSignupDisabled) {
+          console.warn('Phone signups disabled; continuing with backend registration without auth user id');
+        }
+        // If user already exists, inform them and offer to sign in
+        if (authError.message.includes('already registered') || 
+            authError.message.includes('already been registered') ||
+            authError.message.includes('User already registered') ||
+            authError.message.includes('duplicate')) {
+          setOtpError('This phone number is already registered. Please sign in instead.');
+          // Optionally redirect to login page after a delay
+          setTimeout(() => {
+            router.push('/login');
+          }, 3000);
+          return;
+        } else if (!isPhoneSignupDisabled) {
+          throw authError;
+        }
+      }
+
+      // Create user profile in your database
+      const { fetchApi } = await import('../../lib/api');
+
+      if (!formData.localUnitId) {
+        setOtpError('Please select your Local Unit');
+        return;
+      }
+      const userProfileData = {
+        name: `${formData.firstName} ${formData.lastName}`,
+        phone: phoneNumber,
+        password: formData.password, // Note: In production, you might not want to send password to your API
+        address: `${formData.state}, India`, // Combine state with country
+        localUnitId: parseInt(formData.localUnitId),
+        authUserId: isPhoneSignupDisabled ? undefined : authData?.user?.id,
+      };
+
+      const userData = await fetchApi('users/register', {
+        method: 'POST',
+        body: JSON.stringify(userProfileData),
+      });
+
+      console.log('Registration successful:', userData);
+
+      if (typeof window !== 'undefined' && userData?.id) {
+        window.localStorage.setItem('devUserId', String(userData.id));
+      }
+      
+      // Redirect to dashboard after successful registration
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      setOtpError(error.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleLoksabhaChange(event: ChangeEvent<HTMLSelectElement>): Promise<void> {
+    const loksabhaId = event.target.value;
+    setFormData(prev => ({ ...prev, loksabhaId, vidhansabhaId: '', localUnitId: '' }));
+    
+    if (!loksabhaId) {
+      setVidhansabhas([]);
+      return;
+    }
+
+    try {
+      // Use the same API helper that's used for loading Loksabhas
+      const { fetchApi } = await import('../../lib/api');
+      const data = await fetchApi(`locations/loksabhas/${loksabhaId}/vidhansabhas`);
+      setVidhansabhas(Array.isArray(data) ? data : []);
+      setLocalUnits([]);
+    } catch (error) {
+      console.error('Error loading Vidhansabhas:', error);
+      setVidhansabhas([]);
+      setLocalUnits([]);
+      // Optionally show an error message to the user
+    }
+  }
+
+  async function handleVerifyOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
+    event.preventDefault();
+    
+    if (!otp) {
+      setOtpError('Please enter the OTP');
+      return;
+    }
+
+    setLoading(true);
+    setOtpError('');
+
+    try {
+      // Import Supabase client
+      const { supabase } = await import('../../lib/supabaseClient');
+      
+      // Format phone number with country code if needed
+      const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
+      
+      // Verify OTP
+      const { data, error } = await supabase.auth.verifyOtp({
+        phone: phoneNumber,
+        token: otp,
+        type: 'sms',
+      });
+
+      if (error) {
+        // If verification fails, check if it's a simulated OTP scenario
+        if (otp === '123456' && otpError?.includes('Simulating OTP sent')) {
+          // Simulate successful verification for development
+          console.log('Simulated OTP verification successful');
+          // Proceed with form submission or next step
+          handleSubmit();
+          return;
+        }
+        throw error;
+      }
+      
+      // OTP verified successfully
+      console.log('OTP verified successfully');
+      // Proceed with form submission or next step
+      handleSubmit();
+    } catch (error: any) {
+      console.error('Error verifying OTP:', error);
+      setOtpError(error.message || 'Invalid OTP. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSendOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
+    event.preventDefault();
+    
+    if (!formData.mobile) {
+      console.error('Mobile number is required');
+      setOtpError('Mobile number is required');
+      return;
+    }
+
+    setLoading(true);
+    setOtpError('');
+
+    try {
+      // Import Supabase client
+      const { supabase } = await import('../../lib/supabaseClient');
+      
+      // Format phone number with country code if needed
+      const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
+      
+      // Send OTP to mobile number
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: phoneNumber,
+      });
+
+      if (error) {
+        console.warn('Supabase Auth Error (falling back to simulation):', error.message);
+        throw error;
+      }
+
+      // OTP sent successfully
+      setOtpSent(true);
+      setShowOtpField(true);
+    } catch (error: any) {
+      console.error('Error sending OTP:', error);
+      
+      // Fallback to simulation mode when SMS provider is not configured
+      const isConfigError = error.message === 'Unsupported phone provider' || 
+                           error.message === 'Failed to fetch' || 
+                           error.message?.includes('apikey') ||
+                           error.message?.includes('Signups not allowed');
+      
+      if (isConfigError) {
+        // Simulate OTP sent for development/testing
+        setOtpSent(true);
+        setShowOtpField(true);
+        setOtpError('SMS provider not configured. Simulating OTP sent. Use OTP: 123456');
+      } else {
+        setOtpError(error.message || 'Failed to send OTP. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ... (rest of the code remains the same)
+
   return (
     <div className="min-h-screen bg-white text-gray-800 flex flex-col items-center font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px]">
       <Navbar />
@@ -400,7 +698,7 @@ const JoinPageContent = () => {
             {/* Form Content Section */}
             <form
               className="w-full lg:w-[448px] flex flex-col items-center overflow-y-auto custom-noscroll"
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               <style dangerouslySetInnerHTML={{
@@ -418,6 +716,8 @@ const JoinPageContent = () => {
                   {/* 1. First Name */}
                   <input
                     type="text"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
                     placeholder={t.joinPage.form.firstName}
                   />
@@ -425,6 +725,8 @@ const JoinPageContent = () => {
                   {/* 2. Last Name */}
                   <input
                     type="text"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
                     placeholder={t.joinPage.form.lastName}
                   />
@@ -434,7 +736,6 @@ const JoinPageContent = () => {
                     <div className="relative h-full w-[80px]">
                       <select className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[12px] py-[12px] text-[16px] bg-white text-[#587E67] font-semibold tracking-[-0.3px] outline-none cursor-pointer">
                         <option>+91</option>
-                        <option>+1</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
@@ -442,18 +743,48 @@ const JoinPageContent = () => {
                     </div>
                     <input
                       type="tel"
+                      value={formData.mobile}
+                      onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
                       className="flex-1 h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
                       placeholder={t.joinPage.form.mobile}
                     />
                   </div>
 
+                  {/* 3b. Password */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 hover:text-gray-800"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+
                   {/* 4. State & District */}
                   <div className="w-full h-[46px] flex gap-[14px]">
                     <div className="relative flex-1 h-full">
-                      <select className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk']">
+                      <select
+                        value={formData.state}
+                        onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                        className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk']"
+                      >
                         <option value="">{t.joinPage.form.state}</option>
-                        <option>Rajasthan</option>
-                        <option>Uttar Pradesh</option>
+                        {MOCK_STATES_DATA.map((s) => (
+                          <option key={s} value={s}>{s}</option>
+                        ))}
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
@@ -461,10 +792,15 @@ const JoinPageContent = () => {
                     </div>
 
                     <div className="relative flex-1 h-full">
-                      <select className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk']">
-                        <option value="">{t.joinPage.form.district}</option>
-                        <option>Jaipur</option>
-                        <option>Agra</option>
+                      <select
+                        value={formData.loksabhaId}
+                        onChange={handleLoksabhaChange}
+                        className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk']"
+                      >
+                        <option value="">{t.joinPage.form.district} (Loksabha)</option>
+                        {loksabhas.map((l: any) => (
+                          <option key={l.id} value={l.id}>{l.name}</option>
+                        ))}
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
@@ -474,10 +810,35 @@ const JoinPageContent = () => {
 
                   {/* 6. Constituency */}
                   <div className="relative w-full h-[46px]">
-                    <select className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk']">
+                    <select
+                      value={formData.vidhansabhaId}
+                      onChange={(e) => setFormData({ ...formData, vidhansabhaId: e.target.value })}
+                      className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk']"
+                    >
                       <option value="">{t.joinPage.form.constituency}</option>
-                      <option>Constituency 1</option>
-                      <option>Constituency 2</option>
+                      {vidhansabhas.map((v: any) => (
+                        <option key={v.id} value={v.id}>{v.name}</option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
+                      <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                    </div>
+                  </div>
+
+                  {/* 6b. Local Unit */}
+                  <div className="relative w-full h-[46px]">
+                    <select
+                      value={formData.localUnitId}
+                      onChange={(e) => setFormData({ ...formData, localUnitId: e.target.value })}
+                      disabled={!formData.vidhansabhaId || localUnits.length === 0}
+                      className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      <option value="">Select your Local Unit</option>
+                      {localUnits.map((u: any) => (
+                        <option key={u.id} value={u.id}>
+                          {u.name}{u.type ? ` (${u.type})` : ''}
+                        </option>
+                      ))}
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
                       <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
@@ -487,6 +848,8 @@ const JoinPageContent = () => {
                   {/* 7. ZIP */}
                   <input
                     type="text"
+                    value={formData.zip}
+                    onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
                     className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk'] "
                     placeholder={t.joinPage.form.zip}
                   />
@@ -501,6 +864,8 @@ const JoinPageContent = () => {
                     <div className="relative flex items-center justify-center shrink-0 w-[20px] h-[20px] mt-[2px]">
                       <input
                         type="checkbox"
+                        checked={formData.agreeJoin}
+                        onChange={(e) => setFormData({ ...formData, agreeJoin: e.target.checked })}
                         className="peer h-[20px] w-[20px] appearance-none bg-white border-[2px] border-[#587E67] rounded-[4px] checked:bg-[#587E67] checked:border-[#587E67] focus:outline-none transition-all cursor-pointer"
                       />
                       {/* Checkmark Icon */}
@@ -529,6 +894,8 @@ const JoinPageContent = () => {
                     <div className="relative flex items-center justify-center shrink-0 w-[20px] h-[20px] mt-[2px]">
                       <input
                         type="checkbox"
+                        checked={formData.agreeResponsibility}
+                        onChange={(e) => setFormData({ ...formData, agreeResponsibility: e.target.checked })}
                         className="peer h-[20px] w-[20px] appearance-none bg-white border-[2px] border-[#587E67] rounded-[4px] checked:bg-[#587E67] checked:border-[#587E67] focus:outline-none transition-all cursor-pointer"
                       />
                       {/* Checkmark Icon */}
@@ -557,15 +924,65 @@ const JoinPageContent = () => {
               {/* Gap 24px before Button */}
               <div className="h-[24px] w-full shrink-0"></div>
 
-              {/* Join Us Button */}
-              <button
-                type="submit"
-                className="w-full h-[46px] rounded-[8px] bg-[#0D5229] flex items-center justify-center gap-[10px] hover:bg-[#0a4220] transition-colors"
-              >
-                <span className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-white">
-                  {t.joinPage.form.submit}
-                </span>
-              </button>
+              {otpSent && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Enter OTP sent to {formData.mobile}
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter OTP"
+                      className="flex-1 h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                      disabled={loading}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleVerifyOtp}
+                      disabled={loading || !otp}
+                      className="bg-blue-600 text-white px-4 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {loading ? 'Verifying...' : 'Verify'}
+                    </button>
+                  </div>
+                  {otpError && (
+                    <p className="mt-1 text-sm text-red-600">{otpError}</p>
+                  )}
+                  <div className="mt-2 text-sm text-gray-600">
+                    Didn't receive OTP?{' '}
+                    <button 
+                      type="button" 
+                      onClick={handleSendOtp} 
+                      className="text-blue-600 hover:underline"
+                      disabled={loading}
+                    >
+                      Resend OTP
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {!otpSent ? (
+                <button
+                  type="button"
+                  onClick={handleSendOtp}
+                  disabled={loading}
+                  className="w-full bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Sending OTP...' : 'Send OTP'}
+                </button>
+              ) : !showOtpField && (
+                <button
+                  type="button"
+                  onClick={handleSendOtp}
+                  disabled={loading}
+                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Resend OTP
+                </button>
+              )}
             </form>
           </div>
         </section>

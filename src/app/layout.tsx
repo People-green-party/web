@@ -26,7 +26,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  // ... existing metadata ...
+  title: "PGP",
+  description: "Peoples Governance Party",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 // ... existing viewport ...

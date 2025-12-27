@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getAuthHeader } from "../../../lib/supabaseClient";
+import { RequireAuth } from "../../components/RequireAuth";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
 
@@ -152,13 +153,14 @@ export default function AdminElectionsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <div className="flex items-end justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold text-green-800">Admin: Elections</h1>
-          <p className="text-sm text-gray-600 mt-1">Create, manage, and close elections. APC is now a district-wide election (no zones).</p>
+    <RequireAuth>
+      <div className="max-w-6xl mx-auto p-6 space-y-6">
+        <div className="flex items-end justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold text-green-800">Admin: Elections</h1>
+            <p className="text-sm text-gray-600 mt-1">Create, manage, and close elections. APC is now a district-wide election (no zones).</p>
+          </div>
         </div>
-      </div>
 
       {loading && <div className="rounded border p-3">Loading…</div>}
       {error && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3">{error}</div>}
@@ -270,6 +272,7 @@ export default function AdminElectionsPage() {
           </table>
         </div>
       </div>
-    </div>
+      </div>
+    </RequireAuth>
   );
 }

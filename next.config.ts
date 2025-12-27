@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   turbopack: {},
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:3002/:path*',
+      },
+    ]
+  }
 };
 
 export default withPWA(nextConfig);

@@ -132,19 +132,19 @@ const Navbar = () => {
     { name: t.nav.about, href: '/about' },
     { name: t.nav.constitution, href: '/constitution' },
     { name: t.nav.donate, href: '/donation' },
-    { name: t.nav.declaration, href: '/declaration' },
+    // { name: t.nav.declaration, href: '/declaration' },
   ];
 
   return (
     <nav className="bg-white fixed top-0 z-50 w-full flex justify-center">
-      <div className="w-full max-w-[1320px] lg:h-[92px] h-[70px] flex items-center justify-between px-4 lg:px-0 bg-white">
+      <div className="w-full max-w-[1320px] lg:h-[92px] h-[70px] relative flex items-center justify-between px-4 lg:px-0 bg-white">
 
         <div className="flex items-center">
           <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
             <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
           </Link>
 
-          <div className="hidden lg:flex items-center gap-[12px] ml-[131px] h-[46px]">
+          <div className="hidden lg:flex items-center gap-[12px] absolute left-1/2 -translate-x-1/2 h-[46px]">
             {links.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -395,11 +395,12 @@ const DonationPageContent = () => {
             }}
           >
             {/* Play Button */}
+            {/* Play Button */}
             <button
               type="button"
-              className="w-[100px] h-[100px] rounded-full bg-white/90 shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
+              className="absolute inset-0 z-20 m-auto flex items-center justify-center w-[100px] h-[100px] rounded-full bg-white/90 shadow-md hover:scale-105 transition-transform"
             >
-              <Play className="w-[32px] h-[32px] text-[#1B5E20] ml-2 fill-[#1B5E20]" />
+              <Play className="w-[40px] h-[40px] text-green-700 ml-1" />
             </button>
           </div>
 

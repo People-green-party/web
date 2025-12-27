@@ -1,6 +1,4 @@
-import { supabase } from './supabaseClient';
-
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
@@ -10,22 +8,37 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
         ...options.headers,
     };
 
-    // Get current session from Supabase
-    const { data: { session } } = await supabase.auth.getSession();
-    const token = session?.access_token;
-
-    if (token) {
-        (headers as any)['Authorization'] = `Bearer ${token}`;
+    // Get auth header (handles both dev mode and Supabase session)
+    try {
+        const { getAuthHeader } = await import('./supabaseClient');
+        const authHeader = await getAuthHeader();
+        Object.assign(headers, authHeader);
+    } catch {
+        // Ignore if auth isn't configured/available; allow public endpoints to work.
     }
 
-    const response = await fetch(url, {
-        ...options,
-        headers,
-    });
+    let response: Response;
+    try {
+        response = await fetch(url, {
+            ...options,
+            headers,
+        });
+    } catch (err: any) {
+        const msg = err?.message || String(err);
+        throw new Error(`Network error calling ${url}: ${msg}. Check NEXT_PUBLIC_API_URL, API server running, and CORS.`);
+    }
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `API Error: ${response.statusText}`);
+        const text = await response.text().catch(() => '');
+        let message = '';
+        try {
+            const parsed = text ? JSON.parse(text) : {};
+            message = parsed?.message || '';
+        } catch {
+            message = '';
+        }
+        const detail = message || text || response.statusText;
+        throw new Error(`API error calling ${url}: ${response.status} ${detail}`);
     }
 
     return response.json();

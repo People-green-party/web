@@ -4,6 +4,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { getAuthHeader } from "../../../lib/supabaseClient";
+import { RequireAuth } from "../../components/RequireAuth";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
 
@@ -37,7 +38,8 @@ export default function ElectionDetailPage() {
   // Voting is now done via /vote page (multi-select up to 21). This page shows details & results.
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-4">
+    <RequireAuth>
+      <div className="max-w-4xl mx-auto p-6 space-y-4">
       <h1 className="text-2xl font-semibold text-green-800">Election #{id}</h1>
       {loading && <div className="rounded border p-3">Loading…</div>}
       {error && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3">{error}</div>}
@@ -70,6 +72,7 @@ export default function ElectionDetailPage() {
           <a href="/vote" className="inline-block mt-3 bg-green-700 hover:bg-green-800 text-white px-3 py-1.5 rounded text-sm">Open My Ballot</a>
         )}
       </div>
-    </div>
+      </div>
+    </RequireAuth>
   );
 }

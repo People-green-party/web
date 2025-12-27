@@ -15,6 +15,7 @@ import {
 import { Navbar } from '../../../components/Navbar';
 import { LanguageProvider, useLanguage } from '../../../components/LanguageContext';
 import { ConfirmVotesModal, VerifyMobileModal, VotingSuccessModal } from './VotingModals';
+import { RequireAuth } from '../../components/RequireAuth';
 
 // --- Types ---
 interface Candidate {
@@ -420,8 +421,10 @@ const ElectionVotingContent = () => {
 
 export default function ElectionVotingPage() {
     return (
-        <LanguageProvider>
-            <ElectionVotingContent />
-        </LanguageProvider>
+        <RequireAuth>
+            <LanguageProvider>
+                <ElectionVotingContent />
+            </LanguageProvider>
+        </RequireAuth>
     );
 }
