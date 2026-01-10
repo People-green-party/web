@@ -384,23 +384,21 @@ const DonationPageContent = () => {
         <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col lg:flex-row gap-[40px] items-stretch">
 
           {/* LEFT: Video Section */}
-          <div
-            className="w-full lg:w-[768px] min-h-[500px] lg:min-h-[716px] rounded-[8px] flex items-center justify-center relative bg-gray-100"
-            style={{
-              background: 'linear-gradient(270deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.15) 100%)',
-              backgroundImage: 'url(/donation.svg)', // Fallback or base image
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              boxShadow: 'inset 0 0 0 1000px rgba(0,0,0,0.1)' // optional overlay
-            }}
-          >
-            {/* Play Button */}
+          <div className="w-full lg:w-[768px] min-h-[500px] lg:min-h-[716px] rounded-[8px] flex items-center justify-center relative bg-gray-100 overflow-hidden">
+            <img
+              src="/donation.png"
+              alt="Donation Video Thumbnail"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            {/* Optional Overlay */}
+            <div className="absolute inset-0 bg-black/10"></div>
+
             {/* Play Button */}
             <button
               type="button"
-              className="absolute inset-0 z-20 m-auto flex items-center justify-center w-[100px] h-[100px] rounded-full bg-white/90 shadow-md hover:scale-105 transition-transform"
+              className="absolute inset-0 z-20 m-auto flex items-center justify-center w-[100px] h-[100px] hover:scale-105 transition-transform"
             >
-              <Play className="w-[40px] h-[40px] text-green-700 ml-1" />
+              <img src="/Play-Button.svg" alt="Play" className="w-full h-full" />
             </button>
           </div>
 

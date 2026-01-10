@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useContext, createContext, useEffect, ChangeEvent } from "react";
+import React, { useState, useContext, createContext, useEffect, ChangeEvent, useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from '../../lib/supabaseClient';
@@ -16,6 +16,8 @@ import {
   Play,
   Menu,
 } from "lucide-react";
+
+import { STATE_LOKSABHA_MAP, getTranslation } from './location_utils';
 
 // --- Translations ---
 const translations = {
@@ -358,7 +360,7 @@ const MOCK_STATES_DATA = [
 ];
 
 const JoinPageContent = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const router = useRouter();
   const [loksabhas, setLoksabhas] = useState<any[]>([]);
   const [vidhansabhas, setVidhansabhas] = useState<any[]>([]);
@@ -368,6 +370,7 @@ const JoinPageContent = () => {
     lastName: '',
     mobile: '',
     password: '',
+    referralCode: '',
     state: '',
     loksabhaId: '',
     vidhansabhaId: '',
@@ -391,6 +394,17 @@ const JoinPageContent = () => {
         .catch(err => console.error("Failed to load Loksabhas", err));
     });
   }, []);
+
+  const filteredLoksabhas = useMemo(() => {
+    if (!formData.state) return [];
+    const allowedNames = STATE_LOKSABHA_MAP[formData.state];
+    if (!allowedNames) return loksabhas; // If state not in map, show associated loksabhas if array empty or undefined? Better to show none or all? 
+    // If state is selected but no map, maybe show empty?
+    // Based on user request "rj select kiya to rj ke hi district aaye", implies filtering.
+    // If map exists, filter. If not, showing all might be confusing.
+    // But MOCK_STATES_DATA are all in map except maybe typos.
+    return loksabhas.filter((l: any) => allowedNames.includes(l.name));
+  }, [formData.state, loksabhas]);
 
   useEffect(() => {
     const vidhansabhaId = formData.vidhansabhaId;
@@ -417,6 +431,11 @@ const JoinPageContent = () => {
       return;
     }
 
+    if (String(formData.password).length < 8) {
+      setOtpError('Password must be at least 8 characters');
+      return;
+    }
+
     if (!formData.agreeJoin || !formData.agreeResponsibility) {
       setOtpError('Please agree to all terms and conditions');
       return;
@@ -428,10 +447,10 @@ const JoinPageContent = () => {
     try {
       // Import Supabase client
       const { supabase } = await import('../../lib/supabaseClient');
-      
+
       // Format phone number with country code if needed
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
-      
+
       // Create user in Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         phone: phoneNumber,
@@ -456,10 +475,10 @@ const JoinPageContent = () => {
           console.warn('Phone signups disabled; continuing with backend registration without auth user id');
         }
         // If user already exists, inform them and offer to sign in
-        if (authError.message.includes('already registered') || 
-            authError.message.includes('already been registered') ||
-            authError.message.includes('User already registered') ||
-            authError.message.includes('duplicate')) {
+        if (authError.message.includes('already registered') ||
+          authError.message.includes('already been registered') ||
+          authError.message.includes('User already registered') ||
+          authError.message.includes('duplicate')) {
           setOtpError('This phone number is already registered. Please sign in instead.');
           // Optionally redirect to login page after a delay
           setTimeout(() => {
@@ -484,6 +503,7 @@ const JoinPageContent = () => {
         password: formData.password, // Note: In production, you might not want to send password to your API
         address: `${formData.state}, India`, // Combine state with country
         localUnitId: parseInt(formData.localUnitId),
+        referralCode: formData.referralCode || undefined,
         authUserId: isPhoneSignupDisabled ? undefined : authData?.user?.id,
       };
 
@@ -497,7 +517,7 @@ const JoinPageContent = () => {
       if (typeof window !== 'undefined' && userData?.id) {
         window.localStorage.setItem('devUserId', String(userData.id));
       }
-      
+
       // Redirect to dashboard after successful registration
       router.push('/dashboard');
     } catch (error: any) {
@@ -511,7 +531,7 @@ const JoinPageContent = () => {
   async function handleLoksabhaChange(event: ChangeEvent<HTMLSelectElement>): Promise<void> {
     const loksabhaId = event.target.value;
     setFormData(prev => ({ ...prev, loksabhaId, vidhansabhaId: '', localUnitId: '' }));
-    
+
     if (!loksabhaId) {
       setVidhansabhas([]);
       return;
@@ -533,7 +553,7 @@ const JoinPageContent = () => {
 
   async function handleVerifyOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
     event.preventDefault();
-    
+
     if (!otp) {
       setOtpError('Please enter the OTP');
       return;
@@ -545,10 +565,10 @@ const JoinPageContent = () => {
     try {
       // Import Supabase client
       const { supabase } = await import('../../lib/supabaseClient');
-      
+
       // Format phone number with country code if needed
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
-      
+
       // Verify OTP
       const { data, error } = await supabase.auth.verifyOtp({
         phone: phoneNumber,
@@ -567,7 +587,7 @@ const JoinPageContent = () => {
         }
         throw error;
       }
-      
+
       // OTP verified successfully
       console.log('OTP verified successfully');
       // Proceed with form submission or next step
@@ -582,7 +602,7 @@ const JoinPageContent = () => {
 
   async function handleSendOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
     event.preventDefault();
-    
+
     if (!formData.mobile) {
       console.error('Mobile number is required');
       setOtpError('Mobile number is required');
@@ -595,10 +615,10 @@ const JoinPageContent = () => {
     try {
       // Import Supabase client
       const { supabase } = await import('../../lib/supabaseClient');
-      
+
       // Format phone number with country code if needed
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
-      
+
       // Send OTP to mobile number
       const { error } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
@@ -614,13 +634,13 @@ const JoinPageContent = () => {
       setShowOtpField(true);
     } catch (error: any) {
       console.error('Error sending OTP:', error);
-      
+
       // Fallback to simulation mode when SMS provider is not configured
-      const isConfigError = error.message === 'Unsupported phone provider' || 
-                           error.message === 'Failed to fetch' || 
-                           error.message?.includes('apikey') ||
-                           error.message?.includes('Signups not allowed');
-      
+      const isConfigError = error.message === 'Unsupported phone provider' ||
+        error.message === 'Failed to fetch' ||
+        error.message?.includes('apikey') ||
+        error.message?.includes('Signups not allowed');
+
       if (isConfigError) {
         // Simulate OTP sent for development/testing
         setOtpSent(true);
@@ -661,7 +681,7 @@ const JoinPageContent = () => {
           {/* Left: Video Section */}
           <div className="relative w-full lg:w-[768px] h-[400px] lg:h-[698px] rounded-[8px] overflow-hidden">
             <img
-              src="/Frame 2087326335.svg"
+              src="/joinus.png"
               alt="People gathering"
               className="w-full h-full object-cover"
             />
@@ -675,9 +695,9 @@ const JoinPageContent = () => {
             {/* Play Button */}
             <button
               type="button"
-              className="absolute inset-0 z-20 m-auto flex items-center justify-center w-[100px] h-[100px] rounded-full bg-white/90 shadow-md hover:scale-105 transition-transform"
+              className="absolute inset-0 z-20 m-auto flex items-center justify-center w-[100px] h-[100px] hover:scale-105 transition-transform"
             >
-              <Play className="w-[40px] h-[40px] text-green-700 ml-1" />
+              <img src="/Play-Button.svg" alt="Play" className="w-full h-full" />
             </button>
           </div>
 
@@ -761,6 +781,7 @@ const JoinPageContent = () => {
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 pr-10"
+                        minLength={8}
                         required
                       />
                       <button
@@ -773,17 +794,36 @@ const JoinPageContent = () => {
                     </div>
                   </div>
 
+                  {/* 3c. Referral Code */}
+                  <input
+                    type="text"
+                    value={formData.referralCode}
+                    onChange={(e) => setFormData({ ...formData, referralCode: e.target.value })}
+                    className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
+                    placeholder="Referral Code (Optional)"
+                  />
+
                   {/* 4. State & District */}
                   <div className="w-full h-[46px] flex gap-[14px]">
                     <div className="relative flex-1 h-full">
                       <select
                         value={formData.state}
-                        onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            state: e.target.value,
+                            loksabhaId: '',
+                            vidhansabhaId: '',
+                            localUnitId: ''
+                          });
+                          setVidhansabhas([]);
+                          setLocalUnits([]);
+                        }}
                         className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk']"
                       >
                         <option value="">{t.joinPage.form.state}</option>
-                        {MOCK_STATES_DATA.map((s) => (
-                          <option key={s} value={s}>{s}</option>
+                        {Object.keys(STATE_LOKSABHA_MAP).sort().map((s) => (
+                          <option key={s} value={s}>{getTranslation(s, language)}</option>
                         ))}
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
@@ -798,8 +838,8 @@ const JoinPageContent = () => {
                         className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk']"
                       >
                         <option value="">{t.joinPage.form.district} (Loksabha)</option>
-                        {loksabhas.map((l: any) => (
-                          <option key={l.id} value={l.id}>{l.name}</option>
+                        {filteredLoksabhas.map((l: any) => (
+                          <option key={l.id} value={l.id}>{getTranslation(l.name, language)}</option>
                         ))}
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
@@ -817,7 +857,7 @@ const JoinPageContent = () => {
                     >
                       <option value="">{t.joinPage.form.constituency}</option>
                       {vidhansabhas.map((v: any) => (
-                        <option key={v.id} value={v.id}>{v.name}</option>
+                        <option key={v.id} value={v.id}>{getTranslation(v.name, language)}</option>
                       ))}
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
@@ -836,7 +876,7 @@ const JoinPageContent = () => {
                       <option value="">Select your Local Unit</option>
                       {localUnits.map((u: any) => (
                         <option key={u.id} value={u.id}>
-                          {u.name}{u.type ? ` (${u.type})` : ''}
+                          {getTranslation(u.name, language)}{u.type ? ` (${u.type})` : ''}
                         </option>
                       ))}
                     </select>
@@ -860,17 +900,25 @@ const JoinPageContent = () => {
 
                   {/* First Checkbox Item */}
                   <label className="flex items-start gap-[12px] cursor-pointer group select-none">
-                    {/* Checkbox Container: Fixed 20x20 with shrink-0 and aligned to top of text */}
-                    <div className="relative flex items-center justify-center shrink-0 w-[20px] h-[20px] mt-[2px]">
+                    {/* Checkbox Container: Fixed 20x20 */}
+                    <div className="relative shrink-0 flex items-center justify-center" style={{ width: '20px', height: '20px' }}>
+                      {/* 1. Invisible Clickable Input Layer */}
                       <input
                         type="checkbox"
                         checked={formData.agreeJoin}
                         onChange={(e) => setFormData({ ...formData, agreeJoin: e.target.checked })}
-                        className="peer h-[20px] w-[20px] appearance-none bg-white border-[2px] border-[#587E67] rounded-[4px] checked:bg-[#587E67] checked:border-[#587E67] focus:outline-none transition-all cursor-pointer"
+                        className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 m-0 p-0"
                       />
-                      {/* Checkmark Icon */}
+
+                      {/* 2. Visual Box Layer (15x15px) */}
+                      <div
+                        className="w-[15px] h-[15px] bg-white border-[2px] border-[#587E67] rounded-none peer-checked:bg-[#587E67] pointer-events-none transition-all"
+                        style={{ width: '15px', height: '15px' }} // Double enforcement
+                      />
+
+                      {/* 3. Checkmark Icon Layer */}
                       <svg
-                        className="absolute w-[14px] h-[14px] text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200"
+                        className="absolute inset-0 m-auto w-[11px] h-[11px] text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200 z-20"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="none"
@@ -890,17 +938,25 @@ const JoinPageContent = () => {
 
                   {/* Second Checkbox Item */}
                   <label className="flex items-start gap-[12px] cursor-pointer group select-none">
-                    {/* Checkbox Container: Fixed 20x20 with shrink-0 and aligned to top of text */}
-                    <div className="relative flex items-center justify-center shrink-0 w-[20px] h-[20px] mt-[2px]">
+                    {/* Checkbox Container: Fixed 20x20 */}
+                    <div className="relative shrink-0 flex items-center justify-center" style={{ width: '20px', height: '20px' }}>
+                      {/* 1. Invisible Clickable Input Layer */}
                       <input
                         type="checkbox"
                         checked={formData.agreeResponsibility}
                         onChange={(e) => setFormData({ ...formData, agreeResponsibility: e.target.checked })}
-                        className="peer h-[20px] w-[20px] appearance-none bg-white border-[2px] border-[#587E67] rounded-[4px] checked:bg-[#587E67] checked:border-[#587E67] focus:outline-none transition-all cursor-pointer"
+                        className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 m-0 p-0"
                       />
-                      {/* Checkmark Icon */}
+
+                      {/* 2. Visual Box Layer (15x15px) */}
+                      <div
+                        className="w-[15px] h-[15px] bg-white border-[2px] border-[#587E67] rounded-none peer-checked:bg-[#587E67] pointer-events-none transition-all"
+                        style={{ width: '15px', height: '15px' }}
+                      />
+
+                      {/* 3. Checkmark Icon Layer */}
                       <svg
-                        className="absolute w-[14px] h-[14px] text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200"
+                        className="absolute inset-0 m-auto w-[11px] h-[11px] text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200 z-20"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
                         fill="none"
@@ -952,9 +1008,9 @@ const JoinPageContent = () => {
                   )}
                   <div className="mt-2 text-sm text-gray-600">
                     Didn't receive OTP?{' '}
-                    <button 
-                      type="button" 
-                      onClick={handleSendOtp} 
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
                       className="text-blue-600 hover:underline"
                       disabled={loading}
                     >
@@ -963,7 +1019,7 @@ const JoinPageContent = () => {
                   </div>
                 </div>
               )}
-              
+
               {!otpSent ? (
                 <button
                   type="button"

@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { X, Menu, User } from 'lucide-react'; // Added User icon
+import { usePathname, useRouter } from "next/navigation";
+import { X, Menu, User, LogOut } from 'lucide-react'; // Added User icon
 import { useLanguage } from "./LanguageContext";
+import { supabase } from "../lib/supabaseClient";
 
 interface NavbarProps {
     links?: { name: string; href: string }[];
@@ -16,7 +17,17 @@ interface NavbarProps {
 export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfileButton = false, isDashboard = false }: NavbarProps) => {
     const { language, setLanguage, t } = useLanguage();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
     const pathname = usePathname();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
+        if (typeof window !== 'undefined') {
+            window.localStorage.removeItem('devUserId');
+        }
+        router.push('/');
+    };
 
     const defaultLinks = [
         { name: t.nav.home, href: '/' },
@@ -115,10 +126,27 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                         {language === 'en' ? 'HI' : 'EN'}
                     </div>
 
-                    {/* Profile Button */}
+                    {/* Profile Button with Dropdown */}
                     {showProfileButton && (
-                        <div className="hidden lg:flex items-center justify-center w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] cursor-pointer hover:bg-gray-50 text-[#04330B]">
-                            <User size={24} />
+                        <div className="relative">
+                            <div
+                                className="hidden lg:flex items-center justify-center w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] cursor-pointer hover:bg-gray-50 text-[#04330B]"
+                                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                            >
+                                <User size={24} />
+                            </div>
+
+                            {isProfileMenuOpen && (
+                                <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100 z-50">
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                                    >
+                                        <LogOut size={16} />
+                                        Log Out
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
 

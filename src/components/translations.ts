@@ -96,7 +96,12 @@ export const translations = {
             roles: {
                 member: "Member",
                 worker: "Worker"
-            }
+            },
+            placeholderNameEn: "Name Here",
+            placeholderNameHi: "Name Here",
+            placeholderMemberId: "PGP-XXXXXX",
+            placeholderWard: "Ward Details",
+            wardLabel: "Ward No."
         },
         election: {
             title: "Election 2026",
@@ -226,7 +231,12 @@ export const translations = {
             roles: {
                 member: "सदस्य",
                 worker: "कार्यकर्ता"
-            }
+            },
+            placeholderNameEn: "नाम यहाँ",
+            placeholderNameHi: "नाम यहाँ",
+            placeholderMemberId: "PGP-XXXXXX",
+            placeholderWard: "वार्ड विवरण",
+            wardLabel: "वार्ड नं."
         },
         election: {
             title: "चुनाव 2026",

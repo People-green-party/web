@@ -7,11 +7,14 @@ import { supabase } from '../../lib/supabaseClient';
 
 export default function LoginScreen() {
   const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState(''); // New state
   const [otp, setOtp] = useState('');
-  const [showOtp, setShowOtp] = useState(false);
+  const [showOtp, setShowOtp] = useState(false); // For toggling OTP visibility in input
+  const [showPassword, setShowPassword] = useState(false); // For toggling Password visibility
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showOtpField, setShowOtpField] = useState(false);
+  const [usePassword, setUsePassword] = useState(true); // Default to password login
   const router = useRouter();
 
   const handleBack = () => {
@@ -31,13 +34,13 @@ export default function LoginScreen() {
     try {
       // Format phone number with country code if needed
       const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
-      
+
       const { error } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
       });
 
       if (error) throw error;
-      
+
       setShowOtpField(true);
     } catch (err: any) {
       setError(err.message || 'Failed to send OTP. Please try again.');
@@ -64,7 +67,7 @@ export default function LoginScreen() {
       });
 
       if (error) throw error;
-      
+
       // If we get here, authentication was successful
       router.push('/dashboard');
     } catch (err: any) {
@@ -74,9 +77,95 @@ export default function LoginScreen() {
     }
   };
 
-  const handleDemoLogin = () => {
-    // For demo purposes, you can implement a demo login here
-    router.push('/dashboard');
+  const handlePasswordLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!phone || !password) {
+      setError('Phone and Password are required');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
+
+      // First try Supabase Auth
+      const { data, error } = await supabase.auth.signInWithPassword({
+        phone: phoneNumber,
+        password: password,
+      });
+
+      if (error) {
+        // If Supabase fails (e.g. valid credentials but Provider is disabled), try direct backend login
+        console.warn('Supabase login failed, trying backend fallback:', error.message);
+
+        // Import fetchApi dynamically or use a simple fetch since we are not auth'd yet
+        // Actually fetchApi handles unauthenticated requests fine if we don't pass token? 
+        // But fetchApi usually expects JWT. 
+        // Let's use direct fetch to our new endpoint.
+        // Use /api by default to leverage Next.js rewrite proxy (avoids CORS)
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+
+        console.log('Sending backend login request:', { phone: phoneNumber });
+
+        const fallbackRes = await fetch(`${baseUrl}/users/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: phoneNumber, password }),
+        });
+
+        if (!fallbackRes.ok) {
+          // Check if it was because of credentials or server error
+          const errJson = await fallbackRes.json();
+          throw new Error(errJson.message || error.message); // Throw either backend error or original Supabase error if backend fails vaguely
+        }
+
+        const fallbackData = await fallbackRes.json();
+        // Success! We have { id, name }
+        // Set dev mode cookie/storage
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('devUserId', String(fallbackData.id));
+        }
+
+        // Proceed
+        router.push('/dashboard');
+        return;
+      }
+
+      router.push('/dashboard');
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSocialLogin = async (provider: 'google' | 'facebook' | 'apple') => {
+    setLoading(true);
+    setError('');
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
+      if (error) throw error;
+      // The browser will redirect to the OAuth provider
+    } catch (err: any) {
+      console.error('Social Login Error:', err);
+
+      // Handle Supabase "provider not enabled" error specifically
+      if (err?.code === 'validation_failed' || err?.msg?.includes('not enabled') || err?.message?.includes('not enabled')) {
+        setError(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login is not enabled in Supabase dashboard.`);
+      } else {
+        setError(err.message || `Failed to login with ${provider}`);
+      }
+
+      setLoading(false);
+    }
   };
 
   return (
@@ -109,7 +198,7 @@ export default function LoginScreen() {
 
           <form
             className="w-full flex flex-col gap-[40px]"
-            onSubmit={showOtpField ? handleVerifyOtp : handleSendOtp}
+            onSubmit={usePassword ? handlePasswordLogin : (showOtpField ? handleVerifyOtp : handleSendOtp)}
           >
             <div className="w-full flex flex-col gap-[12px]">
               <div className="w-full flex flex-col gap-[16px]">
@@ -124,26 +213,64 @@ export default function LoginScreen() {
                   />
                 </div>
 
-                {showOtpField && (
-                  <div className="flex flex-col">
-                    <div className="relative w-full h-[46px]">
-                      <input
-                        type={showOtp ? "text" : "password"}
-                        placeholder="Enter OTP"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowOtp(!showOtp)}
-                        className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
-                      >
-                        {showOtp ? <EyeOff size={20} /> : <Eye size={20} />}
-                      </button>
-                    </div>
+              </div>
+
+              {/* Password Input (only if usePassword is true) */}
+              {usePassword && (
+                <div className="flex flex-col">
+                  <div className="relative w-full h-[46px]">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
                   </div>
-                )}
+                </div>
+              )}
+
+              {/* OTP Input (only if !usePassword and OTP sent) */}
+              {!usePassword && showOtpField && (
+                <div className="flex flex-col">
+                  <div className="relative w-full h-[46px]">
+                    <input
+                      type={showOtp ? "text" : "password"}
+                      placeholder="Enter OTP"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowOtp(!showOtp)}
+                      className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
+                    >
+                      {showOtp ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsePassword(!usePassword);
+                    setError('');
+                    setShowOtpField(false);
+                  }}
+                  className="text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] hover:underline"
+                >
+                  {usePassword ? 'Login via OTP' : 'Login via Password'}
+                </button>
               </div>
 
               {error && (
@@ -159,7 +286,7 @@ export default function LoginScreen() {
               className="mt-[2px] w-full h-[46px] rounded-[8px] bg-[#0D5229] disabled:bg-gray-400 flex items-center justify-center gap-[10px] hover:bg-[#0a4220] transition-colors shrink-0"
             >
               <span className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-white">
-                {loading ? 'Processing...' : showOtpField ? 'Verify OTP' : 'Send OTP'}
+                {loading ? 'Processing...' : (usePassword ? 'Log In' : (showOtpField ? 'Verify OTP' : 'Send OTP'))}
               </span>
             </button>
           </form>
@@ -171,9 +298,9 @@ export default function LoginScreen() {
 
             <div className="w-full flex flex-col gap-[36px]">
               <div className="w-full flex justify-between gap-[16px]">
-                <button 
+                <button
                   className="w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
-                  onClick={handleDemoLogin}
+                  onClick={() => handleSocialLogin('google')}
                 >
                   <div className="w-[20px] h-[20px] flex items-center justify-center">
                     <img src="/login/Google-login.svg" alt="Google" className="w-[20px] h-[20px]" />
@@ -183,9 +310,9 @@ export default function LoginScreen() {
                   </span>
                 </button>
 
-                <button 
+                <button
                   className="w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
-                  onClick={handleDemoLogin}
+                  onClick={() => handleSocialLogin('facebook')}
                 >
                   <div className="w-[20px] h-[20px] flex items-center justify-center">
                     <img src="/login/Fb-login.svg" alt="Facebook" className="w-[20px] h-[20px]" />
@@ -195,9 +322,9 @@ export default function LoginScreen() {
                   </span>
                 </button>
 
-                <button 
+                <button
                   className="w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
-                  onClick={handleDemoLogin}
+                  onClick={() => handleSocialLogin('apple')}
                 >
                   <div className="w-[20px] h-[20px] flex items-center justify-center">
                     <img src="/login/Apple-login.svg" alt="Apple" className="w-[20px] h-[20px]" />
@@ -211,8 +338,8 @@ export default function LoginScreen() {
               <div className="text-center w-full h-[22px]">
                 <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B]">
                   Don't have an account?{' '}
-                  <button 
-                    onClick={() => router.push('/join')} 
+                  <button
+                    onClick={() => router.push('/join')}
                     className="hover:underline text-[#0D5229]"
                   >
                     Sign Up
