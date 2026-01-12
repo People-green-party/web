@@ -116,9 +116,17 @@ export default function LoginScreen() {
         });
 
         if (!fallbackRes.ok) {
-          // Check if it was because of credentials or server error
-          const errJson = await fallbackRes.json();
-          throw new Error(errJson.message || error.message); // Throw either backend error or original Supabase error if backend fails vaguely
+          // Check content type to see if it's JSON
+          const contentType = fallbackRes.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const errJson = await fallbackRes.json();
+            throw new Error(errJson.message || error.message);
+          } else {
+            // Probably an HTML 404/500 page from the proxy or server
+            const textHTML = await fallbackRes.text();
+            console.error('Backend returned non-JSON error:', textHTML.substring(0, 200)); // Log detailed error
+            throw new Error(`Server error (${fallbackRes.status}). The API might be unreachable.`);
+          }
         }
 
         const fallbackData = await fallbackRes.json();
