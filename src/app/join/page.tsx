@@ -395,6 +395,28 @@ const JoinPageContent = () => {
     });
   }, []);
 
+  // Clear form on mount
+  useEffect(() => {
+    setFormData({
+      firstName: '',
+      lastName: '',
+      mobile: '',
+      password: '',
+      referralCode: '',
+      state: '',
+      loksabhaId: '',
+      vidhansabhaId: '',
+      localUnitId: '',
+      zip: '',
+      agreeJoin: false,
+      agreeResponsibility: false
+    });
+    setOtp('');
+    setOtpError('');
+    setOtpSent(false);
+    setShowOtpField(false);
+  }, []);
+
   const filteredLoksabhas = useMemo(() => {
     if (!formData.state) return [];
     const allowedNames = STATE_LOKSABHA_MAP[formData.state];
@@ -673,13 +695,13 @@ const JoinPageContent = () => {
         </div>
 
         {/* Gap between Header and Content */}
-        <div className="h-[64px] w-full"></div>
+        <div className="h-[32px] w-full"></div>
 
         {/* 2. Content Section (Video + Form) */}
-        <section className="w-full h-auto lg:h-[698px] flex flex-col lg:flex-row gap-[40px]">
+        <section className="w-full h-auto lg:h-[950px] flex flex-col lg:flex-row gap-[24px]">
 
           {/* Left: Video Section */}
-          <div className="relative w-full lg:w-[768px] h-[400px] lg:h-[698px] rounded-[8px] overflow-hidden">
+          <div className="relative w-full lg:w-[768px] h-[400px] lg:h-[950px] rounded-[8px] overflow-hidden">
             <img
               src="/joinus.png"
               alt="People gathering"
@@ -703,7 +725,7 @@ const JoinPageContent = () => {
 
           {/* Right: Registration Form */}
           <div
-            className="w-full lg:w-[512px] h-auto lg:h-[698px] bg-white rounded-[8px] border border-[#E4F2EA] p-[32px] flex flex-col gap-[28px] shadow-[0px_4px_20px_0px_#0000001A]"
+            className="w-full lg:w-[512px] h-auto lg:h-[950px] bg-white rounded-[8px] border border-[#E4F2EA] p-[32px] flex flex-col gap-[28px] shadow-[0px_4px_20px_0px_#0000001A]"
           >
             {/* Form Header Section */}
             <div className="w-full lg:w-[448px] h-auto lg:h-[72px] flex flex-col gap-[12px] items-center">
@@ -720,6 +742,7 @@ const JoinPageContent = () => {
               className="w-full lg:w-[448px] flex flex-col items-center overflow-y-auto custom-noscroll"
               onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              autoComplete="off"
             >
               <style dangerouslySetInnerHTML={{
                 __html: `
@@ -740,6 +763,7 @@ const JoinPageContent = () => {
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
                     placeholder={t.joinPage.form.firstName}
+                    autoComplete="off"
                   />
 
                   {/* 2. Last Name */}
@@ -749,6 +773,7 @@ const JoinPageContent = () => {
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
                     placeholder={t.joinPage.form.lastName}
+                    autoComplete="off"
                   />
 
                   {/* 3. Mobile */}
@@ -767,6 +792,7 @@ const JoinPageContent = () => {
                       onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
                       className="flex-1 h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
                       placeholder={t.joinPage.form.mobile}
+                      autoComplete="off"
                     />
                   </div>
 
@@ -783,6 +809,7 @@ const JoinPageContent = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 pr-10"
                         minLength={8}
                         required
+                        autoComplete="new-password"
                       />
                       <button
                         type="button"
@@ -801,6 +828,7 @@ const JoinPageContent = () => {
                     onChange={(e) => setFormData({ ...formData, referralCode: e.target.value })}
                     className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
                     placeholder="Referral Code (Optional)"
+                    autoComplete="off"
                   />
 
                   {/* 4. State & District */}
@@ -892,6 +920,7 @@ const JoinPageContent = () => {
                     onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
                     className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk'] "
                     placeholder={t.joinPage.form.zip}
+                    autoComplete="off"
                   />
                 </div>
 

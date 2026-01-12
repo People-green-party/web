@@ -354,6 +354,31 @@ const LandingPageContent = () => {
   const [useMobileCards, setUseMobileCards] = useState(false);
   const [desktopTransform, setDesktopTransform] = useState(false);
 
+  // State for "View More" sections
+  const [showMoreVision, setShowMoreVision] = useState(false);
+  const [showMoreCommittee, setShowMoreCommittee] = useState(false);
+
+  // Committee Members Data
+  const initialCommittee = [
+    { name: "Dr. Sudhanshu", role: "President", image: "/Members/CM.png" },
+    { name: "Bhanwar Lal Nayak", role: "Vice President", image: "/leadersection/Bhanwar-lal-ji.png" },
+    { name: "Naseem Ansari", role: "Vice President", image: "/nassem-removebg-preview.png" },
+    { name: "Adv. Kapil", role: "Gen. Secretary", image: "/kapil-removebg-preview.png" },
+    { name: "Er. Gaurav", role: "Secretary", image: "/gaurav-removebg-preview.png" },
+    { name: "Dr. Tanmay", role: "Gen. Secretary", image: "/Tanmay-removebg-preview.png" },
+    { name: "Satish Nagpal", role: "Pradesh Adhyaksh Rajasthan", image: "/Satish-removebg-preview.png" },
+    { name: "Dr. Hari Singh Chauhan", role: "Vice President", image: "/hari-removebg-preview.png" }
+  ];
+
+  const extraCommittee = [
+    { name: "Amit Verma", role: "Executive Member", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=400" },
+    { name: "Sunita Gupta", role: "Secretary", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400" },
+    { name: "Rajesh Kumar", role: "Coordinator", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400" },
+    { name: "Priya Singh", role: "Spokesperson", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400" }
+  ];
+
+  const allCommittee = [...initialCommittee, ...extraCommittee];
+
   useEffect(() => {
     const handleResize = () => {
       const isDesktop = window.innerWidth >= 1024;
@@ -564,7 +589,7 @@ const LandingPageContent = () => {
               {overlapCards.map((item: any, i: number) => (
                 <div
                   key={i}
-                  className="w-full lg:w-[636px] h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px]"
+                  className="w-full lg:w-[636px] h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px] hover:shadow-[0px_8px_30px_0px_#00000020] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
                 >
                   <div className="flex flex-col gap-[4px]">
                     <h3 className="font-['Familjen_Grotesk'] font-bold text-[20px] lg:text-[24px] text-[#04330B]">{item.title}</h3>
@@ -576,12 +601,47 @@ const LandingPageContent = () => {
           </div>
         </div>
 
+        {/* Expanded Vision Section */}
+        {showMoreVision && (
+          <div className="w-full max-w-[1320px] relative px-4 lg:px-0 mt-[60px] lg:mt-[100px] animate-in fade-in slide-in-from-bottom-10 duration-700">
+            {/* Mobile: Stacked | Desktop: Absolute/Overlap */}
+            <div className="relative w-full h-auto lg:h-[500px] flex flex-col lg:block">
+              {/* Image */}
+              <div className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[500px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
+                <img src="/herosection/hero4.svg" alt="Vision Expanded" className="w-full h-full object-cover" />
+              </div>
+
+              {/* Cards */}
+              <div className="relative lg:absolute lg:top-[52px] lg:right-0 w-full lg:w-[636px] h-auto lg:h-[396px] z-10 flex flex-col gap-[16px] lg:gap-[24px]">
+                {[
+                  { title: "Empowering Rural Communities", desc: "Creating self-sustainable villages through modern agricultural practices." },
+                  { title: "Green Energy Initiatives", desc: "Promoting solar and wind energy adoption at the grassroots level." },
+                  { title: "Youth Leadership Program", desc: "Training the next generation of eco-conscious political leaders." }
+                ].map((item: any, i: number) => (
+                  <div
+                    key={i}
+                    className="w-full lg:w-[636px] h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px] hover:shadow-[0px_8px_30px_0px_#00000020] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                  >
+                    <div className="flex flex-col gap-[4px]">
+                      <h3 className="font-['Familjen_Grotesk'] font-bold text-[20px] lg:text-[24px] text-[#04330B]">{item.title}</h3>
+                      <p className="font-['Familjen_Grotesk'] font-medium text-[14px] lg:text-[16px] text-[#587E67]">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Button */}
         <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-center mt-[32px] lg:mt-[48px]">
           {/* Spacer mostly for desktop logic, on mobile we use margin top */}
           <div className="hidden lg:block h-[50px] w-full"></div>
-          <button className="w-full lg:w-[153px] h-[46px] rounded-[8px] border border-[#0D5229] flex items-center justify-center gap-[12px] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] hover:bg-green-50 transition-colors">
-            {t.overlappingSection.button}
+          <button
+            onClick={() => setShowMoreVision(!showMoreVision)}
+            className="w-full lg:w-[153px] h-[46px] rounded-[8px] border border-[#0D5229] flex items-center justify-center gap-[12px] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] hover:bg-green-50 transition-colors"
+          >
+            {showMoreVision ? 'View Less' : t.overlappingSection.button}
           </button>
         </div>
       </section>
@@ -751,16 +811,8 @@ const LandingPageContent = () => {
           </div>
 
           <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[24px]">
-            {[
-              { name: "Dr. Sudhanshu", role: "President", image: "/Members/CM.png" },
-              { name: "Bhanwar Lal Nayak", role: "Vice President", image: "/leadersection/Bhanwar-lal-ji.png" },
-              { name: "Naseem Ansari", role: "Vice President", image: "/nassem-removebg-preview.png" },
-              { name: "Adv. Kapil", role: "Gen. Secretary", image: "/kapil-removebg-preview.png" },
-              { name: "Er. Gaurav", role: "Secretary", image: "/gaurav-removebg-preview.png" },
-              { name: "Dr. Tanmay", role: "Gen. Secretary", image: "/Tanmay-removebg-preview.png" },
-              { name: "Satish Nagpal", role: "Pradesh Adhyaksh Rajasthan", image: "/Satish-removebg-preview.png" },
-              { name: "Dr. Hari Singh Chauhan", role: "Vice President", image: "/hari-removebg-preview.png" }
-            ].map((member, index) => (
+            {/* Show only initial or all based on state */}
+            {(showMoreCommittee ? allCommittee : initialCommittee).map((member, index) => (
               <div key={index} className="w-full mx-auto max-w-[312px] h-[322px] rounded-[8px] border border-[#B9D3C4] p-[20px] flex flex-col justify-between transition-transform hover:-translate-y-1 bg-white">
                 <div className="flex flex-col gap-[4px] mb-[20px]">
                   <h3 className="font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
@@ -791,8 +843,11 @@ const LandingPageContent = () => {
           </div>
 
           <div className="flex justify-center mt-[48px] lg:mt-[64px]">
-            <button className="w-full lg:w-[153px] h-[46px] flex items-center justify-center gap-[12px] bg-white border border-[#0D5229] rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#0D5229] hover:bg-green-50 transition-colors">
-              {t.committee.button}
+            <button
+              onClick={() => setShowMoreCommittee(!showMoreCommittee)}
+              className="w-full lg:w-[153px] h-[46px] flex items-center justify-center gap-[12px] bg-white border border-[#0D5229] rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#0D5229] hover:bg-green-50 transition-colors"
+            >
+              {showMoreCommittee ? 'View Less' : t.committee.button}
             </button>
           </div>
 

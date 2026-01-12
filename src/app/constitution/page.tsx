@@ -42,6 +42,14 @@ const translations = {
         {
           heading: "People-Centric Governance & Shared Prosperity",
           text: "Jan-Khushali or Peoples Green aims to establish a political philosophy that prioritizes the happiness, well-being, and dignified life of citizens. The party advocates for education for all, healthy citizens, quality housing, fair income, and human dignity and liberty as guaranteed provisions fulfilling citizens’ basic needs. They propose that government businesses and profit-making activities be conducted through a disciplined professional limited company, making every citizen a non-transferable shareholder with annual benefits. This ensures that the people benefit from profits and prevents exploitation by executives and representatives."
+        },
+        {
+          heading: "Sustainable Development & Environmental Stewardship",
+          text: "We are committed to a development model that respects the planet's ecological boundaries. Our vision includes a robust transition to renewable energy, conservation of natural resources, and the promotion of green technologies. By integrating environmental consciousness into every policy decision, we aim to safeguard the health of our ecosystems for future generations while ensuring sustainable economic growth."
+        },
+        {
+          heading: "Social Justice & Inclusive Growth",
+          text: "True progress is only possible when every voice is heard and every citizen is empowered. We strive to eliminate systemic inequalities based on caste, gender, religion, or economic status. Our policies focus on uplifting marginalized communities, ensuring equal access to opportunities, legal aid, and social security. We believe in a society where justice is not a privilege, but a fundamental right for all."
         }
       ]
     },
@@ -87,6 +95,14 @@ const translations = {
         {
           heading: "जन-केंद्रित शासन और साझा समृद्धि",
           text: "जन-खुशाली या पीपल्स ग्रीन का उद्देश्य एक ऐसा राजनीतिक दर्शन स्थापित करना है जो नागरिकों की खुशी, भलाई और गरिमापूर्ण जीवन को प्राथमिकता देता है। पार्टी सभी के लिए शिक्षा, स्वस्थ नागरिक, गुणवत्तापूर्ण आवास, उचित आय और नागरिकों की बुनियादी जरूरतों को पूरा करने वाले गारंटीकृत प्रावधानों के रूप में मानवीय गरिमा और स्वतंत्रता की वकालत करती है। उनका प्रस्ताव है कि सरकारी व्यवसायों और लाभ कमाने वाले उद्यमों को लाभ के उद्देश्यों के बजाय लोगों के हितों की सेवा करनी चाहिए।"
+        },
+        {
+          heading: "सतत विकास और पर्यावरण संरक्षण",
+          text: "हम एक ऐसे विकास मॉडल के लिए प्रतिबद्ध हैं जो ग्रह की पारिस्थितिक सीमाओं का सम्मान करता है। हमारे दृष्टिकोण में नवीकरणीय ऊर्जा के लिए एक मजबूत संक्रमण, प्राकृतिक संसाधनों का संरक्षण, और हरित प्रौद्योगिकियों को बढ़ावा देना शामिल है। हर नीतिगत निर्णय में पर्यावरण चेतना को एकीकृत करके, हम भविष्य की पीढ़ियों के लिए अपने पारिस्थितिक तंत्र के स्वास्थ्य की रक्षा करते हुए स्थायी आर्थिक विकास सुनिश्चित करना चाहते हैं।"
+        },
+        {
+          heading: "सामाजिक न्याय और समावेशी विकास",
+          text: "सच्ची प्रगति तभी संभव है जब हर आवाज सुनी जाए और हर नागरिक सशक्त हो। हम जाति, लिंग, धर्म या आर्थिक स्थिति के आधार पर प्रणालीगत असमानताओं को खत्म करने का प्रयास करते हैं। हमारी नीतियां हाशिए पर रहने वाले समुदायों के उत्थान, अवसरों तक समान पहुंच, कानूनी सहायता और सामाजिक सुरक्षा सुनिश्चित करने पर केंद्रित हैं। हम एक ऐसे समाज में विश्वास करते हैं जहां न्याय विशेषाधिकार नहीं, बल्कि सभी के लिए एक मौलिक अधिकार है।"
         }
       ]
     },
@@ -221,6 +237,15 @@ const Navbar = () => {
 
 const ConstitutionPageContent = () => {
   const { language, t } = useLanguage();
+  const [currentVisionIndex, setCurrentVisionIndex] = useState(0);
+
+  const handleNextVision = () => {
+    setCurrentVisionIndex((prev) => (prev + 1) % t.vision.items.length);
+  };
+
+  const handlePrevVision = () => {
+    setCurrentVisionIndex((prev) => (prev - 1 + t.vision.items.length) % t.vision.items.length);
+  };
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800 pt-[70px] lg:pt-[92px]">
@@ -341,20 +366,26 @@ const ConstitutionPageContent = () => {
           {/* Left Column: Text & Buttons - Order 2 on Mobile */}
           <div className="flex flex-col w-full lg:max-w-[882px] order-2 lg:order-1">
             {/* Item Title */}
-            <h3 className="max-w-[490px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
-              {t.vision.items[0].heading}
+            <h3 className="w-full font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] animate-in fade-in duration-300">
+              {t.vision.items[currentVisionIndex].heading}
             </h3>
             {/* Item Description */}
-            <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] text-left min-h-[132px] flex items-center mt-[12px] lg:mt-0">
-              {t.vision.items[0].text}
+            <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] text-left min-h-[132px] flex items-center mt-[12px] lg:mt-0 animate-in fade-in duration-300">
+              {t.vision.items[currentVisionIndex].text}
             </p>
 
             {/* Buttons: Gap 4px below text (from prompt) */}
             <div className="flex gap-[12px] mt-[14px]">
-              <button className="w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] flex items-center justify-center text-[#04330B] hover:bg-green-50 transition-colors">
+              <button
+                onClick={handlePrevVision}
+                className="w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] flex items-center justify-center text-[#04330B] hover:bg-green-50 transition-colors"
+              >
                 <ArrowLeft size={24} />
               </button>
-              <button className="w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] flex items-center justify-center text-[#04330B] hover:bg-green-50 transition-colors">
+              <button
+                onClick={handleNextVision}
+                className="w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] flex items-center justify-center text-[#04330B] hover:bg-green-50 transition-colors"
+              >
                 <ArrowRight size={24} />
               </button>
             </div>
