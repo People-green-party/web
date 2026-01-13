@@ -7,12 +7,17 @@ const DEV_MODE = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === "true";
 
 function requirePublicEnv(name: string, value: string | undefined) {
   if (!value || !String(value).trim()) {
+    if (process.env.NODE_ENV === "production" && typeof window === "undefined") {
+      // During Vercel build/prerender, don't crash the entire build
+      console.warn(`[Build Warning] ${name} is missing. If you are deploying, add it to Vercel Environment Variables.`);
+      return "missing-key-check-vercel-settings";
+    }
     throw new Error(`${name} is missing. Add it to your web env (e.g. .env.local) and restart the dev server.`);
   }
   return value;
 }
 
-const checkedSupabaseUrl = requirePublicEnv("NEXT_PUBLIC_SUPABASE_URL", supabaseUrl);
+const checkedSupabaseUrl = requirePublicEnv("NEXT_PUBLIC_SUPABASE_URL", supabaseUrl || "https://placeholder.supabase.co");
 const checkedSupabaseAnonKey = requirePublicEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", supabaseAnonKey);
 
 try {
