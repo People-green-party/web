@@ -385,13 +385,26 @@ const JoinPageContent = () => {
   const [otpError, setOtpError] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [showOtpField, setShowOtpField] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [locLoading, setLocLoading] = useState({ loksabhas: false, vidhansabhas: false, localUnits: false });
 
   // Load Loksabhas on mount
   useEffect(() => {
+    setLocLoading(prev => ({ ...prev, loksabhas: true }));
+    setApiError(null);
     import('../../lib/api').then(({ fetchApi }) => {
       fetchApi('locations/loksabhas')
-        .then(data => setLoksabhas(data))
-        .catch(err => console.error("Failed to load Loksabhas", err));
+        .then(data => {
+          setLoksabhas(data);
+          if (Array.isArray(data) && data.length === 0) {
+            console.warn("Loksabhas list is empty from API");
+          }
+        })
+        .catch(err => {
+          console.error("Failed to load Loksabhas", err);
+          setApiError("Failed to load districts. Please check your internet connection.");
+        })
+        .finally(() => setLocLoading(prev => ({ ...prev, loksabhas: false })));
     });
   }, []);
 
@@ -420,12 +433,13 @@ const JoinPageContent = () => {
   const filteredLoksabhas = useMemo(() => {
     if (!formData.state) return [];
     const allowedNames = STATE_LOKSABHA_MAP[formData.state];
-    if (!allowedNames) return loksabhas; // If state not in map, show associated loksabhas if array empty or undefined? Better to show none or all? 
-    // If state is selected but no map, maybe show empty?
-    // Based on user request "rj select kiya to rj ke hi district aaye", implies filtering.
-    // If map exists, filter. If not, showing all might be confusing.
-    // But MOCK_STATES_DATA are all in map except maybe typos.
-    return loksabhas.filter((l: any) => allowedNames.includes(l.name));
+    if (!allowedNames) return loksabhas;
+
+    // Case-insensitive filtering for robustness
+    const allowedNamesLower = allowedNames.map(n => n.toLowerCase().trim());
+    return loksabhas.filter((l: any) =>
+      allowedNamesLower.includes(l.name.toLowerCase().trim())
+    );
   }, [formData.state, loksabhas]);
 
   useEffect(() => {
@@ -435,13 +449,15 @@ const JoinPageContent = () => {
       return;
     }
 
+    setLocLoading(prev => ({ ...prev, localUnits: true }));
     import('../../lib/api').then(({ fetchApi }) => {
       fetchApi(`locations/vidhansabhas/${vidhansabhaId}/local-units`)
         .then((data) => setLocalUnits(Array.isArray(data) ? data : []))
         .catch((err) => {
           console.error('Failed to load Local Units', err);
           setLocalUnits([]);
-        });
+        })
+        .finally(() => setLocLoading(prev => ({ ...prev, localUnits: false })));
     });
   }, [formData.vidhansabhaId]);
 
@@ -556,11 +572,12 @@ const JoinPageContent = () => {
 
     if (!loksabhaId) {
       setVidhansabhas([]);
+      setLocalUnits([]);
       return;
     }
 
+    setLocLoading(prev => ({ ...prev, vidhansabhas: true }));
     try {
-      // Use the same API helper that's used for loading Loksabhas
       const { fetchApi } = await import('../../lib/api');
       const data = await fetchApi(`locations/loksabhas/${loksabhaId}/vidhansabhas`);
       setVidhansabhas(Array.isArray(data) ? data : []);
@@ -569,7 +586,8 @@ const JoinPageContent = () => {
       console.error('Error loading Vidhansabhas:', error);
       setVidhansabhas([]);
       setLocalUnits([]);
-      // Optionally show an error message to the user
+    } finally {
+      setLocLoading(prev => ({ ...prev, vidhansabhas: false }));
     }
   }
 
@@ -863,9 +881,12 @@ const JoinPageContent = () => {
                       <select
                         value={formData.loksabhaId}
                         onChange={handleLoksabhaChange}
-                        className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk']"
+                        disabled={!formData.state || locLoading.loksabhas}
+                        className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60"
                       >
-                        <option value="">{t.joinPage.form.district} (Loksabha)</option>
+                        <option value="">
+                          {locLoading.loksabhas ? 'Loading...' : `${t.joinPage.form.district} (Loksabha)`}
+                        </option>
                         {filteredLoksabhas.map((l: any) => (
                           <option key={l.id} value={l.id}>{getTranslation(l.name, language)}</option>
                         ))}
@@ -875,15 +896,19 @@ const JoinPageContent = () => {
                       </div>
                     </div>
                   </div>
+                  {apiError && <p className="text-xs text-red-500 mt-[-15px] self-start">{apiError}</p>}
 
                   {/* 6. Constituency */}
                   <div className="relative w-full h-[46px]">
                     <select
                       value={formData.vidhansabhaId}
                       onChange={(e) => setFormData({ ...formData, vidhansabhaId: e.target.value })}
-                      className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk']"
+                      disabled={!formData.loksabhaId || locLoading.vidhansabhas}
+                      className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60"
                     >
-                      <option value="">{t.joinPage.form.constituency}</option>
+                      <option value="">
+                        {locLoading.vidhansabhas ? 'Loading constituencies...' : (formData.loksabhaId && vidhansabhas.length === 0 ? 'No constituencies found' : t.joinPage.form.constituency)}
+                      </option>
                       {vidhansabhas.map((v: any) => (
                         <option key={v.id} value={v.id}>{getTranslation(v.name, language)}</option>
                       ))}
@@ -898,10 +923,12 @@ const JoinPageContent = () => {
                     <select
                       value={formData.localUnitId}
                       onChange={(e) => setFormData({ ...formData, localUnitId: e.target.value })}
-                      disabled={!formData.vidhansabhaId || localUnits.length === 0}
+                      disabled={!formData.vidhansabhaId || locLoading.localUnits || localUnits.length === 0}
                       className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      <option value="">Select your Local Unit</option>
+                      <option value="">
+                        {locLoading.localUnits ? 'Loading units...' : (formData.vidhansabhaId && localUnits.length === 0 ? 'No Local Units found' : 'Select your Local Unit')}
+                      </option>
                       {localUnits.map((u: any) => (
                         <option key={u.id} value={u.id}>
                           {getTranslation(u.name, language)}{u.type ? ` (${u.type})` : ''}

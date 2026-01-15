@@ -25,7 +25,12 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
         });
     } catch (err: any) {
         const msg = err?.message || String(err);
-        throw new Error(`Network error calling ${url}: ${msg}. Check NEXT_PUBLIC_API_URL, API server running, and CORS.`);
+        const detailedError = `Network error calling ${url}: ${msg}. 
+        - Check if NEXT_PUBLIC_API_URL (${process.env.NEXT_PUBLIC_API_URL}) is correct.
+        - Ensure API server is running and accessible from the browser.
+        - Check for CORS issues if calling across domains.`;
+        console.error(detailedError);
+        throw new Error(detailedError);
     }
 
     if (!response.ok) {
