@@ -677,12 +677,14 @@ const JoinPageContent = () => {
 
       // Fallback to simulation mode when SMS provider is not configured
       const isConfigError = error.message === 'Unsupported phone provider' ||
+        error.message?.includes('Unsupported phone provider') ||
         error.message === 'Failed to fetch' ||
         error.message?.includes('apikey') ||
         error.message?.includes('Signups not allowed');
 
       if (isConfigError) {
         // Simulate OTP sent for development/testing
+        console.warn('SMS provider not configured (falling back to simulation).', error.message);
         setOtpSent(true);
         setShowOtpField(true);
         setOtpError('SMS provider not configured. Simulating OTP sent. Use OTP: 123456');

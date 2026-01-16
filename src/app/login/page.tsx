@@ -143,7 +143,10 @@ export default function LoginScreen() {
 
       router.push('/dashboard');
     } catch (err: any) {
-      console.error(err);
+      // Only log unexpected errors
+      if (err.message !== 'Invalid credentials - Password mismatch' && !err.message.includes('Invalid credentials')) {
+        console.error(err);
+      }
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);

@@ -354,8 +354,37 @@ const DashboardContent = () => {
         }
       } catch (err: any) {
         if (cancelled) return;
-        console.error('Failed to load dashboard data:', err);
-        setError(err.message || 'Failed to load dashboard data');
+        console.error('Failed to load dashboard data, falling back to mock data:', err);
+
+        // --- MOCK FALLBACK ---
+        setSummary({
+          user: {
+            id: 0,
+            name: 'Demo User',
+            phone: '+919876543210',
+            role: 'Member',
+            referralCode: 'DEMO123',
+            memberId: 'PGP-DEMO',
+            photoUrl: null,
+            ward: { id: 1, wardNumber: 1, gp: { id: 1, name: 'Demo GP' } },
+            localUnit: {
+              id: 1,
+              name: 'Demo Unit',
+              type: 'Ward',
+              vidhansabha: { id: 1, name: 'Demo Vidhansabha', loksabha: { id: 1, name: 'Demo Loksabha' } }
+            }
+          },
+          recruitsCount: 0,
+          votesCast: 0
+        });
+        setProgress({
+          role: 'Member',
+          total: 0,
+          target: 21,
+          remaining: 21
+        });
+        setRecruits([]);
+        setError('Dashboard is running in offline mode. (Backend unavailable)');
       } finally {
         if (!cancelled) setLoading(false);
       }

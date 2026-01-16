@@ -5,6 +5,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
     const headers = {
         'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true',
         ...options.headers,
     };
 
