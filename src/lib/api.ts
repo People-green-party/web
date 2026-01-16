@@ -19,6 +19,9 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
     let response: Response;
     try {
+        if (process.env.NODE_ENV === 'development') {
+            console.log(`[API Call] ${options.method || 'GET'} ${url}`);
+        }
         response = await fetch(url, {
             ...options,
             headers,
@@ -26,8 +29,9 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     } catch (err: any) {
         const msg = err?.message || String(err);
         const detailedError = `Network error calling ${url}: ${msg}. 
-        - Check if NEXT_PUBLIC_API_URL (${process.env.NEXT_PUBLIC_API_URL}) is correct.
-        - Ensure API server is running and accessible from the browser.
+        - Backend URL: ${process.env.BACKEND_URL || 'Not Set'}
+        - API URL: ${process.env.NEXT_PUBLIC_API_URL}
+        - Ensure API server (NestJS) is running at http://localhost:3002.
         - Check for CORS issues if calling across domains.`;
         console.error(detailedError);
         throw new Error(detailedError);
