@@ -415,7 +415,7 @@ const RecruitsPanel = ({ summary, progress, recruits, loading }: RecruitsPanelPr
                 <img
                   src={recruit.photoUrl.startsWith('http') ? recruit.photoUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'}${recruit.photoUrl}`}
                   alt={recruit.name}
-                  className="w-full h-full rounded-[8px] object-cover bg-gray-100 shrink-0"
+                  className="w-[44px] h-[44px] rounded-[8px] object-cover bg-gray-100 shrink-0"
                 />
               ) : (
                 <div className="w-[44px] h-[44px] rounded-[8px] flex items-center justify-center bg-gray-200 text-gray-600 shrink-0">

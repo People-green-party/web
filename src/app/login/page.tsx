@@ -107,13 +107,19 @@ export default function LoginScreen() {
         // Use /api by default to leverage Next.js rewrite proxy (avoids CORS)
         const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
 
-        console.log('Sending backend login request:', { phone: phoneNumber });
+        console.log('Sending backend login request to:', baseUrl, { phone: phoneNumber });
 
-        const fallbackRes = await fetch(`${baseUrl}/users/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: phoneNumber, password }),
-        });
+        let fallbackRes;
+        try {
+          fallbackRes = await fetch(`${baseUrl}/users/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: phoneNumber, password }),
+          });
+        } catch (netErr: any) {
+          console.error("Network Error Login:", netErr);
+          throw new Error(`Failed to connect to backend at ${baseUrl}. please ensure NEXT_PUBLIC_API_URL is set correctly.`);
+        }
 
         if (!fallbackRes.ok) {
           // Check content type to see if it's JSON
@@ -125,7 +131,7 @@ export default function LoginScreen() {
             // Probably an HTML 404/500 page from the proxy or server
             const textHTML = await fallbackRes.text();
             console.error('Backend returned non-JSON error:', textHTML.substring(0, 200)); // Log detailed error
-            throw new Error(`Server error (${fallbackRes.status}). The API might be unreachable.`);
+            throw new Error(`Server error (${fallbackRes.status}) from ${baseUrl}. The API might be unreachable.`);
           }
         }
 

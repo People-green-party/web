@@ -364,10 +364,10 @@ const LandingPageContent = () => {
     { name: "Bhanwar Lal Nayak", role: "Vice President", image: "/leadersection/Bhanwar-lal-ji.png" },
     { name: "Naseem Ansari", role: "Vice President", image: "/nassem-removebg-preview.png" },
     { name: "Adv. Kapil", role: "Gen. Secretary", image: "/kapil-removebg-preview.png" },
-    { name: "Er. Gaurav", role: "Secretary", image: "/gaurav-removebg-preview.png" },
+    { name: "Er. Gaurav", role: "Secretary", image: "/Gaurav-removebg-preview.png" },
     { name: "Dr. Tanmay", role: "Gen. Secretary", image: "/Tanmay-removebg-preview.png" },
     { name: "Satish Nagpal", role: "Pradesh Adhyaksh Rajasthan", image: "/Satish-removebg-preview.png" },
-    { name: "Dr. Hari Singh Chauhan", role: "Vice President", image: "/hari-removebg-preview.png" }
+    { name: "Dr. Hari Singh Chauhan", role: "Vice President", image: "/Hari-removebg-preview.png" }
   ];
 
   const extraCommittee = [
