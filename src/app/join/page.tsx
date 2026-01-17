@@ -1,22 +1,10 @@
 "use client";
 
-import React, { useState, useContext, createContext, useEffect, ChangeEvent, useMemo } from "react";
+import React, { useState, useContext, createContext, useEffect, ChangeEvent, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { supabase } from '../../lib/supabaseClient';
-import { Eye, EyeOff } from 'lucide-react';
-import {
-  MapPin,
-  Phone,
-  Mail,
-  Linkedin,
-  Facebook,
-  Instagram,
-  X,
-  Play,
-  Menu,
-} from "lucide-react";
-
+import { Eye, EyeOff, MapPin, Phone, Mail, Linkedin, Facebook, Instagram, Contact as X, Play, Menu } from 'lucide-react';
 import { STATE_LOKSABHA_MAP, getTranslation } from './location_utils';
 
 // --- Translations ---
@@ -120,6 +108,16 @@ const translations = {
 const LanguageContext = createContext<any>(null);
 
 const useLanguage = () => useContext(LanguageContext);
+
+const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
+  const [language, setLanguage] = useState('en');
+  const t = translations[language as keyof typeof translations];
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
 
 // --- Navbar Component ---
 const Navbar = () => {
@@ -1114,12 +1112,14 @@ export default function JoinPage() {
   const [language, setLanguage] = useState<'en' | 'hi'>('en');
 
   return (
-    <LanguageContext.Provider value={{
-      language,
-      setLanguage,
-      t: translations[language]
-    }}>
-      <JoinPageContent />
-    </LanguageContext.Provider>
+    <Suspense fallback={<div className="flex h-screen items-center justify-center">Loading...</div>}>
+      <LanguageContext.Provider value={{
+        language,
+        setLanguage,
+        t: translations[language]
+      }}>
+        <JoinPageContent />
+      </LanguageContext.Provider>
+    </Suspense>
   );
 }
