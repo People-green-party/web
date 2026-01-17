@@ -180,8 +180,8 @@ export default function LoginScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center font-sans">
-      <div className="w-[470px] min-h-[642px] bg-white rounded-[16px] p-[36px] flex flex-col gap-[36px] shadow-2xl relative transition-all duration-300">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center font-sans p-4">
+      <div className="w-full max-w-[470px] min-h-[642px] bg-white rounded-[16px] p-[24px] sm:p-[36px] flex flex-col gap-[36px] shadow-2xl relative transition-all duration-300">
         <div className="w-full h-[24px] flex justify-between items-center shrink-0">
           <button
             onClick={handleBack}
@@ -199,7 +199,7 @@ export default function LoginScreen() {
 
         <div className="w-full flex flex-col gap-[32px] flex-1">
           <div className="w-full flex flex-col items-center gap-[8px]">
-            <h1 className="w-[324px] h-[38px] font-['Familjen_Grotesk'] font-semibold text-[32px] leading-[38px] tracking-[-0.3px] text-center text-[#04330B]">
+            <h1 className="w-full font-['Familjen_Grotesk'] font-semibold text-[28px] sm:text-[32px] leading-[38px] tracking-[-0.3px] text-center text-[#04330B]">
               Log In
             </h1>
             <p className="w-full text-center font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67]">
@@ -208,7 +208,7 @@ export default function LoginScreen() {
           </div>
 
           <form
-            className="w-full flex flex-col gap-[40px]"
+            className="w-full flex flex-col gap-[32px] sm:gap-[40px]"
             onSubmit={usePassword ? handlePasswordLogin : (showOtpField ? handleVerifyOtp : handleSendOtp)}
           >
             <div className="w-full flex flex-col gap-[12px]">
@@ -308,9 +308,9 @@ export default function LoginScreen() {
             </p>
 
             <div className="w-full flex flex-col gap-[36px]">
-              <div className="w-full flex justify-between gap-[16px]">
+              <div className="w-full flex flex-wrap sm:flex-nowrap justify-between gap-[16px]">
                 <button
-                  className="w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
+                  className="w-full sm:w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
                   onClick={() => handleSocialLogin('google')}
                 >
                   <div className="w-[20px] h-[20px] flex items-center justify-center">
@@ -322,7 +322,7 @@ export default function LoginScreen() {
                 </button>
 
                 <button
-                  className="w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
+                  className="w-full sm:w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
                   onClick={() => handleSocialLogin('facebook')}
                 >
                   <div className="w-[20px] h-[20px] flex items-center justify-center">
@@ -334,7 +334,7 @@ export default function LoginScreen() {
                 </button>
 
                 <button
-                  className="w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
+                  className="w-full sm:w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
                   onClick={() => handleSocialLogin('apple')}
                 >
                   <div className="w-[20px] h-[20px] flex items-center justify-center">

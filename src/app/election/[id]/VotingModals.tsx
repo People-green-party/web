@@ -9,7 +9,7 @@ export interface Candidate {
     id: string;
     name: { en: string; hi: string };
     role: { en: string; hi: string };
-    image: string;
+    image: string | null;
     selected: boolean;
 }
 
@@ -43,12 +43,22 @@ export const ConfirmVotesModal = ({ selectedCandidates, onCancel, onConfirm }: C
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {selectedCandidates.map((candidate) => (
                             <div key={candidate.id} className="flex items-center gap-3 p-1">
-                                <div className="w-14 h-14 rounded-2xl overflow-hidden shrink-0 border border-gray-100 shadow-sm">
-                                    <img
-                                        src={candidate.image}
-                                        alt={candidate.name[safeLang]}
-                                        className="w-full h-full object-cover"
-                                    />
+                                <div className={`w-14 h-14 rounded-2xl overflow-hidden shrink-0 border border-gray-100 shadow-sm flex items-center justify-center ${candidate.image ? 'bg-white' : 'bg-[#EAF7EE]'}`}>
+                                    {candidate.image ? (
+                                        <img
+                                            src={candidate.image}
+                                            alt={candidate.name[safeLang]}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        // Placeholder for NOTA or missing image
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0D5229" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="8.5" cy="7" r="4"></circle>
+                                            <line x1="18" y1="8" x2="23" y2="13"></line>
+                                            <line x1="23" y1="8" x2="18" y2="13"></line>
+                                        </svg>
+                                    )}
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-[#0F392B] font-bold text-[15px]">

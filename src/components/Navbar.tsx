@@ -182,6 +182,17 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     {links.map((link) => (
                         <a key={link.name} href={link.href} className="text-gray-700 font-medium py-2 border-b border-gray-50 text-lg">{link.name}</a>
                     ))}
+
+                    {showProfileButton && (
+                        <button
+                            onClick={handleLogout}
+                            className="w-full text-left font-medium py-2 border-b border-gray-50 text-lg text-red-600 flex items-center gap-2"
+                        >
+                            <LogOut size={20} />
+                            Log Out
+                        </button>
+                    )}
+
                     {showAuthButtons && (
                         <div className="flex flex-col gap-4 mt-2">
                             <Link href="/join" className="w-full py-3 bg-green-900 text-white text-center rounded font-medium">

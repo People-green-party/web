@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import Link from "next/link";
 import {
-  Copy,
   MapPin,
   Phone,
   Mail,
@@ -12,7 +11,9 @@ import {
   Instagram,
   X, // Twitter icon
   User,
-  Menu
+  Menu,
+  Share2,
+  Trash2
 } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
@@ -122,6 +123,38 @@ const MemberIdCard = ({ summary, loading, onPhotoUpdate }: MemberIdCardProps) =>
     }
   };
 
+  const handleRemovePhoto = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation(); // Prevent file input from opening
+    // Confirm dialog removed as requested
+    // if (!confirm('Are you sure you want to remove your profile photo?')) return;
+
+    setUploading(true);
+    try {
+      const { getAuthHeader } = await import('../../lib/supabaseClient');
+      const authHeader = await getAuthHeader();
+
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+      const response = await fetch(`${baseUrl}/users/me/photo`, {
+        method: 'DELETE',
+        headers: {
+          ...authHeader,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to remove photo');
+      }
+
+      onPhotoUpdate();
+    } catch (error) {
+      console.error('Photo removal failed:', error);
+      alert('Failed to remove profile photo');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const displayName = summary?.user?.name || (currentLang === 'hi' ? t.dashboard.placeholderNameHi : t.dashboard.placeholderNameEn);
   const membershipId = summary?.user?.memberId || t.dashboard.placeholderMemberId;
   const role = summary?.user?.role || 'Member';
@@ -144,13 +177,12 @@ const MemberIdCard = ({ summary, loading, onPhotoUpdate }: MemberIdCardProps) =>
       </h2>
 
       {/* Photo */}
-      {/* Photo */}
       <div className="w-full h-[200px] overflow-hidden rounded-[8px] bg-gray-100 relative group flex items-center justify-center">
         {loading ? (
           <div className="w-full h-full bg-gray-200 animate-pulse" />
         ) : summary?.user?.photoUrl ? (
           <img
-            src={summary.user.photoUrl}
+            src={summary.user.photoUrl.startsWith('http') ? summary.user.photoUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'}${summary.user.photoUrl}`}
             alt={displayName}
             className="w-full h-full object-cover object-top"
           />
@@ -160,8 +192,52 @@ const MemberIdCard = ({ summary, loading, onPhotoUpdate }: MemberIdCardProps) =>
             <span className="text-sm font-medium">Add Photo</span>
           </div>
         )}
-        {/* Edit Overlay */}
-        <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+
+        {/* Edit Overlay - Visible on Hover (Desktop) */}
+        <div className="absolute inset-0 bg-black/40 flex flex-row items-center justify-center gap-8 opacity-0 group-hover:opacity-100 transition-opacity z-10 transition-all duration-300">
+          {/* Upload Input Label */}
+          <label className="cursor-pointer flex flex-col items-center gap-2 text-white hover:scale-105 transition-transform group/edit">
+            <input
+              type="file"
+              accept="image/png, image/jpeg"
+              className="hidden"
+              onChange={handleFileChange}
+              disabled={uploading}
+            />
+            {uploading ? (
+              <span className="text-sm font-semibold">Processing...</span>
+            ) : (
+              <>
+                <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm group-hover/edit:bg-[#65A27F] transition-colors border border-white/20 shadow-lg">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </div>
+                <span className="text-xs font-medium tracking-wide drop-shadow-md">Change</span>
+              </>
+            )}
+          </label>
+
+          {/* Remove Button (only if photo exists) */}
+          {summary?.user?.photoUrl && !uploading && (
+            <button
+              onClick={handleRemovePhoto}
+              className="flex flex-col items-center gap-2 text-white hover:scale-105 transition-transform group/remove"
+              title="Remove Photo"
+            >
+              <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm group-hover/remove:bg-red-500/60 transition-colors border border-white/20 shadow-lg">
+                <Trash2 size={24} color="white" strokeWidth={2} />
+              </div>
+              <span className="text-xs font-medium tracking-wide drop-shadow-md">Remove</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile-only Edit Buttons (Visible below image on small screens) */}
+      <div className="flex lg:hidden w-full justify-center gap-4 mt-[-8px]">
+        <label className="cursor-pointer flex items-center gap-2 text-[#0D5229] bg-[#EAF7EE] px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#d4eadd] transition-colors">
           <input
             type="file"
             accept="image/png, image/jpeg"
@@ -169,17 +245,18 @@ const MemberIdCard = ({ summary, loading, onPhotoUpdate }: MemberIdCardProps) =>
             onChange={handleFileChange}
             disabled={uploading}
           />
-          {uploading ? (
-            <span className="text-white font-semibold">Updating...</span>
-          ) : (
-            <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-            </div>
-          )}
+          <span>{summary?.user?.photoUrl ? 'Change Photo' : 'Upload Photo'}</span>
         </label>
+
+        {summary?.user?.photoUrl && !uploading && (
+          <button
+            onClick={handleRemovePhoto}
+            className="flex items-center gap-2 text-red-600 bg-red-50 px-4 py-2 rounded-full text-sm font-semibold hover:bg-red-100 transition-colors"
+          >
+            <Trash2 size={16} />
+            <span>Remove</span>
+          </button>
+        )}
       </div>
 
       {/* Details Grid */}
@@ -231,15 +308,48 @@ const RecruitsPanel = ({ summary, progress, recruits, loading }: RecruitsPanelPr
   const handleCopy = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
       const code = summary?.user?.referralCode || '';
-      if (code) navigator.clipboard.writeText(code);
+      if (code) {
+        navigator.clipboard.writeText(code);
+        alert('Referral code copied!');
+      }
     }
   };
 
   const referralCode = summary?.user?.referralCode || t.dashboard.placeholderReferralCode;
+
+  const handleShare = async () => {
+    if (typeof window === 'undefined') return;
+
+    // Construct the share link
+    // If not production, we might want to ensure we point to the public URL, but window.location.origin handles the current host
+    const shareUrl = `${window.location.origin}/join?ref=${referralCode}`;
+    const shareText = `Join Peoples Green Party using my referral code: ${referralCode}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Join Peoples Green Party',
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    } else {
+      // Fallback to copying URL
+      navigator.clipboard.writeText(shareUrl);
+      alert('Share link copied to clipboard!');
+    }
+  };
+
   const total = progress?.total ?? 0;
   const target = progress?.target ?? 0;
   const percentage = target > 0 ? Math.min(Math.round((total / target) * 100), 100) : 0;
   const progressLabel = target > 0 ? `${total}/${target}` : `${total}`;
+
+  // QR Code URL - points to the join page with ref code
+  const qrData = typeof window !== 'undefined' ? `${window.location.origin}/join?ref=${referralCode}` : `https://peoplesgreenparty.org/join?ref=${referralCode}`;
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=118x118&data=${encodeURIComponent(qrData)}`;
 
   return (
     <div className="w-full lg:w-[892px] h-auto lg:h-[420px] bg-white rounded-[8px] p-[24px] pt-[20px] pb-[20px] flex flex-col gap-[20px] border border-[#B9D3C4] shadow-[0px_4px_20px_0px_#0000001A]">
@@ -251,12 +361,23 @@ const RecruitsPanel = ({ summary, progress, recruits, loading }: RecruitsPanelPr
           <div className="flex items-center gap-2 h-[22px]">
             <span className="text-[#587E67] font-semibold font-['Familjen_Grotesk'] text-[16px]">{t.dashboard.referralCode}</span>
             <span className="text-[#04330B] font-bold font-['Familjen_Grotesk'] text-[16px]">{referralCode}</span>
+
+            {/* Copy Button */}
             <button
               onClick={handleCopy}
-              className="cursor-pointer hover:opacity-80 transition-opacity"
+              className="cursor-pointer hover:opacity-80 transition-opacity ml-2"
               title={t.dashboard.copy}
             >
               <img src="/CopiedIcon.svg" alt="Copy" className="w-[18px] h-[18px]" />
+            </button>
+
+            {/* Share Button */}
+            <button
+              onClick={handleShare}
+              className="cursor-pointer hover:opacity-80 transition-opacity ml-1"
+              title="Share Link"
+            >
+              <Share2 size={18} className="text-[#0D5229]" />
             </button>
           </div>
 
@@ -274,10 +395,10 @@ const RecruitsPanel = ({ summary, progress, recruits, loading }: RecruitsPanelPr
           </div>
         </div>
 
-        {/* QR Code Placeholder */}
-        <div className="mt-4 md:mt-0 flex-shrink-0 w-[134px] h-[134px] p-[8px] opacity-80 border border-dashed border-[#0D5229]">
+        {/* QR Code */}
+        <div className="mt-4 md:mt-0 flex-shrink-0 w-[134px] h-[134px] p-[8px] border border-dashed border-[#0D5229] flex items-center justify-center">
           <img
-            src="https://api.qrserver.com/v1/create-qr-code/?size=118x118&data=Example"
+            src={qrCodeUrl}
             alt="QR Code"
             className="w-[118px] h-[118px]"
           />
@@ -292,9 +413,9 @@ const RecruitsPanel = ({ summary, progress, recruits, loading }: RecruitsPanelPr
             <div key={recruit.id} className="flex items-center gap-[12px] w-[172px] h-[44px]">
               {recruit.photoUrl ? (
                 <img
-                  src={recruit.photoUrl}
+                  src={recruit.photoUrl.startsWith('http') ? recruit.photoUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'}${recruit.photoUrl}`}
                   alt={recruit.name}
-                  className="w-[44px] h-[44px] rounded-[8px] object-cover bg-gray-100 shrink-0"
+                  className="w-full h-full rounded-[8px] object-cover bg-gray-100 shrink-0"
                 />
               ) : (
                 <div className="w-[44px] h-[44px] rounded-[8px] flex items-center justify-center bg-gray-200 text-gray-600 shrink-0">
@@ -331,27 +452,52 @@ const DashboardContent = () => {
     let cancelled = false;
 
     const loadDashboardData = async () => {
-      setLoading(true);
+      // 1. Try to load from cache first for instant display
+      const cached = localStorage.getItem('dashboard_cache');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          // Only use cache if it has the expected structure
+          if (parsed.summary && parsed.progress) {
+            setSummary(parsed.summary);
+            setProgress(parsed.progress);
+            setRecruits(parsed.recruits || []);
+            setLoading(false); // Show cached content immediately
+          }
+        } catch (e) {
+          console.warn('Invalid dashboard cache', e);
+        }
+      }
+
+      // 2. Fetch fresh data (background update)
+      // Only set loading true if we didn't have cached data
+      if (!cached) setLoading(true);
       setError(null);
+
       try {
-        const [summaryRes, progressRes] = await Promise.all([
+        // Fetch all data in parallel
+        const [summaryRes, progressRes, recruitsRes] = await Promise.all([
           fetchApi('users/me/summary'),
           fetchApi('users/me/recruitment-progress'),
+          fetchApi('users/me/recruits')
         ]);
 
         if (cancelled) return;
 
+        const newRecruits = recruitsRes?.recruits || [];
+
+        // Update state with fresh data
         setSummary(summaryRes as DashboardUserSummary);
         setProgress(progressRes as DashboardRecruitProgress);
+        setRecruits(newRecruits as DashboardRecruitsListItem[]);
 
-        // Load recruits list using the current user's id
-        const userId = (summaryRes as DashboardUserSummary)?.user?.id;
-        if (userId) {
-          const recruitsData = await fetchApi(`users/${userId}/recruits`);
-          if (!cancelled && recruitsData?.recruits) {
-            setRecruits(recruitsData.recruits as DashboardRecruitsListItem[]);
-          }
-        }
+        // Update cache
+        localStorage.setItem('dashboard_cache', JSON.stringify({
+          summary: summaryRes,
+          progress: progressRes,
+          recruits: newRecruits
+        }));
+
       } catch (err: any) {
         if (cancelled) return;
         console.error('Failed to load dashboard data, falling back to mock data:', err);

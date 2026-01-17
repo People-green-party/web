@@ -2,7 +2,7 @@
 
 import React, { useState, useContext, createContext, useEffect, ChangeEvent, useMemo } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { supabase } from '../../lib/supabaseClient';
 import { Eye, EyeOff } from 'lucide-react';
 import {
@@ -362,6 +362,7 @@ const MOCK_STATES_DATA = [
 const JoinPageContent = () => {
   const { language, t } = useLanguage();
   const router = useRouter();
+  const searchParams = useSearchParams(); // Added useSearchParams
   const [loksabhas, setLoksabhas] = useState<any[]>([]);
   const [vidhansabhas, setVidhansabhas] = useState<any[]>([]);
   const [localUnits, setLocalUnits] = useState<any[]>([]);
@@ -408,14 +409,16 @@ const JoinPageContent = () => {
     });
   }, []);
 
-  // Clear form on mount
+  // Clear form on mount but preserve referral code if present in URL
   useEffect(() => {
+    const urlRefCode = searchParams.get('ref') || '';
+
     setFormData({
       firstName: '',
       lastName: '',
       mobile: '',
       password: '',
-      referralCode: '',
+      referralCode: urlRefCode, // Set from URL
       state: '',
       loksabhaId: '',
       vidhansabhaId: '',
@@ -428,7 +431,7 @@ const JoinPageContent = () => {
     setOtpError('');
     setOtpSent(false);
     setShowOtpField(false);
-  }, []);
+  }, [searchParams]); // Re-run if search params change (though usually stable on mount)
 
   const filteredLoksabhas = useMemo(() => {
     if (!formData.state) return [];

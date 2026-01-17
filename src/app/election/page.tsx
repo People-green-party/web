@@ -56,65 +56,113 @@ const ElectionTable = () => {
     }
 
     return (
-        <div className="w-full flex flex-col gap-[20px] rounded-[8px] border border-[#B9D3C4] overflow-hidden overflow-x-auto">
-            <div className="min-w-[1000px]">
-                {/* Header Row */}
-                <div className="w-full h-[64px] flex items-center px-[24px] py-[20px] border-b border-[#B9D3C4] bg-white gap-[67.67px]">
-                    <div style={{ width: '38px' }} className="shrink-0 font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-                        {t.election.table.sno}
+
+        <div className="w-full">
+            {/* Desktop View (Table) */}
+            <div className="hidden lg:flex flex-col gap-[20px] rounded-[8px] border border-[#B9D3C4] overflow-hidden overflow-x-auto">
+                <div className="min-w-[1000px]">
+                    {/* Header Row */}
+                    <div className="w-full h-[64px] flex items-center px-[24px] py-[20px] border-b border-[#B9D3C4] bg-white gap-[67.67px]">
+                        <div style={{ width: '38px' }} className="shrink-0 font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                            {t.election.table.sno}
+                        </div>
+                        <div style={{ flex: 1 }} className="font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                            {t.election.table.name}
+                        </div>
+                        <div className="w-[120px] text-center font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                            {t.election.table.candidates}
+                        </div>
+                        <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                            {t.election.table.startDate}
+                        </div>
+                        <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                            {t.election.table.endDate}
+                        </div>
+                        <div className="w-[100px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                            {t.election.table.status}
+                        </div>
+                        <div className="w-[120px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                            {t.election.table.vote}
+                        </div>
                     </div>
-                    <div style={{ flex: 1 }} className="font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-                        {t.election.table.name}
-                    </div>
-                    <div className="w-[120px] text-center font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-                        {t.election.table.candidates}
-                    </div>
-                    <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-                        {t.election.table.startDate}
-                    </div>
-                    <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-                        {t.election.table.endDate}
-                    </div>
-                    <div className="w-[100px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-                        {t.election.table.status}
-                    </div>
-                    <div className="w-[120px] font-['Familjen_Grotesk'] font-semibold text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-                        {t.election.table.vote}
+
+                    {/* Rows Container */}
+                    <div className="flex flex-col w-full px-[8px] pb-[20px] gap-[12px]">
+                        {data.map((row, idx) => (
+                            <div
+                                key={idx}
+                                onClick={() => router.push(`/election/${row.id}`)}
+                                className={`w-full h-[54px] flex items-center px-[16px] rounded-[8px] border border-transparent hover:border-[#B9D3C4] transition-all group bg-transparent gap-[66.33px] cursor-pointer`}
+                            >
+                                <div style={{ width: '46px' }} className="shrink-0 font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                    {idx + 1}
+                                </div>
+                                <div style={{ flex: 1 }} className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                    {row.name}
+                                </div>
+                                <div className="w-[120px] text-center font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                    {row.candidates}
+                                </div>
+                                <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                    {row.start}
+                                </div>
+                                <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                    {row.end}
+                                </div>
+                                <div className="w-[100px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                    {row.status}
+                                </div>
+                                <div className="w-[120px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
+                                    {row.vote ? t.election.table.voted : t.election.table.notVoted}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
+            </div>
 
-                {/* Rows Container */}
-                <div className="flex flex-col w-full px-[8px] pb-[20px] gap-[12px]">
-                    {data.map((row, idx) => (
-                        <div
-                            key={idx}
-                            onClick={() => router.push(`/election/${row.id}`)}
-                            className={`w-full h-[54px] flex items-center px-[16px] rounded-[8px] border border-transparent hover:border-[#B9D3C4] transition-all group bg-transparent gap-[66.33px] cursor-pointer`}
-                        >
-                            <div style={{ width: '46px' }} className="shrink-0 font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
-                                {idx + 1}
+            {/* Mobile View (Vertical Cards) */}
+            <div className="flex lg:hidden flex-col gap-[16px] w-full px-4">
+                {data.map((row, idx) => (
+                    <div
+                        key={idx}
+                        onClick={() => router.push(`/election/${row.id}`)}
+                        className="w-full bg-white rounded-[8px] border border-[#B9D3C4] p-[16px] flex flex-col gap-[12px] shadow-sm active:scale-[0.98] transition-transform"
+                    >
+                        <div className="flex justify-between items-start border-b border-[#E4F2EA] pb-[12px]">
+                            <div className="flex flex-col gap-[4px]">
+                                <span className="text-[12px] font-bold text-[#587E67] uppercase tracking-wider">{t.election.table.name}</span>
+                                <span className="text-[18px] font-bold text-[#04330B] font-['Familjen_Grotesk']">{row.name}</span>
                             </div>
-                            <div style={{ flex: 1 }} className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
-                                {row.name}
+                            <span className="bg-[#EAF7EE] text-[#0D5229] text-[12px] font-bold px-2 py-1 rounded">
+                                #{idx + 1}
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-y-[12px] gap-x-[8px]">
+                            <div className="flex flex-col">
+                                <span className="text-[12px] font-semibold text-[#587E67]">{t.election.table.candidates}</span>
+                                <span className="text-[14px] font-medium text-[#04330B]">{row.candidates}</span>
                             </div>
-                            <div className="w-[120px] text-center font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
-                                {row.candidates}
+                            <div className="flex flex-col">
+                                <span className="text-[12px] font-semibold text-[#587E67]">{t.election.table.status}</span>
+                                <span className="text-[14px] font-medium text-[#04330B]">{row.status}</span>
                             </div>
-                            <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
-                                {row.start}
+                            <div className="flex flex-col">
+                                <span className="text-[12px] font-semibold text-[#587E67]">{t.election.table.startDate}</span>
+                                <span className="text-[14px] font-medium text-[#04330B]">{row.start}</span>
                             </div>
-                            <div className="w-[140px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
-                                {row.end}
-                            </div>
-                            <div className="w-[100px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
-                                {row.status}
-                            </div>
-                            <div className="w-[120px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] group-hover:text-[#04330B] transition-colors">
-                                {row.vote ? t.election.table.voted : t.election.table.notVoted}
+                            <div className="flex flex-col">
+                                <span className="text-[12px] font-semibold text-[#587E67]">{t.election.table.endDate}</span>
+                                <span className="text-[14px] font-medium text-[#04330B]">{row.end}</span>
                             </div>
                         </div>
-                    ))}
-                </div>
+
+                        <div className={`mt-[4px] w-full py-2 text-center rounded text-[14px] font-bold ${row.vote ? 'bg-[#EAF7EE] text-[#0D5229]' : 'bg-gray-100 text-gray-500'}`}>
+                            {row.vote ? t.election.table.voted : t.election.table.notVoted}
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );
