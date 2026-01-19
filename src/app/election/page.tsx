@@ -15,10 +15,12 @@ const ElectionTable = () => {
     const router = useRouter();
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const loadElections = async () => {
             try {
+                setError(null);
                 const result = await fetchApi('elections');
                 const formatted = result.map((e: any) => ({
                     id: e.id,
@@ -31,18 +33,9 @@ const ElectionTable = () => {
                 }));
                 setData(formatted);
             } catch (err: any) {
-                console.warn("Failed to fetch elections (using demo data):", err);
-                // Fallback to demo/mock data if backend is offline or empty
-                const demoData = Array(5).fill(null).map((_, idx) => ({
-                    id: idx,
-                    name: t.election.table.demoElectionName,
-                    candidates: 312,
-                    start: "21-10-2025",
-                    end: "31-10-2025",
-                    status: t.election.table.ongoing,
-                    vote: idx === 1 ? false : true
-                }));
-                setData(demoData);
+                console.error("Failed to fetch elections:", err);
+                setError('Failed to load elections. Please try again later.');
+                setData([]);
             } finally {
                 setLoading(false);
             }
@@ -53,6 +46,10 @@ const ElectionTable = () => {
 
     if (loading) {
         return <div className="w-full text-center py-8 text-[#587E67]">Loading elections...</div>;
+    }
+
+    if (error) {
+        return <div className="w-full text-center py-8 text-red-600">{error}</div>;
     }
 
     return (

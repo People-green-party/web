@@ -154,124 +154,126 @@ export default function AdminElectionsPage() {
 
   return (
     <RequireAuth>
-      <div className="max-w-6xl mx-auto p-6 space-y-6">
-        <div className="flex items-end justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold text-green-800">Admin: Elections</h1>
-            <p className="text-sm text-gray-600 mt-1">Create, manage, and close elections. APC is now a district-wide election (no zones).</p>
+      <div className="min-h-screen bg-[#F5F8F6] py-10 px-4">
+        <div className="max-w-6xl mx-auto space-y-6 font-['Familjen_Grotesk']">
+          <div className="flex items-end justify-between">
+            <div>
+              <h1 className="text-3xl font-semibold text-[#04330B]">Admin: Elections</h1>
+              <p className="text-sm text-[#587E67] mt-1">Create, manage, and close elections. APC is now a district-wide election (no zones).</p>
+            </div>
+          </div>
+
+          {loading && <div className="rounded-[8px] border border-[#B9D3C4] bg-white p-3 text-sm text-[#587E67]">Loading…</div>}
+          {error && <div className="rounded-[8px] border border-red-300 bg-red-50 text-red-800 p-3 text-sm font-medium">{error}</div>}
+
+          <form onSubmit={onCreateApc} className="rounded-[8px] border border-[#B9D3C4] bg-white p-5 shadow-sm">
+            <h2 className="text-xl font-semibold mb-3 text-[#04330B]">Create APC Election for a Vidhan Sabha</h2>
+            <div className="flex flex-wrap gap-3 items-end">
+              <label className="text-sm text-[#587E67] flex flex-col gap-1">
+                Loksabha
+                <select value={apcLoksabhaId} onChange={(e) => setApcLoksabhaId(e.target.value)} className="mt-1 border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm min-w-[180px]">
+                  <option value="">Select</option>
+                  {loksabhas.map((l) => (
+                    <option key={l.id} value={l.id}>{l.name}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm text-[#587E67] flex flex-col gap-1">
+                Vidhan Sabha
+                <select value={apcVidhansabhaId} onChange={(e) => setApcVidhansabhaId(e.target.value)} className="mt-1 border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm min-w-[200px] disabled:bg-gray-100" disabled={!apcLoksabhaId}>
+                  <option value="">Select</option>
+                  {vidhansabhas.map((v) => (
+                    <option key={v.id} value={v.id}>{v.name}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm text-[#587E67] flex flex-col gap-1">
+                Actor User ID
+                <input value={apcActorUserId} onChange={(e) => setApcActorUserId(e.target.value)} className="mt-1 border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm w-32" />
+              </label>
+              <label className="text-sm text-[#587E67] flex-1 flex flex-col gap-1">
+                Reason
+                <input value={apcReason} onChange={(e) => setApcReason(e.target.value)} className="mt-1 border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm w-full" />
+              </label>
+              <button type="submit" className="bg-[#0D5229] hover:bg-[#0a4220] text-white px-4 py-2 rounded-[8px] text-sm font-semibold">Create APC Election</button>
+            </div>
+          </form>
+
+          <form onSubmit={onCreate} className="rounded-[8px] border border-[#B9D3C4] bg-white p-5 shadow-sm">
+            <h2 className="text-xl font-semibold mb-3 text-[#04330B]">Create Election</h2>
+            <div className="flex flex-wrap gap-3 items-end">
+              <label className="text-sm text-[#587E67] flex flex-col gap-1">
+                Council
+                <select value={councilLevel} onChange={(e) => setCouncilLevel(e.target.value)} className="mt-1 border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm min-w-[140px]">
+                  <option value="CWC">CWC</option>
+                  <option value="ALC">ALC</option>
+                  <option value="SLC">SLC</option>
+                </select>
+              </label>
+              <label className="text-sm text-[#587E67] flex flex-col gap-1">
+                Position
+                <input value={position} onChange={(e) => setPosition(e.target.value)} className="mt-1 border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm min-w-[160px]" />
+              </label>
+              <label className="text-sm text-[#587E67] flex flex-col gap-1">
+                Actor User ID
+                <input value={actorUserId} onChange={(e) => setActorUserId(e.target.value)} className="mt-1 border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm w-28" />
+              </label>
+              <label className="text-sm text-[#587E67] flex-1 flex flex-col gap-1">
+                Reason
+                <input value={reason} onChange={(e) => setReason(e.target.value)} className="mt-1 border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm w-full" />
+              </label>
+              <button type="submit" className="bg-[#0D5229] hover:bg-[#0a4220] text-white px-4 py-2 rounded-[8px] text-sm font-semibold">Create</button>
+            </div>
+          </form>
+
+          <div className="rounded-[8px] border border-[#B9D3C4] bg-white p-5 shadow-sm">
+            <h2 className="text-xl font-semibold mb-3 text-[#04330B]">Existing Elections</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left">
+                    <th className="px-2 py-2 text-[#587E67] font-semibold">ID</th>
+                    <th className="px-2 py-2 text-[#587E67] font-semibold">Council</th>
+                    <th className="px-2 py-2 text-[#587E67] font-semibold">Position</th>
+                    <th className="px-2 py-2 text-[#587E67] font-semibold">Status</th>
+                    <th className="px-2 py-2 text-[#587E67] font-semibold">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {elections.map((e) => (
+                    <tr key={e.id} className="border-t border-[#E4F2EA]">
+                      <td className="px-2 py-2">{e.id}</td>
+                      <td className="px-2 py-2">{e.councilLevel}</td>
+                      <td className="px-2 py-2">{e.position}</td>
+                      <td className="px-2 py-2">{e.status}</td>
+                      <td className="px-2 py-2">
+                        <Link href={`/admin/elections/${e.id}/candidates`} className="text-[#0D5229] hover:text-[#04330B] mr-2 font-semibold">Manage Candidates</Link>
+                        <Link href={`/admin/elections/${e.id}/results`} className="text-[#0D5229] hover:text-[#04330B] mr-2 font-semibold">Results</Link>
+                        {e.status === 'Active' && (
+                          <span className="inline-flex items-center gap-2">
+                            <input
+                              placeholder="Reason"
+                              value={closeReasons[e.id] || ''}
+                              onChange={(ev) => setCloseReasons((s) => ({ ...s, [e.id]: ev.target.value }))}
+                              className="border border-[#B9D3C4] rounded-[6px] px-3 py-1.5 w-48 text-sm"
+                            />
+                            <input
+                              placeholder="Actor User ID"
+                              value={closeActors[e.id] || ''}
+                              onChange={(ev) => setCloseActors((s) => ({ ...s, [e.id]: ev.target.value }))}
+                              className="border border-[#B9D3C4] rounded-[6px] px-3 py-1.5 w-32 text-sm"
+                            />
+                            <button onClick={() => onClose(e.id)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-[8px] text-sm font-semibold">Close</button>
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
-
-      {loading && <div className="rounded border p-3">Loading…</div>}
-      {error && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3">{error}</div>}
-
-      <form onSubmit={onCreateApc} className="rounded border border-gray-200 bg-white p-5">
-        <h2 className="text-xl font-medium mb-3">Create APC Election for a Vidhan Sabha</h2>
-        <div className="flex flex-wrap gap-3 items-end">
-          <label className="text-sm text-gray-700">
-            Loksabha
-            <select value={apcLoksabhaId} onChange={(e) => setApcLoksabhaId(e.target.value)} className="ml-2 border rounded px-2 py-1">
-              <option value="">Select</option>
-              {loksabhas.map((l) => (
-                <option key={l.id} value={l.id}>{l.name}</option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm text-gray-700">
-            Vidhan Sabha
-            <select value={apcVidhansabhaId} onChange={(e) => setApcVidhansabhaId(e.target.value)} className="ml-2 border rounded px-2 py-1" disabled={!apcLoksabhaId}>
-              <option value="">Select</option>
-              {vidhansabhas.map((v) => (
-                <option key={v.id} value={v.id}>{v.name}</option>
-              ))}
-            </select>
-          </label>
-          <label className="text-sm text-gray-700">
-            Actor User ID
-            <input value={apcActorUserId} onChange={(e) => setApcActorUserId(e.target.value)} className="ml-2 border rounded px-2 py-1 w-32" />
-          </label>
-          <label className="text-sm text-gray-700 flex-1">
-            Reason
-            <input value={apcReason} onChange={(e) => setApcReason(e.target.value)} className="ml-2 border rounded px-2 py-1 w-full" />
-          </label>
-          <button type="submit" className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded">Create APC Election</button>
-        </div>
-      </form>
-
-      <form onSubmit={onCreate} className="rounded border border-gray-200 bg-white p-5">
-        <h2 className="text-xl font-medium mb-3">Create Election</h2>
-        <div className="flex flex-wrap gap-3 items-end">
-          <label className="text-sm text-gray-700">
-            Council
-            <select value={councilLevel} onChange={(e) => setCouncilLevel(e.target.value)} className="ml-2 border rounded px-2 py-1">
-              <option value="CWC">CWC</option>
-              <option value="ALC">ALC</option>
-              <option value="SLC">SLC</option>
-            </select>
-          </label>
-          <label className="text-sm text-gray-700">
-            Position
-            <input value={position} onChange={(e) => setPosition(e.target.value)} className="ml-2 border rounded px-2 py-1" />
-          </label>
-          <label className="text-sm text-gray-700">
-            Actor User ID
-            <input value={actorUserId} onChange={(e) => setActorUserId(e.target.value)} className="ml-2 border rounded px-2 py-1 w-28" />
-          </label>
-          <label className="text-sm text-gray-700 flex-1">
-            Reason
-            <input value={reason} onChange={(e) => setReason(e.target.value)} className="ml-2 border rounded px-2 py-1 w-full" />
-          </label>
-          <button type="submit" className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded">Create</button>
-        </div>
-      </form>
-
-      <div className="rounded border border-gray-200 bg-white p-5">
-        <h2 className="text-xl font-medium mb-3">Existing Elections</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left">
-                <th className="px-2 py-2">ID</th>
-                <th className="px-2 py-2">Council</th>
-                <th className="px-2 py-2">Position</th>
-                <th className="px-2 py-2">Status</th>
-                <th className="px-2 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {elections.map((e) => (
-                <tr key={e.id} className="border-t">
-                  <td className="px-2 py-2">{e.id}</td>
-                  <td className="px-2 py-2">{e.councilLevel}</td>
-                  <td className="px-2 py-2">{e.position}</td>
-                  <td className="px-2 py-2">{e.status}</td>
-                  <td className="px-2 py-2">
-                    <Link href={`/admin/elections/${e.id}/candidates`} className="text-green-700 hover:text-green-800 mr-2">Manage Candidates</Link>
-                    <Link href={`/admin/elections/${e.id}/results`} className="text-green-700 hover:text-green-800 mr-2">Results</Link>
-                    {e.status === 'Active' && (
-                      <span className="inline-flex items-center gap-2">
-                        <input
-                          placeholder="Reason"
-                          value={closeReasons[e.id] || ''}
-                          onChange={(ev) => setCloseReasons((s) => ({ ...s, [e.id]: ev.target.value }))}
-                          className="border rounded px-2 py-1 w-48"
-                        />
-                        <input
-                          placeholder="Actor User ID"
-                          value={closeActors[e.id] || ''}
-                          onChange={(ev) => setCloseActors((s) => ({ ...s, [e.id]: ev.target.value }))}
-                          className="border rounded px-2 py-1 w-32"
-                        />
-                        <button onClick={() => onClose(e.id)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded">Close</button>
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
       </div>
     </RequireAuth>
   );

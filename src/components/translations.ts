@@ -91,7 +91,7 @@ export const translations = {
             recruitsTitle: "Recruits",
             referralCode: "Referral Code:",
             copy: "Copy",
-            target: "Senior Members target 5 workers. Workers Target 20 members",
+            target: "",
             recruitedMembers: "Recruited Members",
             roles: {
                 member: "Member",
@@ -226,7 +226,7 @@ export const translations = {
             recruitsTitle: "भर्ती",
             referralCode: "रेफरल कोड:",
             copy: "कॉपी",
-            target: "वरिष्ठ सदस्य 5 कार्यकर्ताओं का लक्ष्य रखें। कार्यकर्ता 20 सदस्यों का लक्ष्य रखें",
+            target: "",
             recruitedMembers: "भर्ती किए गए सदस्य",
             roles: {
                 member: "सदस्य",

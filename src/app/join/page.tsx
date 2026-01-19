@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useContext, createContext, useEffect, ChangeEvent, useMemo, Suspense } from "react";
+import React, { useState, useContext, createContext, useEffect, ChangeEvent, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { supabase } from '../../lib/supabaseClient';
 import { Eye, EyeOff, MapPin, Phone, Mail, Linkedin, Facebook, Instagram, Contact as X, Play, Menu } from 'lucide-react';
-import { STATE_LOKSABHA_MAP, getTranslation } from './location_utils';
+import { getTranslation } from './location_utils';
 
 // --- Translations ---
 const translations = {
@@ -370,11 +370,9 @@ const JoinPageContent = () => {
     mobile: '',
     password: '',
     referralCode: '',
-    state: '',
     loksabhaId: '',
     vidhansabhaId: '',
     localUnitId: '',
-    zip: '',
     agreeJoin: false,
     agreeResponsibility: false
   });
@@ -392,7 +390,7 @@ const JoinPageContent = () => {
     setLocLoading(prev => ({ ...prev, loksabhas: true }));
     setApiError(null);
     import('../../lib/api').then(({ fetchApi }) => {
-      fetchApi('locations/loksabhas')
+      fetchApi('geo/loksabhas')
         .then(data => {
           setLoksabhas(data);
           if (Array.isArray(data) && data.length === 0) {
@@ -417,11 +415,9 @@ const JoinPageContent = () => {
       mobile: '',
       password: '',
       referralCode: urlRefCode, // Set from URL
-      state: '',
       loksabhaId: '',
       vidhansabhaId: '',
       localUnitId: '',
-      zip: '',
       agreeJoin: false,
       agreeResponsibility: false
     });
@@ -430,18 +426,6 @@ const JoinPageContent = () => {
     setOtpSent(false);
     setShowOtpField(false);
   }, [searchParams]); // Re-run if search params change (though usually stable on mount)
-
-  const filteredLoksabhas = useMemo(() => {
-    if (!formData.state) return [];
-    const allowedNames = STATE_LOKSABHA_MAP[formData.state];
-    if (!allowedNames) return loksabhas;
-
-    // Case-insensitive filtering for robustness
-    const allowedNamesLower = allowedNames.map(n => n.toLowerCase().trim());
-    return loksabhas.filter((l: any) =>
-      allowedNamesLower.includes(l.name.toLowerCase().trim())
-    );
-  }, [formData.state, loksabhas]);
 
   useEffect(() => {
     const vidhansabhaId = formData.vidhansabhaId;
@@ -452,7 +436,7 @@ const JoinPageContent = () => {
 
     setLocLoading(prev => ({ ...prev, localUnits: true }));
     import('../../lib/api').then(({ fetchApi }) => {
-      fetchApi(`locations/vidhansabhas/${vidhansabhaId}/local-units`)
+      fetchApi(`geo/vidhansabhas/${vidhansabhaId}/local-units`)
         .then((data) => setLocalUnits(Array.isArray(data) ? data : []))
         .catch((err) => {
           console.error('Failed to load Local Units', err);
@@ -540,7 +524,7 @@ const JoinPageContent = () => {
         name: `${formData.firstName} ${formData.lastName}`,
         phone: phoneNumber,
         password: formData.password, // Note: In production, you might not want to send password to your API
-        address: `${formData.state}, India`, // Combine state with country
+        address: 'India',
         localUnitId: parseInt(formData.localUnitId),
         referralCode: formData.referralCode || undefined,
         authUserId: isPhoneSignupDisabled ? undefined : authData?.user?.id,
@@ -580,7 +564,7 @@ const JoinPageContent = () => {
     setLocLoading(prev => ({ ...prev, vidhansabhas: true }));
     try {
       const { fetchApi } = await import('../../lib/api');
-      const data = await fetchApi(`locations/loksabhas/${loksabhaId}/vidhansabhas`);
+      const data = await fetchApi(`geo/loksabhas/${loksabhaId}/vidhansabhas`);
       setVidhansabhas(Array.isArray(data) ? data : []);
       setLocalUnits([]);
     } catch (error) {
@@ -852,51 +836,23 @@ const JoinPageContent = () => {
                     autoComplete="off"
                   />
 
-                  {/* 4. State & District */}
-                  <div className="w-full h-[46px] flex gap-[14px]">
-                    <div className="relative flex-1 h-full">
-                      <select
-                        value={formData.state}
-                        onChange={(e) => {
-                          setFormData({
-                            ...formData,
-                            state: e.target.value,
-                            loksabhaId: '',
-                            vidhansabhaId: '',
-                            localUnitId: ''
-                          });
-                          setVidhansabhas([]);
-                          setLocalUnits([]);
-                        }}
-                        className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk']"
-                      >
-                        <option value="">{t.joinPage.form.state}</option>
-                        {Object.keys(STATE_LOKSABHA_MAP).sort().map((s) => (
-                          <option key={s} value={s}>{getTranslation(s, language)}</option>
-                        ))}
-                      </select>
-                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
-                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-                      </div>
-                    </div>
-
-                    <div className="relative flex-1 h-full">
-                      <select
-                        value={formData.loksabhaId}
-                        onChange={handleLoksabhaChange}
-                        disabled={!formData.state || locLoading.loksabhas}
-                        className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60"
-                      >
-                        <option value="">
-                          {locLoading.loksabhas ? 'Loading...' : `${t.joinPage.form.district} (Loksabha)`}
-                        </option>
-                        {filteredLoksabhas.map((l: any) => (
-                          <option key={l.id} value={l.id}>{getTranslation(l.name, language)}</option>
-                        ))}
-                      </select>
-                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
-                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-                      </div>
+                  {/* 4. District (Loksabha) */}
+                  <div className="relative w-full h-[46px]">
+                    <select
+                      value={formData.loksabhaId}
+                      onChange={handleLoksabhaChange}
+                      disabled={locLoading.loksabhas}
+                      className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60"
+                    >
+                      <option value="">
+                        {locLoading.loksabhas ? 'Loading...' : `${t.joinPage.form.district} (Loksabha)`}
+                      </option>
+                      {loksabhas.map((l: any) => (
+                        <option key={l.id} value={l.id}>{getTranslation(l.name, language)}</option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
+                      <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
                     </div>
                   </div>
                   {apiError && <p className="text-xs text-red-500 mt-[-15px] self-start">{apiError}</p>}
@@ -943,15 +899,7 @@ const JoinPageContent = () => {
                     </div>
                   </div>
 
-                  {/* 7. ZIP */}
-                  <input
-                    type="text"
-                    value={formData.zip}
-                    onChange={(e) => setFormData({ ...formData, zip: e.target.value })}
-                    className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk'] "
-                    placeholder={t.joinPage.form.zip}
-                    autoComplete="off"
-                  />
+                  
                 </div>
 
                 {/* --- CHECKBOX SECTION FIXED --- */}

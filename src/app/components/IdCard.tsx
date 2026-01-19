@@ -45,52 +45,6 @@ const recruitsList: Member[] = [
   { id: '12', name: 'Mahima Singh', role: 'Member', avatar: 'https://i.pravatar.cc/150?u=mahima' },
 ];
 
-// --- Components ---
-
-const Header = () => {
-  return (
-    <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100">
-      {/* Logo Area */}
-      <div className="flex items-center gap-2">
-        {/* Placeholder for PGP Logo */}
-        <div className="flex flex-col items-center leading-none">
-           <span className="text-3xl font-bold text-green-700 font-sans">pgp</span>
-           <span className="text-[0.6rem] text-orange-600 font-bold uppercase">Peoples Green Party</span>
-        </div>
-      </div>
-
-      {/* Nav Links */}
-      <nav className="hidden md:flex gap-8">
-        <a href="#" className="px-4 py-2 text-sm font-medium text-green-800 bg-green-50 rounded-md">Dashboard</a>
-        <a href="#" className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-green-700">Election</a>
-      </nav>
-
-      {/* Controls */}
-      <div className="flex items-center gap-4">
-  {/* Language switch */}
-  <div className="flex items-center border border-gray-300 rounded overflow-hidden">
-    <button className="px-3 py-1 text-sm text-gray-500 hover:bg-gray-100">हि</button>
-    <div className="w-px h-6 bg-gray-300"></div>
-    <button className="px-3 py-1 text-sm font-bold bg-green-50 text-green-800">En</button>
-  </div>
-
-  {/* ✅ Join Now button */}
-  <Link
-    href="/join"
-    className="px-4 py-2 text-sm font-semibold rounded-md bg-green-600 text-white hover:bg-green-700 transition"
-  >
-    Join Now
-  </Link>
-
-  {/* User icon */}
-  <div className="p-2 border border-gray-300 rounded-full cursor-pointer hover:bg-gray-50">
-    <User className="w-5 h-5 text-gray-600" />
-  </div>
-</div>
-    </header>
-  );
-};
-
 const MemberIdCard = () => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-full">

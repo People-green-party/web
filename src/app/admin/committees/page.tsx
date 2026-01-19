@@ -86,88 +86,89 @@ export default function AdminCommitteesPage() {
 
   return (
     <RequireAuth>
-      <div className="max-w-5xl mx-auto p-6">
-        <h1 className="text-2xl font-semibold mb-4">Admin: Committees</h1>
+      <div className="min-h-screen bg-[#F5F8F6] py-10 px-4">
+        <div className="max-w-5xl mx-auto p-0 font-['Familjen_Grotesk']">
+          <h1 className="text-2xl font-semibold mb-4 text-[#04330B]">Admin: Committees</h1>
 
-        <div className="rounded border bg-white p-4 mb-6">
-          <h2 className="font-medium mb-2">Actor & Reason</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm mb-1">Actor User ID</label>
-              <input className="w-full border rounded px-3 py-2" value={actorUserId} onChange={(e) => setActorUserId(e.target.value)} placeholder="Admin user id" />
+          <div className="rounded-[8px] border border-[#B9D3C4] bg-white p-4 mb-6 shadow-sm">
+            <h2 className="font-semibold mb-2 text-[#04330B]">Actor & Reason</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm mb-1 text-[#587E67]">Actor User ID</label>
+                <input className="w-full border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm" value={actorUserId} onChange={(e) => setActorUserId(e.target.value)} placeholder="Admin user id" />
+              </div>
+              <div>
+                <label className="block text-sm mb-1 text-[#587E67]">Reason</label>
+                <input className="w-full border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Audit reason (required)" />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm mb-1">Reason</label>
-              <input className="w-full border rounded px-3 py-2" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Audit reason (required)" />
+          </div>
+
+          <form onSubmit={onCreate} className="rounded-[8px] border border-[#B9D3C4] bg-white p-4 mb-6 shadow-sm">
+            <h2 className="font-semibold mb-2 text-[#04330B]">Create Committee</h2>
+            {createMsg && <div className="rounded border border-green-300 bg-green-50 text-green-800 p-2 mb-2 text-sm">{createMsg}</div>}
+            {createErr && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-2 mb-2 text-sm">{createErr}</div>}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm mb-1 text-[#587E67]">Name</label>
+                <input className="w-full border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm" value={cName} onChange={(e) => setCName(e.target.value)} required />
+              </div>
+              <div>
+                <label className="block text-sm mb-1 text-[#587E67]">Local Unit ID</label>
+                <input className="w-full border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm" value={localUnitId} onChange={(e) => setLocalUnitId(e.target.value)} required />
+              </div>
+              <div>
+                <label className="block text-sm mb-1 text-[#587E67]">Type</label>
+                <select className="w-full border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm" value={cType} onChange={(e) => setCType(e.target.value)}>
+                  <option value="CWC">CWC</option>
+                  <option value="APC">APC</option>
+                  <option value="PPC">PPC</option>
+                  <option value="SSP">SSP</option>
+                </select>
+              </div>
             </div>
-          </div>
-        </div>
+            <div className="mt-4">
+              <button className="bg-[#0D5229] hover:bg-[#0a4220] text-white px-4 py-2 rounded-[8px] text-sm font-semibold disabled:opacity-50" disabled={creating}>
+                {creating ? "Creating…" : "Create Committee"}
+              </button>
+            </div>
+          </form>
 
-      <form onSubmit={onCreate} className="rounded border bg-white p-4 mb-6">
-        <h2 className="font-medium mb-2">Create Committee</h2>
-        {createMsg && <div className="rounded border border-green-300 bg-green-50 text-green-800 p-2 mb-2">{createMsg}</div>}
-        {createErr && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-2 mb-2">{createErr}</div>}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm mb-1">Name</label>
-            <input className="w-full border rounded px-3 py-2" value={cName} onChange={(e) => setCName(e.target.value)} required />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Local Unit ID</label>
-            <input className="w-full border rounded px-3 py-2" value={localUnitId} onChange={(e) => setLocalUnitId(e.target.value)} required />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Type</label>
-            <select className="w-full border rounded px-3 py-2" value={cType} onChange={(e) => setCType(e.target.value)}>
-              <option value="CWC">CWC</option>
-              <option value="APC">APC</option>
-              <option value="PPC">PPC</option>
-              <option value="SSP">SSP</option>
-            </select>
-          </div>
+          <form onSubmit={onAddMember} className="rounded-[8px] border border-[#B9D3C4] bg-white p-4 shadow-sm">
+            <h2 className="font-semibold mb-2 text-[#04330B]">Add Member / Set President</h2>
+            {memberMsg && <div className="rounded border border-green-300 bg-green-50 text-green-800 p-2 mb-2 text-sm">{memberMsg}</div>}
+            {memberErr && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-2 mb-2 text-sm">{memberErr}</div>}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm mb-1 text-[#587E67]">Committee ID</label>
+                <input className="w-full border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm" value={committeeId} onChange={(e) => setCommitteeId(e.target.value)} required />
+              </div>
+              <div>
+                <label className="block text-sm mb-1 text-[#587E67]">User ID</label>
+                <input className="w-full border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm" value={userId} onChange={(e) => setUserId(e.target.value)} required />
+              </div>
+              <div>
+                <label className="block text-sm mb-1 text-[#587E67]">Role</label>
+                <select className="w-full border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm" value={role} onChange={(e) => setRole(e.target.value)}>
+                  <option value="CWCMember">CWCMember</option>
+                  <option value="ExtendedMember">ExtendedMember</option>
+                  <option value="CWCPresident">CWCPresident</option>
+                </select>
+              </div>
+              <div className="flex items-end">
+                <label className="inline-flex items-center gap-2 text-sm text-[#587E67]">
+                  <input type="checkbox" checked={isPresident} onChange={(e) => setIsPresident(e.target.checked)} />
+                  <span>Make President</span>
+                </label>
+              </div>
+            </div>
+            <div className="mt-4">
+              <button className="bg-[#0D5229] hover:bg-[#0a4220] text-white px-4 py-2 rounded-[8px] text-sm font-semibold disabled:opacity-50" disabled={adding}>
+                {adding ? "Saving…" : "Save"}
+              </button>
+            </div>
+          </form>
         </div>
-        <div className="mt-4">
-          <button className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded disabled:opacity-50" disabled={creating}>
-            {creating ? "Creating…" : "Create Committee"}
-          </button>
-        </div>
-      </form>
-
-      <form onSubmit={onAddMember} className="rounded border bg-white p-4">
-        <h2 className="font-medium mb-2">Add Member / Set President</h2>
-        {memberMsg && <div className="rounded border border-green-300 bg-green-50 text-green-800 p-2 mb-2">{memberMsg}</div>}
-        {memberErr && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-2 mb-2">{memberErr}</div>}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm mb-1">Committee ID</label>
-            <input className="w-full border rounded px-3 py-2" value={committeeId} onChange={(e) => setCommitteeId(e.target.value)} required />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">User ID</label>
-            <input className="w-full border rounded px-3 py-2" value={userId} onChange={(e) => setUserId(e.target.value)} required />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Role</label>
-            <select className="w-full border rounded px-3 py-2" value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value="CWCMember">CWCMember</option>
-              <option value="ExtendedMember">ExtendedMember</option>
-              <option value="CWCPresident">CWCPresident</option>
-            </select>
-          </div>
-          <div className="flex items-end">
-            <label className="inline-flex items-center gap-2">
-              <input type="checkbox" checked={isPresident} onChange={(e) => setIsPresident(e.target.checked)} />
-              <span>Make President</span>
-            </label>
-          </div>
-        </div>
-        <div className="mt-4">
-          <button className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded disabled:opacity-50" disabled={adding}>
-            {adding ? "Saving…" : "Save"}
-          </button>
-        </div>
-      </form>
-
       </div>
     </RequireAuth>
   );

@@ -90,76 +90,38 @@ export default function LoginScreen() {
     try {
       const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
 
-      // First try Supabase Auth
+      // 1. Strict Supabase Auth
       const { data, error } = await supabase.auth.signInWithPassword({
         phone: phoneNumber,
         password: password,
       });
 
       if (error) {
-        // If Supabase fails (e.g. valid credentials but Provider is disabled), try direct backend login
-        console.warn('Supabase login failed, trying backend fallback:', error.message);
+        // If Supabase fails, WE STOP HERE. No fallback.
+        // This forces the system to be secure.
+        console.error('Supabase login failed:', error.message);
 
-        // Import fetchApi dynamically or use a simple fetch since we are not auth'd yet
-        // Actually fetchApi handles unauthenticated requests fine if we don't pass token? 
-        // But fetchApi usually expects JWT. 
-        // Let's use direct fetch to our new endpoint.
-        // Use /api by default to leverage Next.js rewrite proxy (avoids CORS)
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
-
-        console.log('Sending backend login request to:', baseUrl, { phone: phoneNumber });
-
-        let fallbackRes;
-        try {
-          fallbackRes = await fetch(`${baseUrl}/users/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone: phoneNumber, password }),
-          });
-        } catch (netErr: any) {
-          console.error("Network Error Login:", netErr);
-          throw new Error(`Failed to connect to backend at ${baseUrl}. please ensure NEXT_PUBLIC_API_URL is set correctly.`);
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('Incorrect Phone Number or Password.');
+        } else if (error.message.includes('Phone not confirmed')) {
+          throw new Error('Please verify your phone number via OTP first.');
+        } else {
+          throw error; // Throw generic error
         }
-
-        if (!fallbackRes.ok) {
-          // Check content type to see if it's JSON
-          const contentType = fallbackRes.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const errJson = await fallbackRes.json();
-            throw new Error(errJson.message || error.message);
-          } else {
-            // Probably an HTML 404/500 page from the proxy or server
-            const textHTML = await fallbackRes.text();
-            console.error('Backend returned non-JSON error:', textHTML.substring(0, 200)); // Log detailed error
-            throw new Error(`Server error (${fallbackRes.status}) from ${baseUrl}. The API might be unreachable.`);
-          }
-        }
-
-        const fallbackData = await fallbackRes.json();
-        // Success! We have { id, name }
-        // Set dev mode cookie/storage
-        if (typeof window !== 'undefined') {
-          window.localStorage.setItem('devUserId', String(fallbackData.id));
-        }
-
-        // Proceed
-        router.push('/dashboard');
-        return;
       }
 
+      // 2. Success - Supabase session is set automatically
+      // Redirect to dashboard
       router.push('/dashboard');
+
     } catch (err: any) {
-      // Only log unexpected errors
-      if (err.message !== 'Invalid credentials - Password mismatch' && !err.message.includes('Invalid credentials')) {
-        console.error(err);
-      }
-      setError(err.message || 'Login failed. Please check your credentials.');
+      setError(err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSocialLogin = async (provider: 'google' | 'facebook' | 'apple') => {
+  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
     setLoading(true);
     setError('');
     try {
@@ -339,17 +301,7 @@ export default function LoginScreen() {
                   </span>
                 </button>
 
-                <button
-                  className="w-full sm:w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
-                  onClick={() => handleSocialLogin('apple')}
-                >
-                  <div className="w-[20px] h-[20px] flex items-center justify-center">
-                    <img src="/login/Apple-login.svg" alt="Apple" className="w-[20px] h-[20px]" />
-                  </div>
-                  <span className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#0D5229]">
-                    Apple
-                  </span>
-                </button>
+                
               </div>
 
               <div className="text-center w-full h-[22px]">

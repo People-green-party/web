@@ -13,10 +13,12 @@ import {
     ChevronRight,
     UserX
 } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { Navbar } from '../../../components/Navbar';
 import { LanguageProvider, useLanguage } from '../../../components/LanguageContext';
 import { ConfirmVotesModal, VerifyMobileModal, VotingSuccessModal } from './VotingModals';
 import { RequireAuth } from '../../components/RequireAuth';
+import { fetchApi } from '../../../lib/api';
 
 // --- Types ---
 interface Candidate {
@@ -31,49 +33,10 @@ interface Candidate {
     isNota: boolean;
 }
 
-// --- Mock Data Generators ---
-const NAMES = ["Aarav", "Vivaan", "Aditya", "Vihaan", "Arjun", "Sai", "Reyansh", "Ayaan", "Krishna", "Ishaan", "Shaurya", "Atharv", "Neerav", "Sohan", "Palak", "Ananya", "Diya", "Sana", "Amara", "Aditi", "Riya", "Pari", "Anika", "Navya", "Angel", "Shruti"];
-const SURNAMES = ["Sharma", "Verma", "Gupta", "Malhotra", "Bhatnagar", "Saxena", "Mehta", "Singh", "Yadav", "Jain", "Agarwal", "Reddy", "Nair", "Patel", "Shah", "Khan", "Ali"];
-const ROLES = [
-    { en: "Member", hi: "सदस्य" },
-    { en: "Secretary", hi: "सचिव" },
-    { en: "Treasurer", hi: "कोषाध्यक्ष" },
-    { en: "Vice President", hi: "उपाध्यक्ष" },
-    { en: "Spokesperson", hi: "प्रवक्ता" }
-];
-const REGIONS = ["North", "South", "East", "West", "Central"];
-const AGE_GROUPS = ["18-25", "26-35", "36-45", "46-60", "60+"];
-const GENDERS = ["Male", "Female", "Other"];
-
-const generateCandidates = (count: number): Candidate[] => {
-    const candidates: Candidate[] = [];
-    for (let i = 0; i < count; i++) {
-        const isDr = Math.random() > 0.7;
-        const firstName = NAMES[Math.floor(Math.random() * NAMES.length)];
-        const lastName = SURNAMES[Math.floor(Math.random() * SURNAMES.length)];
-        const fullName = `${isDr ? 'Dr. ' : ''}${firstName} ${lastName}`;
-        const gender = Math.random() > 0.5 ? "Male" : "Female"; // Simplified for mock
-        const photoId = Math.floor(Math.random() * 70) + 1; // Random unsplash ID param
-        const role = ROLES[Math.floor(Math.random() * ROLES.length)];
-
-        candidates.push({
-            id: (i + 1).toString(),
-            name: { en: fullName, hi: fullName }, // Hindi names mocked as English for simplicity in this generated set, or mapped if strict
-            role: role,
-            image: gender === 'Male'
-                ? `https://randomuser.me/api/portraits/men/${photoId}.jpg`
-                : `https://randomuser.me/api/portraits/women/${photoId}.jpg`,
-            selected: false,
-            ageGroup: AGE_GROUPS[Math.floor(Math.random() * AGE_GROUPS.length)],
-            region: REGIONS[Math.floor(Math.random() * REGIONS.length)],
-            gender: gender,
-            isNota: false
-        });
-    }
-    return candidates;
-};
-
-
+// --- Static Filter Options ---
+const AGE_GROUPS: string[] = ["18-25", "26-35", "36-45", "46-60", "60+"];
+const REGIONS: string[] = ["North", "South", "East", "West", "Central"];
+const GENDERS: string[] = ["Male", "Female", "Other"];
 
 // --- Translations ---
 const translations = {
@@ -151,7 +114,7 @@ const FilterBar = ({ searchQuery, setSearchQuery, ageFilter, setAgeFilter, regio
                         className="w-full h-full rounded-[8px] border border-[#B9D3C4] bg-white appearance-none px-[16px] text-[#587E67] text-[16px] font-['Familjen_Grotesk'] font-semibold focus:outline-none cursor-pointer focus:border-[#04330B]"
                     >
                         <option value="">{t.ageGroup}</option>
-                        {AGE_GROUPS.map(g => <option key={g} value={g}>{g}</option>)}
+                        {AGE_GROUPS.map((g: string) => <option key={g} value={g}>{g}</option>)}
                     </select>
                     <ChevronDown className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-[#587E67] pointer-events-none" />
                 </div>
@@ -163,7 +126,7 @@ const FilterBar = ({ searchQuery, setSearchQuery, ageFilter, setAgeFilter, regio
                         className="w-full h-full rounded-[8px] border border-[#B9D3C4] bg-white appearance-none px-[16px] text-[#587E67] text-[16px] font-['Familjen_Grotesk'] font-semibold focus:outline-none cursor-pointer focus:border-[#04330B]"
                     >
                         <option value="">{t.region}</option>
-                        {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                        {REGIONS.map((r: string) => <option key={r} value={r}>{r}</option>)}
                     </select>
                     <ChevronDown className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-[#587E67] pointer-events-none" />
                 </div>
@@ -175,7 +138,7 @@ const FilterBar = ({ searchQuery, setSearchQuery, ageFilter, setAgeFilter, regio
                         className="w-full h-full rounded-[8px] border border-[#B9D3C4] bg-white appearance-none px-[16px] text-[#587E67] text-[16px] font-['Familjen_Grotesk'] font-semibold focus:outline-none cursor-pointer focus:border-[#04330B]"
                     >
                         <option value="">{t.gender}</option>
-                        {GENDERS.map(g => <option key={g} value={g}>{g}</option>)}
+                        {GENDERS.map((g: string) => <option key={g} value={g}>{g}</option>)}
                     </select>
                     <ChevronDown className="absolute right-[16px] top-1/2 -translate-y-1/2 w-[20px] h-[20px] text-[#587E67] pointer-events-none" />
                 </div>
@@ -233,6 +196,8 @@ const CandidateCard = ({ candidate, onToggle }: { candidate: Candidate, onToggle
     }
 
     // Standard Candidate Card
+    const hasImage = !!candidate.image;
+
     return (
         <div
             className={`relative w-[208px] h-[252px] rounded-[8px] bg-white p-[12px] flex flex-col gap-[4px] transition-all
@@ -242,11 +207,17 @@ const CandidateCard = ({ candidate, onToggle }: { candidate: Candidate, onToggle
         >
             {/* Image Container 184x184 */}
             <div className="relative w-[184px] h-[184px] rounded-[8px] overflow-hidden shrink-0 bg-gray-100">
-                <img
-                    src={candidate.image!}
-                    alt={candidate.name[safeLang]}
-                    className="w-full h-full object-cover"
-                />
+                {hasImage ? (
+                    <img
+                        src={candidate.image as string}
+                        alt={candidate.name[safeLang]}
+                        className="w-full h-full object-cover"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100 text-[#587E67] font-['Familjen_Grotesk'] font-semibold text-[18px]">
+                        {candidate.name[safeLang].charAt(0)}
+                    </div>
+                )}
 
                 {/* L-Curve Cutout Mask */}
                 <div className="absolute top-0 right-0 w-[44px] h-[44px] bg-white rounded-bl-[44px] z-10" />
@@ -365,6 +336,9 @@ const ElectionVotingContent = () => {
     const t = translations[language as keyof typeof translations] || translations.en;
     const safeLang = (language === 'hi' || language === 'en') ? (language as 'en' | 'hi') : 'en';
 
+    const params = useParams<{ id: string }>();
+    const electionId = params?.id;
+
     const [candidates, setCandidates] = useState<Candidate[]>([]);
     const [votingState, setVotingState] = useState<'selection' | 'confirm' | 'verify' | 'success'>('selection');
     const [isLoading, setIsLoading] = useState(true);
@@ -380,24 +354,65 @@ const ElectionVotingContent = () => {
     const itemsPerPage = 12; // 4 columns x 3 rows ideally
 
     // --- Effects ---
-    // Generate Candidates on Client Side only to avoid Hydration Mismatch
     React.useEffect(() => {
-        const gen = generateCandidates(299);
-        // Add NOTA
-        gen.push({
-            id: 'nota',
-            name: { en: 'None of the Above (NOTA)', hi: 'इनमें से कोई नहीं (NOTA)' },
-            role: { en: '', hi: '' },
-            image: null,
-            selected: false,
-            ageGroup: '',
-            region: '',
-            gender: '',
-            isNota: true
-        });
-        setCandidates(gen);
-        setIsLoading(false);
-    }, []);
+        let cancelled = false;
+
+        const loadCandidates = async () => {
+            if (!electionId) {
+                setIsLoading(false);
+                return;
+            }
+            try {
+                setIsLoading(true);
+                const res: any = await fetchApi(`elections/${electionId}`);
+                const apiCandidates = Array.isArray(res?.candidates) ? res.candidates : [];
+
+                const mapped: Candidate[] = apiCandidates.map((c: any) => ({
+                    id: String(c.user?.id ?? c.id),
+                    name: { en: c.user?.name ?? '', hi: c.user?.name ?? '' },
+                    role: { en: '', hi: '' },
+                    image: null,
+                    selected: false,
+                    ageGroup: '',
+                    region: '',
+                    gender: '',
+                    isNota: false,
+                }));
+
+                const withNota: Candidate[] = [
+                    ...mapped,
+                    {
+                        id: 'nota',
+                        name: { en: 'None of the Above (NOTA)', hi: 'इनमें से कोई नहीं (NOTA)' },
+                        role: { en: '', hi: '' },
+                        image: null,
+                        selected: false,
+                        ageGroup: '',
+                        region: '',
+                        gender: '',
+                        isNota: true,
+                    },
+                ];
+
+                if (!cancelled) {
+                    setCandidates(withNota);
+                    setIsLoading(false);
+                }
+            } catch (err) {
+                console.error('Failed to load election candidates:', err);
+                if (!cancelled) {
+                    setCandidates([]);
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        loadCandidates();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [electionId]);
 
     // --- Logic ---
 
