@@ -238,8 +238,6 @@ const FooterLink = ({ text }: { text: string }) => (
 export default function Dashboard() {
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800">
-      <Header />
-      
       <main className="max-w-[1400px] mx-auto p-6 md:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
