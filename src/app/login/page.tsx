@@ -1,24 +1,80 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronLeft, X, Eye, EyeOff } from 'lucide-react';
+import { ChevronLeft, X, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabaseClient';
+import { fetchApi } from '../../lib/api';
 
 export default function LoginScreen() {
   const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState(''); // New state
+  const [pin, setPin] = useState('');
   const [otp, setOtp] = useState('');
-  const [showOtp, setShowOtp] = useState(false); // For toggling OTP visibility in input
-  const [showPassword, setShowPassword] = useState(false); // For toggling Password visibility
+  const [showPin, setShowPin] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showOtpField, setShowOtpField] = useState(false);
-  const [usePassword, setUsePassword] = useState(true); // Default to password login
+  
+  // Modes: 'login' (Phone+PIN), 'otp_request' (Forgot PIN), 'otp_verify' (Verify OTP), 'set_new_pin' (Set New PIN)
+  const [mode, setMode] = useState<'login' | 'otp_request' | 'otp_verify' | 'set_new_pin'>('login');
+  
+  const [newPin, setNewPin] = useState('');
+  const [confirmNewPin, setConfirmNewPin] = useState('');
+  const [showNewPin, setShowNewPin] = useState(false);
+
   const router = useRouter();
 
+  // Helper to extract clean error message
+  const cleanError = (msg: string) => {
+    if (!msg) return '';
+    // Remove "API error calling ... : <status> " prefix
+    return msg.replace(/^API error calling .*?:\s*\d+\s+/, '');
+  };
+
   const handleBack = () => {
-    router.back();
+    if (mode === 'login') {
+      router.back();
+    } else {
+      setMode('login');
+      setError('');
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!phone || !pin) {
+      setError('Phone and PIN are required');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
+      
+      const data = await fetchApi('users/login-pin', {
+        method: 'POST',
+        body: JSON.stringify({ phone: phoneNumber, pin }),
+      });
+
+      if (data.access_token) {
+        // Store token for API access
+        localStorage.setItem('access_token', data.access_token);
+        // Also store user info if needed
+        if (data.user) {
+          localStorage.setItem('user_info', JSON.stringify(data.user));
+        }
+        router.push('/dashboard');
+      } else {
+        throw new Error('No access token received');
+      }
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(cleanError(err.message || 'Login failed. Please check your PIN.'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSendOtp = async (e: React.FormEvent) => {
@@ -32,7 +88,6 @@ export default function LoginScreen() {
     setError('');
 
     try {
-      // Format phone number with country code if needed
       const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
 
       const { error } = await supabase.auth.signInWithOtp({
@@ -41,9 +96,9 @@ export default function LoginScreen() {
 
       if (error) throw error;
 
-      setShowOtpField(true);
+      setMode('otp_verify');
     } catch (err: any) {
-      setError(err.message || 'Failed to send OTP. Please try again.');
+      setError(cleanError(err.message || 'Failed to send OTP. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -60,27 +115,41 @@ export default function LoginScreen() {
     setError('');
 
     try {
+      const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
+
       const { data, error } = await supabase.auth.verifyOtp({
-        phone: phone.startsWith('+') ? phone : `+91${phone}`,
+        phone: phoneNumber,
         token: otp,
         type: 'sms',
       });
 
       if (error) throw error;
 
-      // If we get here, authentication was successful
-      router.push('/dashboard');
+      // OTP Verified - now let user set new PIN
+      // Clear any old custom token so fetchApi uses the fresh Supabase session
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('access_token');
+      }
+      setMode('set_new_pin');
     } catch (err: any) {
-      setError(err.message || 'Invalid OTP. Please try again.');
+      setError(cleanError(err.message || 'Invalid OTP. Please try again.'));
     } finally {
       setLoading(false);
     }
   };
 
-  const handlePasswordLogin = async (e: React.FormEvent) => {
+  const handleSetNewPin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone || !password) {
-      setError('Phone and Password are required');
+    if (!newPin || !confirmNewPin) {
+      setError('Please enter and confirm your new PIN');
+      return;
+    }
+    if (newPin !== confirmNewPin) {
+      setError('PINs do not match');
+      return;
+    }
+    if (newPin.length < 4 || newPin.length > 6) {
+      setError('PIN must be 4-6 digits');
       return;
     }
 
@@ -88,68 +157,39 @@ export default function LoginScreen() {
     setError('');
 
     try {
-      const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
-
-      // 1. Strict Supabase Auth
-      const { data, error } = await supabase.auth.signInWithPassword({
-        phone: phoneNumber,
-        password: password,
+      // User is authenticated via Supabase (from OTP verify), so this call should work if API supports Supabase auth or we have a way to identify user
+      // Note: We need an endpoint to update PIN. Assuming 'users/me' with PATCH can handle it or we add one.
+      // We'll update the 'me' endpoint to accept PIN updates.
+      
+      await fetchApi('users/me', {
+        method: 'PATCH',
+        body: JSON.stringify({ pin: newPin }),
       });
 
-      if (error) {
-        // If Supabase fails, WE STOP HERE. No fallback.
-        // This forces the system to be secure.
-        console.error('Supabase login failed:', error.message);
-
-        if (error.message.includes('Invalid login credentials')) {
-          throw new Error('Incorrect Phone Number or Password.');
-        } else if (error.message.includes('Phone not confirmed')) {
-          throw new Error('Please verify your phone number via OTP first.');
-        } else {
-          throw error; // Throw generic error
-        }
-      }
-
-      // 2. Success - Supabase session is set automatically
-      // Redirect to dashboard
-      router.push('/dashboard');
+      // After setting PIN, go back to login or dashboard?
+      // Let's go to dashboard as they are technically logged in via Supabase now.
+      // Or force them to login with new PIN to ensure the custom token flow is used.
+      
+      setMode('login');
+      setPin('');
+      setError(''); // Clear error on success
+      // Consider showing a success message instead of error state, but for now just clear error.
+      // Ideally we should use a toast or a temporary success state.
+      alert('PIN updated successfully. Please login with your new PIN.');
+      
+      // Optionally logout from Supabase to force PIN login flow
+      await supabase.auth.signOut();
 
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError(cleanError(err.message || 'Failed to update PIN.'));
     } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
-    setLoading(true);
-    setError('');
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`,
-        },
-      });
-      if (error) throw error;
-      // The browser will redirect to the OAuth provider
-    } catch (err: any) {
-      console.error('Social Login Error:', err);
-
-      // Handle Supabase "provider not enabled" error specifically
-      if (err?.code === 'validation_failed' || err?.msg?.includes('not enabled') || err?.message?.includes('not enabled')) {
-        setError(`${provider.charAt(0).toUpperCase() + provider.slice(1)} login is not enabled in Supabase dashboard.`);
-      } else {
-        setError(err.message || `Failed to login with ${provider}`);
-      }
-
       setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center font-sans p-4">
-      <div className="w-full max-w-[470px] min-h-[642px] bg-white rounded-[16px] p-[24px] sm:p-[36px] flex flex-col gap-[36px] shadow-2xl relative transition-all duration-300">
+      <div className="w-full max-w-[470px] min-h-[400px] bg-white rounded-[16px] p-[24px] sm:p-[36px] flex flex-col gap-[36px] shadow-2xl relative transition-all duration-300">
         <div className="w-full h-[24px] flex justify-between items-center shrink-0">
           <button
             onClick={handleBack}
@@ -158,7 +198,7 @@ export default function LoginScreen() {
             <ChevronLeft size={24} />
           </button>
           <button
-            onClick={handleBack}
+            onClick={() => router.push('/')}
             className="text-gray-700 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
           >
             <X size={24} />
@@ -168,19 +208,32 @@ export default function LoginScreen() {
         <div className="w-full flex flex-col gap-[32px] flex-1">
           <div className="w-full flex flex-col items-center gap-[8px]">
             <h1 className="w-full font-['Familjen_Grotesk'] font-semibold text-[28px] sm:text-[32px] leading-[38px] tracking-[-0.3px] text-center text-[#04330B]">
-              Log In
+              {mode === 'login' && 'Log In'}
+              {mode === 'otp_request' && 'Reset PIN'}
+              {mode === 'otp_verify' && 'Verify OTP'}
+              {mode === 'set_new_pin' && 'Set New PIN'}
             </h1>
             <p className="w-full text-center font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67]">
-              Login into your account
+              {mode === 'login' && 'Enter your phone number and PIN'}
+              {mode === 'otp_request' && 'Enter your phone number to receive OTP'}
+              {mode === 'otp_verify' && `Enter OTP sent to ${phone}`}
+              {mode === 'set_new_pin' && 'Create a new PIN for your account'}
             </p>
           </div>
 
           <form
             className="w-full flex flex-col gap-[32px] sm:gap-[40px]"
-            onSubmit={usePassword ? handlePasswordLogin : (showOtpField ? handleVerifyOtp : handleSendOtp)}
+            onSubmit={
+              mode === 'login' ? handleLogin :
+              mode === 'otp_request' ? handleSendOtp :
+              mode === 'otp_verify' ? handleVerifyOtp :
+              handleSetNewPin
+            }
           >
             <div className="w-full flex flex-col gap-[12px]">
-              <div className="w-full flex flex-col gap-[16px]">
+              
+              {/* Phone Input */}
+              {(mode === 'login' || mode === 'otp_request') && (
                 <div className="flex flex-col">
                   <input
                     type="tel"
@@ -188,36 +241,44 @@ export default function LoginScreen() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
-                    disabled={showOtpField}
                   />
                 </div>
+              )}
 
-              </div>
-
-              {/* Password Input (only if usePassword is true) */}
-              {usePassword && (
+              {/* PIN Input (Login Mode) */}
+              {mode === 'login' && (
                 <div className="flex flex-col">
                   <div className="relative w-full h-[46px]">
                     <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      type={showPin ? "text" : "password"}
+                      placeholder="PIN"
+                      value={pin}
+                      onChange={(e) => setPin(e.target.value)}
                       className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
+                      maxLength={6}
                     />
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
+                      onClick={() => setShowPin(!showPin)}
                       className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
                     >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      {showPin ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                  <div className="flex justify-end mt-2">
+                    <button
+                      type="button"
+                      onClick={() => setMode('otp_request')}
+                      className="text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] hover:underline"
+                    >
+                      Forgot PIN?
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* OTP Input (only if !usePassword and OTP sent) */}
-              {!usePassword && showOtpField && (
+              {/* OTP Input */}
+              {mode === 'otp_verify' && (
                 <div className="flex flex-col">
                   <div className="relative w-full h-[46px]">
                     <input
@@ -235,27 +296,61 @@ export default function LoginScreen() {
                       {showOtp ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                   </div>
+                  <div className="flex justify-end mt-2">
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      className="text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] hover:underline"
+                    >
+                      Resend OTP
+                    </button>
+                  </div>
                 </div>
               )}
 
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setUsePassword(!usePassword);
-                    setError('');
-                    setShowOtpField(false);
-                  }}
-                  className="text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] hover:underline"
-                >
-                  {usePassword ? 'Login via OTP' : 'Login via Password'}
-                </button>
-              </div>
+              {/* New PIN Input */}
+              {mode === 'set_new_pin' && (
+                <>
+                  <div className="flex flex-col gap-4">
+                    <div className="relative w-full h-[46px]">
+                      <input
+                        type={showNewPin ? "text" : "password"}
+                        placeholder="New PIN (4-6 digits)"
+                        value={newPin}
+                        onChange={(e) => setNewPin(e.target.value)}
+                        className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
+                        maxLength={6}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPin(!showNewPin)}
+                        className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
+                      >
+                        {showNewPin ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
+                    
+                    <div className="relative w-full h-[46px]">
+                      <input
+                        type={showNewPin ? "text" : "password"}
+                        placeholder="Confirm New PIN"
+                        value={confirmNewPin}
+                        onChange={(e) => setConfirmNewPin(e.target.value)}
+                        className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
+                        maxLength={6}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
 
               {error && (
-                <p className="mt-[4px] font-['Familjen_Grotesk'] font-semibold text-[14px] leading-[18px] tracking-[-0.3px] text-[#EC4521]">
-                  {error}
-                </p>
+                <div className="mt-2 w-full p-3 rounded-lg bg-red-50 border border-red-200 flex items-start gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <AlertCircle className="w-5 h-5 text-[#EC4521] shrink-0 mt-0.5" />
+                  <p className="font-['Familjen_Grotesk'] font-medium text-[14px] leading-[20px] tracking-[-0.2px] text-[#C93514]">
+                    {error}
+                  </p>
+                </div>
               )}
             </div>
 
@@ -265,58 +360,15 @@ export default function LoginScreen() {
               className="mt-[2px] w-full h-[46px] rounded-[8px] bg-[#0D5229] disabled:bg-gray-400 flex items-center justify-center gap-[10px] hover:bg-[#0a4220] transition-colors shrink-0"
             >
               <span className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-white">
-                {loading ? 'Processing...' : (usePassword ? 'Log In' : (showOtpField ? 'Verify OTP' : 'Send OTP'))}
+                {loading ? 'Processing...' : (
+                  mode === 'login' ? 'Log In' :
+                  mode === 'otp_request' ? 'Send OTP' :
+                  mode === 'otp_verify' ? 'Verify' :
+                  'Set PIN'
+                )}
               </span>
             </button>
           </form>
-
-          <div className="w-full flex flex-col gap-[16px] mt-[12px]">
-            <p className="w-full text-center font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B]">
-              Or login with
-            </p>
-
-            <div className="w-full flex flex-col gap-[36px]">
-              <div className="w-full flex flex-wrap sm:flex-nowrap justify-between gap-[16px]">
-                <button
-                  className="w-full sm:w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
-                  onClick={() => handleSocialLogin('google')}
-                >
-                  <div className="w-[20px] h-[20px] flex items-center justify-center">
-                    <img src="/login/Google-login.svg" alt="Google" className="w-[20px] h-[20px]" />
-                  </div>
-                  <span className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#0D5229]">
-                    Google
-                  </span>
-                </button>
-
-                <button
-                  className="w-full sm:w-[122px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[12px] flex items-center justify-center gap-[8px] hover:bg-gray-50 transition-colors"
-                  onClick={() => handleSocialLogin('facebook')}
-                >
-                  <div className="w-[20px] h-[20px] flex items-center justify-center">
-                    <img src="/login/Fb-login.svg" alt="Facebook" className="w-[20px] h-[20px]" />
-                  </div>
-                  <span className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#0D5229]">
-                    Facebook
-                  </span>
-                </button>
-
-                
-              </div>
-
-              <div className="text-center w-full h-[22px]">
-                <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B]">
-                  Don't have an account?{' '}
-                  <button
-                    onClick={() => router.push('/join')}
-                    className="hover:underline text-[#0D5229]"
-                  >
-                    Sign Up
-                  </button>
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

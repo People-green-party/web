@@ -4,7 +4,7 @@ import React, { useState, useContext, createContext, useEffect, ChangeEvent, Sus
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { supabase } from '../../lib/supabaseClient';
-import { Eye, EyeOff, MapPin, Phone, Mail, Linkedin, Facebook, Instagram, Contact as X, Play, Menu } from 'lucide-react';
+import { MapPin, Phone, Mail, Linkedin, Facebook, Instagram, Contact as X, Play, Menu } from 'lucide-react';
 import { getTranslation } from './location_utils';
 
 // --- Translations ---
@@ -368,7 +368,6 @@ const JoinPageContent = () => {
     firstName: '',
     lastName: '',
     mobile: '',
-    password: '',
     referralCode: '',
     loksabhaId: '',
     vidhansabhaId: '',
@@ -376,9 +375,9 @@ const JoinPageContent = () => {
     agreeJoin: false,
     agreeResponsibility: false
   });
+  const [showReferralInput, setShowReferralInput] = useState(false);
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [otpError, setOtpError] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [showOtpField, setShowOtpField] = useState(false);
@@ -413,7 +412,6 @@ const JoinPageContent = () => {
       firstName: '',
       lastName: '',
       mobile: '',
-      password: '',
       referralCode: urlRefCode, // Set from URL
       loksabhaId: '',
       vidhansabhaId: '',
@@ -421,6 +419,7 @@ const JoinPageContent = () => {
       agreeJoin: false,
       agreeResponsibility: false
     });
+    setShowReferralInput(!!urlRefCode);
     setOtp('');
     setOtpError('');
     setOtpSent(false);
@@ -449,13 +448,8 @@ const JoinPageContent = () => {
 
   async function handleSubmit() {
     // Validate form data
-    if (!formData.firstName || !formData.lastName || !formData.mobile || !formData.password) {
+    if (!formData.firstName || !formData.lastName || !formData.mobile) {
       setOtpError('Please fill all required fields');
-      return;
-    }
-
-    if (String(formData.password).length < 8) {
-      setOtpError('Password must be at least 8 characters');
       return;
     }
 
@@ -473,11 +467,14 @@ const JoinPageContent = () => {
 
       // Format phone number with country code if needed
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
+      
+      // Generate a random secure password since we removed the field
+      const randomPassword = Math.random().toString(36).slice(-8) + "Aa1!";
 
       // Create user in Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         phone: phoneNumber,
-        password: formData.password,
+        password: randomPassword,
         options: {
           data: {
             first_name: formData.firstName,
@@ -523,7 +520,7 @@ const JoinPageContent = () => {
       const userProfileData = {
         name: `${formData.firstName} ${formData.lastName}`,
         phone: phoneNumber,
-        password: formData.password, // Note: In production, you might not want to send password to your API
+        password: randomPassword, // Send random password to API
         address: 'India',
         localUnitId: parseInt(formData.localUnitId),
         referralCode: formData.referralCode || undefined,
@@ -801,40 +798,40 @@ const JoinPageContent = () => {
                     />
                   </div>
 
-                  {/* 3b. Password */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 pr-10"
-                        minLength={8}
-                        required
-                        autoComplete="new-password"
-                      />
+                  {/* 3c. Referral Code (Smart Auto-Fill + Edit) */}
+                  <div className="w-full">
+                    {!showReferralInput && !formData.referralCode ? (
                       <button
                         type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600 hover:text-gray-800"
+                        onClick={() => setShowReferralInput(true)}
+                        className="text-[#0D5229] text-sm font-semibold hover:underline"
                       >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        + I have a referral code
                       </button>
-                    </div>
+                    ) : (
+                      <div className="flex flex-col gap-1">
+                        <label className="block text-xs mb-0.5 text-[#587E67]">
+                          Referral Code (Optional)
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.referralCode}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              referralCode: e.target.value.toUpperCase(),
+                            })
+                          }
+                          placeholder="e.g. RAJ123"
+                          className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[0.15em] text-[14px] placeholder-[#A3B8AA] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk'] uppercase bg-[#F9FBFA]"
+                          autoComplete="off"
+                        />
+                        <p className="text-[11px] text-[#8CA596] mt-0.5">
+                          Enter the code of the person who invited you. This helps us credit them for your membership.
+                        </p>
+                      </div>
+                    )}
                   </div>
-
-                  {/* 3c. Referral Code */}
-                  <input
-                    type="text"
-                    value={formData.referralCode}
-                    onChange={(e) => setFormData({ ...formData, referralCode: e.target.value })}
-                    className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
-                    placeholder="Referral Code (Optional)"
-                    autoComplete="off"
-                  />
 
                   {/* 4. District (Loksabha) */}
                   <div className="relative w-full h-[46px]">

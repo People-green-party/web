@@ -29,10 +29,18 @@ try {
 export const supabase = createClient(checkedSupabaseUrl, checkedSupabaseAnonKey);
 
 export async function getAuthHeader(): Promise<Record<string, string>> {
-  if (DEV_MODE && typeof window !== "undefined") {
-    const devUserId = window.localStorage.getItem("devUserId");
-    if (devUserId) {
-      return { Authorization: `Dev ${devUserId}` };
+  if (typeof window !== "undefined") {
+    // Check for custom access token from PIN login
+    const customToken = window.localStorage.getItem("access_token");
+    if (customToken) {
+      return { Authorization: `Bearer ${customToken}` };
+    }
+
+    if (DEV_MODE) {
+      const devUserId = window.localStorage.getItem("devUserId");
+      if (devUserId) {
+        return { Authorization: `Dev ${devUserId}` };
+      }
     }
   }
   const { data } = await supabase.auth.getSession();
