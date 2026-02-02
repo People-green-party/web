@@ -26,6 +26,13 @@ export function RequireAuth({ children }: RequireAuthProps) {
             if (!cancelled) setAllowed(true);
             return;
           }
+
+          // Check for PIN-based login token
+          const pinToken = window.localStorage.getItem('access_token');
+          if (pinToken) {
+            if (!cancelled) setAllowed(true);
+            return;
+          }
         }
       } catch {
         // ignore

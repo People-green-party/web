@@ -182,7 +182,7 @@ const MemberIdCard = ({ summary, loading, onPhotoUpdate }: MemberIdCardProps) =>
           <div className="w-full h-full bg-gray-200 animate-pulse" />
         ) : summary?.user?.photoUrl ? (
           <img
-            src={summary.user.photoUrl.startsWith('http') ? summary.user.photoUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'}${summary.user.photoUrl}`}
+            src={summary.user.photoUrl.startsWith('http') ? summary.user.photoUrl : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002').replace(/\/v1\/?$/, '')}${summary.user.photoUrl}`}
             alt={displayName}
             className="w-full h-full object-cover object-top"
           />
@@ -413,7 +413,7 @@ const RecruitsPanel = ({ summary, progress, recruits, loading }: RecruitsPanelPr
             <div key={recruit.id} className="flex items-center gap-[12px] w-[172px] h-[44px]">
               {recruit.photoUrl ? (
                 <img
-                  src={recruit.photoUrl.startsWith('http') ? recruit.photoUrl : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'}${recruit.photoUrl}`}
+                  src={recruit.photoUrl.startsWith('http') ? recruit.photoUrl : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002').replace(/\/v1\/?$/, '')}${recruit.photoUrl}`}
                   alt={recruit.name}
                   className="w-[44px] h-[44px] rounded-[8px] object-cover bg-gray-100 shrink-0"
                 />

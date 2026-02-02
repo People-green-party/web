@@ -368,10 +368,12 @@ const JoinPageContent = () => {
     firstName: '',
     lastName: '',
     mobile: '',
+    pin: '',
     referralCode: '',
     loksabhaId: '',
     vidhansabhaId: '',
     localUnitId: '',
+    customLocalUnitName: '',
     agreeJoin: false,
     agreeResponsibility: false
   });
@@ -412,10 +414,12 @@ const JoinPageContent = () => {
       firstName: '',
       lastName: '',
       mobile: '',
+      pin: '',
       referralCode: urlRefCode, // Set from URL
       loksabhaId: '',
       vidhansabhaId: '',
       localUnitId: '',
+      customLocalUnitName: '',
       agreeJoin: false,
       agreeResponsibility: false
     });
@@ -454,9 +458,18 @@ const JoinPageContent = () => {
     }
 
     if (!formData.agreeJoin || !formData.agreeResponsibility) {
-      setOtpError('Please agree to all terms and conditions');
+      setOtpError('Please agree to the terms');
       return;
     }
+    if (!formData.pin || formData.pin.length < 4 || formData.pin.length > 8) {
+      setOtpError('Please create a 4-8 digit Login PIN');
+      return;
+    }
+    // Old validation block
+    // if (!formData.agreeJoin || !formData.agreeResponsibility) {
+    //   setOtpError('Please agree to all terms and conditions');
+    //   return;
+    // }
 
     setLoading(true);
     setOtpError('');
@@ -467,7 +480,7 @@ const JoinPageContent = () => {
 
       // Format phone number with country code if needed
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
-      
+
       // Generate a random secure password since we removed the field
       const randomPassword = Math.random().toString(36).slice(-8) + "Aa1!";
 
@@ -517,12 +530,19 @@ const JoinPageContent = () => {
         setOtpError('Please select your Local Unit');
         return;
       }
+      if (formData.localUnitId === 'other' && !formData.customLocalUnitName) {
+        setOtpError('Please enter your Village/Ward Name');
+        return;
+      }
       const userProfileData = {
         name: `${formData.firstName} ${formData.lastName}`,
         phone: phoneNumber,
         password: randomPassword, // Send random password to API
+        pin: formData.pin,
         address: 'India',
-        localUnitId: parseInt(formData.localUnitId),
+        localUnitId: formData.localUnitId === 'other' ? undefined : parseInt(formData.localUnitId),
+        customLocalUnitName: formData.localUnitId === 'other' ? formData.customLocalUnitName : undefined,
+        vidhansabhaId: formData.vidhansabhaId ? parseInt(formData.vidhansabhaId) : undefined,
         referralCode: formData.referralCode || undefined,
         authUserId: isPhoneSignupDisabled ? undefined : authData?.user?.id,
       };
@@ -534,8 +554,13 @@ const JoinPageContent = () => {
 
       console.log('Registration successful:', userData);
 
-      if (typeof window !== 'undefined' && userData?.id) {
-        window.localStorage.setItem('devUserId', String(userData.id));
+      if (typeof window !== 'undefined') {
+        if (userData?.user?.id) {
+          window.localStorage.setItem('devUserId', String(userData.user.id));
+        }
+        if (userData?.access_token) {
+          window.localStorage.setItem('access_token', userData.access_token);
+        }
       }
 
       // Redirect to dashboard after successful registration
@@ -678,8 +703,6 @@ const JoinPageContent = () => {
     }
   }
 
-  // ... (rest of the code remains the same)
-
   return (
     <div className="min-h-screen bg-white text-gray-800 flex flex-col items-center font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px]">
       <Navbar />
@@ -798,6 +821,22 @@ const JoinPageContent = () => {
                     />
                   </div>
 
+                  {/* 3b. Login PIN */}
+                  <div className="w-full">
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      value={formData.pin}
+                      onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '').slice(0, 6) })}
+                      className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[0.2em] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk'] text-center"
+                      placeholder="CREATE 6-DIGIT PIN"
+                      autoComplete="new-password"
+                    />
+                    <p className="text-[11px] text-[#587E67] mt-1 text-center">
+                      This PIN will be used to login to your dashboard later.
+                    </p>
+                  </div>
+
                   {/* 3c. Referral Code (Smart Auto-Fill + Edit) */}
                   <div className="w-full">
                     {!showReferralInput && !formData.referralCode ? (
@@ -875,111 +914,123 @@ const JoinPageContent = () => {
                   </div>
 
                   {/* 6b. Local Unit */}
-                  <div className="relative w-full h-[46px]">
-                    <select
-                      value={formData.localUnitId}
-                      onChange={(e) => setFormData({ ...formData, localUnitId: e.target.value })}
-                      disabled={!formData.vidhansabhaId || locLoading.localUnits || localUnits.length === 0}
-                      className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      <option value="">
-                        {locLoading.localUnits ? 'Loading units...' : (formData.vidhansabhaId && localUnits.length === 0 ? 'No Local Units found' : 'Select your Local Unit')}
+                  <select
+                    value={formData.localUnitId}
+                    onChange={(e) => setFormData({ ...formData, localUnitId: e.target.value })}
+                    disabled={!formData.vidhansabhaId || locLoading.localUnits}
+                    className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    <option value="">
+                      {locLoading.localUnits ? 'Loading units...' : (formData.vidhansabhaId && localUnits.length === 0 ? 'No Local Units found' : 'Select your Local Unit')}
+                    </option>
+                    {localUnits.map((u: any) => (
+                      <option key={u.id} value={u.id}>
+                        {getTranslation(u.name, language)}{u.type ? ` (${u.type})` : ''}
                       </option>
-                      {localUnits.map((u: any) => (
-                        <option key={u.id} value={u.id}>
-                          {getTranslation(u.name, language)}{u.type ? ` (${u.type})` : ''}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
-                      <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-                    </div>
+                    ))}
+                    <option value="other">Other / My Village is not listed</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
+                    <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                  </div>
+                </div>
+
+                {/* 6c. Custom Local Unit Input (If "Other" selected) */}
+                {formData.localUnitId === 'other' && (
+                  <input
+                    type="text"
+                    value={formData.customLocalUnitName}
+                    onChange={(e) => setFormData({ ...formData, customLocalUnitName: e.target.value })}
+                    className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
+                    placeholder="Enter Village or Ward Name"
+                    autoComplete="off"
+                  />
+                )}
+
+
+              </div>
+
+              {/* --- CHECKBOX SECTION FIXED --- */}
+              <div className="w-full flex flex-col gap-[16px] mt-[4px]">
+
+                {/* First Checkbox Item */}
+                <label className="flex items-start gap-[12px] cursor-pointer group select-none">
+                  {/* Checkbox Container: Fixed 20x20 */}
+                  <div className="relative shrink-0 flex items-center justify-center" style={{ width: '20px', height: '20px' }}>
+                    {/* 1. Invisible Clickable Input Layer */}
+                    <input
+                      type="checkbox"
+                      checked={formData.agreeJoin}
+                      onChange={(e) => setFormData({ ...formData, agreeJoin: e.target.checked })}
+                      className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 m-0 p-0"
+                    />
+
+                    {/* 2. Visual Box Layer (15x15px) */}
+                    <div
+                      className="w-[15px] h-[15px] bg-white border-[2px] border-[#587E67] rounded-none peer-checked:bg-[#587E67] pointer-events-none transition-all"
+                      style={{ width: '15px', height: '15px' }} // Double enforcement
+                    />
+
+                    {/* 3. Checkmark Icon Layer */}
+                    <svg
+                      className="absolute inset-0 m-auto w-[11px] h-[11px] text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200 z-20"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
                   </div>
 
-                  
-                </div>
+                  <span className="flex-1 text-[14px] leading-[20px] font-semibold text-[#587E67] tracking-[-0.3px] font-['Familjen_Grotesk']">
+                    {t.joinPage.form.agreeJoin}
+                  </span>
+                </label>
 
-                {/* --- CHECKBOX SECTION FIXED --- */}
-                <div className="w-full flex flex-col gap-[16px] mt-[4px]">
+                {/* Second Checkbox Item */}
+                <label className="flex items-start gap-[12px] cursor-pointer group select-none">
+                  {/* Checkbox Container: Fixed 20x20 */}
+                  <div className="relative shrink-0 flex items-center justify-center" style={{ width: '20px', height: '20px' }}>
+                    {/* 1. Invisible Clickable Input Layer */}
+                    <input
+                      type="checkbox"
+                      checked={formData.agreeResponsibility}
+                      onChange={(e) => setFormData({ ...formData, agreeResponsibility: e.target.checked })}
+                      className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 m-0 p-0"
+                    />
 
-                  {/* First Checkbox Item */}
-                  <label className="flex items-start gap-[12px] cursor-pointer group select-none">
-                    {/* Checkbox Container: Fixed 20x20 */}
-                    <div className="relative shrink-0 flex items-center justify-center" style={{ width: '20px', height: '20px' }}>
-                      {/* 1. Invisible Clickable Input Layer */}
-                      <input
-                        type="checkbox"
-                        checked={formData.agreeJoin}
-                        onChange={(e) => setFormData({ ...formData, agreeJoin: e.target.checked })}
-                        className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 m-0 p-0"
-                      />
+                    {/* 2. Visual Box Layer (15x15px) */}
+                    <div
+                      className="w-[15px] h-[15px] bg-white border-[2px] border-[#587E67] rounded-none peer-checked:bg-[#587E67] pointer-events-none transition-all"
+                      style={{ width: '15px', height: '15px' }}
+                    />
 
-                      {/* 2. Visual Box Layer (15x15px) */}
-                      <div
-                        className="w-[15px] h-[15px] bg-white border-[2px] border-[#587E67] rounded-none peer-checked:bg-[#587E67] pointer-events-none transition-all"
-                        style={{ width: '15px', height: '15px' }} // Double enforcement
-                      />
+                    {/* 3. Checkmark Icon Layer */}
+                    <svg
+                      className="absolute inset-0 m-auto w-[11px] h-[11px] text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200 z-20"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
 
-                      {/* 3. Checkmark Icon Layer */}
-                      <svg
-                        className="absolute inset-0 m-auto w-[11px] h-[11px] text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200 z-20"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="3.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                    </div>
+                  <span className="flex-1 text-[14px] leading-[20px] font-semibold text-[#587E67] tracking-[-0.3px] font-['Familjen_Grotesk']">
+                    {t.joinPage.form.agreeResponsibility}
+                  </span>
+                </label>
 
-                    <span className="flex-1 text-[14px] leading-[20px] font-semibold text-[#587E67] tracking-[-0.3px] font-['Familjen_Grotesk']">
-                      {t.joinPage.form.agreeJoin}
-                    </span>
-                  </label>
-
-                  {/* Second Checkbox Item */}
-                  <label className="flex items-start gap-[12px] cursor-pointer group select-none">
-                    {/* Checkbox Container: Fixed 20x20 */}
-                    <div className="relative shrink-0 flex items-center justify-center" style={{ width: '20px', height: '20px' }}>
-                      {/* 1. Invisible Clickable Input Layer */}
-                      <input
-                        type="checkbox"
-                        checked={formData.agreeResponsibility}
-                        onChange={(e) => setFormData({ ...formData, agreeResponsibility: e.target.checked })}
-                        className="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 m-0 p-0"
-                      />
-
-                      {/* 2. Visual Box Layer (15x15px) */}
-                      <div
-                        className="w-[15px] h-[15px] bg-white border-[2px] border-[#587E67] rounded-none peer-checked:bg-[#587E67] pointer-events-none transition-all"
-                        style={{ width: '15px', height: '15px' }}
-                      />
-
-                      {/* 3. Checkmark Icon Layer */}
-                      <svg
-                        className="absolute inset-0 m-auto w-[11px] h-[11px] text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity duration-200 z-20"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="3.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                    </div>
-
-                    <span className="flex-1 text-[14px] leading-[20px] font-semibold text-[#587E67] tracking-[-0.3px] font-['Familjen_Grotesk']">
-                      {t.joinPage.form.agreeResponsibility}
-                    </span>
-                  </label>
-
-                </div>
               </div>
+
 
               {/* Gap 24px before Button */}
               <div className="h-[24px] w-full shrink-0"></div>
@@ -1045,11 +1096,11 @@ const JoinPageContent = () => {
               )}
             </form>
           </div>
-        </section>
-      </main>
+        </section >
+      </main >
 
       <Footer />
-    </div>
+    </div >
   );
 };
 

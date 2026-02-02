@@ -43,7 +43,13 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
         let message = '';
         try {
             const parsed = text ? JSON.parse(text) : {};
-            message = parsed?.message || '';
+            if (Array.isArray(parsed?.message)) {
+                message = parsed.message.join(', ');
+            } else if (typeof parsed?.message === 'object') {
+                message = JSON.stringify(parsed.message);
+            } else {
+                message = parsed?.message || '';
+            }
         } catch {
             message = '';
         }
