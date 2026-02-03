@@ -253,34 +253,34 @@ const Navbar = () => {
 
   return (
     <nav className="bg-white fixed top-0 z-50 w-full flex justify-center">
-      <div className="w-full max-w-[1320px] lg:h-[92px] h-[70px] relative flex items-center justify-between px-4 lg:px-0 bg-white">
+      <div className="w-full max-w-[1320px] lg:h-[92px] h-[70px] relative flex items-center justify-between px-4 lg:px-8 bg-white">
 
-        <div className="flex items-center">
+        <div className="flex items-center shrink-0">
           <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
             <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
           </Link>
+        </div>
 
-          <div className="hidden lg:flex items-center gap-[12px] absolute left-1/2 -translate-x-1/2 h-[46px]">
-            {links.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className={`w-[106px] h-[46px] flex items-center justify-center rounded-[8px] p-[12px] transition-colors font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-center whitespace-nowrap ${isActive
-                    ? 'bg-[#EAF7EE] text-[#04330B]'
-                    : 'bg-transparent text-[#587E67] hover:bg-gray-50'
-                    }`}
-                >
-                  {link.name}
-                </a>
-              );
-            })}
-          </div>
+        <div className="hidden lg:flex flex-1 items-center justify-center gap-[12px] h-[46px] mx-4">
+          {links.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <a
+                key={link.name}
+                href={link.href}
+                className={`w-[106px] h-[46px] flex items-center justify-center rounded-[8px] p-[12px] transition-colors font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-center whitespace-nowrap ${isActive
+                  ? 'bg-[#EAF7EE] text-[#04330B]'
+                  : 'bg-transparent text-[#587E67] hover:bg-gray-50'
+                  }`}
+              >
+                {link.name}
+              </a>
+            );
+          })}
         </div>
 
         {/* Right Side Actions: Mobile optimized */}
-        <div className="flex items-center gap-[10px] lg:gap-[20px]">
+        <div className="flex items-center gap-[10px] lg:gap-[20px] shrink-0">
 
           {/* Language Toggle */}
           <div
@@ -442,10 +442,10 @@ const LandingPageContent = () => {
 
       {/* 1. HERO SECTION */}
       <section className="w-full flex justify-center mt-[24px] lg:mt-[12px]">
-        <div className="w-full max-w-[1320px] relative px-4 lg:px-0 flex flex-col lg:flex-row">
+        <div className="w-full max-w-[1320px] relative px-4 lg:px-8 flex flex-col lg:flex-row">
 
           {/* Header Text - Comes First on Mobile via natural DOM order */}
-          <div className="flex flex-col w-full lg:w-[703px] shrink-0 lg:justify-between">
+          <div className="flex flex-col w-full lg:w-[53%] shrink-0 lg:justify-between">
             <div className="flex flex-col gap-[12px] lg:gap-[16px] w-full mb-[24px] lg:mb-0">
               <h1 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
                 {t.hero.titleLine1} <br className="hidden lg:block" /> {t.hero.titleLine2}
@@ -460,13 +460,13 @@ const LandingPageContent = () => {
             </div>
           </div>
 
-          <div className="hidden lg:block w-[34px] shrink-0"></div>
+          <div className="hidden lg:block w-[2%] shrink-0"></div>
 
           {/* Other Hero Images - Stacked or hidden on mobile? 
               User said "changes are only in mobile view desktop is perfect".
               Standard mobile response: Show more images stacked below.
           */}
-          <div className="flex flex-col w-full lg:w-[291px] shrink-0 gap-[16px] lg:gap-[24px] mt-[16px] lg:mt-0">
+          <div className="flex flex-col w-full lg:w-[22%] shrink-0 gap-[16px] lg:gap-[24px] mt-[16px] lg:mt-0">
             <div className="w-full h-[200px] lg:h-[256px] rounded-[8px] overflow-hidden bg-gray-100">
               <img src="/herosection/hero2.svg" alt="Hero 2" className="w-full h-full object-cover" />
             </div>
@@ -475,9 +475,9 @@ const LandingPageContent = () => {
             </div>
           </div>
 
-          <div className="hidden lg:block w-[24px] shrink-0"></div>
+          <div className="hidden lg:block w-[2%] shrink-0"></div>
 
-          <div className="flex flex-col w-full lg:w-[278px] shrink-0 gap-[24px] mt-[16px] lg:mt-0 hidden lg:flex">
+          <div className="flex flex-col w-full lg:w-[21%] shrink-0 gap-[24px] mt-[16px] lg:mt-0 hidden lg:flex">
             <div className="w-full h-[230px] rounded-[8px] overflow-hidden bg-gray-100">
               <img src="/herosection/hero4.svg" alt="Hero 4" className="w-full h-full object-cover" />
             </div>
@@ -563,7 +563,7 @@ const LandingPageContent = () => {
       {/* 3. OUR VISION (Overlapping Layout) */}
       < section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center" >
         {/* Text First */}
-        < div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-start lg:pl-[16px]" >
+        < div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col items-start lg:pl-[16px]" >
           <div className="flex flex-col gap-[16px] items-start text-left w-full max-w-[631px]">
             <h2 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
               {t.overlappingSection.title}
@@ -576,7 +576,7 @@ const LandingPageContent = () => {
 
         <div className="h-[32px] lg:h-[64px]"></div>
 
-        <div className="w-full max-w-[1320px] relative px-4 lg:px-0">
+        <div className="w-full max-w-[1320px] relative px-4 lg:px-8">
 
           {/* Mobile: Stacked | Desktop: Absolute/Overlap */}
           <div className="relative w-full h-auto lg:h-[500px] flex flex-col lg:block">
@@ -605,7 +605,7 @@ const LandingPageContent = () => {
         {/* Expanded Vision Section */}
         {
           showMoreVision && (
-            <div className="w-full max-w-[1320px] relative px-4 lg:px-0 mt-[60px] lg:mt-[100px] animate-in fade-in slide-in-from-bottom-10 duration-700">
+            <div className="w-full max-w-[1320px] relative px-4 lg:px-8 mt-[60px] lg:mt-[100px] animate-in fade-in slide-in-from-bottom-10 duration-700">
               {/* Mobile: Stacked | Desktop: Absolute/Overlap */}
               <div className="relative w-full h-auto lg:h-[500px] flex flex-col lg:block">
                 {/* Image */}
@@ -637,7 +637,7 @@ const LandingPageContent = () => {
         }
 
         {/* Button */}
-        <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-center mt-[32px] lg:mt-[48px]">
+        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col items-center mt-[32px] lg:mt-[48px]">
           {/* Spacer mostly for desktop logic, on mobile we use margin top */}
           <div className="hidden lg:block h-[50px] w-full"></div>
           <button
@@ -651,7 +651,7 @@ const LandingPageContent = () => {
 
       {/* 4. MEET YOUR IDEOLOGICAL LEADER */}
       < section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center" >
-        <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col lg:flex-row items-end justify-between gap-[32px] lg:gap-0">
+        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col lg:flex-row items-end justify-between gap-[32px] lg:gap-0">
 
           {/* Text First on Mobile via flex-col order (DOM order) */}
           <div className="flex flex-col items-start text-left w-full lg:max-w-[810px] pb-0 lg:pb-[40px]">
@@ -711,7 +711,7 @@ const LandingPageContent = () => {
 
       {/* 5. IMPACT STATS */}
       < section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center" >
-        <div className="w-full max-w-[1320px] flex flex-col items-center px-4 lg:px-0">
+        <div className="w-full max-w-[1320px] flex flex-col items-center px-4 lg:px-8">
 
           {/* Header First */}
           <div className="w-full flex flex-col items-start text-left gap-[16px] mb-[32px] lg:mb-[64px]">
@@ -745,7 +745,7 @@ const LandingPageContent = () => {
       {/* 6. NEWS AND PUBLICATIONS - Responsive Fix */}
       <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center">
         {/* On Mobile: Flex Col / Grid. On Desktop: Absolute. */}
-        <div className="relative w-full max-w-[1320px] h-auto lg:h-[600px] rounded-[8px] px-4 lg:px-0 mx-auto">
+        <div className="relative w-full max-w-[1320px] h-auto lg:h-[45vw] xl:h-[600px] rounded-[8px] px-4 lg:px-8 mx-auto">
 
           {/* Header Block - Relative/Static on Mobile, Absolute on Desktop */}
           <div className="relative lg:absolute top-0 left-0 flex flex-col items-start gap-[12px] lg:gap-[16px] mb-[32px] lg:mb-0">
@@ -802,7 +802,7 @@ const LandingPageContent = () => {
 
       {/* 7. COMMITTEE MEMBERS */}
       <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center">
-        <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-center">
+        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col items-center">
 
           {/* Header First */}
           <div className="flex flex-col items-center gap-[16px] mb-[32px] lg:mb-[64px]">
@@ -860,9 +860,8 @@ const LandingPageContent = () => {
 
       {/* 8. FOOTER */}
       < footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]" >
-        <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-0 flex flex-col lg:flex-row items-start">
-
-          <div className="flex flex-col w-full lg:w-[255px]">
+        <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row items-start lg:justify-between">
+          <div className="flex flex-col w-full lg:w-[20%]">
             <Link href="/">
               <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[150px] lg:w-[255px] h-auto lg:h-[136px] object-contain mb-[24px] cursor-pointer" />
             </Link>
@@ -882,7 +881,7 @@ const LandingPageContent = () => {
             </div>
           </div>
 
-          <div className="flex flex-col w-full lg:w-[380px] shrink-0 lg:ml-[152px] mt-10 lg:mt-0">
+          <div className="flex flex-col w-full lg:w-[35%] shrink-0 mt-10 lg:mt-0">
             <div className="flex flex-col gap-[20px] w-full lg:w-[330px]">
               <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                 {t.footer.useful}
@@ -922,7 +921,7 @@ const LandingPageContent = () => {
             </div>
           </div>
 
-          <div className="flex flex-col w-full lg:w-[381px] shrink-0 lg:ml-auto mt-10 lg:mt-0">
+          <div className="flex flex-col w-full lg:w-[35%] shrink-0 mt-10 lg:mt-0">
             <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] mb-[20px]">
               {t.footer.contact}
             </h3>

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
-import { LanguageProvider, useLanguage } from '../../components/LanguageContext';
+import { useLanguage } from '../../components/LanguageContext';
 import { fetchApi } from '../../lib/api';
 import { RequireAuth } from '../components/RequireAuth';
 
@@ -183,14 +183,14 @@ const ElectionPageContent = () => {
         <div className="min-h-screen bg-white font-sans text-gray-800 pt-[104px] overflow-x-hidden">
             <Navbar links={dashboardLinks} showAuthButtons={false} showProfileButton={true} isDashboard={true} />
 
-            <main className="max-w-[1320px] mx-auto px-4 lg:px-0">
+            <main className="max-w-[1320px] mx-auto px-4 lg:px-8">
 
                 {/* HERO SECTION (Matches Home Page Layout exactly) */}
                 <section className="w-full flex justify-center mt-[12px]">
                     <div className="w-full relative flex flex-col lg:flex-row gap-4 lg:gap-0">
 
                         {/* Header Text - Left Column */}
-                        <div className="flex flex-col w-full lg:w-[703px] shrink-0 lg:justify-between">
+                        <div className="flex flex-col w-full lg:w-[50%] shrink-0 lg:justify-between">
                             <div className="flex flex-col gap-[12px] lg:gap-[16px] w-full mb-[24px] lg:mb-0">
                                 <h1 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
                                     {t.election.title}
@@ -205,10 +205,10 @@ const ElectionPageContent = () => {
                             </div>
                         </div>
 
-                        <div className="hidden lg:block w-[34px] shrink-0"></div>
+                        <div className="hidden lg:block w-[3%] shrink-0"></div>
 
                         {/* Middle Column Images */}
-                        <div className="flex flex-col w-full lg:w-[291px] shrink-0 gap-[16px] lg:gap-[24px] mt-[16px] lg:mt-0">
+                        <div className="flex flex-col w-full lg:w-[23%] shrink-0 gap-[16px] lg:gap-[24px] mt-[16px] lg:mt-0">
                             <div className="w-full h-[200px] lg:h-[256px] rounded-[8px] overflow-hidden bg-gray-100">
                                 <img src="/herosection/hero2.svg" alt="Hero 2" className="w-full h-full object-cover" />
                             </div>
@@ -217,10 +217,10 @@ const ElectionPageContent = () => {
                             </div>
                         </div>
 
-                        <div className="hidden lg:block w-[24px] shrink-0"></div>
+                        <div className="hidden lg:block w-[2%] shrink-0"></div>
 
                         {/* Right Column Images */}
-                        <div className="flex flex-col w-full lg:w-[278px] shrink-0 gap-[24px] mt-[16px] lg:mt-0 hidden lg:flex">
+                        <div className="flex flex-col w-full lg:w-[22%] shrink-0 gap-[24px] mt-[16px] lg:mt-0 hidden lg:flex">
                             <div className="w-full h-[230px] rounded-[8px] overflow-hidden bg-gray-100">
                                 <img src="/herosection/hero4.svg" alt="Hero 4" className="w-full h-full object-cover" />
                             </div>
@@ -294,9 +294,7 @@ const ElectionPageContent = () => {
 export default function ElectionPage() {
     return (
         <RequireAuth>
-            <LanguageProvider>
-                <ElectionPageContent />
-            </LanguageProvider>
+            <ElectionPageContent />
         </RequireAuth>
     );
 }

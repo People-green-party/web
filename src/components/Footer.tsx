@@ -18,9 +18,9 @@ export const Footer = () => {
 
     return (
         <footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]">
-            <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-0 flex flex-col lg:flex-row items-start">
+            <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row items-start lg:justify-between">
 
-                <div className="flex flex-col w-full lg:w-[255px]">
+                <div className="flex flex-col w-full lg:w-[20%]">
                     <Link href="/">
                         <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[150px] lg:w-[255px] h-auto lg:h-[136px] object-contain mb-[24px] cursor-pointer" />
                     </Link>
@@ -38,7 +38,7 @@ export const Footer = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-col w-full lg:w-[380px] shrink-0 lg:ml-[152px] mt-10 lg:mt-0">
+                <div className="flex flex-col w-full lg:w-[35%] shrink-0 mt-10 lg:mt-0">
                     <div className="flex flex-col gap-[20px] w-full lg:w-[330px]">
                         <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                             {t.footer.useful}
@@ -78,7 +78,7 @@ export const Footer = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-col w-full lg:w-[381px] shrink-0 lg:ml-auto mt-10 lg:mt-0">
+                <div className="flex flex-col w-full lg:w-[35%] shrink-0 mt-10 lg:mt-0">
                     <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] mb-[20px]">
                         {t.footer.contact}
                     </h3>

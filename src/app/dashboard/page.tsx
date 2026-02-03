@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
-import { LanguageProvider, useLanguage } from '../../components/LanguageContext';
+import { useLanguage } from '../../components/LanguageContext';
 import { fetchApi } from '../../lib/api';
 import { RequireAuth } from '../components/RequireAuth';
 
@@ -171,7 +171,7 @@ const MemberIdCard = ({ summary, loading, onPhotoUpdate }: MemberIdCardProps) =>
   const roleLabel = role === 'Worker' ? t.dashboard.roles.worker : t.dashboard.roles.member;
 
   return (
-    <div className="w-full lg:w-[388px] h-auto lg:h-[419px] bg-white rounded-[8px] p-[24px] pt-[20px] flex flex-col gap-[16px] border border-[#B9D3C4] shadow-[0px_4px_20px_0px_#0000001A]">
+    <div className="w-full lg:w-[30%] min-w-[320px] h-auto lg:h-[419px] bg-white rounded-[8px] p-[24px] pt-[20px] flex flex-col gap-[16px] border border-[#B9D3C4] shadow-[0px_4px_20px_0px_#0000001A]">
       <h2 className="text-[20px] font-bold text-[#04330B] font-['Familjen_Grotesk'] leading-[26px]">
         {t.dashboard.memberCardTitle}
       </h2>
@@ -352,7 +352,7 @@ const RecruitsPanel = ({ summary, progress, recruits, loading }: RecruitsPanelPr
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=118x118&data=${encodeURIComponent(qrData)}`;
 
   return (
-    <div className="w-full lg:w-[892px] h-auto lg:h-[420px] bg-white rounded-[8px] p-[24px] pt-[20px] pb-[20px] flex flex-col gap-[20px] border border-[#B9D3C4] shadow-[0px_4px_20px_0px_#0000001A]">
+    <div className="w-full lg:flex-1 h-auto lg:min-h-[420px] bg-white rounded-[8px] p-[24px] pt-[20px] pb-[20px] flex flex-col gap-[20px] border border-[#B9D3C4] shadow-[0px_4px_20px_0px_#0000001A]">
       {/* Top Section: Header & QR */}
       <div className="w-full flex flex-col md:flex-row justify-between items-start">
         <div className="w-full md:w-3/4 flex flex-col gap-[12px]">
@@ -520,7 +520,7 @@ const DashboardContent = () => {
       {/* Navbar with showProfileButton=true and isDashboard=true */}
       <Navbar links={dashboardLinks} showAuthButtons={false} showProfileButton={true} isDashboard={true} />
 
-      <main className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
+      <main className="w-full max-w-[1320px] mx-auto flex flex-col items-center px-4 lg:px-8">
         {/* Main Content Container - 1320x420, Gap 40px */}
         {error && (
           <div className="w-full max-w-[1320px] px-4 mb-4 text-red-700 bg-red-50 border border-red-200 rounded-md text-sm font-['Familjen_Grotesk']">
@@ -528,9 +528,9 @@ const DashboardContent = () => {
           </div>
         )}
 
-        <div className="w-full flex flex-col lg:flex-row gap-[40px] justify-center px-4 lg:px-0">
+        <div className="w-full flex flex-col lg:flex-row gap-[40px] justify-between">
 
-          {/* Left Column: Member Card (388px) */}
+          {/* Left Column: Member Card (Responsive) */}
           <MemberIdCard
             summary={summary}
             loading={loading}
@@ -546,7 +546,7 @@ const DashboardContent = () => {
             }}
           />
 
-          {/* Right Column: Recruits Panel (892px) */}
+          {/* Right Column: Recruits Panel (Responsive) */}
           <RecruitsPanel summary={summary} progress={progress} recruits={recruits} loading={loading} />
 
         </div>
@@ -562,9 +562,7 @@ const DashboardContent = () => {
 export default function Dashboard() {
   return (
     <RequireAuth>
-      <LanguageProvider>
-        <DashboardContent />
-      </LanguageProvider>
+      <DashboardContent />
     </RequireAuth>
   );
 }

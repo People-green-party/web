@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Familjen_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 
 import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
+import { LanguageProvider } from "../components/LanguageContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,7 +56,9 @@ export default function RootLayout({
         <div className="min-h-screen flex flex-col">
 
           <main className="flex-1">
-            {children}
+            <LanguageProvider>
+              {children}
+            </LanguageProvider>
           </main>
 
         </div>

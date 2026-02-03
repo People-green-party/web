@@ -65,7 +65,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
     return (
         <nav className={`bg-white fixed top-0 z-50 w-full flex justify-center ${isDashboard ? '' : 'border-b border-[#E4F2EA]'}`}>
-            <div className={`w-full max-w-[1320px] lg:h-[92px] h-[70px] flex items-center justify-between px-4 lg:px-0 bg-white`}>
+            <div className={`w-full max-w-[1320px] lg:h-[92px] h-[70px] flex items-center justify-between px-4 lg:px-8 bg-white`}>
 
                 {/* Left Side: Logo */}
                 {/* For Dashboard, we want Dashboard/Election buttons centered. 
@@ -77,11 +77,13 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                 {isDashboard ? (
                     // Dashboard Layout: Logo Left, Buttons Center, Profile/Lang Right
                     <>
-                        <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
-                            <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
-                        </Link>
+                        <div className="flex items-center shrink-0">
+                            <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
+                                <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
+                            </Link>
+                        </div>
 
-                        <div className="hidden lg:flex items-center justify-center gap-[12px] h-[46px] absolute left-1/2 -translate-x-1/2">
+                        <div className="hidden lg:flex flex-1 items-center justify-center gap-[12px] h-[46px] mx-4">
                             {links.map((link) => {
                                 const isActive = pathname === link.href;
                                 return (
@@ -101,13 +103,14 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     </>
                 ) : (
                     // Default Layout: Logo + Links Grouped Left
-                    <div className="flex items-center">
-                        <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
-                            <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
-                        </Link>
+                    <>
+                        <div className="flex items-center shrink-0">
+                            <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
+                                <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
+                            </Link>
+                        </div>
 
-                        {/* Standard Links - Margin Left from Logo */}
-                        <div className="hidden lg:flex items-center gap-[12px] ml-[131px] h-[46px]">
+                        <div className="hidden lg:flex flex-1 items-center justify-center gap-[12px] h-[46px] mx-4">
                             {links.map((link) => {
                                 const isActive = pathname === link.href;
                                 return (
@@ -124,7 +127,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                                 );
                             })}
                         </div>
-                    </div>
+                    </>
                 )}
 
                 {/* Right Side Actions */}
