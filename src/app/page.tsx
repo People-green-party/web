@@ -509,15 +509,16 @@ const LandingPageContent = () => {
             <div
               className={`flex flex-col lg:flex-row gap-[16px] ${isAnimating ? 'lg:transition-transform lg:duration-500 lg:ease-in-out' : ''}`}
               style={{
-                // Only apply transform on Desktop
-                transform: desktopTransform ? `translateX(${offset}px)` : 'none'
+                // Only apply transform on Desktop and when not using mobile/tablet layout
+                transform: desktopTransform ? `translateX(${offset}px)` : 'none',
+                flexWrap: useMobileCards ? 'wrap' : 'nowrap'
               }}
             >
               {/* On Mobile, just show the base cards without the duplicate buffer for infinite scroll */}
               {(useMobileCards ? rotatedCards : displayCards.slice(0, 6)).map((card: any, idx: number) => (
                 <div
                   key={idx}
-                  className="w-full lg:w-[360px] h-auto lg:h-[364px] border border-[#B9D3C4] rounded-[8px] p-[24px] flex flex-col items-start bg-white hover:shadow-lg transition-shadow shrink-0"
+                  className="w-full md:w-[calc(50%-8px)] lg:w-[360px] h-auto lg:h-[364px] border border-[#B9D3C4] rounded-[8px] p-[24px] flex flex-col items-start bg-white hover:shadow-lg transition-shadow shrink-0"
                 >
                   <div className="w-[48px] h-[48px] flex items-center justify-center mb-[16px]">
                     <img src={card.image} alt="icon" className="w-[48px] h-[48px] object-contain" />
@@ -557,12 +558,12 @@ const LandingPageContent = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* 3. OUR VISION (Overlapping Layout) */}
-      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center">
+      < section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center" >
         {/* Text First */}
-        <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-start lg:pl-[16px]">
+        < div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-start lg:pl-[16px]" >
           <div className="flex flex-col gap-[16px] items-start text-left w-full max-w-[631px]">
             <h2 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
               {t.overlappingSection.title}
@@ -571,7 +572,7 @@ const LandingPageContent = () => {
               {t.overlappingSection.desc}
             </p>
           </div>
-        </div>
+        </div >
 
         <div className="h-[32px] lg:h-[64px]"></div>
 
@@ -602,36 +603,38 @@ const LandingPageContent = () => {
         </div>
 
         {/* Expanded Vision Section */}
-        {showMoreVision && (
-          <div className="w-full max-w-[1320px] relative px-4 lg:px-0 mt-[60px] lg:mt-[100px] animate-in fade-in slide-in-from-bottom-10 duration-700">
-            {/* Mobile: Stacked | Desktop: Absolute/Overlap */}
-            <div className="relative w-full h-auto lg:h-[500px] flex flex-col lg:block">
-              {/* Image */}
-              <div className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[500px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
-                <img src="/herosection/hero4.svg" alt="Vision Expanded" className="w-full h-full object-cover" />
-              </div>
+        {
+          showMoreVision && (
+            <div className="w-full max-w-[1320px] relative px-4 lg:px-0 mt-[60px] lg:mt-[100px] animate-in fade-in slide-in-from-bottom-10 duration-700">
+              {/* Mobile: Stacked | Desktop: Absolute/Overlap */}
+              <div className="relative w-full h-auto lg:h-[500px] flex flex-col lg:block">
+                {/* Image */}
+                <div className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[500px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
+                  <img src="/herosection/hero4.svg" alt="Vision Expanded" className="w-full h-full object-cover" />
+                </div>
 
-              {/* Cards */}
-              <div className="relative lg:absolute lg:top-[52px] lg:right-0 w-full lg:w-[636px] h-auto lg:h-[396px] z-10 flex flex-col gap-[16px] lg:gap-[24px]">
-                {[
-                  { title: "Empowering Rural Communities", desc: "Creating self-sustainable villages through modern agricultural practices." },
-                  { title: "Green Energy Initiatives", desc: "Promoting solar and wind energy adoption at the grassroots level." },
-                  { title: "Youth Leadership Program", desc: "Training the next generation of eco-conscious political leaders." }
-                ].map((item: any, i: number) => (
-                  <div
-                    key={i}
-                    className="w-full lg:w-[636px] h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px] hover:shadow-[0px_8px_30px_0px_#00000020] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-                  >
-                    <div className="flex flex-col gap-[4px]">
-                      <h3 className="font-['Familjen_Grotesk'] font-bold text-[20px] lg:text-[24px] text-[#04330B]">{item.title}</h3>
-                      <p className="font-['Familjen_Grotesk'] font-medium text-[14px] lg:text-[16px] text-[#587E67]">{item.desc}</p>
+                {/* Cards */}
+                <div className="relative lg:absolute lg:top-[52px] lg:right-0 w-full lg:w-[636px] h-auto lg:h-[396px] z-10 flex flex-col gap-[16px] lg:gap-[24px]">
+                  {[
+                    { title: "Empowering Rural Communities", desc: "Creating self-sustainable villages through modern agricultural practices." },
+                    { title: "Green Energy Initiatives", desc: "Promoting solar and wind energy adoption at the grassroots level." },
+                    { title: "Youth Leadership Program", desc: "Training the next generation of eco-conscious political leaders." }
+                  ].map((item: any, i: number) => (
+                    <div
+                      key={i}
+                      className="w-full lg:w-[636px] h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px] hover:shadow-[0px_8px_30px_0px_#00000020] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                    >
+                      <div className="flex flex-col gap-[4px]">
+                        <h3 className="font-['Familjen_Grotesk'] font-bold text-[20px] lg:text-[24px] text-[#04330B]">{item.title}</h3>
+                        <p className="font-['Familjen_Grotesk'] font-medium text-[14px] lg:text-[16px] text-[#587E67]">{item.desc}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )
+        }
 
         {/* Button */}
         <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col items-center mt-[32px] lg:mt-[48px]">
@@ -644,10 +647,10 @@ const LandingPageContent = () => {
             {showMoreVision ? 'View Less' : t.overlappingSection.button}
           </button>
         </div>
-      </section>
+      </section >
 
       {/* 4. MEET YOUR IDEOLOGICAL LEADER */}
-      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center">
+      < section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center" >
         <div className="w-full max-w-[1320px] px-4 lg:px-0 flex flex-col lg:flex-row items-end justify-between gap-[32px] lg:gap-0">
 
           {/* Text First on Mobile via flex-col order (DOM order) */}
@@ -704,10 +707,10 @@ const LandingPageContent = () => {
           </div>
 
         </div>
-      </section>
+      </section >
 
       {/* 5. IMPACT STATS */}
-      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center">
+      < section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center" >
         <div className="w-full max-w-[1320px] flex flex-col items-center px-4 lg:px-0">
 
           {/* Header First */}
@@ -755,41 +758,42 @@ const LandingPageContent = () => {
           </div>
 
           {/* Image Grid Wrapper for Mobile / Absolute Wrapper for Desktop */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:block">
+          {/* Changed: Use percentage-based positioning for LG+ screens to be responsive */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:block lg:relative lg:w-full lg:h-full">
 
-            <div className="relative w-full aspect-[244/280] lg:absolute lg:top-[320px] lg:left-0 lg:w-[244px] lg:h-[280px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+            <div className="relative w-full aspect-[244/280] lg:absolute lg:left-[0%] lg:top-[53.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
               <img src="/news1.svg" className="w-full h-full object-fill" />
             </div>
 
-            <div className="relative w-full aspect-[245/188] lg:absolute lg:top-[240px] lg:left-[268px] lg:w-[245px] lg:h-[188px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_4px_20px_0px_#0000001A]">
+            <div className="relative w-full aspect-[245/188] lg:absolute lg:left-[20.3%] lg:top-[40%] lg:w-[18.5%] lg:h-auto rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_4px_20px_0px_#0000001A]">
               <img src="/news2.svg" className="w-full h-full object-fill" />
             </div>
 
-            <div className="relative w-full aspect-[245/148] lg:absolute lg:top-[452px] lg:left-[268px] lg:w-[245px] lg:h-[148px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+            <div className="relative w-full aspect-[245/148] lg:absolute lg:left-[20.3%] lg:top-[75.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
               <img src="/news3.svg" className="w-full h-full object-fill" />
             </div>
 
-            <div className="relative w-full aspect-[245/141] lg:absolute lg:top-[160px] lg:left-[537px] lg:w-[245px] lg:h-[141px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+            <div className="relative w-full aspect-[245/141] lg:absolute lg:left-[40.7%] lg:top-[26.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
               <img src="/news4.svg" className="w-full h-full object-fill" />
             </div>
 
-            <div className="relative w-full aspect-[245/275] lg:absolute lg:top-[325px] lg:left-[537px] lg:w-[245px] lg:h-[275px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+            <div className="relative w-full aspect-[245/275] lg:absolute lg:left-[40.7%] lg:top-[54.1%] lg:w-[18.5%] lg:h-auto rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
               <img src="/news5.svg" className="w-full h-full object-fill" />
             </div>
 
-            <div className="relative w-full aspect-[245/350] lg:absolute lg:top-[80px] lg:left-[806px] lg:w-[245px] lg:h-[350px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+            <div className="relative w-full aspect-[245/350] lg:absolute lg:left-[61%] lg:top-[13.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
               <img src="/news6.svg" className="w-full h-full object-fill" />
             </div>
 
-            <div className="relative w-full aspect-[245/146] lg:absolute lg:top-[454px] lg:left-[806px] lg:w-[245px] lg:h-[146px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+            <div className="relative w-full aspect-[245/146] lg:absolute lg:left-[61%] lg:top-[75.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
               <img src="/news7.svg" className="w-full h-full object-fill" />
             </div>
 
-            <div className="relative w-full aspect-[245/178] lg:absolute lg:top-[0px] lg:left-[1075px] lg:w-[245px] lg:h-[178px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+            <div className="relative w-full aspect-[245/178] lg:absolute lg:left-[81.4%] lg:top-[0%] lg:w-[18.5%] lg:h-auto rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
               <img src="/news8.svg" className="w-full h-full object-fill" />
             </div>
 
-            <div className="relative w-full aspect-[245/398] lg:absolute lg:top-[202px] lg:left-[1075px] lg:w-[245px] lg:h-[398px] rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
+            <div className="relative w-full aspect-[245/398] lg:absolute lg:left-[81.4%] lg:top-[33.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] border border-[#B9D3C4] overflow-hidden shadow-sm lg:shadow-[0px_8px_12px_0px_#00000033]">
               <img src="/news9.svg" className="w-full h-full object-fill" />
             </div>
           </div>
@@ -852,10 +856,10 @@ const LandingPageContent = () => {
           </div>
 
         </div>
-      </section>
+      </section >
 
       {/* 8. FOOTER */}
-      <footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]">
+      < footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]" >
         <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-0 flex flex-col lg:flex-row items-start">
 
           <div className="flex flex-col w-full lg:w-[255px]">
@@ -956,7 +960,7 @@ const LandingPageContent = () => {
           </div>
 
         </div>
-      </footer>
+      </footer >
     </div >
   );
 };
