@@ -8,6 +8,7 @@ import {
 import { useLanguage } from "../../components/LanguageContext";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
+import ScrollReveal from '../../components/ScrollReveal';
 
 // --- 1. Translation Data ---
 
@@ -108,12 +109,16 @@ const ConstitutionPageContent = () => {
           <div className="flex flex-col w-full lg:w-[50%] shrink-0 lg:justify-between">
             {/* Image 1 */}
             <div className="flex flex-col gap-[16px] w-full mb-[48px] lg:mb-0">
-              <h1 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
-                {t.hero.titleLine1} {t.hero.titleLine2}
-              </h1>
-              <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67] max-w-[476px]">
-                {t.hero.subtitle}
-              </p>
+              <ScrollReveal animation="fade-up" duration={800}>
+                <h1 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
+                  {t.hero.titleLine1} {t.hero.titleLine2}
+                </h1>
+              </ScrollReveal>
+              <ScrollReveal animation="fade-up" duration={800} delay={200}>
+                <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67] max-w-[476px]">
+                  {t.hero.subtitle}
+                </p>
+              </ScrollReveal>
             </div>
 
             <div className="w-full h-[246px] rounded-[8px] overflow-hidden bg-gray-100">
@@ -127,13 +132,13 @@ const ConstitutionPageContent = () => {
           {/* --- MIDDLE COLUMN --- */}
           <div className="hidden lg:flex flex-col w-[23%] shrink-0 gap-[24px]">
             {/* Image 2 */}
-            <div className="w-full h-[256px] rounded-[8px] overflow-hidden bg-gray-100">
+            <ScrollReveal animation="scale-up" duration={800} delay={100} className="w-full h-[256px] rounded-[8px] overflow-hidden bg-gray-100">
               <img src="/herosection/hero2.svg" alt="Hero 2" className="w-full h-full object-cover" />
-            </div>
+            </ScrollReveal>
             {/* Image 3 */}
-            <div className="w-full h-[222px] rounded-[8px] overflow-hidden bg-gray-100">
+            <ScrollReveal animation="scale-up" duration={800} delay={200} className="w-full h-[222px] rounded-[8px] overflow-hidden bg-gray-100">
               <img src="/herosection/hero3.svg" alt="Hero 3" className="w-full h-full object-cover" />
-            </div>
+            </ScrollReveal>
           </div>
 
           {/* Gap */}
@@ -142,13 +147,13 @@ const ConstitutionPageContent = () => {
           {/* --- RIGHT COLUMN --- */}
           <div className="hidden lg:flex flex-col w-[22%] shrink-0 gap-[24px]">
             {/* Image 4 */}
-            <div className="w-full h-[230px] rounded-[8px] overflow-hidden bg-gray-100">
+            <ScrollReveal animation="scale-up" duration={800} delay={300} className="w-full h-[230px] rounded-[8px] overflow-hidden bg-gray-100">
               <img src="/herosection/hero4.svg" alt="Hero 4" className="w-full h-full object-cover" />
-            </div>
+            </ScrollReveal>
             {/* Image 5 */}
-            <div className="w-full h-[246px] rounded-[8px] overflow-hidden bg-gray-100">
+            <ScrollReveal animation="scale-up" duration={800} delay={400} className="w-full h-[246px] rounded-[8px] overflow-hidden bg-gray-100">
               <img src="/herosection/hero5.svg" alt="Hero 5" className="w-full h-full object-cover" />
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
@@ -157,13 +162,13 @@ const ConstitutionPageContent = () => {
       <section className="w-full flex flex-col items-center mt-[40px] lg:mt-[120px] relative h-auto lg:min-h-[948px] pb-[40px] lg:pb-0">
 
         {/* Layer 1: Image (Z-Index 10) */}
-        <div className="relative z-10 w-full max-w-[1240px] h-auto aspect-[1240/533] rounded-[16px] overflow-hidden shadow-lg mx-4 lg:mx-0 px-4 lg:px-8">
+        <ScrollReveal animation="scale-up" duration={1000} className="relative z-10 w-full max-w-[1240px] h-auto aspect-[1240/533] rounded-[16px] overflow-hidden shadow-lg mx-4 lg:mx-0 px-4 lg:px-8">
           <img
             src="/Constitution/Constitution-1.svg"
             alt="Preamble Banner"
             className="w-full h-full object-cover rounded-[16px]"
           />
-        </div>
+        </ScrollReveal>
 
         {/* Layer 2: Green Background Section (Z-Index 0) */}
         <div className="absolute top-[100px] lg:top-[314px] bottom-0 lg:bottom-auto w-full lg:h-[634px] bg-[#C6E0D1] -z-0"></div>
@@ -173,17 +178,24 @@ const ConstitutionPageContent = () => {
 
           {/* Title & Subtitle Block */}
           <div className="flex flex-col items-center gap-[0px] mb-[24px] lg:mb-[44px]">
-            <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#0D5229]">
-              {t.preamble.title}
-            </h2>
-            <h3 className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67] mt-[8px]">
-              {t.preamble.subtitle}
-            </h3>
+            <ScrollReveal animation="fade-up" duration={800}>
+              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#0D5229]">
+                {t.preamble.title}
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal animation="fade-up" duration={800} delay={200}>
+              <h3 className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67] mt-[8px]">
+                {t.preamble.subtitle}
+              </h3>
+            </ScrollReveal>
           </div>
 
-          <p className="font-['Familjen_Grotesk'] font-semibold text-[14px] lg:text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] text-center max-w-[972px]">
-            {t.preamble.text}
-          </p>
+          <ScrollReveal animation="fade-up" duration={800} delay={400}>
+            <p className="font-['Familjen_Grotesk'] font-semibold text-[14px] lg:text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] text-center max-w-[972px]">
+              {t.preamble.text}
+            </p>
+          </ScrollReveal>
+
         </div>
 
       </section>
@@ -192,12 +204,16 @@ const ConstitutionPageContent = () => {
       <section className="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col mt-[40px] lg:mt-[120px]">
 
         <div className="flex flex-col gap-[0px] w-full text-left mb-[24px] lg:mb-[61px]">
-          <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
-            {t.vision.title}
-          </h2>
-          <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67] mt-[0px]">
-            {t.vision.subtitle}
-          </p>
+          <ScrollReveal animation="fade-up" duration={800}>
+            <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
+              {t.vision.title}
+            </h2>
+          </ScrollReveal>
+          <ScrollReveal animation="fade-up" duration={800} delay={200}>
+            <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67] mt-[0px]">
+              {t.vision.subtitle}
+            </p>
+          </ScrollReveal>
         </div>
 
         <div className="w-full flex flex-col lg:flex-row items-start justify-between">
@@ -229,13 +245,13 @@ const ConstitutionPageContent = () => {
           </div>
 
           {/* Right Column: Image */}
-          <div className="w-full lg:w-[35%] h-[304px] rounded-[8px] shadow-[0px_4px_20px_0px_#0000001A] overflow-hidden shrink-0 order-1 lg:order-3 mb-[24px] lg:mb-0">
+          <ScrollReveal animation="fade-in" duration={800} delay={200} className="w-full lg:w-[35%] h-[304px] rounded-[8px] shadow-[0px_4px_20px_0px_#0000001A] overflow-hidden shrink-0 order-1 lg:order-3 mb-[24px] lg:mb-0">
             <img
               src="/Constitution/Constitution-2.svg"
               alt="Vision"
               className="w-full h-full object-cover"
             />
-          </div>
+          </ScrollReveal>
         </div>
       </section>
 

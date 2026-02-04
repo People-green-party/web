@@ -9,7 +9,7 @@ import { supabase } from "../lib/supabaseClient";
 import { fetchApi } from "../lib/api";
 
 interface NavbarProps {
-    links?: { name: string; href: string }[];
+    links?: { name: string; href: string; target?: string }[];
     showAuthButtons?: boolean;
     showProfileButton?: boolean; // New Prop
     isDashboard?: boolean; // New Prop to control alignment
@@ -33,10 +33,9 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
     const defaultLinks = [
         { name: t.nav.home, href: '/' },
-        { name: t.nav.about, href: '/about' },
+        { name: t.nav.leaders, href: '/leadership' },
         { name: t.nav.constitution, href: '/constitution' },
-        { name: t.nav.donate, href: '/donation' },
-        { name: t.nav.declaration, href: '/declaration' },
+        { name: t.nav.weAreAravali, href: 'https://wearearavali.org/', target: '_blank' },
     ];
 
     const links = customLinks || defaultLinks;
@@ -64,8 +63,8 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
     }, []);
 
     return (
-        <nav className={`bg-white fixed top-0 z-50 w-full flex justify-center ${isDashboard ? '' : 'border-b border-[#E4F2EA]'}`}>
-            <div className={`w-full max-w-[1320px] lg:h-[92px] h-[70px] flex items-center justify-between px-4 lg:px-8 bg-white`}>
+        <nav className={`bg-white fixed top-0 z-50 w-full ${isDashboard ? 'flex justify-center' : ''}`}>
+            <div className={`w-full ${isDashboard ? 'max-w-[1320px] lg:h-[92px]' : 'lg:h-[90px] relative'} h-[70px] flex items-center justify-between px-4 lg:px-8 bg-white`}>
 
                 {/* Left Side: Logo */}
                 {/* For Dashboard, we want Dashboard/Election buttons centered. 
@@ -74,24 +73,31 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     Center content implies absolute centering or Flex Grow logic.
                 */}
 
+                {/* Default Layout: Logo + Links Absolute Center */}
                 {isDashboard ? (
-                    // Dashboard Layout: Logo Left, Buttons Center, Profile/Lang Right
+                    // Dashboard Layout (keep as is or update if needed, but user asked for "home page jaisa")
+                    // Assuming user meant mainly the public pages.
+                    // For now, let's keep dashboard distinct or minimally touch it if not requested.
+                    // ACTUALLY, "dashboard buttons" structure is separate block above.
+                    // This block handles non-dashboard "default" layout.
                     <>
                         <div className="flex items-center shrink-0">
                             <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
-                                <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
+                                <img src="/PGPlogo.svg" alt="PGP Logo" className="w-auto h-[60px] lg:h-[86px] object-contain" />
                             </Link>
                         </div>
 
-                        <div className="hidden lg:flex flex-1 items-center justify-center gap-[12px] h-[46px] mx-4">
+                        <div className="hidden xl:flex items-center justify-center gap-[8px] absolute left-1/2 -translate-x-1/2">
                             {links.map((link) => {
                                 const isActive = pathname === link.href;
                                 return (
                                     <a
                                         key={link.name}
                                         href={link.href}
-                                        className={`w-[100px] h-[46px] flex items-center justify-center rounded-[8px] p-[12px] transition-colors font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-center whitespace-nowrap ${isActive
-                                            ? 'bg-[#E8F3EC] text-[#04330B]'
+                                        target={(link as any).target}
+                                        rel={(link as any).target === '_blank' ? "noopener noreferrer" : undefined}
+                                        className={`flex items-center justify-center rounded-[6px] px-[20px] h-[42px] transition-colors font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.2px] text-center whitespace-nowrap ${isActive
+                                            ? 'bg-[#EAF7EE] text-[#04330B]'
                                             : 'bg-transparent text-[#587E67] hover:bg-gray-50'
                                             }`}
                                     >
@@ -102,23 +108,29 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                         </div>
                     </>
                 ) : (
-                    // Default Layout: Logo + Links Grouped Left
+                    // This else block was actually the "Default Layout" in the original code. 
+                    // I will replace the logic to use 'isDashboard' check correctly.
+                    // Wait, original code was:
+                    // {isDashboard ? ( ...Dashboard... ) : ( ...Default... )}
+                    // So I should replace the CONTENTS of the else block (lines 105-129)
                     <>
                         <div className="flex items-center shrink-0">
                             <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
-                                <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[80px] lg:w-[114px] lg:h-[60px] h-[42px] object-cover" />
+                                <img src="/PGPlogo.svg" alt="PGP Logo" className="w-auto h-[60px] lg:h-[86px] object-contain" />
                             </Link>
                         </div>
 
-                        <div className="hidden lg:flex flex-1 items-center justify-center gap-[12px] h-[46px] mx-4">
+                        <div className="hidden xl:flex items-center justify-center gap-[8px] absolute left-1/2 -translate-x-1/2">
                             {links.map((link) => {
                                 const isActive = pathname === link.href;
                                 return (
                                     <a
                                         key={link.name}
                                         href={link.href}
-                                        className={`w-[106px] h-[46px] flex items-center justify-center rounded-[8px] p-[12px] transition-colors font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-center whitespace-nowrap ${isActive
-                                            ? 'bg-[#EAF7EE] text-[#04330B]' // Default active color
+                                        target={(link as any).target}
+                                        rel={(link as any).target === '_blank' ? "noopener noreferrer" : undefined}
+                                        className={`flex items-center justify-center rounded-[6px] px-[20px] h-[42px] transition-colors font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.2px] text-center whitespace-nowrap ${isActive
+                                            ? 'bg-[#EAF7EE] text-[#04330B]'
                                             : 'bg-transparent text-[#587E67] hover:bg-gray-50'
                                             }`}
                                     >
@@ -135,19 +147,19 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
                     {/* Language Toggle */}
                     <div
-                        className="hidden lg:flex relative w-[84px] h-[46px] rounded-[8px] border border-[#B9D3C4] p-[4px] bg-white cursor-pointer"
+                        className="hidden xl:flex relative w-[60px] h-[30px] rounded-[6px] border border-[#B9D3C4] p-[2px] bg-white cursor-pointer"
                         onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
                     >
-                        <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'hi' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
+                        <div className={`flex-1 rounded-[4px] text-[12px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'hi' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
                             {language === 'hi' ? 'हि' : ''}
                         </div>
-                        <div className={`flex-1 rounded-[4px] text-[16px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'en' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
+                        <div className={`flex-1 rounded-[4px] text-[12px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'en' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
                             {language === 'en' ? 'En' : ''}
                         </div>
                     </div>
 
                     <div
-                        className="flex lg:hidden relative w-[50px] h-[36px] rounded-[8px] border border-[#B9D3C4] items-center justify-center font-bold text-[#04330B] cursor-pointer text-sm"
+                        className="flex xl:hidden relative w-[50px] h-[36px] rounded-[8px] border border-[#B9D3C4] items-center justify-center font-bold text-[#04330B] cursor-pointer text-sm"
                         onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
                     >
                         {language === 'en' ? 'HI' : 'EN'}
@@ -157,7 +169,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     {isAdmin && (
                         <Link
                             href="/admin/elections"
-                            className="hidden lg:flex items-center justify-center px-4 h-[38px] rounded-[8px] border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] leading-[20px] tracking-[-0.2px] hover:bg-green-50 transition-colors whitespace-nowrap"
+                            className="hidden xl:flex items-center justify-center px-4 h-[38px] rounded-[8px] border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] leading-[20px] tracking-[-0.2px] hover:bg-green-50 transition-colors whitespace-nowrap"
                         >
                             Admin Panel
                         </Link>
@@ -167,7 +179,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     {showProfileButton && (
                         <div className="relative">
                             <div
-                                className="hidden lg:flex items-center justify-center w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] cursor-pointer hover:bg-gray-50 text-[#04330B]"
+                                className="hidden xl:flex items-center justify-center w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] cursor-pointer hover:bg-gray-50 text-[#04330B]"
                                 onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                             >
                                 <User size={24} />
@@ -187,17 +199,24 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                         </div>
                     )}
 
+                    <Link
+                        href="/donation"
+                        className="hidden xl:flex px-[20px] h-[42px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-green-50 transition-colors whitespace-nowrap"
+                    >
+                        {t.nav.donate}
+                    </Link>
+
                     {showAuthButtons && (
                         <>
                             <Link
                                 href="/join"
-                                className="hidden md:flex w-[100px] lg:w-[124px] h-[36px] lg:h-[46px] items-center justify-center bg-[#0D5229] text-white font-['Familjen_Grotesk'] font-semibold text-[14px] lg:text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-[#0a4220] transition-colors whitespace-nowrap"
+                                className="hidden xl:flex px-[20px] h-[42px] items-center justify-center bg-[#0D5229] text-white font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-[#0a4220] transition-colors whitespace-nowrap"
                             >
                                 {t.nav.join}
                             </Link>
                             <Link
                                 href="/login"
-                                className="hidden md:flex w-[90px] lg:w-[118px] h-[36px] lg:h-[46px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] lg:text-[16px] leading-[22px] tracking-[-0.3px] rounded-[8px] hover:bg-green-50 transition-colors whitespace-nowrap"
+                                className="hidden xl:flex px-[20px] h-[42px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-green-50 transition-colors whitespace-nowrap"
                             >
                                 {t.nav.login}
                             </Link>
@@ -205,7 +224,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     )}
 
                     <button
-                        className="lg:hidden p-2 text-gray-700 ml-auto"
+                        className="xl:hidden p-2 text-gray-700 ml-auto"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                     >
                         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -215,37 +234,42 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
             {/* Mobile Menu Dropdown */}
             {isMenuOpen && (
-                <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg h-screen z-50">
+                <div className="xl:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg h-screen z-50">
                     {isAdmin && (
-                        <Link href="/admin/elections" className="text-gray-800 font-semibold py-2 border-b border-gray-100 text-lg">
+                        <Link href="/admin/elections" className="text-gray-800 font-semibold py-2 border-b border-gray-100 text-lg text-center w-full">
                             Admin Panel
                         </Link>
                     )}
 
                     {links.map((link) => (
-                        <a key={link.name} href={link.href} className="text-gray-700 font-medium py-2 border-b border-gray-50 text-lg">{link.name}</a>
+                        <a key={link.name} href={link.href} className="text-gray-700 font-medium py-2 border-b border-gray-50 text-lg text-center w-full">{link.name}</a>
                     ))}
 
                     {showProfileButton && (
                         <button
                             onClick={handleLogout}
-                            className="w-full text-left font-medium py-2 border-b border-gray-50 text-lg text-red-600 flex items-center gap-2"
+                            className="w-full font-medium py-2 border-b border-gray-50 text-lg text-red-600 flex items-center justify-center gap-2"
                         >
                             <LogOut size={20} />
                             Log Out
                         </button>
                     )}
 
-                    {showAuthButtons && (
-                        <div className="flex flex-col gap-4 mt-2">
-                            <Link href="/join" className="w-full py-3 bg-green-900 text-white text-center rounded font-medium">
-                                {t.nav.join}
-                            </Link>
-                            <Link href="/login" className="w-full py-3 border border-gray-300 text-gray-700 rounded font-medium text-center block">
-                                {t.nav.login}
-                            </Link>
-                        </div>
-                    )}
+                    <div className="flex flex-col gap-4 mt-2">
+                        <Link href="/donation" className="w-full py-3 border border-[#0D5229] text-[#0D5229] rounded font-medium text-center block">
+                            {t.nav.donate}
+                        </Link>
+                        {showAuthButtons && (
+                            <>
+                                <Link href="/join" className="w-full py-3 bg-green-900 text-white text-center rounded font-medium">
+                                    {t.nav.join}
+                                </Link>
+                                <Link href="/login" className="w-full py-3 border border-gray-300 text-gray-700 rounded font-medium text-center block">
+                                    {t.nav.login}
+                                </Link>
+                            </>
+                        )}
+                    </div>
                 </div>
             )}
         </nav>

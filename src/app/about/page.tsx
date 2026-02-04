@@ -8,6 +8,7 @@ import {
 import { useLanguage } from "../../components/LanguageContext";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
+import ScrollReveal from '../../components/ScrollReveal';
 
 // --- Local Translations for About Page Content ---
 const translations = {
@@ -168,22 +169,26 @@ const AboutPageContent = () => {
           <div className="flex flex-col w-full lg:w-[58%] shrink-0 gap-[44px]">
             {/* Text Section */}
             <div className="flex flex-col gap-[16px] h-auto lg:h-[208px]">
-              <h1 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B] whitespace-pre-line">
-                {t.hero.title}
-              </h1>
-              <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-                {t.hero.subtitle}
-              </p>
+              <ScrollReveal animation="fade-up" duration={800}>
+                <h1 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B] whitespace-pre-line">
+                  {t.hero.title}
+                </h1>
+              </ScrollReveal>
+              <ScrollReveal animation="fade-up" duration={800} delay={200}>
+                <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                  {t.hero.subtitle}
+                </p>
+              </ScrollReveal>
             </div>
 
             {/* Image Section */}
-            <div className="w-full h-[300px] lg:h-[420px] rounded-[8px] overflow-hidden bg-gray-100">
+            <ScrollReveal animation="fade-in" duration={1000} delay={400} className="w-full h-[300px] lg:h-[420px] rounded-[8px] overflow-hidden bg-gray-100">
               <img
                 src="/About/about-1.svg"
                 alt="Conference"
                 className="w-full h-full object-cover"
               />
-            </div>
+            </ScrollReveal>
           </div>
 
           {/* Right Column: Fluid Width */}
@@ -210,39 +215,43 @@ const AboutPageContent = () => {
         <div className="w-full mt-[80px] lg:mt-[120px] flex flex-col gap-[64px]">
 
           <div className="flex flex-col gap-[16px] w-full max-w-[960px]">
-            <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
-              {t.principles.title}
-            </h2>
-            <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-              {t.principles.subtitle}
-            </p>
+            <ScrollReveal animation="fade-up" duration={800}>
+              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
+                {t.principles.title}
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal animation="fade-up" duration={800} delay={200}>
+              <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                {t.principles.subtitle}
+              </p>
+            </ScrollReveal>
           </div>
 
           <div className="w-full flex flex-col lg:flex-row h-auto gap-8 lg:gap-[48px]">
 
             {/* Left Column (4 Cards) */}
             <div className="w-full lg:flex-1 flex flex-col gap-[40px] lg:gap-[60px]">
-              <PrincipleItem iconUrl="/About/about-Icon-1.svg" text={t.principles.items[0]} />
-              <PrincipleItem iconUrl="/About/about-Icon-2.svg" text={t.principles.items[1]} />
-              <PrincipleItem iconUrl="/About/about-Icon-3.svg" text={t.principles.items[2]} />
-              <PrincipleItem iconUrl="/About/about-Icon-4.svg" text={t.principles.items[3]} />
+              <ScrollReveal animation="slide-right" delay={100}><PrincipleItem iconUrl="/About/about-Icon-1.svg" text={t.principles.items[0]} /></ScrollReveal>
+              <ScrollReveal animation="slide-right" delay={200}><PrincipleItem iconUrl="/About/about-Icon-2.svg" text={t.principles.items[1]} /></ScrollReveal>
+              <ScrollReveal animation="slide-right" delay={300}><PrincipleItem iconUrl="/About/about-Icon-3.svg" text={t.principles.items[2]} /></ScrollReveal>
+              <ScrollReveal animation="slide-right" delay={400}><PrincipleItem iconUrl="/About/about-Icon-4.svg" text={t.principles.items[3]} /></ScrollReveal>
             </div>
 
             {/* Middle Image */}
-            <div className="w-full lg:w-[32%] h-[300px] lg:h-auto rounded-[8px] overflow-hidden bg-gray-100 self-stretch">
+            <ScrollReveal animation="fade-in" duration={1000} className="w-full lg:w-[32%] h-[300px] lg:h-auto rounded-[8px] overflow-hidden bg-gray-100 self-stretch">
               <img
                 src="/About/about-2.svg"
                 alt="Principles Image"
                 className="w-full h-full object-cover"
               />
-            </div>
+            </ScrollReveal>
 
             {/* Right Column (4 Cards) */}
             <div className="w-full lg:flex-1 flex flex-col gap-[40px] lg:gap-[60px]">
-              <PrincipleItem iconUrl="/About/about-Icon-5.svg" text={t.principles.items[4]} />
-              <PrincipleItem iconUrl="/About/about-Icon-6.svg" text={t.principles.items[5]} />
-              <PrincipleItem iconUrl="/About/about-Icon-7.svg" text={t.principles.items[6]} />
-              <PrincipleItem iconUrl="/About/about-Icon-8.svg" text={t.principles.items[7]} />
+              <ScrollReveal animation="slide-left" delay={100}><PrincipleItem iconUrl="/About/about-Icon-5.svg" text={t.principles.items[4]} /></ScrollReveal>
+              <ScrollReveal animation="slide-left" delay={200}><PrincipleItem iconUrl="/About/about-Icon-6.svg" text={t.principles.items[5]} /></ScrollReveal>
+              <ScrollReveal animation="slide-left" delay={300}><PrincipleItem iconUrl="/About/about-Icon-7.svg" text={t.principles.items[6]} /></ScrollReveal>
+              <ScrollReveal animation="slide-left" delay={400}><PrincipleItem iconUrl="/About/about-Icon-8.svg" text={t.principles.items[7]} /></ScrollReveal>
             </div>
 
           </div>
@@ -253,12 +262,16 @@ const AboutPageContent = () => {
         <div className="w-full mt-[80px] lg:mt-[120px] flex flex-col items-center">
 
           <div className="w-full max-w-[920px] flex flex-col gap-[16px] mb-[64px]">
-            <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-center text-[#04330B]">
-              {t.vision.mainTitle}
-            </h2>
-            <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-center text-[#587E67]">
-              {t.vision.mainText}
-            </p>
+            <ScrollReveal animation="fade-up" duration={800}>
+              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-center text-[#04330B]">
+                {t.vision.mainTitle}
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal animation="fade-up" duration={800} delay={200}>
+              <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-center text-[#587E67]">
+                {t.vision.mainText}
+              </p>
+            </ScrollReveal>
           </div>
 
           <div
@@ -268,13 +281,13 @@ const AboutPageContent = () => {
           >
             <div className="flex flex-row gap-[24px]">
               {t.vision.cards.map((card: any, i: number) => (
-                <div key={i} className="snap-start shrink-0">
+                <ScrollReveal key={i} animation="scale-up" delay={i * 150} className="snap-start shrink-0">
                   <VisionCard
                     iconUrl={`/About/about-Icon-${9 + i}.svg`}
                     title={card.title}
                     text={card.text}
                   />
-                </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>

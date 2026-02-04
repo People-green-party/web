@@ -6,6 +6,7 @@ import {
     MapPin, Phone, Mail, Linkedin, Facebook, Instagram, X
 } from 'lucide-react';
 import { useLanguage } from "./LanguageContext";
+import ScrollReveal from './ScrollReveal';
 
 const SocialIcon = ({ Icon }: { Icon: any }) => (
     <a href="#" className="w-[48px] h-[48px] rounded-[8px] border border-[#E4F2EA] bg-white p-[12px] flex items-center justify-center text-[#04330B] hover:bg-[#EAF7EE] transition-colors cursor-pointer">
@@ -20,7 +21,7 @@ export const Footer = () => {
         <footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]">
             <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row items-start lg:justify-between">
 
-                <div className="flex flex-col w-full lg:w-[20%]">
+                <ScrollReveal animation="fade-up" duration={800} className="flex flex-col w-full lg:w-[20%]">
                     <Link href="/">
                         <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[150px] lg:w-[255px] h-auto lg:h-[136px] object-contain mb-[24px] cursor-pointer" />
                     </Link>
@@ -36,9 +37,9 @@ export const Footer = () => {
                             ))}
                         </div>
                     </div>
-                </div>
+                </ScrollReveal>
 
-                <div className="flex flex-col w-full lg:w-[35%] shrink-0 mt-10 lg:mt-0">
+                <ScrollReveal animation="fade-up" duration={800} delay={200} className="flex flex-col w-full lg:w-[35%] shrink-0 mt-10 lg:mt-0">
                     <div className="flex flex-col gap-[20px] w-full lg:w-[330px]">
                         <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                             {t.footer.useful}
@@ -76,9 +77,9 @@ export const Footer = () => {
                             ))}
                         </div>
                     </div>
-                </div>
+                </ScrollReveal>
 
-                <div className="flex flex-col w-full lg:w-[35%] shrink-0 mt-10 lg:mt-0">
+                <ScrollReveal animation="fade-up" duration={800} delay={400} className="flex flex-col w-full lg:w-[35%] shrink-0 mt-10 lg:mt-0">
                     <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] mb-[20px]">
                         {t.footer.contact}
                     </h3>
@@ -113,7 +114,7 @@ export const Footer = () => {
                         </div>
 
                     </div>
-                </div>
+                </ScrollReveal>
 
             </div>
         </footer>
