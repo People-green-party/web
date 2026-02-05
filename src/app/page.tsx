@@ -816,19 +816,28 @@ const LandingPageContent = () => {
 
             {/* Cards */}
             <div className="relative lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:right-0 w-full lg:w-[636px] h-auto z-10 flex flex-col gap-[16px] lg:gap-[24px]">
-              {overlapCards.map((item: any, i: number) => (
-                <ScrollReveal
-                  key={i}
-                  animation="slide-left"
-                  delay={i * 150}
-                  className="w-full lg:w-[636px] h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px] hover:shadow-[0px_8px_30px_0px_#00000020] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-                >
-                  <div className="flex flex-col gap-[4px]">
-                    <h3 className="font-['Familjen_Grotesk'] font-bold text-[20px] lg:text-[24px] text-[#04330B]">{item.title}</h3>
-                    <p className="font-['Familjen_Grotesk'] font-medium text-[14px] lg:text-[16px] text-[#587E67]">{item.desc}</p>
-                  </div>
-                </ScrollReveal>
-              ))}
+              {overlapCards.map((item: any, i: number) => {
+                // Generate slug for consistency with expanded cards
+                const slug = item.title.toLowerCase().trim().replace(/[\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^`{|}~]+/g, '-');
+                return (
+                  <ScrollReveal
+                    key={i}
+                    animation="slide-left"
+                    delay={i * 150}
+                    className="w-full lg:w-[636px]" // Removed styling classes from here
+                  >
+                    <Link
+                      href={`/vision/${slug}`}
+                      className="w-full h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px] hover:shadow-[0px_8px_30px_0px_#00000020] hover:-translate-y-1 transition-all duration-300 cursor-pointer block"
+                    >
+                      <div className="flex flex-col gap-[4px]">
+                        <h3 className="font-['Familjen_Grotesk'] font-bold text-[20px] lg:text-[24px] text-[#04330B]">{item.title}</h3>
+                        <p className="font-['Familjen_Grotesk'] font-medium text-[14px] lg:text-[16px] text-[#587E67]">{item.desc}</p>
+                      </div>
+                    </Link>
+                  </ScrollReveal>
+                );
+              })}
             </div>
           </div>
         </div>
