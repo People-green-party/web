@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { X, Menu, User, LogOut } from 'lucide-react'; // Added User icon
 import { useLanguage } from "./LanguageContext";
-import { supabase } from "../lib/supabaseClient";
 import { fetchApi } from "../lib/api";
 
 interface NavbarProps {
@@ -24,11 +23,20 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
     const router = useRouter();
 
     const handleLogout = async () => {
-        await supabase.auth.signOut();
+        // Removed direct supabase call to avoid needing Anon Key on frontend for public pages
         if (typeof window !== 'undefined') {
             window.localStorage.removeItem('devUserId');
+            window.localStorage.removeItem('access_token');
+            // Manually clear Supabase auth tokens to prevent auto-login
+            Object.keys(window.localStorage).forEach((key) => {
+                if (key.startsWith('sb-')) {
+                    window.localStorage.removeItem(key);
+                }
+            });
         }
         router.push('/');
+        // Force reload to ensure state is cleared
+        window.location.reload();
     };
 
     const defaultLinks = [
