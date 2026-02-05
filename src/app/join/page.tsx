@@ -25,7 +25,7 @@ const translations = {
         mobile: "Mobile Number",
         state: "State",
         district: "District",
-        constituency: "Your legislative assembly constituency",
+        constituency: "Assembly Constituency",
         zip: "ZIP/Postal Code",
         agreeJoin: "Do you agree to join the party?",
         agreeResponsibility: "Do you want to take any responsibility or position in the party?",
@@ -52,7 +52,7 @@ const translations = {
         mobile: "मोबाइल नंबर",
         state: "राज्य",
         district: "ज़िला",
-        constituency: "आपकी विधान सभा निर्वाचन क्षेत्र",
+        constituency: "विधान सभा क्षेत्र",
         zip: "पिन कोड",
         agreeJoin: "क्या आप पार्टी में शामिल होने के लिए सहमत हैं?",
         agreeResponsibility: "क्या आप पार्टी में कोई जिम्मेदारी या पद लेना चाहते हैं?",
@@ -463,7 +463,7 @@ const JoinPageContent = () => {
                     type="text"
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
+                    className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:border-[#04330B] focus:ring-0 transition-colors outline-none font-['Familjen_Grotesk']"
                     placeholder={t.joinPage.form.firstName}
                     autoComplete="off"
                   />
@@ -473,15 +473,15 @@ const JoinPageContent = () => {
                     type="text"
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
+                    className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:border-[#04330B] focus:ring-0 transition-colors outline-none font-['Familjen_Grotesk']"
                     placeholder={t.joinPage.form.lastName}
                     autoComplete="off"
                   />
 
                   {/* 3. Mobile */}
                   <div className="w-full h-[46px] flex gap-[8px]">
-                    <div className="relative h-full w-[80px]">
-                      <select className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[12px] py-[12px] text-[16px] bg-white text-[#587E67] font-semibold tracking-[-0.3px] outline-none cursor-pointer">
+                    <div className="relative h-full w-[100px]">
+                      <select className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[12px] pr-8 py-[12px] text-[16px] bg-white text-[#587E67] font-semibold tracking-[-0.3px] outline-none cursor-pointer">
                         <option>+91</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[#587E67]">
@@ -492,7 +492,7 @@ const JoinPageContent = () => {
                       type="tel"
                       value={formData.mobile}
                       onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
-                      className="flex-1 h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
+                      className="flex-1 h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:border-[#04330B] focus:ring-0 transition-colors outline-none font-['Familjen_Grotesk']"
                       placeholder={t.joinPage.form.mobile}
                       autoComplete="off"
                     />
@@ -505,7 +505,7 @@ const JoinPageContent = () => {
                       inputMode="numeric"
                       value={formData.pin}
                       onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '').slice(0, 6) })}
-                      className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[0.2em] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk'] text-center"
+                      className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[0.2em] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:border-[#04330B] focus:ring-0 transition-colors outline-none font-['Familjen_Grotesk'] text-center"
                       placeholder="CREATE 6-DIGIT PIN"
                       autoComplete="new-password"
                     />
@@ -539,7 +539,7 @@ const JoinPageContent = () => {
                             })
                           }
                           placeholder="e.g. RAJ123"
-                          className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[0.15em] text-[14px] placeholder-[#A3B8AA] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk'] uppercase bg-[#F9FBFA]"
+                          className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[0.15em] text-[14px] placeholder-[#A3B8AA] text-[#04330B] focus:outline-none focus:border-[#04330B] focus:ring-0 transition-colors outline-none font-['Familjen_Grotesk'] uppercase bg-[#F9FBFA]"
                           autoComplete="off"
                         />
                         <p className="text-[11px] text-[#8CA596] mt-0.5">
@@ -555,7 +555,7 @@ const JoinPageContent = () => {
                       value={formData.loksabhaId}
                       onChange={handleLoksabhaChange}
                       disabled={locLoading.loksabhas}
-                      className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60"
+                      className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] pr-10 py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60 truncate"
                     >
                       <option value="">
                         {locLoading.loksabhas ? 'Loading...' : `${t.joinPage.form.district} (Loksabha)`}
@@ -576,7 +576,7 @@ const JoinPageContent = () => {
                       value={formData.vidhansabhaId}
                       onChange={(e) => setFormData({ ...formData, vidhansabhaId: e.target.value })}
                       disabled={!formData.loksabhaId || locLoading.vidhansabhas}
-                      className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60"
+                      className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] pr-10 py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60 truncate"
                     >
                       <option value="">
                         {locLoading.vidhansabhas ? 'Loading constituencies...' : (formData.loksabhaId && vidhansabhas.length === 0 ? 'No constituencies found' : t.joinPage.form.constituency)}
@@ -595,7 +595,7 @@ const JoinPageContent = () => {
                     value={formData.localUnitId}
                     onChange={(e) => setFormData({ ...formData, localUnitId: e.target.value })}
                     disabled={!formData.vidhansabhaId || locLoading.localUnits}
-                    className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="appearance-none w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] pr-10 py-[12px] font-semibold tracking-[-0.3px] text-[16px] bg-white text-[#587E67] outline-none cursor-pointer font-['Familjen_Grotesk'] disabled:opacity-60 disabled:cursor-not-allowed truncate"
                   >
                     <option value="">
                       {locLoading.localUnits ? 'Loading units...' : (formData.vidhansabhaId && localUnits.length === 0 ? 'No Local Units found' : 'Select your Local Unit')}
@@ -614,7 +614,7 @@ const JoinPageContent = () => {
                       type="text"
                       value={formData.customLocalUnitName}
                       onChange={(e) => setFormData({ ...formData, customLocalUnitName: e.target.value })}
-                      className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:ring-1 focus:ring-green-600 outline-none font-['Familjen_Grotesk']"
+                      className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-semibold tracking-[-0.3px] text-[16px] placeholder-[#587E67] text-[#04330B] focus:outline-none focus:border-[#04330B] focus:ring-0 transition-colors outline-none font-['Familjen_Grotesk']"
                       placeholder="Enter Village or Ward Name"
                       autoComplete="off"
                     />

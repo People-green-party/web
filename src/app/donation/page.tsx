@@ -156,7 +156,7 @@ const DonationPageContent = () => {
               {/* Mobile */}
               <div className="flex gap-[16px]">
                 <div className="w-[100px] h-[56px] relative">
-                  <select className="w-full h-full rounded-[8px] border border-[#C5DCCF] px-[16px] text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B]">
+                  <select className="w-full h-full rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate">
                     <option>+91</option>
                     <option>+1</option>
                   </select>
@@ -192,14 +192,14 @@ const DonationPageContent = () => {
               {/* Country & State */}
               <div className="flex gap-[16px]">
                 <div className="flex-1 relative">
-                  <select className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B]">
+                  <select className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate">
                     <option>{t.form.placeholders.country}</option>
                     <option>India</option>
                   </select>
                   <ChevronDown className="absolute right-[12px] top-[16px] text-[#587E67] pointer-events-none" size={24} />
                 </div>
                 <div className="flex-1 relative">
-                  <select className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B]">
+                  <select className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate">
                     <option>{t.form.placeholders.state}</option>
                     <option>Rajasthan</option>
                   </select>
@@ -210,7 +210,7 @@ const DonationPageContent = () => {
               {/* City & Pincode */}
               <div className="flex gap-[16px]">
                 <div className="flex-1 relative">
-                  <select className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B]">
+                  <select className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate">
                     <option>{t.form.placeholders.city}</option>
                     <option>Jaipur</option>
                   </select>
