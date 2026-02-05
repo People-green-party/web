@@ -693,7 +693,7 @@ const LandingPageContent = () => {
                 <ScrollReveal key={i} animation="fade-in" delay={600 + (i * 100)} className={i === 4 ? 'col-span-2 md:col-span-1 border-t md:border-t-0 border-gray-200/50' : ''}>
                   <Link
                     href={item.path}
-                    className={`group flex flex-col items-center justify-center gap-4 p-6 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 ease-out cursor-pointer h-[160px] md:h-[180px] bg-transparent hover:bg-white w-full h-full`}
+                    className={`group flex flex-col items-center justify-center gap-2 p-4 md:p-6 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 ease-out cursor-pointer min-h-[160px] md:min-h-[180px] h-full bg-transparent hover:bg-white w-full`}
                   >
                     <div className="text-[#0D5229] group-hover:scale-110 transition-transform duration-300">
                       <Icon size={40} strokeWidth={1.5} />

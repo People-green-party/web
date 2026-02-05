@@ -33,7 +33,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
     const defaultLinks = [
         { name: t.nav.home, href: '/' },
-        { name: t.nav.leaders, href: '/leadership' },
+        { name: t.nav.leaders, href: '/leaders' },
         { name: t.nav.constitution, href: '/constitution' },
         { name: t.nav.weAreAravali, href: 'https://wearearavali.org/', target: '_blank' },
     ];
