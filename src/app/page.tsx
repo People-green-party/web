@@ -23,7 +23,7 @@ const translations = {
       join: "Join Us",
       login: "Login",
       weAreAravali: "We are Aravali",
-      leaders: "Leaders"
+      leaders: "Leadership"
     },
     heroSlides: [
       {
@@ -68,49 +68,49 @@ const translations = {
           title: "Entrepreneurial Revolution",
           desc: "Not just jobs, but creating opportunities. Every youth an entrepreneur, every panchayat a development hub.",
           image: "/herosection/hero1.svg",
-          link: "/vision/agriculture"
+          link: "/vision/entrepreneurship"
         },
         {
           title: "New Farming – Capable Farmer",
           desc: "Less water • More production • Prosperous farmer. Transforming farming into a dignified, profitable profession.",
           image: "/herosection/hero2.svg",
-          link: "/vision/conservation"
+          link: "/vision/farming"
         },
         {
           title: "Empowerment of Vulnerable Groups",
           desc: "Equality is not just a promise, it's a system. Women, Dalits, and vulnerable groups at the center of power.",
           image: "/ourvision/VisionImage.svg",
-          link: "/vision/population"
+          link: "/vision/empowerment"
         },
         {
           title: "Holistic Urban-Rural Development",
           desc: "Progress where you are born. Decentralization of development, putting a stop to migration.",
           image: "/herosection/hero4.svg",
-          link: "/vision/education"
+          link: "/vision/urban-rural"
         },
         {
           title: "Civil Liberties and Culture",
           desc: "Freedom is both a right and a responsibility. Building a sensitive, tolerant, and aware India.",
           image: "/herosection/hero5.svg",
-          link: "/vision/energy"
+          link: "/vision/civil-liberties"
         },
         {
           title: "Open Economy – Minimum Government",
           desc: "Minimum government, maximum opportunity. Freedom from License Raj, promoting individual growth.",
           image: "/herosection/hero3.svg",
-          link: "/vision/women"
+          link: "/vision/open-economy"
         },
         {
           title: "World-Class Standard of Living",
           desc: "Living with dignity is every citizen's right. Guaranteeing quality education, health, and life.",
           image: "/ourvision/VisionImage.svg",
-          link: "/vision/youth"
+          link: "/vision/living-standards"
         },
         {
           title: "Nature Conservation and Sustainable Development",
           desc: "Only if nature survives, the future survives. Today's development is tomorrow's responsibility.",
           image: "/herosection/hero2.svg",
-          link: "/vision/health"
+          link: "/vision/nature"
         }
       ],
       footerText: "Now the people's PGP will defeat the dishonest.",
@@ -234,49 +234,49 @@ const translations = {
           title: "आन्त्रेप्रेन्योर क्रांति",
           desc: "नौकरी नहीं, अवसर पैदा करेंगे हर युवा बनेगा उद्यमी, हर पंचायत बनेगी विकास केंद्र",
           image: "/herosection/hero1.svg",
-          link: "/vision/agriculture"
+          link: "/vision/entrepreneurship"
         },
         {
           title: "नई खेती – समर्थ किसान",
           desc: "कम पानी • ज़्यादा उत्पादन • समृद्ध किसान खेती को घाटे से निकालकर सम्मानजनक व्यवसाय बनाएँ",
           image: "/herosection/hero2.svg",
-          link: "/vision/conservation"
+          link: "/vision/farming"
         },
         {
           title: "कमजोर वर्ग का सशक्तिकरण",
           desc: "बराबरी सिर्फ़ वादा नहीं, व्यवस्था होगी महिला, दलित और कमजोर वर्ग — शक्ति के केंद्र में ",
           image: "/ourvision/VisionImage.svg",
-          link: "/vision/population"
+          link: "/vision/empowerment"
         },
         {
           title: "शहरी–ग्रामीण समग्र विकास",
           desc: "जहाँ पैदा हुए, वहीं प्रगति हो विकास का विकेंद्रीकरण, पलायन पर विराम",
           image: "/herosection/hero4.svg",
-          link: "/vision/education"
+          link: "/vision/urban-rural"
         },
         {
           title: "नागरिक स्वतंत्रता और संस्कृति",
           desc: "आज़ादी अधिकार भी है, जिम्मेदारी भी संवेदनशील, सहिष्णु और जागरूक भारत",
           image: "/herosection/hero5.svg",
-          link: "/vision/energy"
+          link: "/vision/civil-liberties"
         },
         {
           title: "खुली अर्थव्यवस्था – न्यून सरकार",
           desc: "सरकार कम, अवसर ज़्यादा लाइसेंस-राज से मुक्ति, व्यक्ति की उड़ान।",
           image: "/herosection/hero3.svg",
-          link: "/vision/women"
+          link: "/vision/open-economy"
         },
         {
           title: "विश्व स्तरीय जीवन स्तर",
           desc: "गरिमा के साथ जीना, हर नागरिक का हक़ शिक्षा, स्वास्थ्य और जीवन की गारंटी।",
           image: "/ourvision/VisionImage.svg",
-          link: "/vision/youth"
+          link: "/vision/living-standards"
         },
         {
           title: "प्रकृति संरक्षण और सतत विकास",
           desc: "प्रकृति बचेगी, तभी भविष्य बचेगा आज का विकास, कल की ज़िम्मेदारी।",
           image: "/herosection/hero2.svg",
-          link: "/vision/health"
+          link: "/vision/nature"
         }
       ],
       footerText: "अब जनता की PGP बेईमानों को हराएगी।",
@@ -739,6 +739,7 @@ const LandingPageContent = () => {
 
           {/* New Image Grid Layout */}
           <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[24px]">
+            {/* Render 8 vision cards */}
             {(showMoreVision ? t.visionSection.cards : t.visionSection.cards.slice(0, 4)).map((card: any, idx: number) => (
               <ScrollReveal key={idx} animation="scale-up" delay={idx * 150} className="h-full">
                 <Link
@@ -843,17 +844,22 @@ const LandingPageContent = () => {
 
               {/* Cards */}
               <div className="relative lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:right-0 w-full lg:w-[636px] h-auto z-10 flex flex-col gap-[16px] lg:gap-[24px]">
-                {(translations[language as keyof typeof translations].overlappingSection.expandedCards || []).map((item: any, i: number) => (
-                  <div
-                    key={i}
-                    className="w-full lg:w-[636px] h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px] hover:shadow-[0px_8px_30px_0px_#00000020] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-                  >
-                    <div className="flex flex-col gap-[4px]">
-                      <h3 className="font-['Familjen_Grotesk'] font-bold text-[20px] lg:text-[24px] text-[#04330B]">{item.title}</h3>
-                      <p className="font-['Familjen_Grotesk'] font-medium text-[14px] lg:text-[16px] text-[#587E67]">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
+                {(translations[language as keyof typeof translations].overlappingSection.expandedCards || []).map((item: any, i: number) => {
+                  // Generate slug from title (handle English/Hindi)
+                  const slug = item.title.toLowerCase().trim().replace(/[\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^`{|}~]+/g, '-');
+                  return (
+                    <Link
+                      href={`/vision/${slug}`}
+                      key={i}
+                      className="w-full lg:w-[636px] h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px] hover:shadow-[0px_8px_30px_0px_#00000020] hover:-translate-y-1 transition-all duration-300 cursor-pointer block"
+                    >
+                      <div className="flex flex-col gap-[4px]">
+                        <h3 className="font-['Familjen_Grotesk'] font-bold text-[20px] lg:text-[24px] text-[#04330B]">{item.title}</h3>
+                        <p className="font-['Familjen_Grotesk'] font-medium text-[14px] lg:text-[16px] text-[#587E67]">{item.desc}</p>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>

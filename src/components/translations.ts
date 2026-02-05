@@ -52,52 +52,52 @@ export const translations = {
             sub: "Advocating for change, fostering growth, and ensuring a prosperous and just society.",
             cards: [
                 {
-                    title: "Entrepreneurial Revolution",
-                    desc: "Not just jobs, but creating opportunities. Every youth an entrepreneur, every panchayat a development hub.",
+                    title: "Entrepreneurship Revolution",
+                    desc: "Foundation of Middle Class Empowerment & Economic Freedom.",
                     image: "/herosection/hero1.svg",
-                    link: "/vision/agriculture"
+                    link: "/vision/entrepreneurship"
                 },
                 {
                     title: "New Farming – Capable Farmer",
-                    desc: "Less water • More production • Prosperous farmer. Transforming farming into a dignified, profitable profession.",
+                    desc: "Modern Agriculture, Less Water, More Income.",
                     image: "/herosection/hero2.svg",
-                    link: "/vision/conservation"
+                    link: "/vision/farming"
                 },
                 {
-                    title: "Empowerment of Vulnerable Groups",
-                    desc: "Equality is not just a promise, it's a system. Women, Dalits, and vulnerable groups at the center of power.",
+                    title: "Empowerment of Vulnerable Sections",
+                    desc: "Equality, Dignity, and Social Justice.",
                     image: "/ourvision/VisionImage.svg",
-                    link: "/vision/population"
+                    link: "/vision/empowerment"
                 },
                 {
-                    title: "Holistic Urban-Rural Development",
-                    desc: "Progress where you are born. Decentralization of development, putting a stop to migration.",
+                    title: "Holistic Urban & Rural Development",
+                    desc: "Balanced Development, Limited Migration.",
                     image: "/herosection/hero4.svg",
-                    link: "/vision/education"
+                    link: "/vision/urban-rural"
                 },
                 {
-                    title: "Civil Liberties and Culture",
-                    desc: "Freedom is both a right and a responsibility. Building a sensitive, tolerant, and aware India.",
+                    title: "Civil Liberties & Cultural Values",
+                    desc: "Sensitive, Tolerant, and Aware Society.",
                     image: "/herosection/hero5.svg",
-                    link: "/vision/energy"
+                    link: "/vision/civil-liberties"
                 },
                 {
-                    title: "Open Economy – Minimum Government",
-                    desc: "Minimum government, maximum opportunity. Freedom from License Raj, promoting individual growth.",
+                    title: "Open Economy & Min Government",
+                    desc: "Individual Freedom, Faster Growth.",
                     image: "/herosection/hero3.svg",
-                    link: "/vision/women"
+                    link: "/vision/open-economy"
                 },
                 {
-                    title: "World-Class Standard of Living",
-                    desc: "Living with dignity is every citizen's right. Guaranteeing quality education, health, and life.",
+                    title: "World Class Standard of Living",
+                    desc: "Guarantee of Education, Health & Dignified Life.",
                     image: "/ourvision/VisionImage.svg",
-                    link: "/vision/youth"
+                    link: "/vision/living-standards"
                 },
                 {
-                    title: "Nature Conservation and Sustainable Development",
-                    desc: "Only if nature survives, the future survives. Today's development is tomorrow's responsibility.",
+                    title: "Nature Conservation & Green Vision",
+                    desc: "Today & Tomorrow – Nature First.",
                     image: "/herosection/hero2.svg",
-                    link: "/vision/health"
+                    link: "/vision/nature"
                 }
             ],
             footerText: "Now the people's PGP will defeat the dishonest.",
@@ -271,51 +271,51 @@ export const translations = {
             cards: [
                 {
                     title: "आन्त्रेप्रेन्योर क्रांति",
-                    desc: "नौकरी नहीं, अवसर पैदा करेंगे हर युवा बनेगा उद्यमी, हर पंचायत बनेगी विकास केंद्र",
+                    desc: "मध्यम वर्ग सशक्तिकरण और आर्थिक स्वतंत्रता का आधार।",
                     image: "/herosection/hero1.svg",
-                    link: "/vision/agriculture"
+                    link: "/vision/entrepreneurship"
                 },
                 {
                     title: "नई खेती – समर्थ किसान",
-                    desc: "कम पानी • ज़्यादा उत्पादन • समृद्ध किसान खेती को घाटे से निकालकर सम्मानजनक व्यवसाय बनाएँ",
+                    desc: "आधुनिक कृषि, कम पानी, अधिक आय।",
                     image: "/herosection/hero2.svg",
-                    link: "/vision/conservation"
+                    link: "/vision/farming"
                 },
                 {
                     title: "कमजोर वर्ग का सशक्तिकरण",
-                    desc: "बराबरी सिर्फ़ वादा नहीं, व्यवस्था होगी महिला, दलित और कमजोर वर्ग — शक्ति के केंद्र में",
+                    desc: "बराबरी, गरिमा और सामाजिक न्याय।",
                     image: "/ourvision/VisionImage.svg",
-                    link: "/vision/population"
+                    link: "/vision/empowerment"
                 },
                 {
-                    title: "शहरी–ग्रामीण समग्र विकास",
-                    desc: "जहाँ पैदा हुए, वहीं प्रगति हो विकास का विकेंद्रीकरण, पलायन पर विराम",
+                    title: "शहरी और ग्रामीण समग्र विकास",
+                    desc: "संतुलित विकास, सीमित पलायन।",
                     image: "/herosection/hero4.svg",
-                    link: "/vision/education"
+                    link: "/vision/urban-rural"
                 },
                 {
                     title: "नागरिक स्वतंत्रता और संस्कृति",
-                    desc: "आज़ादी अधिकार भी है, जिम्मेदारी भी संवेदनशील, सहिष्णु और जागरूक भारत",
+                    desc: "संवेदनशील, सहनशील और जागरूक समाज।",
                     image: "/herosection/hero5.svg",
-                    link: "/vision/energy"
+                    link: "/vision/civil-liberties"
                 },
                 {
-                    title: "खुली अर्थव्यवस्था – न्यून सरकार",
-                    desc: "सरकार कम, अवसर ज़्यादा लाइसेंस-राज से मुक्ति, व्यक्ति की उड़ान",
+                    title: "खुली अर्थव्यवस्था और न्यून सरकार",
+                    desc: "व्यक्ति की आज़ादी, तेज़ विकास।",
                     image: "/herosection/hero3.svg",
-                    link: "/vision/women"
+                    link: "/vision/open-economy"
                 },
                 {
                     title: "विश्व स्तरीय जीवन स्तर",
-                    desc: "गरिमा के साथ जीना, हर नागरिक का हक़ शिक्षा, स्वास्थ्य और जीवन की गारंटी",
+                    desc: "शिक्षा, स्वास्थ्य और गरिमामय जीवन की गारंटी।",
                     image: "/ourvision/VisionImage.svg",
-                    link: "/vision/youth"
+                    link: "/vision/living-standards"
                 },
                 {
                     title: "प्रकृति संरक्षण और सतत विकास",
-                    desc: "प्रकृति बचेगी, तभी भविष्य बचेगा आज का विकास, कल की ज़िम्मेदारी",
+                    desc: "आज भी, कल भी – प्रकृति पहले।",
                     image: "/herosection/hero2.svg",
-                    link: "/vision/health"
+                    link: "/vision/nature"
                 }
             ],
             footerText: "अब जनता की PGP बेईमानों को हराएगी।",

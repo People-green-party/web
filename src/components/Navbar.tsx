@@ -151,7 +151,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                 )}
 
                 {/* Right Side Actions */}
-                <div className="flex items-center gap-[10px] lg:gap-[20px]">
+                <div className="flex items-center gap-[10px] lg:gap-[12px]">
 
                     {/* Language Toggle */}
                     <div
