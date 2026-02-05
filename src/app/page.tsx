@@ -720,7 +720,7 @@ const LandingPageContent = () => {
 
       {/* 2. VISION FOR BETTER TOMORROW (Cards) */}
       {/* 2. VISION FOR BETTER TOMORROW (Replaced with Image Grid) */}
-      <section className="bg-white px-4 mt-[180px] lg:mt-[240px] mb-20">
+      <section className="bg-white px-4 mt-[350px] lg:mt-[280px] mb-20">
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
 
           {/* Header */}
