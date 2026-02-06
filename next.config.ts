@@ -25,6 +25,8 @@ const nextConfig: NextConfig = {
         hostname: 'placehold.co',
       },
     ],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   async rewrites() {
     // Only use public URL if it's an absolute URL (starts with http), otherwise default to localhost for the proxy

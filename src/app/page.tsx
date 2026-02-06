@@ -1046,39 +1046,39 @@ const LandingPageContent = () => {
           {/* Changed: Use percentage-based positioning for LG+ screens to be responsive */}
           <ScrollReveal animation="fade-in" duration={1200} delay={300} className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:block lg:relative lg:w-full lg:h-full">
             <div className="relative w-full aspect-[244/280] lg:absolute lg:left-[0%] lg:top-[53.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news1.svg" className="w-full h-full object-fill" />
+              <Image src="/news1.svg" alt="News 1" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
             </div>
 
             <div className="relative w-full aspect-[245/188] lg:absolute lg:left-[20.3%] lg:top-[40%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news2.svg" className="w-full h-full object-fill" />
+              <Image src="/news2.svg" alt="News 2" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
             </div>
 
             <div className="relative w-full aspect-[245/148] lg:absolute lg:left-[20.3%] lg:top-[75.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news3.svg" className="w-full h-full object-fill" />
+              <Image src="/news3.svg" alt="News 3" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
             </div>
 
             <div className="relative w-full aspect-[245/141] lg:absolute lg:left-[40.7%] lg:top-[26.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news4.svg" className="w-full h-full object-fill" />
+              <Image src="/news4.svg" alt="News 4" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
             </div>
 
             <div className="relative w-full aspect-[245/275] lg:absolute lg:left-[40.7%] lg:top-[54.1%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news5.svg" className="w-full h-full object-fill" />
+              <Image src="/news5.svg" alt="News 5" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
             </div>
 
             <div className="relative w-full aspect-[245/350] lg:absolute lg:left-[61%] lg:top-[13.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news6.svg" className="w-full h-full object-fill" />
+              <Image src="/news6.svg" alt="News 6" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
             </div>
 
             <div className="relative w-full aspect-[245/146] lg:absolute lg:left-[61%] lg:top-[75.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news7.svg" className="w-full h-full object-fill" />
+              <Image src="/news7.svg" alt="News 7" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
             </div>
 
             <div className="relative w-full aspect-[245/178] lg:absolute lg:left-[81.4%] lg:top-[0%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news8.svg" className="w-full h-full object-fill" />
+              <Image src="/news8.svg" alt="News 8" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
             </div>
 
             <div className="relative w-full aspect-[245/398] lg:absolute lg:left-[81.4%] lg:top-[33.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news9.svg" className="w-full h-full object-fill" />
+              <Image src="/news9.svg" alt="News 9" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
             </div>
           </ScrollReveal>
         </div>
@@ -1089,7 +1089,13 @@ const LandingPageContent = () => {
         <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row items-start lg:justify-between">
           <ScrollReveal animation="fade-up" duration={800} className="flex flex-col w-full lg:w-[20%]">
             <Link href="/">
-              <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[150px] lg:w-[255px] h-auto lg:h-[136px] object-contain mb-[24px] cursor-pointer" />
+              <Image
+                src="/PGPlogo.svg"
+                alt="PGP Logo"
+                width={255}
+                height={136}
+                className="w-[150px] lg:w-[255px] h-auto lg:h-[136px] object-contain mb-[24px] cursor-pointer"
+              />
             </Link>
 
             <div className="flex flex-col gap-[20px] w-full lg:w-[228px]">

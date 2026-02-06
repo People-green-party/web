@@ -5,6 +5,7 @@ import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import { ArrowLeft, CheckCircle2, Scale, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useLanguage } from "../../../components/LanguageContext";
 import ScrollReveal from '../../../components/ScrollReveal';
 
@@ -61,10 +62,13 @@ export default function CivilLibertiesPage() {
             <div className={`relative w-full min-h-[85vh] lg:h-[85vh] flex items-center overflow-hidden mt-[70px] lg:mt-[90px] pb-16 lg:pb-0`}>
                 {/* Background Image */}
                 <div className="absolute inset-0 z-0">
-                    <img
+                    <Image
                         src={content.image}
                         alt={content.title}
-                        className="w-full h-full object-cover"
+                        fill
+                        priority
+                        className="object-cover"
+                        sizes="100vw"
                     />
                 </div>
 
@@ -116,10 +120,12 @@ export default function CivilLibertiesPage() {
 
                             {/* Left: Image Side (Desktop) */}
                             <div className="lg:w-2/5 h-[300px] lg:h-auto relative">
-                                <img
+                                <Image
                                     src={content.image}
-                                    className="w-full h-full object-cover"
                                     alt="Vision Details"
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 1024px) 100vw, 50vw"
                                 />
                                 <div className={`absolute inset-0 ${theme.primary} opacity-20 mix-blend-multiply`} />
                             </div>
@@ -207,7 +213,13 @@ export default function CivilLibertiesPage() {
                                 <Link href={card.link} className="block group h-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                                     <div className="relative h-48 overflow-hidden">
                                         <div className={`absolute inset-0 ${theme.primary} opacity-0 group-hover:opacity-20 transition-opacity z-10`} />
-                                        <img src={card.image} alt={card.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
+                                        <Image
+                                            src={card.image}
+                                            alt={card.title}
+                                            fill
+                                            className="object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                                        />
                                     </div>
                                     <div className="p-6">
                                         <h3 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-900 group-hover:text-green-700 transition-colors">
