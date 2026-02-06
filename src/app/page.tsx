@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import React, { useState, useContext, createContext, useRef, useEffect } from "react";
 import {
   Play, ChevronLeft, ChevronRight, Trophy, HandHeart, Globe, Leaf,
@@ -662,15 +661,8 @@ const LandingPageContent = () => {
               key={index}
               className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentHeroIndex ? 'opacity-100' : 'opacity-0'}`}
             >
-              <Image
-                src={img}
-                alt={`Hero ${index + 1}`}
-                fill
-                priority={index === 0} // Prioritize first hero image
-                className="object-cover"
-                sizes="100vw"
-              />
-              <div className="absolute inset-0 bg-black/40 z-10" /> {/* Dark Overlay */}
+              <img src={img} alt={`Hero ${index + 1}`} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-black/40" /> {/* Dark Overlay for text readability */}
             </div>
           ))}
         </div>
@@ -756,12 +748,10 @@ const LandingPageContent = () => {
                 >
                   {/* Background Image */}
                   <div className="absolute inset-0 overflow-hidden">
-                    <Image
+                    <img
                       src={card.image}
                       alt={card.title}
-                      fill
-                      className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors" />
                   </div>
@@ -821,13 +811,7 @@ const LandingPageContent = () => {
           <div className="relative w-full h-auto lg:h-[600px] flex flex-col lg:block">
             {/* Image */}
             <ScrollReveal animation="scale-up" duration={1000} className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[600px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
-              <Image
-                src="/ourvision/VisionImage.svg"
-                alt="Vision"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 920px"
-              />
+              <img src="/ourvision/VisionImage.svg" alt="Vision" className="w-full h-full object-cover" />
             </ScrollReveal>
 
             {/* Cards */}
@@ -864,13 +848,7 @@ const LandingPageContent = () => {
             <div className="relative w-full h-auto lg:h-[600px] flex flex-col lg:block">
               {/* Image */}
               <div className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[600px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
-                <Image
-                  src="/herosection/hero4.svg"
-                  alt="Vision Expanded"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 920px"
-                />
+                <img src="/herosection/hero4.svg" alt="Vision Expanded" className="w-full h-full object-cover" />
               </div>
 
               {/* Cards */}
@@ -957,13 +935,7 @@ const LandingPageContent = () => {
             {/* Mobile Image */}
             <div className="order-2 lg:hidden w-full flex justify-center mb-[24px]">
               <div className="relative w-full max-w-[400px] h-auto aspect-square group">
-                <Image
-                  src="/Shudhanshu.svg"
-                  alt="Dr Sudhanshu"
-                  fill
-                  className="rounded-[8px] border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500"
-                  sizes="(max-width: 1024px) 100vw, 400px"
-                />
+                <img src="Shudhanshu.svg" alt="Dr Sudhanshu" className="w-full h-full rounded-[8px] bg-white border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500" />
               </div>
             </div>
           </div>
@@ -971,14 +943,8 @@ const LandingPageContent = () => {
           {/* Image Second */}
           <div className="hidden lg:flex w-full lg:w-auto justify-center lg:justify-end">
             <div className="relative w-full max-w-[400px] h-auto aspect-square lg:w-[419px] lg:h-[444px] group">
-              <ScrollReveal animation="fade-in" duration={1000} delay={300} className="w-full h-full relative">
-                <Image
-                  src="/Shudhanshu.svg"
-                  alt="Dr Sudhanshu"
-                  fill
-                  className="rounded-[8px] border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500"
-                  sizes="(max-width: 1024px) 100vw, 419px"
-                />
+              <ScrollReveal animation="fade-in" duration={1000} delay={300} className="w-full h-full">
+                <img src="Shudhanshu.svg" alt="Dr Sudhanshu" className="w-full h-full rounded-[8px] bg-white border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500" />
               </ScrollReveal>
             </div>
           </div>
@@ -1046,39 +1012,39 @@ const LandingPageContent = () => {
           {/* Changed: Use percentage-based positioning for LG+ screens to be responsive */}
           <ScrollReveal animation="fade-in" duration={1200} delay={300} className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:block lg:relative lg:w-full lg:h-full">
             <div className="relative w-full aspect-[244/280] lg:absolute lg:left-[0%] lg:top-[53.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <Image src="/news1.svg" alt="News 1" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
+              <img src="/news1.svg" className="w-full h-full object-fill" />
             </div>
 
             <div className="relative w-full aspect-[245/188] lg:absolute lg:left-[20.3%] lg:top-[40%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <Image src="/news2.svg" alt="News 2" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
+              <img src="/news2.svg" className="w-full h-full object-fill" />
             </div>
 
             <div className="relative w-full aspect-[245/148] lg:absolute lg:left-[20.3%] lg:top-[75.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <Image src="/news3.svg" alt="News 3" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
+              <img src="/news3.svg" className="w-full h-full object-fill" />
             </div>
 
             <div className="relative w-full aspect-[245/141] lg:absolute lg:left-[40.7%] lg:top-[26.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <Image src="/news4.svg" alt="News 4" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
+              <img src="/news4.svg" className="w-full h-full object-fill" />
             </div>
 
             <div className="relative w-full aspect-[245/275] lg:absolute lg:left-[40.7%] lg:top-[54.1%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <Image src="/news5.svg" alt="News 5" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
+              <img src="/news5.svg" className="w-full h-full object-fill" />
             </div>
 
             <div className="relative w-full aspect-[245/350] lg:absolute lg:left-[61%] lg:top-[13.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <Image src="/news6.svg" alt="News 6" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
+              <img src="/news6.svg" className="w-full h-full object-fill" />
             </div>
 
             <div className="relative w-full aspect-[245/146] lg:absolute lg:left-[61%] lg:top-[75.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <Image src="/news7.svg" alt="News 7" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
+              <img src="/news7.svg" className="w-full h-full object-fill" />
             </div>
 
             <div className="relative w-full aspect-[245/178] lg:absolute lg:left-[81.4%] lg:top-[0%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <Image src="/news8.svg" alt="News 8" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
+              <img src="/news8.svg" className="w-full h-full object-fill" />
             </div>
 
             <div className="relative w-full aspect-[245/398] lg:absolute lg:left-[81.4%] lg:top-[33.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <Image src="/news9.svg" alt="News 9" fill className="object-fill" sizes="(max-width: 1024px) 50vw, 20vw" />
+              <img src="/news9.svg" className="w-full h-full object-fill" />
             </div>
           </ScrollReveal>
         </div>
@@ -1089,13 +1055,7 @@ const LandingPageContent = () => {
         <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row items-start lg:justify-between">
           <ScrollReveal animation="fade-up" duration={800} className="flex flex-col w-full lg:w-[20%]">
             <Link href="/">
-              <Image
-                src="/PGPlogo.svg"
-                alt="PGP Logo"
-                width={255}
-                height={136}
-                className="w-[150px] lg:w-[255px] h-auto lg:h-[136px] object-contain mb-[24px] cursor-pointer"
-              />
+              <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[150px] lg:w-[255px] h-auto lg:h-[136px] object-contain mb-[24px] cursor-pointer" />
             </Link>
 
             <div className="flex flex-col gap-[20px] w-full lg:w-[228px]">
