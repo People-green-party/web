@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import React, { useState, useContext, createContext, useRef, useEffect } from "react";
 import {
   Play, ChevronLeft, ChevronRight, Trophy, HandHeart, Globe, Leaf,
@@ -661,8 +662,15 @@ const LandingPageContent = () => {
               key={index}
               className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentHeroIndex ? 'opacity-100' : 'opacity-0'}`}
             >
-              <img src={img} alt={`Hero ${index + 1}`} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/40" /> {/* Dark Overlay for text readability */}
+              <Image
+                src={img}
+                alt={`Hero ${index + 1}`}
+                fill
+                priority={index === 0} // Prioritize first hero image
+                className="object-cover"
+                sizes="100vw"
+              />
+              <div className="absolute inset-0 bg-black/40 z-10" /> {/* Dark Overlay */}
             </div>
           ))}
         </div>
@@ -748,10 +756,12 @@ const LandingPageContent = () => {
                 >
                   {/* Background Image */}
                   <div className="absolute inset-0 overflow-hidden">
-                    <img
+                    <Image
                       src={card.image}
                       alt={card.title}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+                      fill
+                      className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors" />
                   </div>
@@ -811,7 +821,13 @@ const LandingPageContent = () => {
           <div className="relative w-full h-auto lg:h-[600px] flex flex-col lg:block">
             {/* Image */}
             <ScrollReveal animation="scale-up" duration={1000} className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[600px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
-              <img src="/ourvision/VisionImage.svg" alt="Vision" className="w-full h-full object-cover" />
+              <Image
+                src="/ourvision/VisionImage.svg"
+                alt="Vision"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 920px"
+              />
             </ScrollReveal>
 
             {/* Cards */}
@@ -848,7 +864,13 @@ const LandingPageContent = () => {
             <div className="relative w-full h-auto lg:h-[600px] flex flex-col lg:block">
               {/* Image */}
               <div className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[600px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
-                <img src="/herosection/hero4.svg" alt="Vision Expanded" className="w-full h-full object-cover" />
+                <Image
+                  src="/herosection/hero4.svg"
+                  alt="Vision Expanded"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 920px"
+                />
               </div>
 
               {/* Cards */}
@@ -935,7 +957,13 @@ const LandingPageContent = () => {
             {/* Mobile Image */}
             <div className="order-2 lg:hidden w-full flex justify-center mb-[24px]">
               <div className="relative w-full max-w-[400px] h-auto aspect-square group">
-                <img src="Shudhanshu.svg" alt="Dr Sudhanshu" className="w-full h-full rounded-[8px] bg-white border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500" />
+                <Image
+                  src="/Shudhanshu.svg"
+                  alt="Dr Sudhanshu"
+                  fill
+                  className="rounded-[8px] border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500"
+                  sizes="(max-width: 1024px) 100vw, 400px"
+                />
               </div>
             </div>
           </div>
@@ -943,8 +971,14 @@ const LandingPageContent = () => {
           {/* Image Second */}
           <div className="hidden lg:flex w-full lg:w-auto justify-center lg:justify-end">
             <div className="relative w-full max-w-[400px] h-auto aspect-square lg:w-[419px] lg:h-[444px] group">
-              <ScrollReveal animation="fade-in" duration={1000} delay={300} className="w-full h-full">
-                <img src="Shudhanshu.svg" alt="Dr Sudhanshu" className="w-full h-full rounded-[8px] bg-white border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500" />
+              <ScrollReveal animation="fade-in" duration={1000} delay={300} className="w-full h-full relative">
+                <Image
+                  src="/Shudhanshu.svg"
+                  alt="Dr Sudhanshu"
+                  fill
+                  className="rounded-[8px] border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500"
+                  sizes="(max-width: 1024px) 100vw, 419px"
+                />
               </ScrollReveal>
             </div>
           </div>

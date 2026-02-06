@@ -6,6 +6,7 @@ import { Footer } from "../../components/Footer";
 import { useLanguage } from "../../components/LanguageContext";
 import { Facebook, Instagram, X } from 'lucide-react';
 import ScrollReveal from '../../components/ScrollReveal';
+import Image from "next/image";
 
 export default function LeadersPage() {
     const { t } = useLanguage();
@@ -70,7 +71,13 @@ export default function LeadersPage() {
                                         </p>
                                     </div>
                                     <div className="relative w-full h-[226px] rounded-[8px] overflow-hidden" style={{ background: 'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)' }}>
-                                        <img src={member.image} alt={member.name} className="w-full h-full object-contain object-bottom" onError={(e) => (e.currentTarget.src = 'https://placehold.co/272x226/E8F3EC/587E67?text=Photo')} />
+                                        <Image
+                                            src={member.image}
+                                            alt={member.name}
+                                            fill
+                                            className="object-contain object-bottom"
+                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                        />
                                         {index === 0 && (
                                             <div className="absolute bottom-[16px] left-[16px] flex gap-[12px] z-10">
                                                 <div className="w-[32px] h-[32px] bg-white rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors">
