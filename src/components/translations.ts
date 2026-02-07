@@ -142,6 +142,12 @@ export const translations = {
             title: "News and Publications",
             sub: "Stay updated with the party’s latest statements and announcements."
         },
+        gallery: {
+            title: "Media Gallery",
+            sub: "Glimpses of our journey and events.",
+            viewMore: "View More",
+            viewLess: "View Less"
+        },
         committee: {
             title: "Meet Our Committee Members",
             sub: "Dedicated leaders working together to guide our vision for a sustainable future.",
@@ -359,6 +365,12 @@ export const translations = {
         news: {
             title: "समाचार और प्रकाशन",
             sub: "पार्टी के नवीनतम बयानों और घोषणाओं से अपडेट रहें।"
+        },
+        gallery: {
+            title: "मीडिया गैलरी",
+            sub: "हमारी यात्रा और कार्यक्रमों की झलकियाँ।",
+            viewMore: "और देखें",
+            viewLess: "कम देखें"
         },
         committee: {
             title: "हमारी समिति के सदस्यों से मिलें",

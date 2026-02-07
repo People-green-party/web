@@ -67,49 +67,49 @@ const translations = {
         {
           title: "Entrepreneurial Revolution",
           desc: "Not just jobs, but creating opportunities. Every youth an entrepreneur, every panchayat a development hub.",
-          image: "/herosection/hero1.svg",
+          image: "/herosection/7.jpg",
           link: "/vision/entrepreneurship"
         },
         {
           title: "New Farming – Capable Farmer",
           desc: "Less water • More production • Prosperous farmer. Transforming farming into a dignified, profitable profession.",
-          image: "/herosection/hero2.svg",
+          image: "/herosection/5.jpg",
           link: "/vision/farming"
         },
         {
           title: "Empowerment of Vulnerable Groups",
           desc: "Equality is not just a promise, it's a system. Women, Dalits, and vulnerable groups at the center of power.",
-          image: "/ourvision/VisionImage.svg",
+          image: "/herosection/9.jpg",
           link: "/vision/empowerment"
         },
         {
           title: "Holistic Urban-Rural Development",
           desc: "Progress where you are born. Decentralization of development, putting a stop to migration.",
-          image: "/herosection/hero4.svg",
+          image: "/herosection/1.png",
           link: "/vision/urban-rural"
         },
         {
           title: "Civil Liberties and Culture",
           desc: "Freedom is both a right and a responsibility. Building a sensitive, tolerant, and aware India.",
-          image: "/herosection/hero5.svg",
+          image: "/herosection/7.jpg",
           link: "/vision/civil-liberties"
         },
         {
           title: "Open Economy – Minimum Government",
           desc: "Minimum government, maximum opportunity. Freedom from License Raj, promoting individual growth.",
-          image: "/herosection/hero3.svg",
+          image: "/herosection/7.jpg",
           link: "/vision/open-economy"
         },
         {
           title: "World-Class Standard of Living",
           desc: "Living with dignity is every citizen's right. Guaranteeing quality education, health, and life.",
-          image: "/ourvision/VisionImage.svg",
+          image: "/herosection/7.jpg",
           link: "/vision/living-standards"
         },
         {
           title: "Nature Conservation and Sustainable Development",
           desc: "Only if nature survives, the future survives. Today's development is tomorrow's responsibility.",
-          image: "/herosection/hero2.svg",
+          image: "/herosection/7.jpg",
           link: "/vision/nature"
         }
       ],
@@ -154,6 +154,12 @@ const translations = {
     news: {
       title: "News and Publications",
       sub: "Stay updated with the party’s latest statements and announcements."
+    },
+    gallery: {
+      title: "Media Gallery",
+      sub: "Glimpses of our journey and events.",
+      viewMore: "View More",
+      viewLess: "View Less"
     },
     committee: {
       title: "Meet Our Committee Members",
@@ -320,6 +326,12 @@ const translations = {
     news: {
       title: "समाचार और प्रकाशन",
       sub: "पार्टी के नवीनतम बयानों और घोषणाओं से अपडेट रहें।"
+    },
+    gallery: {
+      title: "मीडिया गैलरी",
+      sub: "हमारी यात्रा और कार्यक्रमों की झलकियाँ।",
+      viewMore: "और देखें",
+      viewLess: "कम देखें"
     },
     committee: {
       title: "हमारी समिति के सदस्यों से मिलें",
@@ -581,6 +593,7 @@ const LandingPageContent = () => {
   // State for "View More" sections
   const [showMoreVision, setShowMoreVision] = useState(false);
   const [showMoreOverlap, setShowMoreOverlap] = useState(false);
+  const [showMoreGallery, setShowMoreGallery] = useState(false);
 
 
   useEffect(() => {
@@ -651,11 +664,11 @@ const LandingPageContent = () => {
         {/* Slider Images */}
         <div className="absolute inset-0 overflow-hidden">
           {[
-            "/herosection/hero1.svg",
-            "/herosection/hero2.svg",
-            "/herosection/hero3.svg",
-            "/herosection/hero4.svg",
-            "/herosection/hero5.svg"
+            "/herosection/10.jpg",
+            "/herosection/4.jpg",
+            "/herosection/8.jpg",
+            "/herosection/9.jpg",
+            "/herosection/7.jpg"
           ].map((img, index) => (
             <div
               key={index}
@@ -811,7 +824,7 @@ const LandingPageContent = () => {
           <div className="relative w-full h-auto lg:h-[600px] flex flex-col lg:block">
             {/* Image */}
             <ScrollReveal animation="scale-up" duration={1000} className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[600px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
-              <img src="/ourvision/VisionImage.svg" alt="Vision" className="w-full h-full object-cover" />
+              <img src="/ourvision/jaipur-vision.jpg" alt="Vision" className="w-full h-full object-cover" />
             </ScrollReveal>
 
             {/* Cards */}
@@ -848,7 +861,7 @@ const LandingPageContent = () => {
             <div className="relative w-full h-auto lg:h-[600px] flex flex-col lg:block">
               {/* Image */}
               <div className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[600px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
-                <img src="/herosection/hero4.svg" alt="Vision Expanded" className="w-full h-full object-cover" />
+                <img src="/ourvision/jaipur-vison-1.jpg" alt="Vision Expanded" className="w-full h-full object-cover" />
               </div>
 
               {/* Cards */}
@@ -1047,6 +1060,63 @@ const LandingPageContent = () => {
               <img src="/news9.svg" className="w-full h-full object-fill" />
             </div>
           </ScrollReveal>
+        </div>
+      </section>
+
+      {/* 7. GALLERY SECTION */}
+      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center">
+        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col items-center">
+
+          {/* Header */}
+          <div className="flex flex-col gap-[16px] w-full items-center text-center mb-[40px] lg:mb-[60px]">
+            <ScrollReveal animation="fade-up" duration={800}>
+              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] tracking-[-0.3px] text-[#04330B]">
+                {t.gallery.title}
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal animation="fade-up" duration={800} delay={200}>
+              <p className="font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[20px] text-[#587E67] max-w-[800px]">
+                {t.gallery.sub}
+              </p>
+            </ScrollReveal>
+          </div>
+
+          {/* Gallery Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+            {[
+              "/herosection/10.jpg",
+              "/herosection/4.jpg",
+              "/herosection/8.jpg",
+              "/herosection/9.jpg",
+              "/herosection/7.jpg",
+              "/news1.svg",
+              "/news2.svg",
+              "/news3.svg",
+              "/news4.svg",
+              "/news5.svg",
+              "/news6.svg",
+              "/news7.svg"
+            ].slice(0, showMoreGallery ? 12 : 8).map((src, index) => (
+              <ScrollReveal key={index} animation="scale-up" delay={index * 100} className="relative aspect-square rounded-[12px] overflow-hidden group cursor-pointer">
+                <img
+                  src={src}
+                  alt={`Gallery ${index + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              </ScrollReveal>
+            ))}
+          </div>
+
+          {/* View More Button */}
+          <div className="mt-[40px] lg:mt-[60px] flex justify-center w-full">
+            <button
+              onClick={() => setShowMoreGallery(!showMoreGallery)}
+              className="px-[32px] py-[12px] bg-[#04330B] hover:bg-[#0D5229] text-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors duration-300 shadow-xl"
+            >
+              {showMoreGallery ? t.gallery.viewLess : t.gallery.viewMore}
+            </button>
+          </div>
+
         </div>
       </section>
 
