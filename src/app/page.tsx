@@ -1084,6 +1084,7 @@ const LandingPageContent = () => {
           {/* Gallery Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
             {[
+              "/herosection/team.jpg",
               "/herosection/10.jpg",
               "/herosection/4.jpg",
               "/herosection/8.jpg",

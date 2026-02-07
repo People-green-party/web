@@ -3,7 +3,7 @@
 import React from "react";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
-import { ArrowLeft, CheckCircle2, Briefcase, ChevronRight } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Briefcase, ChevronRight, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "../../../components/LanguageContext";
 import ScrollReveal from '../../../components/ScrollReveal';
@@ -23,26 +23,43 @@ const pageData = {
     en: {
         title: "Entrepreneurship Revolution",
         subtitle: "Foundation of Middle Class Empowerment & Economic Freedom",
-        description: "The first and most critical tenet of PGP is the Entrepreneurship Revolution. Our goal is to empower the middle class and eliminate economic hardship by fostering a culture of self-reliance and business creation. We aim to double the GDP every five years.",
+        missionTitle: "Why is it Important?",
+        description: "India's biggest challenge is not unemployment, but lack of opportunities. The People's Green Party believes that sustainable employment is not created by the government, but by citizens themselves — provided they get the right skills, capital, and freedom.",
         image: "/herosection/hero1.svg",
         icon: Briefcase,
+        strategyTitle: "Our Strategy",
         points: [
-            "Train 100+ youth per Gram Panchayat in specialized skills.",
-            "Assistance in establishing Micro and Small Startups.",
-            "Target to double the GDP every five years.",
-            "Increase public welfare resources through growth."
+            "Identifying Youth Talent: Identifying at least 100 ambitious youths in every Gram Panchayat and Urban Ward through door-to-door surveys who aspire to start their own ventures based on their aptitude and interest.",
+            "One Person = One Skill Model: Providing specialized training to each selected individual in sectors like Technical (e.g., solar repair), Service (e.g., tourism), Agri-based (e.g., food processing), or Digital (e.g., digital marketing).",
+            "Comprehensive Business Training: Beyond vocational skills, we will instill a 'Business Mindset' and 'Financial Literacy'. They will learn bookkeeping, digital payments, customer management, and profit/loss analysis to turn skills into successful enterprises.",
+            "Complete Ecosystem Support: Facilitating easy access to low-interest loans for starting Micro and Small Startups. This includes ongoing mentorship from industry experts and ensuring market access for their products and services."
+        ],
+        outcomeTitle: "Expected Outcomes",
+        outcomes: [
+            "Millions of New Entrepreneurs: Over the next five years, we aim to create crores of new 'First-Generation Entrepreneurs' at the grassroots level, transforming job seekers into job creators.",
+            "Rapid Expansion of Middle Class: As low-income individuals increase their earnings and start small businesses, the middle class will expand rapidly, reducing economic inequality and improving living standards.",
+            "Economic Superpower: Increased grassroots production and services will lead to double GDP growth. A wider tax base generated from new earners will provide the government with more revenue for public welfare schemes like health and education."
         ]
     },
     hi: {
         title: "आन्त्रेप्रेन्योर क्रांति (Entrepreneurship Revolution)",
         subtitle: "मध्यम वर्ग सशक्तिकरण और आर्थिक स्वतंत्रता का आधार",
-        description: "पीपल्स ग्रीन पार्टी का पहला और सबसे महत्वपूर्ण सूत्र आन्त्रेप्रेन्योर क्रांति है। इसका उद्देश्य मध्यम आर्थिक वर्ग को सशक्त बनाकर उसकी आर्थिक कठिनाइयों को समाप्त करना है।",
+        missionTitle: "क्यों ज़रूरी है?",
+        description: "पीपल्स ग्रीन पार्टी का पहला और सबसे महत्वपूर्ण सूत्र आन्त्रेप्रेन्योर क्रांति है। इसका उद्देश्य मध्यम आर्थिक वर्ग को सशक्त बनाकर उसकी आर्थिक कठिनाइयों को समाप्त करना है। भारत की सबसे बड़ी चुनौती बेरोज़गारी नहीं, बल्कि अवसरों की कमी है। पीपल्स ग्रीन पार्टी मानती है कि स्थायी रोज़गार सरकार नहीं, बल्कि नागरिक स्वयं पैदा करते हैं — यदि उन्हें सही स्किल, पूंजी और आज़ादी मिले।",
         image: "/herosection/hero1.svg",
         icon: Briefcase,
+        strategyTitle: "हमारी रणनीति",
         points: [
-            "प्रत्येक ग्राम पंचायत और शहरी वार्ड में कम से कम 100 युवाओं को एक विशिष्ट स्किल में प्रशिक्षित किया जाएगा।",
-            "इन युवाओं को माइक्रो और स्मॉल स्टार्टअप स्थापित करने में सहायता दी जाएगी।",
-            "लक्ष्य है हर पाँच वर्ष में GDP को दोगुना करना, ताकि नागरिकों की आय बढ़े और सरकार के पास जनकल्याण हेतु पर्याप्त संसाधन हों।"
+            "युवा प्रतिभा की पहचान: हर ग्राम पंचायत और शहरी वार्ड में घर-घर जाकर सर्वेक्षण के माध्यम से न्यूनतम 100 ऐसे महत्वाकांक्षी युवाओं की पहचान करना जो अपना व्यवसाय शुरू करना चाहते हैं। हम उनकी रुचि और क्षमता के आधार पर उन्हें शॉर्टलिस्ट करेंगे।",
+            "एक व्यक्ति = एक स्किल मॉडल: प्रत्येक चयनित युवा को एक विशिष्ट क्षेत्र में महारत हासिल करने के लिए ट्रेन किया जाएगा। यह 'टेक्निकल', 'सर्विस', 'एग्री-बेस्ड', या 'डिजिटल' क्षेत्र हो सकता है।",
+            "समग्र प्रशिक्षण: केवल हुनर ही नहीं, हम उन्हें 'बिज़नेस माइंडसेट' और 'फाइनेंशियल लिटरेसी' भी सिखाएंगे। उन्हें खाता बही मेंटेन करना, डिजिटल भुगतान और ग्राहक प्रबंधन सिखाया जाएगा ताकि वे अपने काम को एक सफल व्यवसाय में बदल सकें।",
+            "सम्पूर्ण इकोसिस्टम सहयोग: प्रशिक्षण के बाद, हम उन्हें माइक्रो और स्मॉल स्टार्टअप शुरू करने के लिए कम ब्याज पर आसान लोन उपलब्ध कराएंगे। साथ ही, अनुभवी मेंटर्स का मार्गदर्शन और 'मार्केट एक्सेस' सुनिश्चित करेंगे।"
+        ],
+        outcomeTitle: "अपेक्षित परिणाम",
+        outcomes: [
+            "करोड़ों नए उद्यमी: अगले पाँच वर्षों में हम जमीनी स्तर पर करोड़ों नए 'प्रथम-स्तरीय आन्त्रेप्रेन्योर' तैयार करेंगे। ये वे लोग होंगे जो पहले नौकरी ढूंढ रहे थे, लेकिन अब दूसरों को भी रोजगार देने में सक्षम होंगे।",
+            "सशक्त मध्यम वर्ग: जब निम्न-आय वर्ग के लोग अपनी आय बढ़ाएंगे और छोटा व्यवसाय शुरू करेंगे, तो मध्यम वर्ग का तेज़ विस्तार होगा। इससे समाज में आर्थिक असमानता कम होगी और लोगों का जीवन स्तर सुधरेगा।",
+            "आर्थिक महाशक्ति: जमीनी स्तर पर उत्पादन और सेवाओं के बढ़ने से देश की GDP में दोगुनी वृद्धि होगी। अधिक लोग कमाने लगेंगे, जिससे एक व्यापक टैक्स बेस बनेगा और सरकार के पास जनकल्याणकारी योजनाओं पर खर्च करने के लिए अधिक राजस्व होगा।"
         ]
     }
 };
@@ -129,7 +146,7 @@ export default function EntrepreneurshipPage() {
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className={`h-[2px] w-12 ${theme.primary}`} />
                                     <span className={`font-bold uppercase tracking-wider text-sm ${theme.accent}`}>
-                                        {currentLang === 'hi' ? 'हमारा मिशन' : 'Our Mission'}
+                                        {content.missionTitle}
                                     </span>
                                 </div>
                                 <h3 className="font-['Familjen_Grotesk'] text-3xl font-bold text-gray-900 mb-6">
@@ -144,45 +161,98 @@ export default function EntrepreneurshipPage() {
                 </div>
             </div>
 
-            {/* 3. KEY INITIATIVES - STYLED GRID */}
+            {/* 3. KEY INITIATIVES (STRATEGY) - STYLED GRID */}
             <div className={`w-full ${theme.secondary} py-20 px-4`}>
                 <div className="max-w-[1320px] mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="font-['Familjen_Grotesk'] font-bold text-3xl md:text-4xl text-gray-900 mb-4">
-                            {currentLang === 'hi' ? 'मुख्य पहल' : 'Key Initiatives'}
+                            {content.strategyTitle}
                         </h2>
                         <div className={`w-20 h-1 ${theme.primary} mx-auto rounded-full`} />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-8">
-                        {content.points.map((point: string, idx: number) => (
-                            <ScrollReveal
-                                key={idx}
-                                animation="fade-up"
-                                delay={idx * 100}
-                                className={`group p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden`}
-                            >
-                                <div className={`absolute top-0 left-0 w-2 h-full ${theme.primary} transform -translate-x-2 group-hover:translate-x-0 transition-transform duration-300`} />
-                                <div className="flex items-start gap-5">
-                                    <div className={`w-12 h-12 rounded-xl ${theme.iconBg} flex items-center justify-center shrink-0 text-${theme.accent}`}>
-                                        <CheckCircle2 size={24} className={`${theme.accent}`} />
+                        {content.points.map((point: string, idx: number) => {
+                            const [title, ...rest] = point.split(':');
+                            const description = rest.join(':');
+                            return (
+                                <ScrollReveal
+                                    key={idx}
+                                    animation="fade-up"
+                                    delay={idx * 100}
+                                    className={`group p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden`}
+                                >
+                                    <div className={`absolute top-0 left-0 w-2 h-full ${theme.primary} transform -translate-x-2 group-hover:translate-x-0 transition-transform duration-300`} />
+                                    <div className="flex items-start gap-5">
+                                        <div className={`w-12 h-12 rounded-xl ${theme.iconBg} flex items-center justify-center shrink-0 text-${theme.accent}`}>
+                                            <CheckCircle2 size={24} className={`${theme.accent}`} />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-800 mb-2">
+                                                {currentLang === 'hi' ? `रणनीति ${idx + 1}` : `Strategy ${idx + 1}`}
+                                            </h4>
+                                            <p className="font-['Familjen_Grotesk'] text-gray-600 leading-relaxed">
+                                                {description ? (
+                                                    <>
+                                                        <span className="font-bold text-gray-900">{title}:</span> {description}
+                                                    </>
+                                                ) : (
+                                                    point
+                                                )}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-800 mb-2">
-                                            {currentLang === 'hi' ? `लक्ष्य ${idx + 1}` : `Goal ${idx + 1}`}
-                                        </h4>
-                                        <p className="font-['Familjen_Grotesk'] text-gray-600 leading-relaxed">
-                                            {point}
-                                        </p>
-                                    </div>
-                                </div>
-                            </ScrollReveal>
-                        ))}
+                                </ScrollReveal>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
 
-            {/* 4. MORE VISIONS SECTION */}
+            {/* 4. EXPECTED OUTCOMES - STYLED GRID */}
+            <div className={`w-full bg-white py-20 px-4`}>
+                <div className="max-w-[1320px] mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="font-['Familjen_Grotesk'] font-bold text-3xl md:text-4xl text-gray-900 mb-4">
+                            {content.outcomeTitle}
+                        </h2>
+                        <div className={`w-20 h-1 ${theme.primary} mx-auto rounded-full`} />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                        {content.outcomes.map((outcome: string, idx: number) => {
+                            const [title, ...rest] = outcome.split(':');
+                            const description = rest.join(':');
+                            return (
+                                <ScrollReveal
+                                    key={idx}
+                                    animation="fade-up"
+                                    delay={idx * 100}
+                                    className={`group p-8 ${theme.secondary} rounded-2xl shadow-sm border border-blue-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden text-center`}
+                                >
+                                    <div className="flex flex-col items-center gap-4">
+                                        <div className={`w-14 h-14 rounded-full ${theme.button} flex items-center justify-center shrink-0 text-white shadow-lg`}>
+                                            <Trophy size={28} />
+                                        </div>
+                                        <p className="font-['Familjen_Grotesk'] text-lg text-gray-600 leading-relaxed">
+                                            {description ? (
+                                                <>
+                                                    <span className="block mb-2 font-bold text-xl text-gray-900">{title}</span>
+                                                    {description}
+                                                </>
+                                            ) : (
+                                                <span className="font-semibold text-gray-800">{outcome}</span>
+                                            )}
+                                        </p>
+                                    </div>
+                                </ScrollReveal>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+
+            {/* 5. MORE VISIONS SECTION */}
             <div className="w-full bg-gray-50 py-20 px-4">
                 <div className="max-w-[1320px] mx-auto">
                     <div className="text-center mb-12">
@@ -221,7 +291,7 @@ export default function EntrepreneurshipPage() {
                 </div>
             </div>
 
-            {/* 5. CTA SECTION */}
+            {/* 6. CTA SECTION */}
             <div className="w-full py-20 px-4 bg-white">
                 <div className="max-w-[1000px] mx-auto text-center">
                     <ScrollReveal animation="scale-up" className={`bg-gradient-to-br ${theme.gradient} rounded-[40px] p-10 lg:p-16 shadow-2xl text-white relative overflow-hidden`}>
