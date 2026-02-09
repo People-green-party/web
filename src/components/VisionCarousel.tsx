@@ -730,15 +730,17 @@ const VisionCarousel = ({ language }: { language: string }) => {
             <div className="text-center mb-12 px-4">
                 <ScrollReveal animation="fade-up" duration={800}>
                     <h2 className="font-['Familjen_Grotesk'] font-bold text-[24px] md:text-[32px] lg:text-[48px] leading-tight text-[#04330B] mb-4 uppercase max-w-4xl mx-auto">
-                        VISION JAIPUR 2040
+                        {language === 'hi' ? 'विजन जयपुर 2040' : 'VISION JAIPUR 2040'}
                     </h2>
                 </ScrollReveal>
                 <ScrollReveal animation="fade-up" duration={800} delay={200}>
                     <p className="font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[20px] text-[#587E67] max-w-3xl mx-auto">
-                        50 IDEAS TO TRANSFORM THE PINK CITY
+                        {language === 'hi' ? 'गुलाबी नगरी को बदलने के लिए 50 विचार' : '50 IDEAS TO TRANSFORM THE PINK CITY'}
                         <br />
                         <span className="text-sm md:text-base opacity-80 mt-2 block">
-                            A blueprint for a sustainable, inclusive, and globally admired Jaipur.
+                            {language === 'hi'
+                                ? 'एक स्थायी, समावेशी और विश्व स्तर पर प्रशंसित जयपुर के लिए एक ब्लूप्रिंट।'
+                                : 'A blueprint for a sustainable, inclusive, and globally admired Jaipur.'}
                         </span>
                     </p>
                 </ScrollReveal>

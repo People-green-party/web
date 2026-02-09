@@ -217,6 +217,11 @@ const translations = {
       audit: "Audit Report and Information About Donation",
       eci: "ECI Disclosure",
       criminal: "Declaration about criminal antecedents of candidates set up by the party"
+    },
+    visionJAIPUR2040: {
+      title: "VISION JAIPUR 2040",
+      sub: "50 IDEAS TO TRANSFORM THE PINK CITY",
+      desc: "A blueprint for a sustainable, inclusive, and globally admired Jaipur."
     }
   },
   // --- HINDI TRANSLATIONS ---
@@ -417,6 +422,11 @@ const translations = {
       audit: "ऑडिट रिपोर्ट और दान के बारे में जानकारी",
       eci: "ECI प्रकटीकरण",
       criminal: "उम्मीदवारों के आपराधिक पूर्ववृत्त के बारे में घोषणा"
+    },
+    visionJAIPUR2040: {
+      title: "विजन जयपुर 2040",
+      sub: "गुलाबी नगरी को बदलने के लिए 50 विचार",
+      desc: "एक स्थायी, समावेशी और विश्व स्तर पर प्रशंसित जयपुर के लिए एक ब्लूप्रिंट।"
     }
   }
 };
