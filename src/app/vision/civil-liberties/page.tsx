@@ -3,46 +3,63 @@
 import React from "react";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
-import { ArrowLeft, CheckCircle2, Scale, ChevronRight } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Scale, ChevronRight, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "../../../components/LanguageContext";
 import ScrollReveal from '../../../components/ScrollReveal';
 
-// Theme for Civil-Liberties
+// Theme for Civil Liberties
 const theme = {
-    primary: "bg-teal-800",
-    secondary: "bg-teal-50",
-    accent: "text-teal-700",
-    gradient: "from-teal-800 to-emerald-900",
-    button: "bg-teal-700 hover:bg-teal-800",
-    iconBg: "bg-teal-100",
+    primary: "bg-red-800",
+    secondary: "bg-red-50",
+    accent: "text-red-700",
+    gradient: "from-red-800 to-rose-900",
+    button: "bg-red-700 hover:bg-red-800",
+    iconBg: "bg-red-100",
 };
 
-// Data for Civil-Liberties
+// Data for Civil Liberties
 const pageData = {
     en: {
-        title: "Civil Liberties & Cultural Values",
+        title: "Civil Liberties & Cultural Consciousness",
         subtitle: "Sensitive, Tolerant, and Aware Society",
-        description: "We stand for a society that protects civil liberties while being aware of its duties. Preserving India's historic civilization and diversity is paramount, as is fostering a liberal, tolerant, and sensitive social fabric.",
+        missionTitle: "Need for Balance",
+        description: "Freedom without responsibility becomes chaos, and duty without freedom becomes oppression. We need a society that values both individual rights and collective responsibility, creating a harmonious environment for growth.",
         image: "/herosection/hero5.svg",
         icon: Scale,
+        strategyTitle: "Our Strategy",
         points: [
-            "Protecting civil liberties & duty awareness.",
-            "Preservation of historic civilization & culture.",
-            "Mass awareness for a tolerant society.",
-            "Balance between rights and responsibilities."
+            "Civil Rights: Complete protection of civil rights and individual liberties. We advocate for strong legal safeguards against censorship, arbitrary detention, and privacy violations, ensuring that every citizen feels free to express, associate, and live without fear.",
+            "Social Responsibility: Launching campaigns to create public awareness regarding duties and social responsibilities towards the nation. A rights-based approach must be balanced with a sense of duty towards fellow citizens, public property, and the environment.",
+            "Cultural Preservation: Active preservation and promotion of India's ancient civilization, traditions, and cultural diversity. We will support research, digital archiving, and festivals that celebrate our heritage while encouraging a scientific temper.",
+            "Judicial Reform: Strengthening the judicial system to ensure timely justice for all. We propose increasing the number of judges and digitizing courts to clear the backlog of pending cases."
+        ],
+        outcomeTitle: "Expected Outcomes",
+        outcomes: [
+            "Aware Society: Creating a sensitive, tolerant, and liberal society where diverse viewpoints are respected. Civic education will be integrated into the curriculum to foster a generation of responsible and conscious citizens.",
+            "Cultural Pride: Restoring pride in our rich heritage while embracing modernity. We envision a confident India that is rooted in its past but looks forward to the future with innovation and openness.",
+            "Strong Democracy: A vibrant democracy where institutions are robust, media is independent, and the government is held accountable by an informed citizenry."
         ]
     },
     hi: {
         title: "नागरिक स्वतंत्रता, कर्तव्य और सांस्कृतिक चेतना",
         subtitle: "संवेदनशील, सहनशील और जागरूक समाज",
-        description: "हम नागरिक स्वतंत्रताओं की रक्षा के साथ कर्तव्यों के प्रति जागरूकता फैलाना चाहते हैं。",
+        missionTitle: "संतुलन की आवश्यकता",
+        description: "स्वतंत्रता बिना जिम्मेदारी के अराजकता बन जाती है, और कर्तव्य बिना स्वतंत्रता के दमन। हमें एक ऐसे समाज की आवश्यकता है जो व्यक्तिगत अधिकारों और सामूहिक जिम्मेदारी दोनों को महत्व दे।",
         image: "/herosection/hero5.svg",
         icon: Scale,
+        strategyTitle: "हमारी रणनीति",
         points: [
-            "नागरिक स्वतंत्रताओं की रक्षा के साथ कर्तव्यों के प्रति जागरूकता।",
-            "भारत की ऐतिहासिक सभ्यता और सांस्कृतिक विविधता का संरक्षण।",
-            "समाज को उदार, सहिष्णु और संवेदनशील बनाने हेतु जन-जागरूकता कार्यक्रम।"
+            "नागरिक अधिकार: नागरिक अधिकारों और व्यक्तिगत स्वतंत्रता की पूर्ण रक्षा। हम सेंसरशिप, मनमानी हिरासत और गोपनीयता के उल्लंघन के खिलाफ मजबूत कानूनी सुरक्षा की वकालत करते हैं, यह सुनिश्चित करते हुए कि हर नागरिक स्वतंत्र और सुरक्षित महसूस करे।",
+            "सामाजिक जिम्मेदारी: राष्ट्र के प्रति कर्तव्यों और सामाजिक जिम्मेदारियों के बारे में जन-जागरूकता पैदा करने के लिए अभियान चलाना। अधिकार-आधारित दृष्टिकोण को साथी नागरिकों, सार्वजनिक संपत्ति और पर्यावरण के प्रति कर्तव्य की भावना के साथ संतुलित किया जाना चाहिए।",
+            "सांस्कृतिक संरक्षण: भारत की प्राचीन सभ्यता, परंपराओं और सांस्कृतिक विविधता का सक्रिय संरक्षण और संवर्धन। हम उन शोधों, डिजिटल अभिलेखागार और त्योहारों का समर्थन करेंगे जो हमारी विरासत का जश्न मनाते हैं और साथ ही वैज्ञानिक दृष्टिकोण को प्रोत्साहित करते हैं।",
+            "न्यायिक सुधार: सभी के लिए समय पर न्याय सुनिश्चित करने के लिए न्यायिक प्रणाली को मजबूत करना। हम लंबित मामलों को निपटाने के लिए न्यायाधीशों की संख्या बढ़ाने और अदालतों को डिजिटल बनाने का प्रस्ताव करते हैं।"
+        ],
+        outcomeTitle: "अपेक्षित परिणाम",
+        outcomes: [
+            "जागरूक समाज: एक ऐसे संवेदनशील, सहिष्णु और उदार समाज का निर्माण जहां विविध दृष्टिकोणों का सम्मान किया जाता है। जिम्मेदार और जागरूक नागरिकों की एक पीढ़ी को बढ़ावा देने के लिए नागरिक शिक्षा को पाठ्यक्रम में शामिल किया जाएगा।",
+            "सांस्कृतिक गौरव: आधुनिकता को अपनाते हुए अपनी समृद्ध विरासत पर गर्व बहाल करना। हम एक ऐसे आत्मविश्वास से भरे भारत की कल्पना करते हैं जो अपने अतीत में निहित है लेकिन नवाचार और खुलेपन के साथ भविष्य की ओर देखता है।",
+            "सशक्त लोकतंत्र: एक जीवंत लोकतंत्र जहां संस्थान मजबूत हों, मीडिया स्वतंत्र हो और एक जागरूक नागरिक वर्ग द्वारा सरकार को जवाबदेह ठहराया जाए।"
         ]
     }
 };
@@ -129,7 +146,7 @@ export default function CivilLibertiesPage() {
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className={`h-[2px] w-12 ${theme.primary}`} />
                                     <span className={`font-bold uppercase tracking-wider text-sm ${theme.accent}`}>
-                                        {currentLang === 'hi' ? 'हमारा मिशन' : 'Our Mission'}
+                                        {content.missionTitle}
                                     </span>
                                 </div>
                                 <h3 className="font-['Familjen_Grotesk'] text-3xl font-bold text-gray-900 mb-6">
@@ -144,45 +161,98 @@ export default function CivilLibertiesPage() {
                 </div>
             </div>
 
-            {/* 3. KEY INITIATIVES - STYLED GRID */}
+            {/* 3. KEY INITIATIVES (STRATEGY) - STYLED GRID */}
             <div className={`w-full ${theme.secondary} py-20 px-4`}>
                 <div className="max-w-[1320px] mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="font-['Familjen_Grotesk'] font-bold text-3xl md:text-4xl text-gray-900 mb-4">
-                            {currentLang === 'hi' ? 'मुख्य पहल' : 'Key Initiatives'}
+                            {content.strategyTitle}
                         </h2>
                         <div className={`w-20 h-1 ${theme.primary} mx-auto rounded-full`} />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-8">
-                        {content.points.map((point: string, idx: number) => (
-                            <ScrollReveal
-                                key={idx}
-                                animation="fade-up"
-                                delay={idx * 100}
-                                className={`group p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden`}
-                            >
-                                <div className={`absolute top-0 left-0 w-2 h-full ${theme.primary} transform -translate-x-2 group-hover:translate-x-0 transition-transform duration-300`} />
-                                <div className="flex items-start gap-5">
-                                    <div className={`w-12 h-12 rounded-xl ${theme.iconBg} flex items-center justify-center shrink-0 text-${theme.accent}`}>
-                                        <CheckCircle2 size={24} className={`${theme.accent}`} />
+                        {content.points.map((point: string, idx: number) => {
+                            const [title, ...rest] = point.split(':');
+                            const description = rest.join(':');
+                            return (
+                                <ScrollReveal
+                                    key={idx}
+                                    animation="fade-up"
+                                    delay={idx * 100}
+                                    className={`group p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden`}
+                                >
+                                    <div className={`absolute top-0 left-0 w-2 h-full ${theme.primary} transform -translate-x-2 group-hover:translate-x-0 transition-transform duration-300`} />
+                                    <div className="flex items-start gap-5">
+                                        <div className={`w-12 h-12 rounded-xl ${theme.iconBg} flex items-center justify-center shrink-0 text-${theme.accent}`}>
+                                            <CheckCircle2 size={24} className={`${theme.accent}`} />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-800 mb-2">
+                                                {currentLang === 'hi' ? `रणनीति ${idx + 1}` : `Strategy ${idx + 1}`}
+                                            </h4>
+                                            <p className="font-['Familjen_Grotesk'] text-gray-600 leading-relaxed">
+                                                {description ? (
+                                                    <>
+                                                        <span className="font-bold text-gray-900">{title}:</span> {description}
+                                                    </>
+                                                ) : (
+                                                    point
+                                                )}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-800 mb-2">
-                                            {currentLang === 'hi' ? `लक्ष्य ${idx + 1}` : `Goal ${idx + 1}`}
-                                        </h4>
-                                        <p className="font-['Familjen_Grotesk'] text-gray-600 leading-relaxed">
-                                            {point}
-                                        </p>
-                                    </div>
-                                </div>
-                            </ScrollReveal>
-                        ))}
+                                </ScrollReveal>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
 
-            {/* 4. MORE VISIONS SECTION */}
+            {/* 4. EXPECTED OUTCOMES - STYLED GRID */}
+            <div className={`w-full bg-white py-20 px-4`}>
+                <div className="max-w-[1320px] mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="font-['Familjen_Grotesk'] font-bold text-3xl md:text-4xl text-gray-900 mb-4">
+                            {content.outcomeTitle}
+                        </h2>
+                        <div className={`w-20 h-1 ${theme.primary} mx-auto rounded-full`} />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                        {content.outcomes.map((outcome: string, idx: number) => {
+                            const [title, ...rest] = outcome.split(':');
+                            const description = rest.join(':');
+                            return (
+                                <ScrollReveal
+                                    key={idx}
+                                    animation="fade-up"
+                                    delay={idx * 100}
+                                    className={`group p-8 ${theme.secondary} rounded-2xl shadow-sm border border-blue-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden text-center`}
+                                >
+                                    <div className="flex flex-col items-center gap-4">
+                                        <div className={`w-14 h-14 rounded-full ${theme.button} flex items-center justify-center shrink-0 text-white shadow-lg`}>
+                                            <Trophy size={28} />
+                                        </div>
+                                        <p className="font-['Familjen_Grotesk'] text-lg text-gray-600 leading-relaxed">
+                                            {description ? (
+                                                <>
+                                                    <span className="block mb-2 font-bold text-xl text-gray-900">{title}</span>
+                                                    {description}
+                                                </>
+                                            ) : (
+                                                <span className="font-semibold text-gray-800">{outcome}</span>
+                                            )}
+                                        </p>
+                                    </div>
+                                </ScrollReveal>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+
+            {/* 5. MORE VISIONS SECTION */}
             <div className="w-full bg-gray-50 py-20 px-4">
                 <div className="max-w-[1320px] mx-auto">
                     <div className="text-center mb-12">
@@ -221,7 +291,7 @@ export default function CivilLibertiesPage() {
                 </div>
             </div>
 
-            {/* 5. CTA SECTION */}
+            {/* 6. CTA SECTION */}
             <div className="w-full py-20 px-4 bg-white">
                 <div className="max-w-[1000px] mx-auto text-center">
                     <ScrollReveal animation="scale-up" className={`bg-gradient-to-br ${theme.gradient} rounded-[40px] p-10 lg:p-16 shadow-2xl text-white relative overflow-hidden`}>

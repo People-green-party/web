@@ -8,7 +8,14 @@ import {
   Landmark, Briefcase, HeartHandshake, BookOpen
 } from 'lucide-react';
 import ScrollReveal from '@/components/ScrollReveal';
+
 import { usePathname } from "next/navigation";
+import SocialMediaFeed from '@/components/SocialMediaFeed';
+import VisionCarousel from '@/components/VisionCarousel';
+import { Plus, ImageIcon } from 'lucide-react'; // Make sure to import these
+import { Users, Trees, ArrowUpRight } from 'lucide-react';
+
+
 
 // --- 1. Translation Data ---
 
@@ -121,10 +128,38 @@ const translations = {
       title: "Jaipur Vision",
       desc: "Together, we can make Jaipur a model of sustainable development and ecological harmony. Join our green movement today.",
       cards: [
-        { title: "New farming capable farmer", desc: "Assist patients in recovering from injuries and surgeries." },
-        { title: "Sustainable Use and Conservation", desc: "Ensuring balanced development while protecting nature." },
-        { title: "Control Over Population Growth", desc: "Ensuring a Balanced Future Through Population Control." },
-        { title: "Safe & Empowered Women", desc: "Ensuring safety and equal opportunities for women in all sectors." }
+        {
+          title: "Urban & Cultural Renaissance",
+          points: [
+            "1. Clean City", "2. Heritage City", "3. Tourism City", "4. Festival City",
+            "5. Handicraft City", "6. Art & Culture City", "7. Theatre City", "8. Film City",
+            "9. Fashion City", "10. Literature City"
+          ]
+        },
+        {
+          title: "Innovation & Economic Growth",
+          points: [
+            "11. Jewellery City", "12. Knowledge City", "13. Innovation City", "14. Startup City",
+            "15. Cyber City", "16. Smart City", "17. Green City", "18. Forest City",
+            "19. Lake City", "20. Water Recharge City"
+          ]
+        },
+        {
+          title: "Social Wellbeing & Rights",
+          points: [
+            "21. Solar City", "22. Healthy City", "23. Sports City", "24. Safe City",
+            "25. Happy City", "26. Metro City", "27. Transparent City", "28. Just City",
+            "29. Housing City", "30. Global City"
+          ]
+        },
+        {
+          title: "Future Infrastructure",
+          points: [
+            "31. Electric City", "32. Drone City", "33. Zero-Waste City", "34. Accessible City",
+            "35. Youth City", "36. Senior City", "37. Child Friendly", "38. Pet Friendly",
+            "39. Yoga City", "40. Spiritual City"
+          ]
+        }
       ],
       expandedCards: [
         { title: "Youth Employment", desc: "Creating job opportunities for the young generation." },
@@ -293,10 +328,38 @@ const translations = {
       title: "जयपुर विजन",
       desc: "साथ मिलकर, हम जयपुर को सतत विकास और पारिस्थितिक संतुलन का एक मॉडल बना सकते हैं। आज ही हमारे हरित आंदोलन में शामिल हों।",
       cards: [
-        { title: "नई खेती में सक्षम किसान", desc: "चोटों और सर्जरी से उबरने में रोगियों की सहायता करें।" },
-        { title: "प्राकृतिक संसाधनों का संरक्षण", desc: "प्रकृति की रक्षा करते हुए संतुलित विकास सुनिश्चित करना।" },
-        { title: "जनसंख्या वृद्धि पर नियंत्रण", desc: "जनसंख्या नियंत्रण के माध्यम से एक संतुलित भविष्य सुनिश्चित करना।" },
-        { title: "सुरक्षित और सशक्त महिलाएं", desc: "सभी क्षेत्रों में महिलाओं के लिए सुरक्षा और समान अवसर सुनिश्चित करना।" }
+        {
+          title: "शहरी और सांस्कृतिक पुनर्जागरण",
+          points: [
+            "1. क्लीन सिटी", "2. हैरिटेज सिटी", "3. टूरिज्म सिटी", "4. फेस्टिवल सिटी",
+            "5. हस्तशिल्प सिटी", "6. कला और संस्कृति सिटी", "7. थियेटर सिटी", "8. फिल्म सिटी",
+            "9. फैशन सिटी", "10. साहित्य सिटी"
+          ]
+        },
+        {
+          title: "नवाचार और आर्थिक विकास",
+          points: [
+            "11. ज्वेलरी सिटी", "12. नॉलेज सिटी", "13. इनोवेशन सिटी", "14. स्टार्टअप सिटी",
+            "15. साइबर सिटी", "16. स्मार्ट सिटी", "17. ग्रीन सिटी", "18. फॉरेस्ट सिटी",
+            "19. लेक सिटी", "20. वाटर रिचार्ज सिटी"
+          ]
+        },
+        {
+          title: "सामाजिक कल्याण और अधिकार",
+          points: [
+            "21. सोलर सिटी", "22. हेल्थी सिटी", "23. स्पोर्ट्स सिटी", "24. सेफ सिटी",
+            "25. हैप्पी सिटी", "26. मेट्रो सिटी", "27. पारदर्शी सिटी", "28. न्याय सिटी",
+            "29. आवास सिटी", "30. ग्लोबल सिटी"
+          ]
+        },
+        {
+          title: "भविष्य का बुनियादी ढांचा",
+          points: [
+            "31. इलेक्ट्रिक सिटी", "32. ड्रोन सिटी", "33. जीरो-वेस्ट सिटी", "34. सुगम्य सिटी",
+            "35. युवा सिटी", "36. वरिष्ठ सिटी", "37. बाल मित्र सिटी", "38. पेट फ्रेंडली सिटी",
+            "39. योग सिटी", "40. आध्यात्मिक सिटी"
+          ]
+        }
       ],
       expandedCards: [
         { title: "युवा रोजगार", desc: "युवा पीढ़ी के लिए नौकरी के अवसर पैदा करना।" },
@@ -431,7 +494,7 @@ const CountUp = ({ value }: { value: string }) => {
 
 const getStats = (lang: string) => {
   const t = translations[lang as keyof typeof translations].stats.items;
-  const numbers = ["35K+", "60K+", "32%+", "1.2 Lakh+"];
+  const numbers = ["35K+", "60K+", "32%+", "1.2 Lakhs+"];
   return t.map((item, i) => ({ ...item, number: numbers[i] }));
 };
 
@@ -592,7 +655,6 @@ const LandingPageContent = () => {
 
   // State for "View More" sections
   const [showMoreVision, setShowMoreVision] = useState(false);
-  const [showMoreOverlap, setShowMoreOverlap] = useState(false);
   const [showMoreGallery, setShowMoreGallery] = useState(false);
 
 
@@ -650,7 +712,6 @@ const LandingPageContent = () => {
     : [];
 
   const stats = getStats(language);
-  const overlapCards = translations[language as keyof typeof translations].overlappingSection.cards;
 
   const heroIcons = [Landmark, Briefcase, HeartHandshake, BookOpen, Leaf];
 
@@ -799,105 +860,10 @@ const LandingPageContent = () => {
         </div>
       </section>
 
-      {/* 3. OUR VISION (Restored Overlapping Layout) */}
-      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center">
-        {/* Text First */}
-        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col items-start lg:pl-[16px]">
-          <div className="flex flex-col gap-[16px] items-start text-left w-full max-w-[631px]">
-            <ScrollReveal animation="fade-up" duration={800}>
-              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
-                {t.overlappingSection.title}
-              </h2>
-            </ScrollReveal>
-            <ScrollReveal animation="fade-up" duration={800} delay={200}>
-              <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[26px] lg:leading-[33px] tracking-[-0.3px] text-[#587E67]">
-                {t.overlappingSection.desc}
-              </p>
-            </ScrollReveal>
-          </div>
-        </div>
+      {/* 3. OUR VISION - New Carousel Section */}
+      <VisionCarousel language={language} />
 
-        <div className="h-[32px] lg:h-[64px]"></div>
 
-        <div className="w-full max-w-[1320px] relative px-4 lg:px-8">
-          {/* Mobile: Stacked | Desktop: Absolute/Overlap */}
-          <div className="relative w-full h-auto lg:h-[600px] flex flex-col lg:block">
-            {/* Image */}
-            <ScrollReveal animation="scale-up" duration={1000} className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[600px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
-              <img src="/ourvision/jaipur-vision.jpg" alt="Vision" className="w-full h-full object-cover" />
-            </ScrollReveal>
-
-            {/* Cards */}
-            <div className="relative lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:right-0 w-full lg:w-[636px] h-auto z-10 flex flex-col gap-[16px] lg:gap-[24px]">
-              {overlapCards.map((item: any, i: number) => {
-                // Generate slug for consistency with expanded cards
-                const slug = item.title.toLowerCase().trim().replace(/[\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^`{|}~]+/g, '-');
-                return (
-                  <ScrollReveal
-                    key={i}
-                    animation="slide-left"
-                    delay={i * 150}
-                    className="w-full lg:w-[636px]" // Removed styling classes from here
-                  >
-                    <Link
-                      href={`/vision/${slug}`}
-                      className="w-full h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px] hover:shadow-[0px_8px_30px_0px_#00000020] hover:-translate-y-1 transition-all duration-300 cursor-pointer block"
-                    >
-                      <div className="flex flex-col gap-[4px]">
-                        <h3 className="font-['Familjen_Grotesk'] font-bold text-[20px] lg:text-[24px] text-[#04330B]">{item.title}</h3>
-                        <p className="font-['Familjen_Grotesk'] font-medium text-[14px] lg:text-[16px] text-[#587E67]">{item.desc}</p>
-                      </div>
-                    </Link>
-                  </ScrollReveal>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Expanded Vision Section - Restored */}
-        {showMoreOverlap && (
-          <div className="w-full max-w-[1320px] relative px-4 lg:px-8 mt-[60px] lg:mt-[100px] animate-in fade-in slide-in-from-bottom-10 duration-700">
-            <div className="relative w-full h-auto lg:h-[600px] flex flex-col lg:block">
-              {/* Image */}
-              <div className="relative lg:absolute top-0 left-0 w-full lg:w-[920px] h-[250px] md:h-[350px] lg:h-[600px] rounded-[8px] overflow-hidden bg-gray-100 z-0 mb-6 lg:mb-0">
-                <img src="/ourvision/jaipur-vison-1.jpg" alt="Vision Expanded" className="w-full h-full object-cover" />
-              </div>
-
-              {/* Cards */}
-              <div className="relative lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:right-0 w-full lg:w-[636px] h-auto z-10 flex flex-col gap-[16px] lg:gap-[24px]">
-                {(translations[language as keyof typeof translations].overlappingSection.expandedCards || []).map((item: any, i: number) => {
-                  // Generate slug from title (handle English/Hindi)
-                  const slug = item.title.toLowerCase().trim().replace(/[\s\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^`{|}~]+/g, '-');
-                  return (
-                    <Link
-                      href={`/vision/${slug}`}
-                      key={i}
-                      className="w-full lg:w-[636px] h-auto min-h-[100px] lg:h-[116px] bg-white border border-[#E4F2EA] rounded-[8px] flex items-center shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] px-[20px] py-[24px] hover:shadow-[0px_8px_30px_0px_#00000020] hover:-translate-y-1 transition-all duration-300 cursor-pointer block"
-                    >
-                      <div className="flex flex-col gap-[4px]">
-                        <h3 className="font-['Familjen_Grotesk'] font-bold text-[20px] lg:text-[24px] text-[#04330B]">{item.title}</h3>
-                        <p className="font-['Familjen_Grotesk'] font-medium text-[14px] lg:text-[16px] text-[#587E67]">{item.desc}</p>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Button */}
-        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col items-center mt-[32px] lg:mt-[48px]">
-          <div className="hidden lg:block h-[50px] w-full"></div>
-          <button
-            onClick={() => setShowMoreOverlap(!showMoreOverlap)}
-            className="px-[32px] py-[12px] bg-[#04330B] hover:bg-[#0D5229] text-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors duration-300 shadow-xl"
-          >
-            {showMoreOverlap ? 'View Less' : t.overlappingSection.button}
-          </button>
-        </div>
-      </section>
 
       {/* 4. MEET YOUR IDEOLOGICAL LEADER */}
       < section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center" >
@@ -965,115 +931,120 @@ const LandingPageContent = () => {
         </div>
       </section >
 
-      {/* 5. IMPACT STATS */}
-      < section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center" >
-        <div className="w-full max-w-[1320px] flex flex-col items-center px-4 lg:px-8">
 
-          {/* Header First */}
-          <div className="w-full flex flex-col items-start text-left gap-[16px] mb-[32px] lg:mb-[64px]">
-            <ScrollReveal animation="fade-up" duration={800}>
-              <h2 className="max-w-[1054px] font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
+
+
+
+      {/* 5. IMPACT STATS - WHITE & IMPRESSIVE */}
+      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center py-[10px] relative">
+
+        {/* Subtle Background Pattern (Optional: Adds texture to the white) */}
+        <div className="absolute inset-0 bg-white pointer-events-none"></div>
+
+        <div className="w-full max-w-[1320px] px-4 lg:px-8 relative z-10 flex flex-col items-start">
+
+          {/* Header */}
+          <div className="w-full flex flex-col items-start text-left gap-[16px] mb-[60px]">
+
+
+
+            <ScrollReveal animation="fade-up" duration={800} delay={100}>
+              <h2 className="w-full font-['Familjen_Grotesk'] font-bold text-[36px] md:text-[48px] lg:text-[64px] leading-[1.1] text-[#04330B] whitespace-nowrap">
                 {t.stats.header}
               </h2>
             </ScrollReveal>
+
             <ScrollReveal animation="fade-up" duration={800} delay={200}>
-              <p className="max-w-[1039px] font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+              <p className="w-full font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[20px] leading-[1.6] text-[#587E67] whitespace-nowrap">
                 {t.stats.sub}
               </p>
             </ScrollReveal>
           </div>
 
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[16px] lg:gap-[24px]">
-            {stats.map((stat: any, idx: number) => (
-              <ScrollReveal key={idx} animation="scale-up" delay={idx * 150} className="w-full h-auto min-h-[180px] lg:min-h-[216px] bg-white border border-[#B9D3C4] rounded-[8px] px-[24px] py-[20px] flex flex-col items-start hover:shadow-lg transition-shadow">
-                <h3 className="font-[family-name:var(--font-inter)] font-semibold text-[32px] lg:text-[48px] leading-[1.2] lg:leading-[54px] tracking-[-0.1px] text-[#0D5229] mb-[8px] lg:mb-[12px]">
-                  <CountUp value={stat.number} />
-                </h3>
-                <h4 className="font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[18px] lg:text-[24px] leading-[26px] lg:leading-[30px] tracking-[-0.1px] text-[#04330B] mb-[8px]">
-                  {stat.label}
-                </h4>
-                <p className="font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[14px] lg:text-[20px] leading-[20px] lg:leading-[24px] tracking-[-0.1px] text-[#587E67]">
-                  {stat.sub}
-                </p>
-              </ScrollReveal>
-            ))}
+          {/* Stats Grid */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {stats.map((stat: any, idx: number) => {
+
+              // Dynamic Icons
+              const icons = [Users, MapPin, Trees, HandHeart];
+              const Icon = icons[idx] || Users;
+
+              return (
+                <ScrollReveal
+                  key={idx}
+                  animation="fade-up"
+                  delay={idx * 100}
+                  className="h-full"
+                >
+                  <div className="group relative h-full bg-white rounded-[20px] border border-gray-100 p-8 overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_-12px_rgba(13,82,41,0.15)] hover:border-[#B9D3C4] hover:-translate-y-2">
+
+                    {/* 1. Watermark Icon (Big & Faded in background) */}
+                    <div className="absolute -right-6 -top-6 text-[#EAF7EE] opacity-50 group-hover:opacity-100 group-hover:text-[#E4F2EA] group-hover:scale-110 transition-all duration-700 pointer-events-none">
+                      <Icon size={140} strokeWidth={1} />
+                    </div>
+
+                    {/* 2. Content Wrapper */}
+                    <div className="relative z-10 flex flex-col h-full justify-between">
+
+                      {/* Top: Icon & Number */}
+                      <div>
+                        <div className="w-12 h-12 mb-6 rounded-xl bg-[#F8FBF9] border border-[#E4F2EA] flex items-center justify-center text-[#0D5229] group-hover:bg-[#0D5229] group-hover:text-white transition-colors duration-300">
+                          <Icon size={24} strokeWidth={2} />
+                        </div>
+
+                        <h3 className="font-['Inter'] font-bold text-[42px] lg:text-[52px] leading-none tracking-tight text-[#04330B] mb-2 group-hover:text-[#0D5229] transition-colors">
+                          <CountUp value={stat.number} />
+                        </h3>
+
+                        <h4 className="font-['Familjen_Grotesk'] font-bold text-[18px] text-[#587E67] uppercase tracking-wide mb-4">
+                          {stat.label}
+                        </h4>
+                      </div>
+
+                      {/* Bottom: Description & Line */}
+                      <div>
+                        <div className="w-12 h-[2px] bg-[#E4F2EA] group-hover:w-full group-hover:bg-[#0D5229] transition-all duration-500 mb-4" />
+                        <p className="font-['Familjen_Grotesk'] text-[15px] leading-relaxed text-gray-500 group-hover:text-[#04330B] transition-colors">
+                          {stat.sub}
+                        </p>
+                      </div>
+                    </div>
+
+                  </div>
+                </ScrollReveal>
+              );
+            })}
           </div>
 
-        </div>
-      </section >
-
-      {/* 6. NEWS AND PUBLICATIONS - Responsive Fix */}
-      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center">
-        {/* On Mobile: Flex Col / Grid. On Desktop: Absolute. */}
-        <div className="relative w-full max-w-[1320px] h-auto lg:h-[45vw] xl:h-[600px] rounded-[8px] px-4 lg:px-8 mx-auto">
-
-          {/* Header Block - Relative/Static on Mobile, Absolute on Desktop */}
-          <div className="relative lg:absolute top-0 left-0 flex flex-col items-start gap-[12px] lg:gap-[16px] mb-[32px] lg:mb-0">
-            <ScrollReveal animation="fade-up" duration={800}>
-              <h2 className="w-full max-w-[637px] font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B] text-left">
-                {t.news.title}
-              </h2>
-            </ScrollReveal>
-            <ScrollReveal animation="fade-up" duration={800} delay={200}>
-              <p className="w-full max-w-[572px] font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[16px] lg:text-[24px] leading-[22px] lg:leading-[30px] tracking-[-0.3px] text-[#587E67] text-left">
-                {t.news.sub}
-              </p>
-            </ScrollReveal>
-          </div>
-
-          {/* Image Grid Wrapper for Mobile / Absolute Wrapper for Desktop */}
-          {/* Changed: Use percentage-based positioning for LG+ screens to be responsive */}
-          <ScrollReveal animation="fade-in" duration={1200} delay={300} className="grid grid-cols-2 md:grid-cols-3 gap-4 lg:block lg:relative lg:w-full lg:h-full">
-            <div className="relative w-full aspect-[244/280] lg:absolute lg:left-[0%] lg:top-[53.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news1.svg" className="w-full h-full object-fill" />
-            </div>
-
-            <div className="relative w-full aspect-[245/188] lg:absolute lg:left-[20.3%] lg:top-[40%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news2.svg" className="w-full h-full object-fill" />
-            </div>
-
-            <div className="relative w-full aspect-[245/148] lg:absolute lg:left-[20.3%] lg:top-[75.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news3.svg" className="w-full h-full object-fill" />
-            </div>
-
-            <div className="relative w-full aspect-[245/141] lg:absolute lg:left-[40.7%] lg:top-[26.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news4.svg" className="w-full h-full object-fill" />
-            </div>
-
-            <div className="relative w-full aspect-[245/275] lg:absolute lg:left-[40.7%] lg:top-[54.1%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news5.svg" className="w-full h-full object-fill" />
-            </div>
-
-            <div className="relative w-full aspect-[245/350] lg:absolute lg:left-[61%] lg:top-[13.3%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news6.svg" className="w-full h-full object-fill" />
-            </div>
-
-            <div className="relative w-full aspect-[245/146] lg:absolute lg:left-[61%] lg:top-[75.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news7.svg" className="w-full h-full object-fill" />
-            </div>
-
-            <div className="relative w-full aspect-[245/178] lg:absolute lg:left-[81.4%] lg:top-[0%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news8.svg" className="w-full h-full object-fill" />
-            </div>
-
-            <div className="relative w-full aspect-[245/398] lg:absolute lg:left-[81.4%] lg:top-[33.6%] lg:w-[18.5%] lg:h-auto rounded-[8px] overflow-hidden">
-              <img src="/news9.svg" className="w-full h-full object-fill" />
-            </div>
-          </ScrollReveal>
         </div>
       </section>
+      {/* 6. NEWS AND PUBLICATIONS - Responsive Fix */}
+      <section className="bg-white mt-[5px] lg:mt-[10px] w-full flex justify-center">
+        {/* 6. SOCIAL MEDIA FEED - Replaced News Section */}
+        <SocialMediaFeed language={language} />
+      </section>
 
-      {/* 7. GALLERY SECTION */}
-      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center">
-        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col items-center">
+
+
+      {/* 7. GALLERY SECTION - REDESIGNED */}
+      <section className="bg-[#FFFFFF] mt-[5px] lg:mt-[10px] w-full flex flex-col items-center py-[80px] relative overflow-hidden">
+
+        {/* Decorative Background Elements (Consistent with other sections) */}
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#FFFFFF] rounded-full blur-3xl opacity-60 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#FFFFFF] rounded-full blur-3xl opacity-60 translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
+
+        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col items-center relative z-10">
 
           {/* Header */}
-          <div className="flex flex-col gap-[16px] w-full items-center text-center mb-[40px] lg:mb-[60px]">
-            <ScrollReveal animation="fade-up" duration={800}>
-              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] tracking-[-0.3px] text-[#04330B]">
+          <div className="flex flex-col gap-[16px] w-full items-center text-center mb-[50px] lg:mb-[70px]">
+
+
+            <ScrollReveal animation="fade-up" duration={800} delay={100}>
+              <h2 className="font-['Familjen_Grotesk'] font-bold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] tracking-[-0.3px] text-[#04330B]">
                 {t.gallery.title}
               </h2>
             </ScrollReveal>
+
             <ScrollReveal animation="fade-up" duration={800} delay={200}>
               <p className="font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[20px] text-[#587E67] max-w-[800px]">
                 {t.gallery.sub}
@@ -1081,8 +1052,8 @@ const LandingPageContent = () => {
             </ScrollReveal>
           </div>
 
-          {/* Gallery Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
+          {/* Bento Grid Layout */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 auto-rows-[200px] lg:auto-rows-[240px] gap-4 lg:gap-6">
             {[
               "/herosection/team.jpg",
               "/herosection/10.jpg",
@@ -1094,33 +1065,85 @@ const LandingPageContent = () => {
               "/news2.svg",
               "/news3.svg",
               "/news4.svg",
-              "/news5.svg",
-              "/news6.svg",
-              "/news7.svg"
-            ].slice(0, showMoreGallery ? 12 : 8).map((src, index) => (
-              <ScrollReveal key={index} animation="scale-up" delay={index * 100} className="relative aspect-square rounded-[12px] overflow-hidden group cursor-pointer">
-                <img
-                  src={src}
-                  alt={`Gallery ${index + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-              </ScrollReveal>
-            ))}
+              "/news5.svg"
+            ].slice(0, showMoreGallery ? 13 : 7).map((src, index) => {
+
+              // Dynamic Class Logic for Bento Layout
+              // This creates a pattern: Big, Tall, Wide, Normal, etc.
+              let gridClass = "col-span-1 row-span-1"; // Default
+
+              if (index === 0) gridClass = "md:col-span-2 md:row-span-2"; // Big Feature
+              else if (index === 2) gridClass = "md:col-span-1 md:row-span-2"; // Tall
+              else if (index === 5) gridClass = "md:col-span-2 md:row-span-1"; // Wide
+
+              return (
+                <ScrollReveal
+                  key={index}
+                  animation="fade-up"
+                  delay={index * 50}
+                  className={`relative group rounded-[20px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 bg-gray-200 ${gridClass}`}
+                >
+                  {/* Image */}
+                  <img
+                    src={src}
+                    alt={`Gallery ${index + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+                  />
+
+                  {/* Overlay Gradient (Always there but subtle, stronger on hover) */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#04330B]/90 via-[#04330B]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  {/* Hover Content */}
+                  <div className="absolute inset-0 p-6 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <p className="text-[#EAF7EE] text-xs font-bold uppercase tracking-wider mb-1">PGP Event</p>
+                        <h4 className="text-white font-['Familjen_Grotesk'] font-semibold text-lg leading-tight">Gallery Moment {index + 1}</h4>
+                      </div>
+
+                      {/* Icon Button */}
+                      <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white group-hover:bg-white group-hover:text-[#04330B] transition-colors duration-300">
+                        <ArrowUpRight size={20} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Default State Icon (Center Plus) - Disappears on Hover */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 md:group-hover:opacity-0 pointer-events-none">
+                    {/* Optional: You can keep this empty if you want a clean look, 
+                    or add a subtle watermark logo here */}
+                  </div>
+                </ScrollReveal>
+              );
+            })}
           </div>
 
           {/* View More Button */}
-          <div className="mt-[40px] lg:mt-[60px] flex justify-center w-full">
-            <button
-              onClick={() => setShowMoreGallery(!showMoreGallery)}
-              className="px-[32px] py-[12px] bg-[#04330B] hover:bg-[#0D5229] text-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors duration-300 shadow-xl"
-            >
-              {showMoreGallery ? t.gallery.viewLess : t.gallery.viewMore}
-            </button>
+          <div className="mt-[50px] lg:mt-[80px] flex justify-center w-full relative z-20">
+            <ScrollReveal animation="scale-up" delay={200}>
+              <button
+                onClick={() => setShowMoreGallery(!showMoreGallery)}
+                className="group relative px-[40px] py-[16px] bg-[#04330B] overflow-hidden rounded-full shadow-lg hover:shadow-[#0D5229]/40 transition-shadow duration-300"
+              >
+                {/* Button Hover Fill Effect */}
+                <div className="absolute inset-0 w-full h-full bg-[#0D5229] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+
+                <div className="relative flex items-center gap-3">
+                  <span className="font-['Familjen_Grotesk'] font-bold text-[16px] text-white">
+                    {showMoreGallery ? t.gallery.viewLess : t.gallery.viewMore}
+                  </span>
+                  {showMoreGallery ? (
+                    <Plus size={20} className="text-white rotate-45 transition-transform duration-300" />
+                  ) : (
+                    <Plus size={20} className="text-white group-hover:rotate-90 transition-transform duration-300" />
+                  )}
+                </div>
+              </button>
+            </ScrollReveal>
           </div>
 
         </div>
       </section>
-
       {/* 8. FOOTER */}
       <footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]">
         <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row items-start lg:justify-between">

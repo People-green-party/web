@@ -3,47 +3,63 @@
 import React from "react";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
-import { ArrowLeft, CheckCircle2, Leaf, ChevronRight } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Leaf, ChevronRight, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "../../../components/LanguageContext";
 import ScrollReveal from '../../../components/ScrollReveal';
 
 // Theme for Nature
 const theme = {
-    primary: "bg-emerald-800",
-    secondary: "bg-emerald-50",
-    accent: "text-emerald-700",
-    gradient: "from-emerald-800 to-green-900",
-    button: "bg-emerald-700 hover:bg-emerald-800",
-    iconBg: "bg-emerald-100",
+    primary: "bg-green-800",
+    secondary: "bg-green-50",
+    accent: "text-green-700",
+    gradient: "from-green-800 to-emerald-900",
+    button: "bg-green-700 hover:bg-green-800",
+    iconBg: "bg-green-100",
 };
 
 // Data for Nature
 const pageData = {
     en: {
         title: "Nature Conservation",
-        subtitle: "Today & Tomorrow – Nature First",
-        description: "Sustainable development is the key to our future. We prioritize the long-term protection of natural resources, stopping over-exploitation, and balancing development with environmental health and population control.",
+        subtitle: "Sustainable Development, Secure Future",
+        missionTitle: "Environmental Responsibility",
+        description: "We are merely trustees of this planet for future generations. Our development model must respect the delicate balance of nature. We advocate for policies that prioritize long-term sustainability over short-term gains.",
         image: "/herosection/hero2.svg",
         icon: Leaf,
+        strategyTitle: "Our Strategy",
         points: [
-            "Sustainable use & conservation of resources.",
-            "Stop over-exploitation of nature.",
-            "Focus on population control for balance.",
-            "Balance betwen development & nature."
+            "Sustainable Use: Long-term and prudent use of natural resources. We advocate for a circular economy where waste is minimized, and resources are recycled, ensuring that economic growth does not come at the cost of environmental degradation.",
+            "Resource Conservation: Conservation of mining, water, forests, and land resources. Stringent laws will be enacted to protect our rivers from pollution, stop illegal mining, and expand our forest cover to combat climate change.",
+            "Population Control: Aware policy on population control to maintain environmental balance. We will launch educational campaigns and incentive-based programs to encourage smaller families, reducing the strain on our finite natural resources.",
+            "Green Energy Transition: Aggressively shifting towards renewable energy sources like solar, wind, and green hydrogen to reduce carbon footprint and achieve energy independence."
+        ],
+        outcomeTitle: "Expected Outcomes",
+        outcomes: [
+            "Secure Future: Securing the rights of future generations along with the present generation. By acting as responsible stewards of nature today, we ensure that our children inherit a planet that is habitable and bountiful.",
+            "Ecological Balance: Restoring the ecological balance for a healthier planet. Our initiatives aims to reverse the damage done to ecosystems, bringing back biodiversity and ensuring clean air and water for all.",
+            "Climate Resilience: Building a nation resilient to climate change impacts, with cities and villages capable of withstanding extreme weather events through smart planning."
         ]
     },
     hi: {
         title: "प्रकृति संरक्षण",
-        subtitle: "आज भी, कल भी – प्रकृति पहले",
-        description: "पीपल्स ग्रीन पार्टी प्राकृतिक संसाधनों के दीर्घकालिक उपयोग और संरक्षण में विश्वास करती है। हम विकास और प्रकृति के बीच संतुलन पर जोर देते हैं।",
+        subtitle: "सतत विकास, सुरक्षित भविष्य",
+        missionTitle: "पर्यावरण की जिम्मेदारी",
+        description: "हम आने वाली पीढ़ियों के लिए इस ग्रह के केवल ट्रस्टी हैं। हमारे विकास मॉडल को प्रकृति के नाजुक संतुलन का सम्मान करना चाहिए। हम उन नीतियों की वकालत करते हैं जो अल्पकालिक लाभों पर दीर्घकालिक स्थिरता को प्राथमिकता देती हैं।",
         image: "/herosection/hero2.svg",
         icon: Leaf,
+        strategyTitle: "हमारी रणनीति",
         points: [
-            "प्राकृतिक संसाधनों का दीर्घकालिक संरक्षण।",
-            "संसाधनों के अत्यधिक दोहन को रोकना।",
-            "पर्यावरण संतुलन हेतु जनसंख्या नियंत्रण।",
-            "विकास और प्रकृति के बीच संतुलन।"
+            "विवेकपूर्ण उपयोग: प्राकृतिक संसाधनों का दीर्घकालिक और विवेकपूर्ण उपयोग। हम एक सर्कुलर इकोनॉमी की वकालत करते हैं जहां अपशिष्ट को कम किया जाता है और संसाधनों को पुनर्चक्रित किया जाता है, यह सुनिश्चित करते हुए कि आर्थिक विकास पर्यावरण क्षरण की कीमत पर न आए।",
+            "संसाधन संरक्षण: खनन, जल, वन और भूमि संसाधनों का संरक्षण। हमारी नदियों को प्रदूषण से बचाने, अवैध खनन को रोकने और जलवायु परिवर्तन से निपटने के लिए वन आवरण का विस्तार करने के लिए कड़े कानून बनाए जाएंगे।",
+            "जनसंख्या नियंत्रण: पर्यावरणीय संतुलन बनाए रखने के लिए जनसंख्या नियंत्रण पर जागरूक नीति। हम छोटे परिवारों को प्रोत्साहित करने के लिए शैक्षिक अभियान और प्रोत्साहन-आधारित कार्यक्रम शुरू करेंगे, जिससे हमारे सीमित प्राकृतिक संसाधनों पर दबाव कम होगा।",
+            "हरित ऊर्जा संक्रमण: कार्बन फुटप्रिंट को कम करने और ऊर्जा स्वतंत्रता प्राप्त करने के लिए सौर, पवन और हरित हाइड्रोजन जैसे नवीकरणीय ऊर्जा स्रोतों की ओर आक्रामक रूप से बढ़ना।"
+        ],
+        outcomeTitle: "अपेक्षित परिणाम",
+        outcomes: [
+            "भविष्य सुरक्षित: वर्तमान पीढ़ी के साथ-साथ आने वाली पीढ़ियों के अधिकारों को सुरक्षित करना। आज प्रकृति के जिम्मेदार संरक्षक के रूप में कार्य करके, हम यह सुनिश्चित करते हैं कि हमारे बच्चों को एक ऐसा ग्रह विरासत में मिले जो रहने योग्य और समृद्ध हो।",
+            "पारिस्थितिक संतुलन: एक स्वस्थ ग्रह के लिए पारिस्थितिक संतुलन बहाल करना। हमारी पहल का उद्देश्य पारिस्थितिक तंत्र को हुए नुकसान को उलट देना, जैव विविधता को वापस लाना और सभी के लिए स्वच्छ हवा और पानी सुनिश्चित करना है।",
+            "जलवायु लचीलापन: जलवायु परिवर्तन के प्रभावों के प्रति लचीला राष्ट्र बनाना, जहां शहर और गांव स्मार्ट योजना के माध्यम से चरम मौसम की घटनाओं का सामना करने में सक्षम हों।"
         ]
     }
 };
@@ -130,7 +146,7 @@ export default function NaturePage() {
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className={`h-[2px] w-12 ${theme.primary}`} />
                                     <span className={`font-bold uppercase tracking-wider text-sm ${theme.accent}`}>
-                                        {currentLang === 'hi' ? 'हमारा मिशन' : 'Our Mission'}
+                                        {content.missionTitle}
                                     </span>
                                 </div>
                                 <h3 className="font-['Familjen_Grotesk'] text-3xl font-bold text-gray-900 mb-6">
@@ -145,45 +161,98 @@ export default function NaturePage() {
                 </div>
             </div>
 
-            {/* 3. KEY INITIATIVES - STYLED GRID */}
+            {/* 3. KEY INITIATIVES (STRATEGY) - STYLED GRID */}
             <div className={`w-full ${theme.secondary} py-20 px-4`}>
                 <div className="max-w-[1320px] mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="font-['Familjen_Grotesk'] font-bold text-3xl md:text-4xl text-gray-900 mb-4">
-                            {currentLang === 'hi' ? 'मुख्य पहल' : 'Key Initiatives'}
+                            {content.strategyTitle}
                         </h2>
                         <div className={`w-20 h-1 ${theme.primary} mx-auto rounded-full`} />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-8">
-                        {content.points.map((point: string, idx: number) => (
-                            <ScrollReveal
-                                key={idx}
-                                animation="fade-up"
-                                delay={idx * 100}
-                                className={`group p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden`}
-                            >
-                                <div className={`absolute top-0 left-0 w-2 h-full ${theme.primary} transform -translate-x-2 group-hover:translate-x-0 transition-transform duration-300`} />
-                                <div className="flex items-start gap-5">
-                                    <div className={`w-12 h-12 rounded-xl ${theme.iconBg} flex items-center justify-center shrink-0 text-${theme.accent}`}>
-                                        <CheckCircle2 size={24} className={`${theme.accent}`} />
+                        {content.points.map((point: string, idx: number) => {
+                            const [title, ...rest] = point.split(':');
+                            const description = rest.join(':');
+                            return (
+                                <ScrollReveal
+                                    key={idx}
+                                    animation="fade-up"
+                                    delay={idx * 100}
+                                    className={`group p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden`}
+                                >
+                                    <div className={`absolute top-0 left-0 w-2 h-full ${theme.primary} transform -translate-x-2 group-hover:translate-x-0 transition-transform duration-300`} />
+                                    <div className="flex items-start gap-5">
+                                        <div className={`w-12 h-12 rounded-xl ${theme.iconBg} flex items-center justify-center shrink-0 text-${theme.accent}`}>
+                                            <CheckCircle2 size={24} className={`${theme.accent}`} />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-800 mb-2">
+                                                {currentLang === 'hi' ? `रणनीति ${idx + 1}` : `Strategy ${idx + 1}`}
+                                            </h4>
+                                            <p className="font-['Familjen_Grotesk'] text-gray-600 leading-relaxed">
+                                                {description ? (
+                                                    <>
+                                                        <span className="font-bold text-gray-900">{title}:</span> {description}
+                                                    </>
+                                                ) : (
+                                                    point
+                                                )}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-800 mb-2">
-                                            {currentLang === 'hi' ? `लक्ष्य ${idx + 1}` : `Goal ${idx + 1}`}
-                                        </h4>
-                                        <p className="font-['Familjen_Grotesk'] text-gray-600 leading-relaxed">
-                                            {point}
-                                        </p>
-                                    </div>
-                                </div>
-                            </ScrollReveal>
-                        ))}
+                                </ScrollReveal>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
 
-            {/* 4. MORE VISIONS SECTION */}
+            {/* 4. EXPECTED OUTCOMES - STYLED GRID */}
+            <div className={`w-full bg-white py-20 px-4`}>
+                <div className="max-w-[1320px] mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="font-['Familjen_Grotesk'] font-bold text-3xl md:text-4xl text-gray-900 mb-4">
+                            {content.outcomeTitle}
+                        </h2>
+                        <div className={`w-20 h-1 ${theme.primary} mx-auto rounded-full`} />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                        {content.outcomes.map((outcome: string, idx: number) => {
+                            const [title, ...rest] = outcome.split(':');
+                            const description = rest.join(':');
+                            return (
+                                <ScrollReveal
+                                    key={idx}
+                                    animation="fade-up"
+                                    delay={idx * 100}
+                                    className={`group p-8 ${theme.secondary} rounded-2xl shadow-sm border border-blue-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden text-center`}
+                                >
+                                    <div className="flex flex-col items-center gap-4">
+                                        <div className={`w-14 h-14 rounded-full ${theme.button} flex items-center justify-center shrink-0 text-white shadow-lg`}>
+                                            <Trophy size={28} />
+                                        </div>
+                                        <p className="font-['Familjen_Grotesk'] text-lg text-gray-600 leading-relaxed">
+                                            {description ? (
+                                                <>
+                                                    <span className="block mb-2 font-bold text-xl text-gray-900">{title}</span>
+                                                    {description}
+                                                </>
+                                            ) : (
+                                                <span className="font-semibold text-gray-800">{outcome}</span>
+                                            )}
+                                        </p>
+                                    </div>
+                                </ScrollReveal>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+
+            {/* 5. MORE VISIONS SECTION */}
             <div className="w-full bg-gray-50 py-20 px-4">
                 <div className="max-w-[1320px] mx-auto">
                     <div className="text-center mb-12">
@@ -222,7 +291,7 @@ export default function NaturePage() {
                 </div>
             </div>
 
-            {/* 5. CTA SECTION */}
+            {/* 6. CTA SECTION */}
             <div className="w-full py-20 px-4 bg-white">
                 <div className="max-w-[1000px] mx-auto text-center">
                     <ScrollReveal animation="scale-up" className={`bg-gradient-to-br ${theme.gradient} rounded-[40px] p-10 lg:p-16 shadow-2xl text-white relative overflow-hidden`}>

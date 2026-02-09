@@ -3,7 +3,7 @@
 import React from "react";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
-import { ArrowLeft, CheckCircle2, Sprout, ChevronRight } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Sprout, ChevronRight, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "../../../components/LanguageContext";
 import ScrollReveal from '../../../components/ScrollReveal';
@@ -23,27 +23,43 @@ const pageData = {
     en: {
         title: "New Farming – Capable Farmer",
         subtitle: "Modern Agriculture, Less Water, More Income",
-        description: "We are committed to modernizing agriculture and increasing productivity. By integrating modern technology, organic farming, and animal husbandry, we aim to make every rural unit self-reliant and boost agricultural exports.",
+        missionTitle: "The Root of the Problem",
+        description: "Today's farmer is hardworking but deprived of technology, markets, and security. Water scarcity and rising costs have made farming a losing proposition. We aim to transform this by introducing modern techniques and fair market access.",
         image: "/herosection/hero2.svg",
         icon: Sprout,
+        strategyTitle: "Our Strategy",
         points: [
-            "Modern tech & integrated farming for higher yield.",
-            "Boost income via organic farming & animal husbandry.",
-            "Support for Integrated Farm & Animal Centers.",
-            "Make rural units self-reliant & increase exports."
+            "Smart Irrigation: Promoting smart irrigation and drip systems for higher yields with less water. This ensures that even in water-scarce regions, farmers can grow high-value crops and reduce their dependency on monsoons.",
+            "Integrated Farming: Combining agriculture with animal husbandry, dairy, and organic farming creates a cycle where waste from one becomes input for another, reducing costs and ensuring year-round income for the farmer.",
+            "Initial Support: Providing initial assistance to new farmers in developing Integrated Farms and Animal Centers. The party will offer startup capital and technical know-how to modernize their traditional farming setups.",
+            "Branding & Exports: Special emphasis on branding, processing, and exporting farmer products. We will set up local processing units so farmers sell finished goods (like ketchup instead of tomatoes) and earn higher profits."
+        ],
+        outcomeTitle: "Expected Outcomes",
+        outcomes: [
+            "Farmer to Entrepreneur: Transforming farmers from mere providers to entrepreneurs. They will dictate the price of their produce and manage their farms like profitable businesses.",
+            "Self-reliant Villages: Making every rural unit economically self-reliant. Local wealth creation will reduce the need for migration and restore the prosperity of Indian villages.",
+            "Sustainable Eco-system: Creating a chemical-free, sustainable ecosystem where soil health is restored and biodiversity thrives alongside agriculture."
         ]
     },
     hi: {
         title: "नई खेती – समर्थ किसान कार्यक्रम",
         subtitle: "आधुनिक कृषि, कम पानी, अधिक आय",
-        description: "पीपल्स ग्रीन पार्टी का नई खेती – समर्थ किसान कार्यक्रम कृषि के आधुनिकीकरण और उत्पादकता वृद्धि पर केंद्रित है।",
+        missionTitle: "समस्या की जड़",
+        description: "आज का किसान मेहनती है, लेकिन तकनीक, बाज़ार और सुरक्षा से वंचित है। पानी की कमी और बढ़ती लागत ने खेती को घाटे का सौदा बना दिया है। हम इसे आधुनिक तकनीक और निष्पक्ष बाज़ार व्यवस्था के माध्यम से बदलना चाहते हैं।",
         image: "/herosection/hero2.svg",
         icon: Sprout,
+        strategyTitle: "हमारी रणनीति",
         points: [
-            "कम पानी में अधिक उत्पादन के लिए आधुनिक तकनीक और एकीकृत फार्मिंग को बढ़ावा।",
-            "ऑर्गेनिक खेती और पशुपालन को जोड़कर किसान की आय बढ़ाना।",
-            "नए किसानों को इंटीग्रेटेड फार्म और एनिमल सेंटर विकसित करने में सहयोग।",
-            "हर ग्रामीण इकाई को स्वावलंबी बनाकर कृषि निर्यात बढ़ाना।"
+            "स्मार्ट इरिगेशन: कम पानी में अधिक उत्पादन के लिए स्मार्ट इरिगेशन और ड्रिप सिस्टम को बढ़ावा देना। इससे सूखे क्षेत्रों में भी किसान मूल्यवान फसलें उगा सकेंगे और मानसून पर उनकी निर्भरता कम होगी।",
+            "इंटीग्रेटेड फार्मिंग: खेती के साथ पशुपालन, डेयरी और ऑर्गेनिक खेती को जोड़ना। इससे एक का अपशिष्ट दूसरे के लिए खाद बनता है, जिससे लागत कम होती है और किसान को साल भर आमदनी मिलती रहती है।",
+            "शुरुआती सहायता: नए किसानों को इंटीग्रेटेड फार्म और एनिमल सेंटर विकसित करने में शुरुआती आर्थिक और तकनीकी सहायता प्रदान करना ताकि वे अपनी पारंपरिक खेती को आधुनिक व्यवसाय में बदल सकें।",
+            "ब्रांडिंग और निर्यात: किसान उत्पादों की ब्रांडिंग, प्रोसेसिंग और निर्यात पर विशेष बल। हम स्थानीय स्तर पर प्रोसेसिंग यूनिट्स लगाएंगे ताकि किसान कच्चा माल बेचने के बजाय तैयार उत्पाद (जैसे टमाटर के बजाय सॉस) बेच सकें और अधिक मुनाफा कमाएं।"
+        ],
+        outcomeTitle: "अपेक्षित परिणाम",
+        outcomes: [
+            "उद्यमी किसान: किसान को अन्नदाता से उद्यमी बनाना। वे अपनी उपज की कीमत खुद तय करेंगे और अपने खेतों को किसी व्यापार की तरह मुनाफे के लिए चलाएंगे।",
+            "स्वावलंबी गाँव: हर ग्रामीण इकाई को आर्थिक रूप से स्वावलंबी बनाना। स्थानीय स्तर पर धन सृजन होने से पलायन रुकेगा और भारतीय गाँवों की खुशहाली वापस लौटेगी।",
+            "सतत पारिस्थितिकी तंत्र: एक रसायन मुक्त, सतत पारिस्थितिकी तंत्र का निर्माण जहां मिट्टी की सेहत बहाल हो और कृषि के साथ-साथ जैव विविधता भी पनपे।"
         ]
     }
 };
@@ -130,7 +146,7 @@ export default function FarmingPage() {
                                 <div className="flex items-center gap-3 mb-6">
                                     <div className={`h-[2px] w-12 ${theme.primary}`} />
                                     <span className={`font-bold uppercase tracking-wider text-sm ${theme.accent}`}>
-                                        {currentLang === 'hi' ? 'हमारा मिशन' : 'Our Mission'}
+                                        {content.missionTitle}
                                     </span>
                                 </div>
                                 <h3 className="font-['Familjen_Grotesk'] text-3xl font-bold text-gray-900 mb-6">
@@ -145,45 +161,98 @@ export default function FarmingPage() {
                 </div>
             </div>
 
-            {/* 3. KEY INITIATIVES - STYLED GRID */}
+            {/* 3. KEY INITIATIVES (STRATEGY) - STYLED GRID */}
             <div className={`w-full ${theme.secondary} py-20 px-4`}>
                 <div className="max-w-[1320px] mx-auto">
                     <div className="text-center mb-16">
                         <h2 className="font-['Familjen_Grotesk'] font-bold text-3xl md:text-4xl text-gray-900 mb-4">
-                            {currentLang === 'hi' ? 'मुख्य पहल' : 'Key Initiatives'}
+                            {content.strategyTitle}
                         </h2>
                         <div className={`w-20 h-1 ${theme.primary} mx-auto rounded-full`} />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 lg:gap-8">
-                        {content.points.map((point: string, idx: number) => (
-                            <ScrollReveal
-                                key={idx}
-                                animation="fade-up"
-                                delay={idx * 100}
-                                className={`group p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden`}
-                            >
-                                <div className={`absolute top-0 left-0 w-2 h-full ${theme.primary} transform -translate-x-2 group-hover:translate-x-0 transition-transform duration-300`} />
-                                <div className="flex items-start gap-5">
-                                    <div className={`w-12 h-12 rounded-xl ${theme.iconBg} flex items-center justify-center shrink-0 text-${theme.accent}`}>
-                                        <CheckCircle2 size={24} className={`${theme.accent}`} />
+                        {content.points.map((point: string, idx: number) => {
+                            const [title, ...rest] = point.split(':');
+                            const description = rest.join(':');
+                            return (
+                                <ScrollReveal
+                                    key={idx}
+                                    animation="fade-up"
+                                    delay={idx * 100}
+                                    className={`group p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden`}
+                                >
+                                    <div className={`absolute top-0 left-0 w-2 h-full ${theme.primary} transform -translate-x-2 group-hover:translate-x-0 transition-transform duration-300`} />
+                                    <div className="flex items-start gap-5">
+                                        <div className={`w-12 h-12 rounded-xl ${theme.iconBg} flex items-center justify-center shrink-0 text-${theme.accent}`}>
+                                            <CheckCircle2 size={24} className={`${theme.accent}`} />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-800 mb-2">
+                                                {currentLang === 'hi' ? `रणनीति ${idx + 1}` : `Strategy ${idx + 1}`}
+                                            </h4>
+                                            <p className="font-['Familjen_Grotesk'] text-gray-600 leading-relaxed">
+                                                {description ? (
+                                                    <>
+                                                        <span className="font-bold text-gray-900">{title}:</span> {description}
+                                                    </>
+                                                ) : (
+                                                    point
+                                                )}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h4 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-800 mb-2">
-                                            {currentLang === 'hi' ? `लक्ष्य ${idx + 1}` : `Goal ${idx + 1}`}
-                                        </h4>
-                                        <p className="font-['Familjen_Grotesk'] text-gray-600 leading-relaxed">
-                                            {point}
-                                        </p>
-                                    </div>
-                                </div>
-                            </ScrollReveal>
-                        ))}
+                                </ScrollReveal>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
 
-            {/* 4. MORE VISIONS SECTION */}
+            {/* 4. EXPECTED OUTCOMES - STYLED GRID */}
+            <div className={`w-full bg-white py-20 px-4`}>
+                <div className="max-w-[1320px] mx-auto">
+                    <div className="text-center mb-16">
+                        <h2 className="font-['Familjen_Grotesk'] font-bold text-3xl md:text-4xl text-gray-900 mb-4">
+                            {content.outcomeTitle}
+                        </h2>
+                        <div className={`w-20 h-1 ${theme.primary} mx-auto rounded-full`} />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                        {content.outcomes.map((outcome: string, idx: number) => {
+                            const [title, ...rest] = outcome.split(':');
+                            const description = rest.join(':');
+                            return (
+                                <ScrollReveal
+                                    key={idx}
+                                    animation="fade-up"
+                                    delay={idx * 100}
+                                    className={`group p-8 ${theme.secondary} rounded-2xl shadow-sm border border-blue-100 hover:shadow-xl transition-all duration-300 relative overflow-hidden text-center`}
+                                >
+                                    <div className="flex flex-col items-center gap-4">
+                                        <div className={`w-14 h-14 rounded-full ${theme.button} flex items-center justify-center shrink-0 text-white shadow-lg`}>
+                                            <Trophy size={28} />
+                                        </div>
+                                        <p className="font-['Familjen_Grotesk'] text-lg text-gray-600 leading-relaxed">
+                                            {description ? (
+                                                <>
+                                                    <span className="block mb-2 font-bold text-xl text-gray-900">{title}</span>
+                                                    {description}
+                                                </>
+                                            ) : (
+                                                <span className="font-semibold text-gray-800">{outcome}</span>
+                                            )}
+                                        </p>
+                                    </div>
+                                </ScrollReveal>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+
+            {/* 5. MORE VISIONS SECTION */}
             <div className="w-full bg-gray-50 py-20 px-4">
                 <div className="max-w-[1320px] mx-auto">
                     <div className="text-center mb-12">
@@ -222,7 +291,7 @@ export default function FarmingPage() {
                 </div>
             </div>
 
-            {/* 5. CTA SECTION */}
+            {/* 6. CTA SECTION */}
             <div className="w-full py-20 px-4 bg-white">
                 <div className="max-w-[1000px] mx-auto text-center">
                     <ScrollReveal animation="scale-up" className={`bg-gradient-to-br ${theme.gradient} rounded-[40px] p-10 lg:p-16 shadow-2xl text-white relative overflow-hidden`}>

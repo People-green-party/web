@@ -117,16 +117,22 @@ const DonationPageContent = () => {
             </button>
           </div>
 
-          {/* RIGHT: Donation Form */}
-          <div className="flex-1 bg-white rounded-[16px] p-[32px] shadow-[0px_4px_32px_0px_#00000014] border border-[#EFF5F1] flex flex-col justify-center">
-            <h2 className="text-center font-['Familjen_Grotesk'] font-bold text-[32px] text-[#04330B] mb-[8px]">
-              {t.form.title}
-            </h2>
-            <p className="text-center font-['Familjen_Grotesk'] font-semibold text-[16px] text-[#587E67] mb-[32px]">
-              {t.form.subtitle}
-            </p>
+          {/* RIGHT: Donation Form with Premium Effects */}
+          <div className="flex-1 bg-gradient-to-br from-white via-[#F7FCF9] to-[#ECFDF5] rounded-[16px] p-[32px] shadow-[0px_20px_60px_rgba(0,0,0,0.15)] border border-[#EFF5F1] flex flex-col justify-center relative overflow-hidden">
+            {/* Green Aesthetic Effects for Form */}
+            <div className="absolute top-1/4 -left-20 w-72 h-72 bg-[#10B981] opacity-[0.05] rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-1/4 -right-20 w-72 h-72 bg-[#059669] opacity-[0.04] rounded-full blur-3xl pointer-events-none" />
 
-            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-[24px]">
+            <div className="relative z-10">
+              <h2 className="text-center font-['Familjen_Grotesk'] font-bold text-[32px] text-[#04330B] mb-[8px]">
+                {t.form.title}
+              </h2>
+              <p className="text-center font-['Familjen_Grotesk'] font-semibold text-[16px] text-[#587E67] mb-[32px]">
+                {t.form.subtitle}
+              </p>
+            </div>
+
+            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-[24px] relative z-10">
 
               {/* Existing Member Checkbox */}
               <div

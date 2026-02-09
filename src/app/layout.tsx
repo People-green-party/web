@@ -28,7 +28,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "PGP",
-  description: "Peoples Governance Party",
+  description: "Peoples Green Party",
   icons: {
     icon: "/icon.svg",
   },
