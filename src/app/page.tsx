@@ -949,13 +949,13 @@ const LandingPageContent = () => {
 
 
             <ScrollReveal animation="fade-up" duration={800} delay={100}>
-              <h2 className="w-full font-['Familjen_Grotesk'] font-bold text-[36px] md:text-[48px] lg:text-[64px] leading-[1.1] text-[#04330B] whitespace-nowrap">
+              <h2 className="w-full font-['Familjen_Grotesk'] font-bold text-[36px] md:text-[48px] lg:text-[64px] leading-[1.1] text-[#04330B] lg:whitespace-nowrap">
                 {t.stats.header}
               </h2>
             </ScrollReveal>
 
             <ScrollReveal animation="fade-up" duration={800} delay={200}>
-              <p className="w-full font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[20px] leading-[1.6] text-[#587E67] whitespace-nowrap">
+              <p className="w-full font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[20px] leading-[1.6] text-[#587E67] lg:whitespace-nowrap">
                 {t.stats.sub}
               </p>
             </ScrollReveal>

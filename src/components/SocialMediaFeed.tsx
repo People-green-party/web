@@ -9,8 +9,8 @@ const SOCIAL_DATA = {
     facebook: {
         id: 'fb',
         icon: Facebook,
-        color: "text-white",
-        bgGradient: "from-[#0D5229]/60 to-transparent",
+        color: "text-[#1877F2]",
+        brandBg: "bg-[#1877F2]/10",
         handle: "@peoplesgreen",
         link: "https://www.facebook.com/peoplesgreen/",
         posts: [
@@ -22,8 +22,8 @@ const SOCIAL_DATA = {
     instagram: {
         id: 'insta',
         icon: Instagram,
-        color: "text-white",
-        bgGradient: "from-[#0D5229]/60 to-transparent",
+        color: "text-[#E4405F]",
+        brandBg: "bg-[#E4405F]/10",
         handle: "@drsudhanshu_green",
         link: "https://www.instagram.com/drsudhanshu_green/",
         posts: [
@@ -35,8 +35,8 @@ const SOCIAL_DATA = {
     twitter: {
         id: 'x',
         icon: X,
-        color: "text-white",
-        bgGradient: "from-[#0D5229]/60 to-transparent",
+        color: "text-black",
+        brandBg: "bg-black/10",
         handle: "@ipgpaction",
         link: "https://x.com/ipgpaction",
         posts: [
@@ -48,8 +48,8 @@ const SOCIAL_DATA = {
     youtube: {
         id: 'yt',
         icon: Youtube,
-        color: "text-white",
-        bgGradient: "from-[#0D5229]/60 to-transparent",
+        color: "text-[#FF0000]",
+        brandBg: "bg-[#FF0000]/10",
         handle: "Peoples Green Party",
         link: "https://www.youtube.com/@PeoplesGreenParty",
         posts: [
@@ -75,74 +75,54 @@ const SocialCard = ({ platform, data }: { platform: string, data: any }) => {
     const currentPost = data.posts[index];
 
     return (
-        // FIX: Ensure w-full is explicit and display is block
         <a
             href={currentPost.link || data.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="block relative w-full h-[520px] rounded-[32px] overflow-hidden bg-black shadow-2xl group transition-transform duration-500 hover:-translate-y-2 border border-white/5"
+            className="block relative w-full h-[520px] rounded-[32px] overflow-hidden bg-white shadow-lg group transition-all duration-500 hover:-translate-y-2 border border-gray-100 hover:border-[#0D5229]/30 hover:shadow-2xl hover:shadow-[#0D5229]/10"
         >
-            {/* 1. Background Image Layer (Absolute) */}
-            <div className="absolute inset-0 z-0 bg-[#041208]">
-                {data.posts.map((p: any, i: number) => (
-                    <div
-                        key={i}
-                        className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ${i === index ? 'opacity-100' : 'opacity-0'}`}
-                    >
-                        {/* Blurred Background (Fills the frame) */}
-                        <img
-                            src={p.img}
-                            alt=""
-                            className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-30 scale-125 select-none"
-                        />
-                        {/* Main Image (YouTube Style Frame - Aspect Ratio 16:9) */}
-                        <div className="relative w-full h-full flex items-center justify-center p-6 pb-32">
-                            <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-2xl border border-white/10 transition-transform duration-700 group-hover:scale-105">
-                                <img
-                                    src={p.img}
-                                    alt="Social Post"
-                                    className="w-full h-full object-cover"
-                                />
-                                {/* Bottom Accent Line for Video Look */}
-                                <div className="absolute bottom-0 left-0 w-full h-1 bg-[#0D5229]/80" />
-                            </div>
-                        </div>
-                    </div>
-                ))}
-
-                {/* Heavy Gradient Overlay to ensure text visibility */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90" />
-
-                {/* Brand Color Glow at bottom - intensified on hover */}
-                <div className="absolute inset-0 bg-[#04330B]/0 group-hover:bg-[#04330B]/70 transition-colors duration-500 z-[1]" />
-
-                {/* Brand Color Glow at bottom */}
-                <div className={`absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t ${data.bgGradient} opacity-60 z-[1]`} />
-            </div>
-
-            {/* 2. Top Content */}
-            <div className="absolute top-0 left-0 w-full p-6 z-10 flex justify-between items-start">
+            {/* 1. Header (Top) */}
+            <div className="absolute top-0 left-0 w-full p-6 z-10 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10 shadow-lg group-hover:bg-white group-hover:scale-110 transition-all duration-300">
-                        <Icon size={24} className={`${data.color} group-hover:text-[#0D5229] transition-colors duration-300`} />
+                    <div className="w-12 h-12 rounded-[12px] bg-white border border-[#E4F2EA] flex items-center justify-center shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:bg-[#EAF7EE]">
+                        <Icon size={24} strokeWidth={1.5} className="text-[#04330B]" />
                     </div>
                     <div>
-                        <h3 className="font-['Familjen_Grotesk'] font-bold text-white text-lg capitalize drop-shadow-md">
+                        <h3 className="font-['Familjen_Grotesk'] font-bold text-[#04330B] text-lg capitalize">
                             {platform === 'twitter' ? 'X (Twitter)' : platform}
                         </h3>
-                        <p className="font-['Familjen_Grotesk'] text-white/70 text-xs text-left">
+                        <p className="font-['Familjen_Grotesk'] text-[#587E67] text-xs font-medium text-left text-nowrap">
                             {data.handle}
                         </p>
                     </div>
                 </div>
+                <div className="w-8 h-8 rounded-full bg-white border border-[#E4F2EA] flex items-center justify-center text-[#0D5229] opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-sm">
+                    <ArrowUpRight size={18} />
+                </div>
             </div>
 
-            {/* 3. Bottom Content (Glass Panel) */}
-            <div className="absolute bottom-0 left-0 w-full p-4 z-20">
-                <div className="bg-black/40 backdrop-blur-2xl border border-white/10 rounded-[28px] p-5 shadow-2xl group-hover:bg-black/50 transition-all duration-300">
+            {/* 2. Visual Content (Center) */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-6 pt-12">
+                {data.posts.map((p: any, i: number) => (
+                    <div
+                        key={i}
+                        className={`absolute inset-x-6 top-[80px] aspect-square rounded-2xl overflow-hidden shadow-xl border border-gray-100 transition-all duration-1000 ${i === index ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95 pointer-events-none'}`}
+                    >
+                        <img
+                            src={p.img}
+                            alt="Social Post"
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                ))}
+            </div>
+
+            {/* 3. Bottom Content (Text & Progress) */}
+            <div className="absolute bottom-4 left-0 w-full px-6 z-20">
+                <div className="bg-[#F8FBF9] border border-gray-100 rounded-[24px] p-5 transition-all duration-300 group-hover:bg-[#EAF7EE]">
 
                     {/* Animated Text */}
-                    <div className="relative h-[110px] w-full">
+                    <div className="relative h-[85px] w-full">
                         {data.posts.map((p: any, i: number) => (
                             <div
                                 key={i}
@@ -151,29 +131,21 @@ const SocialCard = ({ platform, data }: { platform: string, data: any }) => {
                                     : 'opacity-0 translate-y-4 pointer-events-none'
                                     }`}
                             >
-                                <p className="font-['Familjen_Grotesk'] font-medium text-white text-[16px] md:text-[18px] leading-snug drop-shadow-lg line-clamp-3 text-left">
+                                <p className="font-['Familjen_Grotesk'] font-medium text-[#04330B] text-[16px] md:text-[17px] leading-snug line-clamp-3 text-left">
                                     {p.text}
                                 </p>
-                                <div className="flex justify-end mt-1">
-                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#04330B] opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 scale-90">
-                                        <ArrowUpRight size={16} />
-                                    </div>
-                                </div>
                             </div>
                         ))}
                     </div>
 
-                    {/* Progress Bar */}
-                    <div className="w-full h-1 bg-white/10 rounded-full mt-3 overflow-hidden relative">
+                    {/* Pagination Dots (Replaced Progress Bar) */}
+                    <div className="flex justify-center items-center gap-1.5 mt-5">
                         {data.posts.map((_: any, i: number) => (
                             <div
                                 key={i}
-                                className="absolute top-0 h-full bg-white transition-all duration-[4000ms] ease-linear"
-                                style={{
-                                    left: `${(i * 100) / data.posts.length}%`,
-                                    width: `${100 / data.posts.length}%`,
-                                    opacity: i === index ? 1 : 0
-                                }}
+                                className={`h-1.5 rounded-full transition-all duration-500 ${i === index
+                                    ? 'w-6 bg-[#0D5229]'
+                                    : 'w-1.5 bg-gray-200'}`}
                             />
                         ))}
                     </div>
@@ -185,8 +157,8 @@ const SocialCard = ({ platform, data }: { platform: string, data: any }) => {
 
 export default function SocialMediaFeed({ language }: { language: string }) {
     const titles = {
-        en: { title: "Social Media Hub", sub: "Follow our latest activities across all platforms" },
-        hi: { title: "सोशल मीडिया अपडेट", sub: "सभी प्लेटफार्मों पर हमारी नवीनतम गतिविधियों का अनुसरण करें" }
+        en: { title: "Connect With Us", sub: "Follow our latest activities across all platforms" },
+        hi: { title: "हमसे जुड़ें", sub: "सभी प्लेटफार्मों पर हमारी नवीनतम गतिविधियों का अनुसरण करें" }
     };
 
     const t = titles[language as keyof typeof titles] || titles.en;
