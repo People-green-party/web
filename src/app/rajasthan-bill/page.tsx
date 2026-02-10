@@ -18,42 +18,48 @@ export default function RajasthanBillPage() {
             description: language === 'hi'
                 ? "हर सरकारी प्रक्रिया को जनता के देखने के लिए खुला और पारदर्शी बनाया जाएगा।"
                 : "Making every government process open and transparent for the public eye.",
-            icon: Scale
+            icon: Scale,
+            image: "/herosection/1.png"
         },
         {
             title: language === 'hi' ? "आर्थिक स्वायत्तता" : "Economic Autonomy",
             description: language === 'hi'
                 ? "स्थानीय व्यवसायों और उद्यमियों के लिए सरल नियम और आर्थिक प्रोत्साहन।"
                 : "Simple regulations and economic incentives for local businesses and entrepreneurs.",
-            icon: Briefcase
+            icon: Briefcase,
+            image: "/herosection/hero3.svg"
         },
         {
             title: language === 'hi' ? "विकेंद्रीकृत सत्ता" : "Decentralized Power",
             description: language === 'hi'
                 ? "पंचायतों और स्थानीय निकायों को सीधे निर्णय लेने की शक्ति देना।"
                 : "Empowering Panchayats and local units with direct decision-making power.",
-            icon: Landmark
+            icon: Landmark,
+            image: "/herosection/hero4.svg"
         },
         {
             title: language === 'hi' ? "सतत रोजगार" : "Sustainable Jobs",
             description: language === 'hi'
                 ? "हर ब्लॉक में नई औद्योगिक इकाइयों के साथ रोजगार के अवसर पैदा करना।"
                 : "Creating employment opportunities with new industrial units in every block.",
-            icon: Users
+            icon: Users,
+            image: "/herosection/team.jpg"
         },
         {
             title: language === 'hi' ? "गुणवत्तापूर्ण शिक्षा" : "Quality Education",
             description: language === 'hi'
                 ? "आधुनिक बुनियादी ढांचे के साथ विश्व स्तरीय शिक्षा प्रणाली की स्थापना।"
                 : "Establishing a world-class education system with modern infrastructure.",
-            icon: GraduationCap
+            icon: GraduationCap,
+            image: "/herosection/5.jpg"
         },
         {
             title: language === 'hi' ? "डिजिटल इंफ्रास्ट्रक्चर" : "Digital Infrastructure",
             description: language === 'hi'
                 ? "राज्य के हर गांव को हाई-स्पीड इंटरनेट और डिजिटल सेवाओं से जोड़ना।"
                 : "Connecting every village in the state with high-speed internet and digital services.",
-            icon: Building2
+            icon: Building2,
+            image: "/herosection/hero5.svg"
         }
     ];
 
@@ -61,10 +67,11 @@ export default function RajasthanBillPage() {
         <MissionLayout
             title={language === 'hi' ? "राजस्थान विकास विधेयक" : "Rajasthan Development Bill"}
             subtitle={language === 'hi' ? "राजस्थान के उज्ज्वल भविष्य के लिए एक व्यापक कानूनी ढांचा।" : "A comprehensive legislative framework for a brighter Rajasthan."}
-            heroImage="/herosection/1.png"
+            heroImage="/herosection/2.png"
             content={content}
             initiatives={initiatives}
             secondaryTitle={language === 'hi' ? "लोगों का बिल, लोगों के लिए" : "The People's Bill, For The People"}
+            tags={["GOVERNANCE", "ECONOMY", "TRANSPARENCY"]}
         />
     );
 }
