@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useState, useContext, createContext, useRef, useEffect } from "react";
 import {
   Play, ChevronLeft, ChevronRight, Trophy, HandHeart, Globe, Leaf,
-  MapPin, Phone, Mail, Linkedin, Facebook, Instagram, X, ArrowRight, ArrowLeft, Menu,
+  MapPin, Phone, Mail, Facebook, Instagram, X, ArrowRight, ArrowLeft, Menu, Youtube,
   Landmark, Briefcase, HeartHandshake, BookOpen
 } from 'lucide-react';
 import ScrollReveal from '@/components/ScrollReveal';
@@ -60,11 +60,11 @@ const translations = {
       }
     ],
     quickLinks: [
-      { title: "Join the New Era\nof Politics", path: "/constitution" },
-      { title: "Our New Rajasthan Bill Will Change the World", path: "/join" },
-      { title: "War on Corruption\nHonest Government", path: "/donation" },
-      { title: "Nature Conservation\nProtection of Humanity", path: "/about" },
-      { title: "A Small Donation\nBoon for Change", path: "/declaration" }
+      { title: "Join the New Era\nof Politics", path: "/join" },
+      { title: "Our New Rajasthan Bill Will Change the World", path: "/rajasthan-bill" },
+      { title: "War on Corruption\nHonest Government", path: "/corruption-free" },
+      { title: "Nature Conservation\nProtection of Humanity", path: "/nature-conservation" },
+      { title: "A Small Donation\nBoon for Change", path: "/donation" }
     ],
     heroTagline: "Now the people's front will defeat the dishonest",
     visionSection: {
@@ -170,9 +170,8 @@ const translations = {
       button: "View More"
     },
     leader: {
-      title: "Meet Your Ideological Leader",
+      title: "Meet Our Ideological Leader",
       sub: "The Face of Change, The Voice of the People.",
-      quote: "“The Green Talks with Dr. Sudhanshu.”",
       role: "– Dr. Sudhanshu Sharma, President",
       bio: "Dr. Sudhanshu is an Indian academician, politician, green activist, and climate change scientist. He is the co-founder of Suresh Gyan Vihar University, one of the NAAC 'A+' graded universities in Rajasthan. He also served as the founding First Vice-President of Suresh Gyan Vihar University between 2008–2010. In 2011, he founded the Bharatiya People's Green Party, based in Rajasthan, as its national president. The party is affiliated with the Naya Rajasthan think-tank and promotes the formation of a people's green zone."
     },
@@ -265,11 +264,11 @@ const translations = {
       }
     ],
     quickLinks: [
-      { title: "नए युग की राजनीति\nसे जुड़िए", path: "/constitution" },
-      { title: "हमारा नया राजस्थान बिल बदलेगा दुनिया", path: "/join" },
-      { title: "करप्शन पर वार\nईमानदार सरकार", path: "/donation" },
-      { title: "प्रकृति का संरक्षण\nमानवता की रक्षा", path: "/about" },
-      { title: "थोड़ा सा दान\nबदलाव के लिए वरदान", path: "/declaration" }
+      { title: "नए युग की राजनीति\nसे जुड़िए", path: "/join" },
+      { title: "हमारा नया राजस्थान बिल बदलेगा दुनिया", path: "/rajasthan-bill" },
+      { title: "करप्शन पर वार\nईमानदार सरकार", path: "/corruption-free" },
+      { title: "प्रकृति का संरक्षण\nमानवता की रक्षा", path: "/nature-conservation" },
+      { title: "थोड़ा सा दान\nबदलाव के लिए वरदान", path: "/donation" }
     ],
     heroTagline: "अब जनता का मोर्चा पराजित करेगा बेईमानों को",
     visionSection: {
@@ -875,7 +874,7 @@ const LandingPageContent = () => {
 
 
 
-      {/* 4. MEET YOUR IDEOLOGICAL LEADER */}
+      {/* 4. MEET OUR IDEOLOGICAL LEADER */}
       < section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center" >
         <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col lg:flex-row items-end justify-between gap-[32px] lg:gap-0">
 
@@ -916,8 +915,11 @@ const LandingPageContent = () => {
               <a href="https://www.instagram.com/drsudhanshu_green/?__pwa=1#" target="_blank" rel="noopener noreferrer" className="w-[40px] h-[40px] rounded-[8px] bg-white border border-[#E8F3EC] flex items-center justify-center text-[#04330B] shadow-sm hover:shadow-lg hover:-translate-y-1 hover:bg-green-50 transition-all duration-300">
                 <img src="/leadersection/insta.svg" alt="Instagram" className="w-[29px] h-[29px]" />
               </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="w-[40px] h-[40px] rounded-[8px] bg-white border border-[#E8F3EC] flex items-center justify-center text-[#04330B] shadow-sm hover:shadow-lg hover:-translate-y-1 hover:bg-green-50 transition-all duration-300">
+              <a href="https://x.com/drsudhanshupgp" target="_blank" rel="noopener noreferrer" className="w-[40px] h-[40px] rounded-[8px] bg-white border border-[#E8F3EC] flex items-center justify-center text-[#04330B] shadow-sm hover:shadow-lg hover:-translate-y-1 hover:bg-green-50 transition-all duration-300">
                 <img src="/leadersection/x.svg" alt="X" className="w-[25px] h-[25px]" />
+              </a>
+              <a href="https://www.youtube.com/channel/UCI6LEG8xFb2EvwvyG4qnwGg" target="_blank" rel="noopener noreferrer" className="w-[40px] h-[40px] rounded-[8px] bg-white border border-[#E8F3EC] flex items-center justify-center text-[#04330B] shadow-sm hover:shadow-lg hover:-translate-y-1 hover:bg-green-50 transition-all duration-300">
+                <Youtube size={24} />
               </a>
             </div>
 
@@ -1168,10 +1170,15 @@ const LandingPageContent = () => {
               </h3>
 
               <div className="w-full h-[48px] flex gap-[12px]">
-                {[Linkedin, Facebook, Instagram, X].map((Icon, i) => (
-                  <div key={i} className="w-[48px] h-[48px] rounded-[8px] border border-[#E4F2EA] bg-white p-[12px] flex items-center justify-center text-[#04330B] hover:bg-[#EAF7EE] transition-colors cursor-pointer">
-                    <Icon size={24} strokeWidth={1.5} />
-                  </div>
+                {[
+                  { Icon: Youtube, href: "https://www.youtube.com/channel/UCI6LEG8xFb2EvwvyG4qnwGg" },
+                  { Icon: Facebook, href: "https://www.facebook.com/sudhanshu.pgp1" },
+                  { Icon: Instagram, href: "https://www.instagram.com/drsudhanshu_green/?__pwa=1#" },
+                  { Icon: X, href: "https://x.com/drsudhanshupgp" }
+                ].map((social, i) => (
+                  <a key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="w-[48px] h-[48px] rounded-[8px] border border-[#E4F2EA] bg-white p-[12px] flex items-center justify-center text-[#04330B] hover:bg-[#EAF7EE] transition-colors cursor-pointer">
+                    <social.Icon size={24} strokeWidth={1.5} />
+                  </a>
                 ))}
               </div>
             </div>

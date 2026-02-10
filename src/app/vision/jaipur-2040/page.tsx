@@ -626,17 +626,35 @@ export default function Page() {
         return language === 'hi' ? point.hi : point.en;
     };
 
+    const getCityImage = (id: number) => {
+        const localImages = [
+            "/herosection/1.png",
+            "/herosection/4.jpg",
+            "/herosection/7.jpg",
+            "/herosection/8.jpg",
+            "/herosection/9.jpg",
+            "/herosection/10.jpg",
+            "/herosection/team.jpg",
+            "/news1.svg",
+            "/news2.svg",
+            "/news3.svg",
+            "/news4.svg",
+            "/news5.svg",
+        ];
+        return localImages[id % localImages.length];
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
             <Navbar />
 
-            <main className="pt-24 pb-20 px-4 md:px-8 max-w-[1320px] mx-auto">
+            <main className="pt-32 lg:pt-40 pb-20 px-4 md:px-8 max-w-[1320px] mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16">
                     <h1 className="font-['Familjen_Grotesk'] font-bold text-4xl md:text-6xl text-[#0D5229] mb-4">
                         {language === 'hi' ? 'जयपुर विजन 2040' : 'JAIPUR VISION 2040'}
                     </h1>
-                    <p className="text-xl md:text-2xl text-[#0D5229] font-medium max-w-3xl mx-auto">
+                    <p className="text-xl md:text-2xl text-[#0D5229] font-medium max-w-none mx-auto whitespace-nowrap lg:whitespace-normal">
                         {language === 'hi'
                             ? 'पिंक सिटी को स्थिरता, संस्कृति और नवाचार के वैश्विक मॉडल में बदलने के लिए 50-सूत्रीय खाका।'
                             : 'A 50-point blueprint to transform The Pink City into a global model of sustainability, culture, and innovation.'}
@@ -644,7 +662,7 @@ export default function Page() {
                 </div>
 
                 {/* Categories / Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {visionPoints.map((point) => {
                         const Icon = point.icon;
                         const content = getPointContent(point);
@@ -652,19 +670,32 @@ export default function Page() {
                         return (
                             <div
                                 key={point.id}
-                                className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col gap-4 group"
+                                className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col group h-full"
                             >
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-[#0D5229] shrink-0 group-hover:bg-[#0D5229] group-hover:text-white transition-colors">
-                                        <Icon size={24} />
+                                {/* Image Container */}
+                                <div className="relative w-full aspect-[16/9] overflow-hidden">
+                                    <img
+                                        src={getCityImage(point.id)}
+                                        alt={content.title}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+                                    <div className="absolute bottom-4 left-4">
+                                        <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white">
+                                            <Icon size={20} />
+                                        </div>
                                     </div>
-                                    <h3 className="font-['Familjen_Grotesk'] font-bold text-lg leading-tight text-gray-900 group-hover:text-[#0D5229] transition-colors">
+                                </div>
+
+                                {/* Content */}
+                                <div className="p-6 flex flex-col gap-3">
+                                    <h3 className="font-['Familjen_Grotesk'] font-bold text-xl leading-tight text-gray-900 group-hover:text-[#0D5229] transition-colors">
                                         {content.title}
                                     </h3>
+                                    <p className="text-gray-600 text-[15px] leading-relaxed text-justify">
+                                        {content.desc}
+                                    </p>
                                 </div>
-                                <p className="text-gray-600 text-[15px] leading-relaxed text-justify">
-                                    {content.desc}
-                                </p>
                             </div>
                         );
                     })}

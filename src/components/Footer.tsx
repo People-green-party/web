@@ -3,13 +3,13 @@
 import React from "react";
 import Link from "next/link";
 import {
-    MapPin, Phone, Mail, Linkedin, Facebook, Instagram, X
+    MapPin, Phone, Mail, Youtube, Facebook, Instagram, X
 } from 'lucide-react';
 import { useLanguage } from "./LanguageContext";
 import ScrollReveal from './ScrollReveal';
 
-const SocialIcon = ({ Icon }: { Icon: any }) => (
-    <a href="#" className="w-[48px] h-[48px] rounded-[8px] border border-[#E4F2EA] bg-white p-[12px] flex items-center justify-center text-[#04330B] hover:bg-[#EAF7EE] transition-colors cursor-pointer">
+const SocialIcon = ({ Icon, href }: { Icon: any, href: string }) => (
+    <a href={href} target="_blank" rel="noopener noreferrer" className="w-[48px] h-[48px] rounded-[8px] border border-[#E4F2EA] bg-white p-[12px] flex items-center justify-center text-[#04330B] hover:bg-[#EAF7EE] transition-colors cursor-pointer">
         <Icon size={24} strokeWidth={1.5} />
     </a>
 );
@@ -32,8 +32,13 @@ export const Footer = () => {
                         </h3>
 
                         <div className="w-full h-[48px] flex gap-[12px]">
-                            {[Linkedin, Facebook, Instagram, X].map((Icon, i) => (
-                                <SocialIcon key={i} Icon={Icon} />
+                            {[
+                                { Icon: Youtube, href: "https://www.youtube.com/channel/UCI6LEG8xFb2EvwvyG4qnwGg" },
+                                { Icon: Facebook, href: "https://www.facebook.com/sudhanshu.pgp1" },
+                                { Icon: Instagram, href: "https://www.instagram.com/drsudhanshu_green/?__pwa=1#" },
+                                { Icon: X, href: "https://x.com/drsudhanshupgp" }
+                            ].map((social, i) => (
+                                <SocialIcon key={i} Icon={social.Icon} href={social.href} />
                             ))}
                         </div>
                     </div>

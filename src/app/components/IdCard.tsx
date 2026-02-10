@@ -1,13 +1,13 @@
 import React from 'react';
 import Link from "next/link";
-import { 
-  Copy, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Linkedin, 
-  Facebook, 
-  Instagram, 
+import {
+  Copy,
+  MapPin,
+  Phone,
+  Mail,
+  Youtube,
+  Facebook,
+  Instagram,
   X, // Twitter icon
   User,
   Menu
@@ -49,12 +49,12 @@ const MemberIdCard = () => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-full">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Member Identification Card</h2>
-      
+
       {/* Photo */}
       <div className="w-full h-48 mb-6 overflow-hidden rounded-lg bg-gray-100">
-        <img 
-          src={currentUser.avatar} 
-          alt={currentUser.name} 
+        <img
+          src={currentUser.avatar}
+          alt={currentUser.name}
           className="w-full h-full object-cover object-top"
         />
       </div>
@@ -84,7 +84,7 @@ const RecruitsPanel = () => {
       <div className="flex flex-col md:flex-row justify-between items-start mb-6">
         <div className="w-full md:w-3/4">
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Recruits</h2>
-          
+
           <div className="flex items-center gap-2 mb-4">
             <span className="text-gray-600">Referral Code:</span>
             <span className="font-bold text-gray-900">ADMINCODE</span>
@@ -106,12 +106,12 @@ const RecruitsPanel = () => {
 
         {/* QR Code Placeholder */}
         <div className="mt-4 md:mt-0 md:ml-4 flex-shrink-0">
-            {/* Using a generic QR code image for visual fidelity */}
-           <img 
-             src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Example" 
-             alt="QR Code" 
-             className="w-24 h-24 border border-gray-200" 
-           />
+          {/* Using a generic QR code image for visual fidelity */}
+          <img
+            src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Example"
+            alt="QR Code"
+            className="w-24 h-24 border border-gray-200"
+          />
         </div>
       </div>
 
@@ -121,9 +121,9 @@ const RecruitsPanel = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {recruitsList.map((recruit) => (
             <div key={recruit.id} className="flex items-center gap-3">
-              <img 
-                src={recruit.avatar} 
-                alt={recruit.name} 
+              <img
+                src={recruit.avatar}
+                alt={recruit.name}
                 className="w-10 h-10 rounded-lg object-cover bg-gray-200"
               />
               <div className="flex flex-col">
@@ -142,22 +142,26 @@ const Footer = () => {
   return (
     <footer className="mt-12 bg-white pt-12 pb-6 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-        
+
         {/* Column 1: Logo & Socials */}
         <div className="space-y-6">
-            <div className="flex flex-col items-start leading-none">
-              <img src="/PGPlogo.svg" alt="PGP Logo" className="w-40 h-25" />
+          <div className="flex flex-col items-start leading-none">
+            <img src="/PGPlogo.svg" alt="PGP Logo" className="w-40 h-25" />
+          </div>
+
+          <div>
+            <h4 className="font-bold text-lg mb-4">Follow Us</h4>
+            <div className="flex gap-3">
+              {[
+                { Icon: Youtube, href: "https://www.youtube.com/channel/UCI6LEG8xFb2EvwvyG4qnwGg" },
+                { Icon: Facebook, href: "https://www.facebook.com/sudhanshu.pgp1" },
+                { Icon: Instagram, href: "https://www.instagram.com/drsudhanshu_green/?__pwa=1#" },
+                { Icon: X, href: "https://x.com/drsudhanshupgp" }
+              ].map((social, i) => (
+                <SocialIcon key={i} Icon={social.Icon} href={social.href} />
+              ))}
             </div>
-            
-            <div>
-              <h4 className="font-bold text-lg mb-4">Follow Us</h4>
-              <div className="flex gap-3">
-                <SocialIcon Icon={Linkedin} />
-                <SocialIcon Icon={Facebook} />
-                <SocialIcon Icon={Instagram} />
-                <SocialIcon Icon={X} />
-              </div>
-            </div>
+          </div>
         </div>
 
         {/* Column 2: Useful Links */}
@@ -187,17 +191,17 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex gap-3 items-start">
               <div className="p-2 border border-gray-200 rounded text-green-800">
-                 <MapPin size={20} />
+                <MapPin size={20} />
               </div>
               <p className="text-sm text-gray-600 font-medium leading-relaxed">
-                Ham Badlenge Bhawan, 02 Mission Compound,<br/>
+                Ham Badlenge Bhawan, 02 Mission Compound,<br />
                 Ajmer Puliya, Jaipur, Rajasthan
               </p>
             </div>
 
             <div className="flex gap-3 items-start">
               <div className="p-2 border border-gray-200 rounded text-green-800">
-                 <Phone size={20} />
+                <Phone size={20} />
               </div>
               <div className="text-sm text-gray-600 font-medium">
                 <p>9521627701</p>
@@ -207,7 +211,7 @@ const Footer = () => {
 
             <div className="flex gap-3 items-start">
               <div className="p-2 border border-gray-200 rounded text-green-800">
-                 <Mail size={20} />
+                <Mail size={20} />
               </div>
               <p className="text-sm text-gray-600 font-medium">joinus@peoplesgreen.org</p>
             </div>
@@ -220,8 +224,8 @@ const Footer = () => {
 };
 
 // Helper Components for Footer
-const SocialIcon = ({ Icon }: { Icon: any }) => (
-  <a href="#" className="p-2 border border-gray-200 rounded-md hover:bg-gray-50 text-green-900">
+const SocialIcon = ({ Icon, href }: { Icon: any, href: string }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" className="p-2 border border-gray-200 rounded-md hover:bg-gray-50 text-green-900">
     <Icon size={18} />
   </a>
 );
@@ -240,7 +244,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-white font-sans text-gray-800">
       <main className="max-w-[1400px] mx-auto p-6 md:p-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* Left Column: Member Card */}
           <div className="lg:col-span-1">
             <MemberIdCard />

@@ -122,7 +122,7 @@ export const translations = {
             button: "View More"
         },
         leader: {
-            title: "Meet Your Ideological Leader",
+            title: "Meet Our Ideological Leader",
             sub: "The Face of Change, The Voice of the People.",
             quote: "“The Green Talks with Dr. Sudhanshu.”",
             role: "– Dr. Sudhanshu Sharma, President",
