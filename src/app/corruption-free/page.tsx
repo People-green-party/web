@@ -70,6 +70,7 @@ export default function CorruptionFreePage() {
             heroImage="/herosection/hero3.svg"
             content={content}
             initiatives={initiatives}
+            theme="blue"
             secondaryTitle={language === 'hi' ? "ईमानदारी ही हमारा आधार है" : "Honesty is Our Foundation"}
             tags={["INTEGRITY", "ZERO BRIBES", "ACCOUNTABILITY"]}
         />

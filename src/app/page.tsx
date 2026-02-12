@@ -14,6 +14,9 @@ import SocialMediaFeed from '@/components/SocialMediaFeed';
 import VisionCarousel from '@/components/VisionCarousel';
 import { Plus, ImageIcon } from 'lucide-react'; // Make sure to import these
 import { Users, Trees, ArrowUpRight } from 'lucide-react';
+import { RajasthanImpactMap } from '@/components/RajasthanImpactMap';
+import { PolicyImpactToggle } from '@/components/PolicyImpactToggle';
+import { SynergyEngine } from '@/components/SynergyEngine';
 
 
 
@@ -221,6 +224,25 @@ const translations = {
       title: "VISION JAIPUR 2040",
       sub: "50 IDEAS TO TRANSFORM THE PINK CITY",
       desc: "A blueprint for a sustainable, inclusive, and globally admired Jaipur."
+    },
+    synergy: {
+      tag: "The Synergy Engine",
+      title: "A Future Built on",
+      highlight: "Seamless Connection.",
+      sub: "PGP's policies aren't isolated. They are a self-sustaining ecosystem where one's success powers the next."
+    },
+    map: {
+      tag: "State-Wide Presence",
+      title: "RAJASTHAN",
+      quote: "Our mission reaches the farthest corners of the desert & the heart of the Aravallis."
+    },
+    choice: {
+      title: "The Power of",
+      highlight: "Political Choice",
+      switchPgp: "PGP GREEN MODEL",
+      switchOld: "STATUS QUO",
+      currentSystem: "CURRENT SYSTEM",
+      greenEra: "GREEN ERA"
     }
   },
   // --- HINDI TRANSLATIONS ---
@@ -426,6 +448,25 @@ const translations = {
       title: "विजन जयपुर 2040",
       sub: "गुलाबी नगरी को बदलने के लिए 50 विचार",
       desc: "एक स्थायी, समावेशी और विश्व स्तर पर प्रशंसित जयपुर के लिए एक ब्लूप्रिंट।"
+    },
+    synergy: {
+      tag: "द सिनर्जी इंजन",
+      title: "निर्बाध जुड़ाव पर बना",
+      highlight: "भविष्य",
+      sub: "पी.जी.पी. की नीतियां अलग-थलग नहीं हैं। वे एक स्व-sustaining पारिस्थितिकी तंत्र हैं जहां एक की सफलता दूसरे को शक्ति प्रदान करती है।"
+    },
+    map: {
+      tag: "राजस्थान भर में उपस्थिति",
+      title: "राजस्थान",
+      quote: "हमारा मिशन रेगिस्तान के सुदूर कोनों और अरावली के हृदय तक पहुँचता है।"
+    },
+    choice: {
+      title: "राजनीतिक पसंद की",
+      highlight: "शक्ति",
+      switchPgp: "पी.जी.पी. ग्रीन मॉडल",
+      switchOld: "यथास्थिति",
+      currentSystem: "पुराना सिस्टम",
+      greenEra: "हरित युग"
     }
   }
 };
@@ -1030,13 +1071,12 @@ const LandingPageContent = () => {
 
         </div>
       </section>
+
       {/* 6. NEWS AND PUBLICATIONS - Responsive Fix */}
       <section className="bg-white mt-[5px] lg:mt-[10px] w-full flex justify-center">
         {/* 6. SOCIAL MEDIA FEED - Replaced News Section */}
         <SocialMediaFeed language={language} />
       </section>
-
-
 
       {/* 7. GALLERY SECTION - REDESIGNED */}
       <section className="bg-[#FFFFFF] mt-[5px] lg:mt-[10px] w-full flex flex-col items-center py-[80px] relative overflow-hidden">
@@ -1156,6 +1196,13 @@ const LandingPageContent = () => {
 
         </div>
       </section>
+
+      <SynergyEngine language={language} />
+
+      <RajasthanImpactMap language={language} />
+
+      <PolicyImpactToggle language={language} />
+
       {/* 8. FOOTER */}
       <footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]">
         <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row items-start lg:justify-between">

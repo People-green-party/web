@@ -70,6 +70,7 @@ export default function RajasthanBillPage() {
             heroImage="/herosection/2.png"
             content={content}
             initiatives={initiatives}
+            theme="gold"
             secondaryTitle={language === 'hi' ? "लोगों का बिल, लोगों के लिए" : "The People's Bill, For The People"}
             tags={["GOVERNANCE", "ECONOMY", "TRANSPARENCY"]}
         />

@@ -70,6 +70,7 @@ export default function NatureConservationPage() {
             heroImage="/herosection/6.jpg"
             content={content}
             initiatives={initiatives}
+            theme="green"
             secondaryTitle={language === 'hi' ? "आने वाली पीढ़ियों के लिए हमारी विरासत" : "Our Legacy for Future Generations"}
             tags={["GREEN ENERGY", "BIODIVERSITY", "CLEAN WATER"]}
         />
