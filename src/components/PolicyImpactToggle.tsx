@@ -101,11 +101,9 @@ export const PolicyImpactToggle = ({ language }: { language: string }) => {
     ];
 
     return (
-        <section className={`py-[120px] lg:py-[200px] transition-colors duration-1000 relative overflow-hidden flex justify-center ${isPGPActive ? 'bg-[#F0FAF3]' : 'bg-white'}`}>
+        <section className="py-[120px] lg:py-[200px] bg-white relative overflow-hidden flex justify-center">
             {/* Background Decor */}
             <div className="absolute inset-0 opacity-[0.4]" style={{ backgroundImage: 'radial-gradient(#0D522915 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-            <div className={`absolute inset-0 transition-opacity duration-1000 ${isPGPActive ? 'opacity-10' : 'opacity-0'} bg-[#10B981]`} />
-            <div className={`absolute inset-0 transition-opacity duration-1000 ${!isPGPActive ? 'opacity-5' : 'opacity-0'} bg-[#EF4444]`} />
 
             <div className="w-full max-w-[1320px] px-4 lg:px-8 relative z-10">
                 <div className="flex flex-col items-center mb-20 text-center">

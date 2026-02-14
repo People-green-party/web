@@ -913,6 +913,9 @@ const LandingPageContent = () => {
       {/* 3. OUR VISION - New Carousel Section */}
       <VisionCarousel language={language} />
 
+      {/* SYNERGY ENGINE - Explaining how policies connect */}
+      <SynergyEngine language={language} />
+
 
 
       {/* 4. MEET OUR IDEOLOGICAL LEADER */}
@@ -1072,6 +1075,12 @@ const LandingPageContent = () => {
         </div>
       </section>
 
+      {/* RAJASTHAN IMPACT MAP - Visualizing state-wide presence */}
+      <RajasthanImpactMap language={language} />
+
+      {/* POLICY IMPACT TOGGLE - Comparative choice after seeing the map */}
+      <PolicyImpactToggle language={language} />
+
       {/* 6. NEWS AND PUBLICATIONS - Responsive Fix */}
       <section className="bg-white mt-[5px] lg:mt-[10px] w-full flex justify-center">
         {/* 6. SOCIAL MEDIA FEED - Replaced News Section */}
@@ -1197,11 +1206,7 @@ const LandingPageContent = () => {
         </div>
       </section>
 
-      <SynergyEngine language={language} />
 
-      <RajasthanImpactMap language={language} />
-
-      <PolicyImpactToggle language={language} />
 
       {/* 8. FOOTER */}
       <footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]">
