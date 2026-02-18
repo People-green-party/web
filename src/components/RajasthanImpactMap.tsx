@@ -119,13 +119,13 @@ export const RajasthanImpactMap = ({ language }: { language: string }) => {
                     {/* Left: Interactive Map Visual (Stylized) */}
                     <div className="w-full lg:w-1/2 relative bg-white/40 backdrop-blur-sm rounded-[60px] p-12 lg:p-20 border border-[#B9D3C4]/30 shadow-xl">
                         <ScrollReveal animation="scale-up">
-                            <h3 className="text-[#04330B] font-bold text-sm tracking-[0.4em] uppercase mb-10 text-center lg:text-left">
+                            <h3 className="text-[#587E67] font-bold text-lg md:text-xl tracking-[0.4em] uppercase mb-10 text-center lg:text-left">
                                 {t.tag}
                             </h3>
 
                             {/* Stylized Map Container */}
                             <div className="relative aspect-square w-full max-w-[500px] mx-auto">
-                                <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-2xl">
+                                <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-2xl overflow-visible">
                                     <path
                                         d="M30,20 L70,15 L85,40 L90,70 L70,90 L40,95 L15,80 L10,50 Z"
                                         fill="#EAF7EE"
@@ -140,8 +140,8 @@ export const RajasthanImpactMap = ({ language }: { language: string }) => {
                                             { x: 50, y: 45 }, // Jaipur
                                             { x: 35, y: 55 }, // Jodhpur
                                             { x: 45, y: 75 }, // Udaipur
-                                            { x: 30, y: 35 }, // Bikaner
-                                            { x: 65, y: 40 }  // Alwar
+                                            { x: 32, y: 38 }, // Bikaner
+                                            { x: 65, y: 42 }  // Alwar
                                         ][i];
 
                                         const isActive = activeCity === cityKey;
@@ -153,8 +153,16 @@ export const RajasthanImpactMap = ({ language }: { language: string }) => {
                                                 onClick={() => setActiveCity(cityKey)}
                                                 onMouseEnter={() => setActiveCity(cityKey)}
                                             >
+                                                {/* ONLY THE PIN CIRCLE - NO ANIMATIONS */}
+                                                {/* SUBTLE HIGHLIGHT RING FOR ACTIVE CITY */}
                                                 {isActive && (
-                                                    <circle cx={coords.x} cy={coords.y} r="5" fill="#E85C2F" className="animate-ping opacity-40" />
+                                                    <circle
+                                                        cx={coords.x}
+                                                        cy={coords.y}
+                                                        r="5"
+                                                        fill="#E85C2F"
+                                                        className="opacity-20"
+                                                    />
                                                 )}
                                                 <circle
                                                     cx={coords.x}
@@ -202,7 +210,7 @@ export const RajasthanImpactMap = ({ language }: { language: string }) => {
                                         <div className="h-[1px] flex-1 bg-[#B9D3C4]" />
                                     </div>
 
-                                    <h3 className="text-2xl lg:text-3xl font-bold text-[#0D5229] mb-6 flex items-center gap-4">
+                                    <h3 className="text-2xl lg:text-3xl font-bold text-[#04330B] mb-6 flex items-center gap-4">
                                         <Icon size={36} className="text-[#E85C2F]" />
                                         {data.title}
                                     </h3>

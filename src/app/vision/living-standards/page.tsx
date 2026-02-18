@@ -25,7 +25,7 @@ const pageData = {
         subtitle: "Guarantee of Education, Health & Dignified Life",
         missionTitle: "Human-Centric Governance",
         description: "The real wealth of a nation is its human resources. We are committed to investing in people to build a strong nation. Every citizen deserves a quality of life that allows them to thrive, not just survive.",
-        image: "/ourvision/VisionImage.svg",
+        image: "/party-images/DSC_0030.JPG",
         icon: Heart,
         strategyTitle: "Our Strategy",
         points: [
@@ -264,14 +264,14 @@ export default function LivingStandardsPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
-                            { title: currentLang === 'hi' ? "आन्त्रेप्रेन्योर क्रांति" : "Entrepreneurial Revolution", image: "/herosection/hero1.svg", link: "/vision/entrepreneurship" },
-                            { title: currentLang === 'hi' ? "नई खेती – समर्थ किसान" : "New Farming – Capable Farmer", image: "/herosection/hero2.svg", link: "/vision/farming" },
-                            { title: currentLang === 'hi' ? "कमजोर वर्ग का सशक्तिकरण" : "Empowerment of Vulnerable Groups", image: "/ourvision/VisionImage.svg", link: "/vision/empowerment" },
-                            { title: currentLang === 'hi' ? "शहरी–ग्रामीण समग्र विकास" : "Holistic Urban-Rural Development", image: "/herosection/hero4.svg", link: "/vision/urban-rural" },
-                            { title: currentLang === 'hi' ? "नागरिक स्वतंत्रता और संस्कृति" : "Civil Liberties and Culture", image: "/herosection/hero5.svg", link: "/vision/civil-liberties" },
-                            { title: currentLang === 'hi' ? "खुली अर्थव्यवस्था" : "Open Economy", image: "/herosection/hero3.svg", link: "/vision/open-economy" },
-                            { title: currentLang === 'hi' ? "विश्व स्तरीय जीवन स्तर" : "World-Class Standard of Living", image: "/ourvision/VisionImage.svg", link: "/vision/living-standards" },
-                            { title: currentLang === 'hi' ? "प्रकृति संरक्षण" : "Nature Conservation", image: "/herosection/hero2.svg", link: "/vision/nature" }
+                            { title: currentLang === 'hi' ? "आन्त्रेप्रेन्योर क्रांति" : "Entrepreneurial Revolution", image: "/herosection/2.png", link: "/vision/entrepreneurship" },
+                            { title: currentLang === 'hi' ? "नई खेती – समर्थ किसान" : "New Farming – Capable Farmer", image: "/herosection/5.jpg", link: "/vision/farming" },
+                            { title: currentLang === 'hi' ? "कमजोर वर्ग का सशक्तिकरण" : "Empowerment of Vulnerable Groups", image: "/herosection/9.jpg", link: "/vision/empowerment" },
+                            { title: currentLang === 'hi' ? "शहरी–ग्रामीण समग्र विकास" : "Holistic Urban-Rural Development", image: "/herosection/1.png", link: "/vision/urban-rural" },
+                            { title: currentLang === 'hi' ? "नागरिक स्वतंत्रता और संस्कृति" : "Civil Liberties and Culture", image: "/herosection/6.jpg", link: "/vision/civil-liberties" },
+                            { title: currentLang === 'hi' ? "खुली अर्थव्यवस्था" : "Open Economy", image: "/herosection/8.jpg", link: "/vision/open-economy" },
+                            { title: currentLang === 'hi' ? "विश्व स्तरीय जीवन स्तर" : "World-Class Standard of Living", image: "/herosection/10.jpg", link: "/vision/living-standards" },
+                            { title: currentLang === 'hi' ? "प्रकृति संरक्षण" : "Nature Conservation", image: "/herosection/4.jpg", link: "/vision/nature" }
                         ].map((card, idx) => (
                             <ScrollReveal key={idx} animation="fade-up" delay={idx * 100}>
                                 <Link href={card.link} className="block group h-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">

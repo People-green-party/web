@@ -114,11 +114,11 @@ export const SynergyEngine = ({ language }: { language: string }) => {
                     <ScrollReveal animation="fade-up">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#0D5229]/10 bg-[#EAF7EE] mb-6">
                             <Zap size={14} className="text-[#10B981] animate-pulse" />
-                            <span className="text-[#0D5229]/60 text-[10px] font-bold uppercase tracking-[0.3em]">{t.tag}</span>
+                            <span className="text-[#587E67] text-[10px] font-bold uppercase tracking-[0.3em]">{t.tag}</span>
                         </div>
                         <h2 className="text-[40px] md:text-[60px] lg:text-[72px] font-bold text-[#04330B] tracking-tighter leading-[1.1] mb-8">
                             {t.title} <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#10B981] via-[#0D5229] to-[#10B981]">{t.highlight}</span>
+                            <span className="text-[#04330B]">{t.highlight}</span>
                         </h2>
                         <p className="text-[#587E67] text-lg lg:text-xl max-w-[700px] mx-auto font-medium">
                             {t.sub}
@@ -159,19 +159,17 @@ export const SynergyEngine = ({ language }: { language: string }) => {
                                     }}
                                 >
                                     {/* Connection Line (Animated SVG) */}
-                                    <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] pointer-events-none overflow-visible">
+                                    <svg className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] pointer-events-none overflow-visible">
                                         <line
-                                            x1="0" y1="0"
-                                            x2={-150 * Math.cos(angle * (Math.PI / 180))}
-                                            y2={-150 * Math.sin(angle * (Math.PI / 180))}
+                                            x1="200" y1="200"
+                                            x2={200 - 200 * Math.cos(angle * (Math.PI / 180))}
+                                            y2={200 - 200 * Math.sin(angle * (Math.PI / 180))}
                                             stroke={isActive ? color : "#0D5229"}
                                             strokeWidth={isActive ? "2" : "1"}
                                             strokeDasharray="5,5"
                                             className="transition-all duration-700"
                                             style={{
                                                 opacity: isActive ? 1 : 0.1,
-                                                transformOrigin: '0 0',
-                                                transform: `rotate(${angle}deg)`
                                             }}
                                         />
                                     </svg>
@@ -181,8 +179,8 @@ export const SynergyEngine = ({ language }: { language: string }) => {
                                         ${isActive ? 'bg-white border-white scale-110 shadow-xl' : 'bg-[#F8FBF9] border-[#0D5229]/5 hover:border-[#0D5229]/20'}`}
                                         style={{ boxShadow: isActive ? `0 10px 40px ${glow}` : 'none' }}
                                     >
-                                        <Icon size={32} style={{ color: isActive ? color : '#0D522950' }} />
-                                        <span className={`text-[9px] font-bold tracking-widest mt-2 ${isActive ? 'text-[#04330B]' : 'text-[#0D5229]/30'}`}>{pillar.label}</span>
+                                        <Icon size={32} style={{ color: isActive ? color : '#587E6750' }} />
+                                        <span className={`text-[9px] font-bold tracking-widest mt-2 ${isActive ? 'text-[#04330B]' : 'text-[#587E67]'}`}>{pillar.label}</span>
                                     </div>
                                 </div>
                             );
@@ -199,6 +197,7 @@ export const SynergyEngine = ({ language }: { language: string }) => {
                                 return (
                                     <div
                                         key={pillar.id}
+                                        onMouseEnter={() => setActivePillar(pillar.id)}
                                         className={`absolute inset-0 transition-all duration-700 flex flex-col justify-center
                                             ${activePillar === pillar.id ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}`}
                                     >
@@ -213,7 +212,7 @@ export const SynergyEngine = ({ language }: { language: string }) => {
                                         </p>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="bg-[#F8FBF9] border border-[#0D5229]/5 p-5 rounded-2xl">
-                                                <p className="text-[#0D5229]/40 text-xs font-bold uppercase tracking-widest mb-2">{t.impactTarget}</p>
+                                                <p className="text-[#587E67] text-xs font-bold uppercase tracking-widest mb-2">{t.impactTarget}</p>
                                                 <p className="text-2xl font-bold" style={{ color: color }}>{pillar.stats}</p>
                                             </div>
                                             <div className="bg-[#04330B] p-5 rounded-2xl flex items-center justify-center group cursor-pointer hover:bg-[#0D5229] transition-colors">
@@ -229,7 +228,7 @@ export const SynergyEngine = ({ language }: { language: string }) => {
                             {/* Default State Content */}
                             <div className={`absolute inset-0 transition-all duration-700 flex flex-col justify-center
                                 ${activePillar === null ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10 pointer-events-none'}`}>
-                                <h3 className="text-3xl lg:text-4xl font-bold text-[#10B981] mb-6 flex items-center gap-3">
+                                <h3 className="text-3xl lg:text-4xl font-bold text-[#04330B] mb-6 flex items-center gap-3">
                                     {t.defaultTitle} <ArrowRight size={24} className="animate-bounce-x" />
                                 </h3>
                                 <p className="text-[#587E67] text-lg lg:text-xl leading-relaxed">

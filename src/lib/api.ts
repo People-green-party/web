@@ -1,61 +1,52 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+"use client";
 
+/**
+ * Standard fetch wrapper for PGP Backend API calls.
+ * Handles base URL, auth tokens, and common error scenarios.
+ */
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
-    const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-da5f.up.railway.app';
+    const url = endpoint.startsWith('http') ? endpoint : `${baseUrl.replace(/\/$/, '')}/${endpoint.replace(/^\//, '')}`;
 
-    const headers = {
-        'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true',
-        ...options.headers,
-    };
-
-    // Get auth header (handles both dev mode and Supabase session)
-    try {
-        const { getAuthHeader } = await import('./supabaseClient');
-        const authHeader = await getAuthHeader();
-        Object.assign(headers, authHeader);
-    } catch {
-        // Ignore if auth isn't configured/available; allow public endpoints to work.
+    // Get auth token from localStorage if available
+    let authHeader: Record<string, string> = {};
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            authHeader = { 'Authorization': `Bearer ${token}` };
+        }
     }
 
-    let response: Response;
+    const defaultHeaders = {
+        'Content-Type': 'application/json',
+        ...authHeader,
+    };
+
     try {
-        if (process.env.NODE_ENV === 'development') {
-            console.log(`[API Call] ${options.method || 'GET'} ${url}`);
-        }
-        response = await fetch(url, {
+        const response = await fetch(url, {
             ...options,
-            headers,
+            headers: {
+                ...defaultHeaders,
+                ...options.headers,
+            },
         });
-    } catch (err: any) {
-        const msg = err?.message || String(err);
-        const detailedError = `Network error calling ${url}: ${msg}. 
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            const errorMsg = data.message || data.error || `API error: ${response.status}`;
+            throw new Error(errorMsg);
+        }
+
+        return data;
+    } catch (error: any) {
+        const detailedError = `Network error calling ${url}: ${error.message}. 
         - Backend URL: ${process.env.BACKEND_URL || 'Not Set'}
-        - API URL: ${process.env.NEXT_PUBLIC_API_URL}
-        - Ensure API server (NestJS) is running at http://localhost:3002.
+        - API URL: ${baseUrl}
+        - Ensure API server (NestJS) is running.
         - Check for CORS issues if calling across domains.`;
+
         console.error(detailedError);
         throw new Error(detailedError);
     }
-
-    if (!response.ok) {
-        const text = await response.text().catch(() => '');
-        let message = '';
-        try {
-            const parsed = text ? JSON.parse(text) : {};
-            if (Array.isArray(parsed?.message)) {
-                message = parsed.message.join(', ');
-            } else if (typeof parsed?.message === 'object') {
-                message = JSON.stringify(parsed.message);
-            } else {
-                message = parsed?.message || '';
-            }
-        } catch {
-            message = '';
-        }
-        const detail = message || text || response.statusText;
-        throw new Error(`API error calling ${url}: ${response.status} ${detail}`);
-    }
-
-    return response.json();
 }
