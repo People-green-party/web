@@ -77,49 +77,49 @@ const translations = {
         {
           title: "Entrepreneurial Revolution",
           desc: "Not just jobs, but creating opportunities. Every youth an entrepreneur, every panchayat a development hub.",
-          image: "/herosection/7.jpg",
+          image: "/party-images/DSC_0030.JPG",
           link: "/vision/entrepreneurship"
         },
         {
           title: "New Farming – Capable Farmer",
           desc: "Less water • More production • Prosperous farmer. Transforming farming into a dignified, profitable profession.",
-          image: "/herosection/5.jpg",
+          image: "/party-images/DSC_0035.JPG",
           link: "/vision/farming"
         },
         {
           title: "Empowerment of Vulnerable Groups",
           desc: "Equality is not just a promise, it's a system. Women, Dalits, and vulnerable groups at the center of power.",
-          image: "/herosection/9.jpg",
+          image: "/party-images/DSC_0037.JPG",
           link: "/vision/empowerment"
         },
         {
           title: "Holistic Urban-Rural Development",
           desc: "Progress where you are born. Decentralization of development, putting a stop to migration.",
-          image: "/herosection/1.png",
+          image: "/party-images/DSC_0038.JPG",
           link: "/vision/urban-rural"
         },
         {
           title: "Civil Liberties and Culture",
           desc: "Freedom is both a right and a responsibility. Building a sensitive, tolerant, and aware India.",
-          image: "/herosection/7.jpg",
+          image: "/party-images/DSC_0076.JPG",
           link: "/vision/civil-liberties"
         },
         {
           title: "Open Economy – Minimum Government",
           desc: "Minimum government, maximum opportunity. Freedom from License Raj, promoting individual growth.",
-          image: "/herosection/7.jpg",
+          image: "/party-images/DSC_0081.JPG",
           link: "/vision/open-economy"
         },
         {
           title: "World-Class Standard of Living",
           desc: "Living with dignity is every citizen's right. Guaranteeing quality education, health, and life.",
-          image: "/herosection/7.jpg",
+          image: "/party-images/DSC_0085.JPG",
           link: "/vision/living-standards"
         },
         {
           title: "Nature Conservation and Sustainable Development",
           desc: "Only if nature survives, the future survives. Today's development is tomorrow's responsibility.",
-          image: "/herosection/7.jpg",
+          image: "/party-images/DSC_0091.JPG",
           link: "/vision/nature"
         }
       ],
@@ -300,49 +300,49 @@ const translations = {
         {
           title: "आन्त्रेप्रेन्योर क्रांति",
           desc: "नौकरी नहीं, अवसर पैदा करेंगे हर युवा बनेगा उद्यमी, हर पंचायत बनेगी विकास केंद्र",
-          image: "/herosection/hero1.svg",
+          image: "/party-images/DSC_0030.JPG",
           link: "/vision/entrepreneurship"
         },
         {
           title: "नई खेती – समर्थ किसान",
           desc: "कम पानी • ज़्यादा उत्पादन • समृद्ध किसान खेती को घाटे से निकालकर सम्मानजनक व्यवसाय बनाएँ",
-          image: "/herosection/hero2.svg",
+          image: "/party-images/DSC_0035.JPG",
           link: "/vision/farming"
         },
         {
           title: "कमजोर वर्ग का सशक्तिकरण",
           desc: "बराबरी सिर्फ़ वादा नहीं, व्यवस्था होगी महिला, दलित और कमजोर वर्ग — शक्ति के केंद्र में ",
-          image: "/ourvision/VisionImage.svg",
+          image: "/party-images/DSC_0037.JPG",
           link: "/vision/empowerment"
         },
         {
           title: "शहरी–ग्रामीण समग्र विकास",
           desc: "जहाँ पैदा हुए, वहीं प्रगति हो विकास का विकेंद्रीकरण, पलायन पर विराम",
-          image: "/herosection/hero4.svg",
+          image: "/party-images/DSC_0038.JPG",
           link: "/vision/urban-rural"
         },
         {
           title: "नागरिक स्वतंत्रता और संस्कृति",
-          desc: "आज़ादी अधिकार भी है, जिम्मेदारी भी संवेदनशील, सहिष्णु और जागरूक भारत",
-          image: "/herosection/hero5.svg",
+          desc: "स्वतंत्रता अधिकार और जिम्मेदारी दोनों है। एक संवेदनशील, सहनशील और जागरूक भारत का निर्माण कर रहे हैं।",
+          image: "/party-images/DSC_0076.JPG",
           link: "/vision/civil-liberties"
         },
         {
-          title: "खुली अर्थव्यवस्था – न्यून सरकार",
-          desc: "सरकार कम, अवसर ज़्यादा लाइसेंस-राज से मुक्ति, व्यक्ति की उड़ान।",
-          image: "/herosection/hero3.svg",
+          title: "खुली अर्थव्यवस्था",
+          desc: "न्यूनतम सरकार, अधिकतम अवसर। लाइसेंस राज से मुक्ति, व्यक्तिगत विकास को बढ़ावा।",
+          image: "/party-images/DSC_0081.JPG",
           link: "/vision/open-economy"
         },
         {
           title: "विश्व स्तरीय जीवन स्तर",
-          desc: "गरिमा के साथ जीना, हर नागरिक का हक़ शिक्षा, स्वास्थ्य और जीवन की गारंटी।",
-          image: "/ourvision/VisionImage.svg",
+          desc: "गरिमा के साथ जीना हर नागरिक का अधिकार है। गुणवत्तापूर्ण शिक्षा, स्वास्थ्य और जीवन की गारंटी।",
+          image: "/party-images/DSC_0085.JPG",
           link: "/vision/living-standards"
         },
         {
-          title: "प्रकृति संरक्षण और सतत विकास",
-          desc: "प्रकृति बचेगी, तभी भविष्य बचेगा आज का विकास, कल की ज़िम्मेदारी।",
-          image: "/herosection/hero2.svg",
+          title: "प्रकृति संरक्षण",
+          desc: "प्रकृति बचेगी तभी भविष्य बचेगा। आज का विकास कल की जिम्मेदारी है।",
+          image: "/party-images/DSC_0091.JPG",
           link: "/vision/nature"
         }
       ],
@@ -480,13 +480,7 @@ const useLanguage = () => useContext(LanguageContext);
 
 const getVisionCards = (lang: string) => {
   const t = translations[lang as keyof typeof translations].visionSection.cards;
-  const images = [
-    "/cardsection/card-logo-1.svg",
-    "/cardsection/card-logo-2.svg",
-    "/cardsection/card-logo-3.svg",
-    "/cardsection/card-logo-4.svg"
-  ];
-  return t.map((card, i) => ({ ...card, image: images[i] }));
+  return t.map((card) => ({ ...card }));
 };
 
 const CountUp = ({ value }: { value: string }) => {
@@ -775,11 +769,11 @@ const LandingPageContent = () => {
         {/* Slider Images */}
         <div className="absolute inset-0 overflow-hidden">
           {[
-            "/herosection/10.jpg",
-            "/herosection/4.jpg",
-            "/herosection/8.jpg",
-            "/herosection/9.jpg",
-            "/herosection/7.jpg"
+            "/party-images/DSC_0006.JPG",
+            "/party-images/DSC_0024.JPG",
+            "/party-images/DSC_0048.JPG",
+            "/party-images/DSC_0064.JPG",
+            "/party-images/DSC_0091.JPG"
           ].map((img, index) => (
             <div
               key={index}
@@ -1116,18 +1110,62 @@ const LandingPageContent = () => {
           {/* Bento Grid Layout */}
           <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 auto-rows-[200px] lg:auto-rows-[240px] gap-4 lg:gap-6">
             {[
-              "/herosection/team.jpg",
-              "/herosection/10.jpg",
-              "/herosection/4.jpg",
-              "/herosection/8.jpg",
-              "/herosection/9.jpg",
-              "/herosection/7.jpg",
-              "/news1.svg",
-              "/news2.svg",
-              "/news3.svg",
-              "/news4.svg",
-              "/news5.svg"
-            ].slice(0, showMoreGallery ? 13 : 7).map((src, index) => {
+              "/party-images/DSC_0006.JPG",
+              "/party-images/DSC_0007.JPG",
+              "/party-images/DSC_0008.JPG",
+              "/party-images/DSC_0009.JPG",
+              "/party-images/DSC_0014.JPG",
+              "/party-images/DSC_0019.JPG",
+              "/party-images/DSC_0020.JPG",
+              "/party-images/DSC_0023.JPG",
+              "/party-images/DSC_0024.JPG",
+              "/party-images/DSC_0030.JPG",
+              "/party-images/DSC_0031.JPG",
+              "/party-images/DSC_0035.JPG",
+              "/party-images/DSC_0037.JPG",
+              "/party-images/DSC_0038.JPG",
+              "/party-images/DSC_0039.JPG",
+              "/party-images/DSC_0040.JPG",
+              "/party-images/DSC_0041.JPG",
+              "/party-images/DSC_0042.JPG",
+              "/party-images/DSC_0043.JPG",
+              "/party-images/DSC_0044.JPG",
+              "/party-images/DSC_0045.JPG",
+              "/party-images/DSC_0046.JPG",
+              "/party-images/DSC_0047.JPG",
+              "/party-images/DSC_0048.JPG",
+              "/party-images/DSC_0056.JPG",
+              "/party-images/DSC_0057.JPG",
+              "/party-images/DSC_0059.JPG",
+              "/party-images/DSC_0060.JPG",
+              "/party-images/DSC_0061.JPG",
+              "/party-images/DSC_0062.JPG",
+              "/party-images/DSC_0063.JPG",
+              "/party-images/DSC_0064.JPG",
+              "/party-images/DSC_0067.JPG",
+              "/party-images/DSC_0068.JPG",
+              "/party-images/DSC_0072.JPG",
+              "/party-images/DSC_0073.JPG",
+              "/party-images/DSC_0074.JPG",
+              "/party-images/DSC_0076.JPG",
+              "/party-images/DSC_0078.JPG",
+              "/party-images/DSC_0079.JPG",
+              "/party-images/DSC_0081.JPG",
+              "/party-images/DSC_0082.JPG",
+              "/party-images/DSC_0085.JPG",
+              "/party-images/DSC_0086.JPG",
+              "/party-images/DSC_0087.JPG",
+              "/party-images/DSC_0091.JPG",
+              "/party-images/DSC_0092.JPG",
+              "/party-images/DSC_0095.JPG",
+              "/party-images/DSC_0097.JPG",
+              "/party-images/DSC_0102.JPG",
+              "/party-images/DSC_0103.JPG",
+              "/party-images/DSC_0104.JPG",
+              "/party-images/DSC_0105.JPG",
+              "/party-images/DSC_0106.JPG",
+              "/party-images/DSC_0107.JPG"
+            ].slice(0, showMoreGallery ? 59 : 7).map((src, index) => {
 
               // Dynamic Class Logic for Bento Layout
               // This creates a pattern: Big, Tall, Wide, Normal, etc.

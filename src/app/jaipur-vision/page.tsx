@@ -47,8 +47,8 @@ const JaipurVisionContent = () => {
                 {/* Hero Section */}
                 <section className="relative w-full h-[400px] lg:h-[500px] flex items-center justify-center bg-[#04330B] overflow-hidden">
                     <div className="absolute inset-0 opacity-40">
-                        {/* Use a placeholder image or reusing one of the hero images for now */}
-                        <img src="/herosection/hero1.svg" alt="Jaipur Vision" className="w-full h-full object-cover" />
+                        {/* Use a real party image for Jaipur Vision */}
+                        <img src="/party-images/DSC_0041.JPG" alt="Jaipur Vision" className="w-full h-full object-cover" />
                     </div>
                     <div className="relative z-10 px-4 text-center max-w-[800px]">
                         <h1 className="font-['Familjen_Grotesk'] font-bold text-[40px] md:text-[56px] lg:text-[72px] text-white leading-[1.1] mb-4">

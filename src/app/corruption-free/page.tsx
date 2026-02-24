@@ -19,47 +19,47 @@ export default function CorruptionFreePage() {
                 ? "भ्रष्टाचार के दोषी पाए जाने वाले अधिकारियों के खिलाफ सख्त और तत्काल कार्रवाई।"
                 : "Strict and immediate action against officials found guilty of corruption.",
             icon: Shield,
-            image: "/herosection/7.jpg"
+            image: "/party-images/DSC_0030.JPG"
+        },
+        {
+            title: language === 'hi' ? "शून्य सहिष्णुता नीति" : "Zero Tolerance Policy",
+            description: language === 'hi'
+                ? "भ्रष्टाचार के दोषी पाए जाने वाले अधिकारियों के खिलाफ सख्त और तत्काल कार्रवाई।"
+                : "Strict and immediate action against officials found guilty of corruption.",
+            icon: Eye,
+            image: "/party-images/DSC_0031.JPG"
         },
         {
             title: language === 'hi' ? "डिजिटल निविदा प्रणाली" : "Digital Tender System",
             description: language === 'hi'
                 ? "सभी सरकारी ठेकों और निविदाओं के लिए पूरी तरह से पारदर्शी और ऑनलाइन प्रक्रिया।"
                 : "Fully transparent and online process for all government contracts and tenders.",
-            icon: Eye,
-            image: "/herosection/hero1.svg"
+            icon: Lock,
+            image: "/party-images/DSC_0035.JPG"
         },
         {
             title: language === 'hi' ? "सुरक्षित भ्रष्टाचार रिपोर्टिंग" : "Secure Reporting",
             description: language === 'hi'
                 ? "नागरिकों के लिए बिना किसी डर के भ्रष्टाचार की रिपोर्ट करने हेतु एक गुप्त और सुरक्षित प्लेटफार्म।"
                 : "A confidential and secure platform for citizens to report corruption without fear.",
-            icon: Lock,
-            image: "/herosection/8.jpg"
+            icon: FileText,
+            image: "/party-images/DSC_0037.JPG"
         },
         {
             title: language === 'hi' ? "खुला ऑडिट सिस्टम" : "Open Audit System",
             description: language === 'hi'
                 ? "हर सरकारी विभाग के खर्चों का जनता द्वारा सुलभ स्वतंत्र ऑडिट।"
                 : "Independent audit of every government expense, accessible to the public.",
-            icon: FileText,
-            image: "/herosection/hero2.svg"
+            icon: CheckCircle2,
+            image: "/party-images/DSC_0038.JPG"
         },
         {
             title: language === 'hi' ? "त्वरित न्याय" : "Fast-Track Justice",
             description: language === 'hi'
                 ? "भ्रष्टाचार से संबंधित मामलों के त्वरित निपटान के लिए विशेष अदालतों की स्थापना।"
                 : "Establishment of special courts for the fast-track disposal of corruption cases.",
-            icon: CheckCircle2,
-            image: "/herosection/9.jpg"
-        },
-        {
-            title: language === 'hi' ? "प्रत्यक्ष जवाबदेही" : "Direct Accountability",
-            description: language === 'hi'
-                ? "लोक सेवकों को सीधे जनता के प्रति जवाबदेह बनाने के लिए नियमित लोक संवाद।"
-                : "Regular public dialogues to make public servants directly accountable.",
             icon: MessageSquare,
-            image: "/herosection/team.jpg"
+            image: "/party-images/DSC_0039.JPG"
         }
     ];
 
@@ -67,7 +67,7 @@ export default function CorruptionFreePage() {
         <MissionLayout
             title={language === 'hi' ? "भ्रष्टाचार मुक्त शासन" : "Corruption-Free Governance"}
             subtitle={language === 'hi' ? "एक ईमानदार सरकार, जहाँ हर नागरिक को न्याय और सम्मान मिले।" : "An honest government, where every citizen receives justice and respect."}
-            heroImage="/herosection/hero3.svg"
+            heroImage="/party-images/DSC_0040.JPG"
             content={content}
             initiatives={initiatives}
             theme="blue"

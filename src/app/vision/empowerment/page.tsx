@@ -25,7 +25,7 @@ const pageData = {
         subtitle: "Equality, Dignity, and Social Justice",
         missionTitle: "Our Perspective",
         description: "Equality is not just a slogan, but a matter of policy and structure. Society cannot progress until the weakest individual is empowered. We demand a systemic change where justice is accessible to all, irrespective of caste, gender, or economic status.",
-        image: "/party-images/DSC_0008.JPG",
+        image: "/party-images/DSC_0037.JPG",
         icon: Users,
         strategyTitle: "Our Strategy",
         points: [
@@ -46,7 +46,7 @@ const pageData = {
         subtitle: "बराबरी, गरिमा और सामाजिक न्याय",
         missionTitle: "हमारा दृष्टिकोण",
         description: "बराबरी केवल नारा नहीं, बल्कि नीति और संरचना का विषय है। जब तक सबसे कमजोर व्यक्ति सशक्त नहीं होगा, समाज प्रगति नहीं कर सकता। हम एक व्यवस्थित बदलाव की मांग करते हैं जहां न्याय जाति, लिंग या आर्थिक स्थिति की परवाह किए बिना सभी के लिए सुलभ हो।",
-        image: "/ourvision/VisionImage.svg",
+        image: "/party-images/DSC_0037.JPG",
         icon: Users,
         strategyTitle: "हमारी रणनीति",
         points: [

@@ -54,49 +54,49 @@ export const translations = {
                 {
                     title: "Entrepreneurship Revolution",
                     desc: "Foundation of Middle Class Empowerment & Economic Freedom.",
-                    image: "/herosection/hero1.svg",
+                    image: "/party-images/DSC_0030.JPG",
                     link: "/vision/entrepreneurship"
                 },
                 {
                     title: "New Farming – Capable Farmer",
                     desc: "Modern Agriculture, Less Water, More Income.",
-                    image: "/herosection/hero2.svg",
+                    image: "/party-images/DSC_0035.JPG",
                     link: "/vision/farming"
                 },
                 {
                     title: "Empowerment of Vulnerable Sections",
                     desc: "Equality, Dignity, and Social Justice.",
-                    image: "/ourvision/VisionImage.svg",
+                    image: "/party-images/DSC_0037.JPG",
                     link: "/vision/empowerment"
                 },
                 {
                     title: "Holistic Urban & Rural Development",
                     desc: "Balanced Development, Limited Migration.",
-                    image: "/herosection/hero4.svg",
+                    image: "/party-images/DSC_0038.JPG",
                     link: "/vision/urban-rural"
                 },
                 {
                     title: "Civil Liberties & Cultural Values",
                     desc: "Sensitive, Tolerant, and Aware Society.",
-                    image: "/herosection/hero5.svg",
+                    image: "/party-images/DSC_0076.JPG",
                     link: "/vision/civil-liberties"
                 },
                 {
                     title: "Open Economy & Min Government",
                     desc: "Individual Freedom, Faster Growth.",
-                    image: "/herosection/hero3.svg",
+                    image: "/party-images/DSC_0081.JPG",
                     link: "/vision/open-economy"
                 },
                 {
                     title: "World Class Standard of Living",
                     desc: "Guarantee of Education, Health & Dignified Life.",
-                    image: "/ourvision/VisionImage.svg",
+                    image: "/party-images/DSC_0085.JPG",
                     link: "/vision/living-standards"
                 },
                 {
                     title: "Nature Conservation & Green Vision",
                     desc: "Today & Tomorrow – Nature First.",
-                    image: "/herosection/hero2.svg",
+                    image: "/party-images/DSC_0091.JPG",
                     link: "/vision/nature"
                 }
             ],
@@ -277,50 +277,50 @@ export const translations = {
             cards: [
                 {
                     title: "आन्त्रेप्रेन्योर क्रांति",
-                    desc: "मध्यम वर्ग सशक्तिकरण और आर्थिक स्वतंत्रता का आधार।",
-                    image: "/herosection/hero1.svg",
+                    desc: "मध्यम वर्ग के सशक्तिकरण और आर्थिक स्वतंत्रता का आधार।",
+                    image: "/party-images/DSC_0030.JPG",
                     link: "/vision/entrepreneurship"
                 },
                 {
                     title: "नई खेती – समर्थ किसान",
                     desc: "आधुनिक कृषि, कम पानी, अधिक आय।",
-                    image: "/herosection/hero2.svg",
+                    image: "/party-images/DSC_0035.JPG",
                     link: "/vision/farming"
                 },
                 {
-                    title: "कमजोर वर्ग का सशक्तिकरण",
-                    desc: "बराबरी, गरिमा और सामाजिक न्याय।",
-                    image: "/ourvision/VisionImage.svg",
+                    title: "वंचित वर्गों का सशक्तिकरण",
+                    desc: "समानता, गरिमा और सामाजिक न्याय।",
+                    image: "/party-images/DSC_0037.JPG",
                     link: "/vision/empowerment"
                 },
                 {
-                    title: "शहरी और ग्रामीण समग्र विकास",
+                    title: "समग्र शहरी और ग्रामीण विकास",
                     desc: "संतुलित विकास, सीमित पलायन।",
-                    image: "/herosection/hero4.svg",
+                    image: "/party-images/DSC_0038.JPG",
                     link: "/vision/urban-rural"
                 },
                 {
-                    title: "नागरिक स्वतंत्रता और संस्कृति",
-                    desc: "संवेदनशील, सहनशील और जागरूक समाज।",
-                    image: "/herosection/hero5.svg",
+                    title: "नागरिक स्वतंत्रता और सांस्कृतिक मूल्य",
+                    desc: "संवेदनशील, सहिष्णु और जागरूक समाज।",
+                    image: "/party-images/DSC_0076.JPG",
                     link: "/vision/civil-liberties"
                 },
                 {
-                    title: "खुली अर्थव्यवस्था और न्यून सरकार",
-                    desc: "व्यक्ति की आज़ादी, तेज़ विकास।",
-                    image: "/herosection/hero3.svg",
+                    title: "खुली अर्थव्यवस्था और न्यूनतम सरकार",
+                    desc: "व्यक्तिगत स्वतंत्रता, तेज़ विकास।",
+                    image: "/party-images/DSC_0081.JPG",
                     link: "/vision/open-economy"
                 },
                 {
                     title: "विश्व स्तरीय जीवन स्तर",
                     desc: "शिक्षा, स्वास्थ्य और गरिमामय जीवन की गारंटी।",
-                    image: "/ourvision/VisionImage.svg",
+                    image: "/party-images/DSC_0085.JPG",
                     link: "/vision/living-standards"
                 },
                 {
-                    title: "प्रकृति संरक्षण और सतत विकास",
-                    desc: "आज भी, कल भी – प्रकृति पहले।",
-                    image: "/herosection/hero2.svg",
+                    title: "प्रकृति संरक्षण और हरित दृष्टि",
+                    desc: "आज और कल – प्रकृति पहले।",
+                    image: "/party-images/DSC_0091.JPG",
                     link: "/vision/nature"
                 }
             ],

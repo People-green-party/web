@@ -25,28 +25,28 @@ const pageData = {
         subtitle: "Sustainable Development, Secure Future",
         missionTitle: "Environmental Responsibility",
         description: "We are merely trustees of this planet for future generations. Our development model must respect the delicate balance of nature. We advocate for policies that prioritize long-term sustainability over short-term gains.",
-        image: "/party-images/DSC_0035.JPG",
+        image: "/party-images/DSC_0091.JPG",
         icon: Leaf,
         strategyTitle: "Our Strategy",
         points: [
-            "Sustainable Use: Long-term and prudent use of natural resources. We advocate for a circular economy where waste is minimized, and resources are recycled, ensuring that economic growth does not come at the cost of environmental degradation.",
-            "Resource Conservation: Conservation of mining, water, forests, and land resources. Stringent laws will be enacted to protect our rivers from pollution, stop illegal mining, and expand our forest cover to combat climate change.",
-            "Population Control: Aware policy on population control to maintain environmental balance. We will launch educational campaigns and incentive-based programs to encourage smaller families, reducing the strain on our finite natural resources.",
-            "Green Energy Transition: Aggressively shifting towards renewable energy sources like solar, wind, and green hydrogen to reduce carbon footprint and achieve energy independence."
+            "Green Infrastructure: Promoting green building practices and renewable energy. We will incentivize the adoption of solar energy, rainwater harvesting, and energy-efficient designs in all new urban and rural constructions.",
+            "Reforestation: Massive reforestation campaigns to restore and expand green cover. Our goal is to protect existing forests and plant millions of additional trees to combat climate change and preserve biodiversity.",
+            "Water Management: Sustainable water management and protection of water bodies. We are committed to rejuvenating dying rivers, lakes, and traditional water structures to ensure long-term water security for all.",
+            "Waste Management: Implementing advanced waste-to-energy and recycling systems. By promoting a circular economy, we will minimize the environmental impact of urban waste and turn it into a valuable resource."
         ],
         outcomeTitle: "Expected Outcomes",
         outcomes: [
-            "Secure Future: Securing the rights of future generations along with the present generation. By acting as responsible stewards of nature today, we ensure that our children inherit a planet that is habitable and bountiful.",
-            "Ecological Balance: Restoring the ecological balance for a healthier planet. Our initiatives aims to reverse the damage done to ecosystems, bringing back biodiversity and ensuring clean air and water for all.",
-            "Climate Resilience: Building a nation resilient to climate change impacts, with cities and villages capable of withstanding extreme weather events through smart planning."
+            "Ecological Balance: Re-establishing the balance between human development and the natural environment. We envision a future where progress does not come at the cost of our planet's health.",
+            "Sustainable Cities: Clean, green, and sustainable cities with improved air quality and efficient resource management. Our urban areas will become models of ecological living.",
+            "Preserved Biodiversity: A thriving natural ecosystem where wildlife and native flora are protected, ensuring that future generations can enjoy the beauty and benefits of a healthy planet."
         ]
     },
     hi: {
-        title: "प्रकृति संरक्षण",
-        subtitle: "सतत विकास, सुरक्षित भविष्य",
-        missionTitle: "पर्यावरण की जिम्मेदारी",
-        description: "हम आने वाली पीढ़ियों के लिए इस ग्रह के केवल ट्रस्टी हैं। हमारे विकास मॉडल को प्रकृति के नाजुक संतुलन का सम्मान करना चाहिए। हम उन नीतियों की वकालत करते हैं जो अल्पकालिक लाभों पर दीर्घकालिक स्थिरता को प्राथमिकता देती हैं।",
-        image: "/herosection/hero2.svg",
+        title: "प्रकृति संरक्षण और सतत विकास",
+        subtitle: "प्रकृति बचेगी तभी भविष्य बचेगा",
+        missionTitle: "हमारा संकल्प",
+        description: "प्रकृति और मनुष्य के बीच का संतुलन ही जीवन का आधार है। हम विकास के ऐसे मॉडल के पक्षधर हैं जो आने वाली पीढ़ियों के लिए एक स्वस्थ और सुरक्षित ग्रह सुनिश्चित करे।",
+        image: "/party-images/DSC_0091.JPG",
         icon: Leaf,
         strategyTitle: "हमारी रणनीति",
         points: [

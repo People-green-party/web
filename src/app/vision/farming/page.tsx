@@ -25,7 +25,7 @@ const pageData = {
         subtitle: "Modern Agriculture, Less Water, More Income",
         missionTitle: "The Root of the Problem",
         description: "Today's farmer is hardworking but deprived of technology, markets, and security. Water scarcity and rising costs have made farming a losing proposition. We aim to transform this by introducing modern techniques and fair market access.",
-        image: "/party-images/DSC_0007.JPG",
+        image: "/party-images/DSC_0035.JPG",
         icon: Sprout,
         strategyTitle: "Our Strategy",
         points: [
@@ -46,7 +46,7 @@ const pageData = {
         subtitle: "आधुनिक कृषि, कम पानी, अधिक आय",
         missionTitle: "समस्या की जड़",
         description: "आज का किसान मेहनती है, लेकिन तकनीक, बाज़ार और सुरक्षा से वंचित है। पानी की कमी और बढ़ती लागत ने खेती को घाटे का सौदा बना दिया है। हम इसे आधुनिक तकनीक और निष्पक्ष बाज़ार व्यवस्था के माध्यम से बदलना चाहते हैं।",
-        image: "/herosection/hero2.svg",
+        image: "/party-images/DSC_0035.JPG",
         icon: Sprout,
         strategyTitle: "हमारी रणनीति",
         points: [

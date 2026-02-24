@@ -25,7 +25,7 @@ const pageData = {
         subtitle: "Sensitive, Tolerant, and Aware Society",
         missionTitle: "Need for Balance",
         description: "Freedom without responsibility becomes chaos, and duty without freedom becomes oppression. We need a society that values both individual rights and collective responsibility, creating a harmonious environment for growth.",
-        image: "/party-images/DSC_0019.JPG",
+        image: "/party-images/DSC_0076.JPG",
         icon: Scale,
         strategyTitle: "Our Strategy",
         points: [
@@ -46,7 +46,7 @@ const pageData = {
         subtitle: "संवेदनशील, सहनशील और जागरूक समाज",
         missionTitle: "संतुलन की आवश्यकता",
         description: "स्वतंत्रता बिना जिम्मेदारी के अराजकता बन जाती है, और कर्तव्य बिना स्वतंत्रता के दमन। हमें एक ऐसे समाज की आवश्यकता है जो व्यक्तिगत अधिकारों और सामूहिक जिम्मेदारी दोनों को महत्व दे।",
-        image: "/herosection/hero5.svg",
+        image: "/party-images/DSC_0076.JPG",
         icon: Scale,
         strategyTitle: "हमारी रणनीति",
         points: [

@@ -708,7 +708,7 @@ export default function Page() {
 
                 {/* Join the Movement CTA */}
                 <div className="mt-20 py-16 bg-[#0D5229] rounded-2xl text-center text-white px-6 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('/herosection/1.png')] bg-cover bg-center mix-blend-overlay"></div>
+                    <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('/party-images/DSC_0042.JPG')] bg-cover bg-center mix-blend-overlay"></div>
                     <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center gap-6">
                         <h2 className="font-['Familjen_Grotesk'] font-bold text-3xl md:text-5xl uppercase tracking-wider">
                             {language === 'hi' ? 'आंदोलन से जुड़ें' : 'Join the Movement'}

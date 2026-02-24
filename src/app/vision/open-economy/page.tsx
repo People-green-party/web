@@ -25,7 +25,7 @@ const pageData = {
         subtitle: "Individual Freedom, Faster Growth",
         missionTitle: "Our Economic Philosophy",
         description: "The role of the state should be that of a facilitator, not a controller. We believe in liberal economic policies and minimum government interference to unleash the true potential of Indian enterprise.",
-        image: "/party-images/DSC_0023.JPG",
+        image: "/party-images/DSC_0081.JPG",
         icon: TrendingUp,
         strategyTitle: "Our Strategy",
         points: [
@@ -46,7 +46,7 @@ const pageData = {
         subtitle: "व्यक्ति की आज़ादी, तेज़ विकास",
         missionTitle: "हमारी आर्थिक सोच",
         description: "राज्य का काम नियंत्रक नहीं, सुविधाकर्ता होना चाहिए। पीपल्स ग्रीन पार्टी उदार आर्थिक नीति और न्यूनतम सरकारी हस्तक्षेप में विश्वास रखती है ताकि भारतीय उद्यम की वास्तविक क्षमता को मुक्त किया जा सके।",
-        image: "/herosection/hero3.svg",
+        image: "/party-images/DSC_0081.JPG",
         icon: TrendingUp,
         strategyTitle: "हमारी रणनीति",
         points: [

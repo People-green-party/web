@@ -201,7 +201,7 @@ const ElectionPageContent = () => {
                             </div>
 
                             <div className="w-full h-[200px] lg:h-[342px] rounded-[8px] overflow-hidden bg-gray-100">
-                                <img src="/herosection/hero1.svg" alt="Hero 1" className="w-full h-full object-cover" />
+                                <img src="/party-images/DSC_0006.JPG" alt="Hero 1" className="w-full h-full object-cover" />
                             </div>
                         </div>
 
@@ -210,10 +210,10 @@ const ElectionPageContent = () => {
                         {/* Middle Column Images */}
                         <div className="flex flex-col w-full lg:w-[23%] shrink-0 gap-[16px] lg:gap-[24px] mt-[16px] lg:mt-0">
                             <div className="w-full h-[200px] lg:h-[256px] rounded-[8px] overflow-hidden bg-gray-100">
-                                <img src="/herosection/hero2.svg" alt="Hero 2" className="w-full h-full object-cover" />
+                                <img src="/party-images/DSC_0007.JPG" alt="Hero 2" className="w-full h-full object-cover" />
                             </div>
                             <div className="w-full h-[200px] lg:h-[222px] rounded-[8px] overflow-hidden bg-gray-100 hidden lg:block">
-                                <img src="/herosection/hero3.svg" alt="Hero 3" className="w-full h-full object-cover" />
+                                <img src="/party-images/DSC_0008.JPG" alt="Hero 3" className="w-full h-full object-cover" />
                             </div>
                         </div>
 
@@ -222,10 +222,10 @@ const ElectionPageContent = () => {
                         {/* Right Column Images */}
                         <div className="flex flex-col w-full lg:w-[22%] shrink-0 gap-[24px] mt-[16px] lg:mt-0 hidden lg:flex">
                             <div className="w-full h-[230px] rounded-[8px] overflow-hidden bg-gray-100">
-                                <img src="/herosection/hero4.svg" alt="Hero 4" className="w-full h-full object-cover" />
+                                <img src="/party-images/DSC_0009.JPG" alt="Hero 4" className="w-full h-full object-cover" />
                             </div>
                             <div className="w-full h-[246px] rounded-[8px] overflow-hidden bg-gray-100">
-                                <img src="/herosection/hero5.svg" alt="Hero 5" className="w-full h-full object-cover" />
+                                <img src="/party-images/DSC_0014.JPG" alt="Hero 5" className="w-full h-full object-cover" />
                             </div>
                         </div>
                     </div>

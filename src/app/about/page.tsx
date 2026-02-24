@@ -184,7 +184,7 @@ const AboutPageContent = () => {
             {/* Image Section */}
             <ScrollReveal animation="fade-in" duration={1000} delay={400} className="w-full h-[300px] lg:h-[420px] rounded-[8px] overflow-hidden bg-gray-100">
               <img
-                src="/About/about-1.svg"
+                src="/party-images/DSC_0006.JPG"
                 alt="Conference"
                 className="w-full h-full object-cover"
               />
@@ -240,7 +240,7 @@ const AboutPageContent = () => {
             {/* Middle Image */}
             <ScrollReveal animation="fade-in" duration={1000} className="w-full lg:w-[32%] h-[300px] lg:h-auto rounded-[8px] overflow-hidden bg-gray-100 self-stretch">
               <img
-                src="/About/about-2.svg"
+                src="/party-images/DSC_0110.JPG"
                 alt="Principles Image"
                 className="w-full h-full object-cover"
               />

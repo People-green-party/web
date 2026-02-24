@@ -1,1 +1,0 @@
-{"statusCode":500,"timestamp":"2026-02-14T06:32:23.830Z","path":"/geo/loksabhas","message":"\nInvalid `this.prisma.loksabha.findMany()` invocation in\n/app/dist/src/geo/geo.service.js:21:37\n\n  18     this.prisma = prisma;\n  19 }\n  20 loksabhas() {\nÔåÆ 21     return this.prisma.loksabha.findMany(\nError querying the database: FATAL: Tenant or user not found"}

@@ -25,7 +25,7 @@ const pageData = {
         subtitle: "Balanced Development, Limited Migration",
         missionTitle: "Current Challenge",
         description: "Unbalanced development has led to excessive burden on some cities and emptying of villages. We believe in balanced development of both urban and rural India, ensuring that prosperity reaches every corner.",
-        image: "/party-images/DSC_0014.JPG",
+        image: "/party-images/DSC_0038.JPG",
         icon: Building2,
         strategyTitle: "Our Strategy",
         points: [
@@ -46,7 +46,7 @@ const pageData = {
         subtitle: "संतुलित विकास, सीमित पलायन",
         missionTitle: "वर्तमान चुनौती",
         description: "असंतुलित विकास ने कुछ शहरों पर अत्यधिक बोझ और गांवों के खाली होने जैसी समस्याएं पैदा की हैं। हम शहरी और ग्रामीण दोनों भारत के संतुलित विकास में विश्वास करते हैं, ताकि समृद्धि हर कोने तक पहुंचे।",
-        image: "/herosection/hero4.svg",
+        image: "/party-images/DSC_0038.JPG",
         icon: Building2,
         strategyTitle: "हमारी रणनीति",
         points: [

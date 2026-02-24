@@ -25,7 +25,7 @@ const pageData = {
         subtitle: "Guarantee of Education, Health & Dignified Life",
         missionTitle: "Human-Centric Governance",
         description: "The real wealth of a nation is its human resources. We are committed to investing in people to build a strong nation. Every citizen deserves a quality of life that allows them to thrive, not just survive.",
-        image: "/party-images/DSC_0030.JPG",
+        image: "/party-images/DSC_0085.JPG",
         icon: Heart,
         strategyTitle: "Our Strategy",
         points: [
@@ -46,7 +46,7 @@ const pageData = {
         subtitle: "शिक्षा, स्वास्थ्य और गरिमामय जीवन की गारंटी",
         missionTitle: "मानव केंद्रित शासन",
         description: "देश की असली संपत्ति उसका मानव संसाधन है। हम एक मजबूत राष्ट्र के निर्माण के लिए लोगों में निवेश करने के लिए प्रतिबद्ध हैं। हर नागरिक जीवन की एक ऐसी गुणवत्ता का हकदार है जो उसे केवल जीवित रहने ही नहीं, बल्कि फलने-फूलने की अनुमति दे।",
-        image: "/ourvision/VisionImage.svg",
+        image: "/party-images/DSC_0085.JPG",
         icon: Heart,
         strategyTitle: "हमारी रणनीति",
         points: [

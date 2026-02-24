@@ -25,7 +25,7 @@ const pageData = {
         subtitle: "Foundation of Middle Class Empowerment & Economic Freedom",
         missionTitle: "Why is it Important?",
         description: "India's biggest challenge is not unemployment, but lack of opportunities. The People's Green Party believes that sustainable employment is not created by the government, but by citizens themselves — provided they get the right skills, capital, and freedom.",
-        image: "/party-images/DSC_0006.JPG",
+        image: "/party-images/DSC_0030.JPG",
         icon: Briefcase,
         strategyTitle: "Our Strategy",
         points: [
@@ -46,7 +46,7 @@ const pageData = {
         subtitle: "मध्यम वर्ग सशक्तिकरण और आर्थिक स्वतंत्रता का आधार",
         missionTitle: "क्यों ज़रूरी है?",
         description: "पीपल्स ग्रीन पार्टी का पहला और सबसे महत्वपूर्ण सूत्र आन्त्रेप्रेन्योर क्रांति है। इसका उद्देश्य मध्यम आर्थिक वर्ग को सशक्त बनाकर उसकी आर्थिक कठिनाइयों को समाप्त करना है। भारत की सबसे बड़ी चुनौती बेरोज़गारी नहीं, बल्कि अवसरों की कमी है। पीपल्स ग्रीन पार्टी मानती है कि स्थायी रोज़गार सरकार नहीं, बल्कि नागरिक स्वयं पैदा करते हैं — यदि उन्हें सही स्किल, पूंजी और आज़ादी मिले।",
-        image: "/herosection/hero1.svg",
+        image: "/party-images/DSC_0030.JPG",
         icon: Briefcase,
         strategyTitle: "हमारी रणनीति",
         points: [
