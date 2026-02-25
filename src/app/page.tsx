@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import React, { useState, useContext, createContext, useRef, useEffect } from "react";
 import {
   Play, ChevronLeft, ChevronRight, Trophy, HandHeart, Globe, Leaf,
@@ -779,7 +780,14 @@ const LandingPageContent = () => {
               key={index}
               className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentHeroIndex ? 'opacity-100' : 'opacity-0'}`}
             >
-              <img src={img} alt={`Hero ${index + 1}`} className="w-full h-full object-cover" />
+              <Image
+                src={img}
+                alt={`Hero ${index + 1}`}
+                fill
+                priority={index === 0}
+                sizes="100vw"
+                className="object-cover"
+              />
               <div className="absolute inset-0 bg-black/40" /> {/* Dark Overlay for text readability */}
             </div>
           ))}
@@ -866,10 +874,13 @@ const LandingPageContent = () => {
                 >
                   {/* Background Image */}
                   <div className="absolute inset-0 overflow-hidden">
-                    <img
+                    <Image
                       src={card.image}
                       alt={card.title}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+                      fill
+                      loading="lazy"
+                      sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+                      className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors" />
                   </div>
@@ -964,7 +975,14 @@ const LandingPageContent = () => {
             {/* Mobile Image */}
             <div className="order-2 lg:hidden w-full flex justify-center mb-[24px]">
               <div className="relative w-full max-w-[400px] h-auto aspect-square group">
-                <img src="Shudhanshu.svg" alt="Dr Sudhanshu" className="w-full h-full rounded-[8px] bg-white border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500" />
+                <Image
+                  src="/Shudhanshu.svg"
+                  alt="Dr Sudhanshu"
+                  fill
+                  loading="lazy"
+                  sizes="(min-width: 1024px) 419px, 100vw"
+                  className="rounded-[8px] bg-white border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500"
+                />
               </div>
             </div>
           </div>
@@ -973,7 +991,14 @@ const LandingPageContent = () => {
           <div className="hidden lg:flex w-full lg:w-auto justify-center lg:justify-end">
             <div className="relative w-full max-w-[400px] h-auto aspect-square lg:w-[419px] lg:h-[444px] group">
               <ScrollReveal animation="fade-in" duration={1000} delay={300} className="w-full h-full">
-                <img src="Shudhanshu.svg" alt="Dr Sudhanshu" className="w-full h-full rounded-[8px] bg-white border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500" />
+                <Image
+                  src="/Shudhanshu.svg"
+                  alt="Dr Sudhanshu"
+                  fill
+                  loading="lazy"
+                  sizes="(min-width: 1024px) 419px, 100vw"
+                  className="rounded-[8px] bg-white border border-[#E8F3EC] object-cover shadow-md group-hover:scale-[1.02] group-hover:shadow-xl transition-all duration-500"
+                />
               </ScrollReveal>
             </div>
           </div>
@@ -1183,10 +1208,13 @@ const LandingPageContent = () => {
                   className={`relative group rounded-[20px] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 bg-gray-200 ${gridClass}`}
                 >
                   {/* Image */}
-                  <img
+                  <Image
                     src={src}
                     alt={`Gallery ${index + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+                    fill
+                    loading="lazy"
+                    sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 100vw"
+                    className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
                   />
 
                   {/* Overlay Gradient (Always there but subtle, stronger on hover) */}
