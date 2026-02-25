@@ -628,23 +628,23 @@ export default function Page() {
 
     const getCityImage = (id: number) => {
         const images = [
-            "/herosection/1.png", "/herosection/4.jpg", "/herosection/7.jpg", "/herosection/8.jpg",
-            "/herosection/9.jpg", "/herosection/10.jpg", "/herosection/team.jpg", "/news1.svg",
+            "/herosection-opt/1.jpg", "/herosection-opt/4.jpg", "/herosection-opt/7.jpg", "/herosection-opt/8.jpg",
+            "/herosection-opt/9.jpg", "/herosection-opt/10.jpg", "/herosection-opt/team.jpg", "/news1.svg",
             "/news2.svg", "/news3.svg", "/news4.svg", "/news5.svg",
             // Remaining 38 points with unique party images
-            "/party-images/DSC_0006.JPG", "/party-images/DSC_0007.JPG", "/party-images/DSC_0008.JPG",
-            "/party-images/DSC_0009.JPG", "/party-images/DSC_0014.JPG", "/party-images/DSC_0019.JPG",
-            "/party-images/DSC_0020.JPG", "/party-images/DSC_0023.JPG", "/party-images/DSC_0024.JPG",
-            "/party-images/DSC_0030.JPG", "/party-images/DSC_0031.JPG", "/party-images/DSC_0035.JPG",
-            "/party-images/DSC_0037.JPG", "/party-images/DSC_0038.JPG", "/party-images/DSC_0039.JPG",
-            "/party-images/DSC_0040.JPG", "/party-images/DSC_0041.JPG", "/party-images/DSC_0042.JPG",
-            "/party-images/DSC_0043.JPG", "/party-images/DSC_0044.JPG", "/party-images/DSC_0045.JPG",
-            "/party-images/DSC_0046.JPG", "/party-images/DSC_0047.JPG", "/party-images/DSC_0048.JPG",
-            "/party-images/DSC_0056.JPG", "/party-images/DSC_0057.JPG", "/party-images/DSC_0059.JPG",
-            "/party-images/DSC_0060.JPG", "/party-images/DSC_0061.JPG", "/party-images/DSC_0062.JPG",
-            "/party-images/DSC_0063.JPG", "/party-images/DSC_0064.JPG", "/party-images/DSC_0067.JPG",
-            "/party-images/DSC_0068.JPG", "/party-images/DSC_0072.JPG", "/party-images/DSC_0073.JPG",
-            "/party-images/DSC_0074.JPG", "/party-images/DSC_0076.JPG"
+            "/party-images-opt/DSC_0006.jpg", "/party-images-opt/DSC_0007.jpg", "/party-images-opt/DSC_0008.jpg",
+            "/party-images-opt/DSC_0009.jpg", "/party-images-opt/DSC_0014.jpg", "/party-images-opt/DSC_0019.jpg",
+            "/party-images-opt/DSC_0020.jpg", "/party-images-opt/DSC_0023.jpg", "/party-images-opt/DSC_0024.jpg",
+            "/party-images-opt/DSC_0030.jpg", "/party-images-opt/DSC_0031.jpg", "/party-images-opt/DSC_0035.jpg",
+            "/party-images-opt/DSC_0037.jpg", "/party-images-opt/DSC_0038.jpg", "/party-images-opt/DSC_0039.jpg",
+            "/party-images-opt/DSC_0040.jpg", "/party-images-opt/DSC_0041.jpg", "/party-images-opt/DSC_0042.jpg",
+            "/party-images-opt/DSC_0043.jpg", "/party-images-opt/DSC_0044.jpg", "/party-images-opt/DSC_0045.jpg",
+            "/party-images-opt/DSC_0046.jpg", "/party-images-opt/DSC_0047.jpg", "/party-images-opt/DSC_0048.jpg",
+            "/party-images-opt/DSC_0056.jpg", "/party-images-opt/DSC_0057.jpg", "/party-images-opt/DSC_0059.jpg",
+            "/party-images-opt/DSC_0060.jpg", "/party-images-opt/DSC_0061.jpg", "/party-images-opt/DSC_0062.jpg",
+            "/party-images-opt/DSC_0063.jpg", "/party-images-opt/DSC_0064.jpg", "/party-images-opt/DSC_0067.jpg",
+            "/party-images-opt/DSC_0068.jpg", "/party-images-opt/DSC_0072.jpg", "/party-images-opt/DSC_0073.jpg",
+            "/party-images-opt/DSC_0074.jpg", "/party-images-opt/DSC_0076.jpg"
         ];
         return images[(id - 1) % images.length];
     };

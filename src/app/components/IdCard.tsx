@@ -94,7 +94,7 @@ const RecruitsPanel = () => {
           </div>
 
           <p className="text-sm text-gray-600 mb-2">
-            Senior Members target 5 workers. Workers Target 20 members
+            Senior Members target 5 workers.
           </p>
 
           {/* Progress Bar */}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import {
     Building2, MapPin, Tent, Music, ShoppingBag, Palette,
@@ -665,10 +666,13 @@ const VisionCarousel = ({ language }: { language: string }) => {
                     ${isActive ? 'bg-[#EAF7EE]' : 'bg-gray-100'}
                 `}>
                     {/* Real Image Background */}
-                    <img
+                    <Image
                         src={getCityImage(point.id)}
                         alt={content.title}
-                        className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ${isActive ? 'scale-100 opacity-100' : 'scale-110 opacity-60 grayscale'}`}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 400px"
+                        className={`absolute inset-0 object-cover transition-transform duration-700 ${isActive ? 'scale-100 opacity-100' : 'scale-110 opacity-60 grayscale'}`}
+                        priority={point.id <= 3}
                     />
                     <div className={`absolute inset-0 bg-gradient-to-t from-black/60 to-transparent ${isActive ? 'opacity-80' : 'opacity-40'}`}></div>
                 </div>

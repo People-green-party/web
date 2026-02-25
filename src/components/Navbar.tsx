@@ -52,6 +52,12 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
         let cancelled = false;
 
         const loadRole = async () => {
+            if (typeof window === 'undefined') return;
+            const token = window.localStorage.getItem('access_token');
+            if (!token) {
+                if (!cancelled) setIsAdmin(false);
+                return;
+            }
             try {
                 const res: any = await fetchApi('users/me/summary');
                 const role = res?.user?.role;

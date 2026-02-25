@@ -5,8 +5,28 @@
  * Handles base URL, auth tokens, and common error scenarios.
  */
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-da5f.up.railway.app';
-    const url = endpoint.startsWith('http') ? endpoint : `${baseUrl.replace(/\/$/, '')}/${endpoint.replace(/^\//, '')}`;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+    const url = endpoint.startsWith('http')
+        ? endpoint
+        : `${baseUrl.replace(/\/$/, '')}/${endpoint.replace(/^\//, '')}`;
+
+    const toFriendlyMessage = (msg: string) => {
+        const m = String(msg || '').trim();
+        if (!m) return 'Something went wrong. Please try again.';
+        if (m.toLowerCase().includes('phone already registered')) {
+            return 'This mobile number is already registered. Please log in.';
+        }
+        if (m.toLowerCase().includes('invalid referral code')) {
+            return 'The referral code looks incorrect. Please check and try again.';
+        }
+        if (m.toLowerCase().includes('invalid phone number')) {
+            return 'Please enter a valid mobile number.';
+        }
+        if (m.toLowerCase().includes('pin must be shorter')) {
+            return 'Your PIN must be 4 to 6 digits.';
+        }
+        return m;
+    };
 
     // Get auth token from localStorage if available
     let authHeader: Record<string, string> = {};
@@ -31,22 +51,28 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
             },
         });
 
-        const data = await response.json();
+        const rawText = await response.text();
+        const data = rawText ? (() => {
+            try { return JSON.parse(rawText); } catch { return rawText; }
+        })() : null;
 
         if (!response.ok) {
-            const errorMsg = data.message || data.error || `API error: ${response.status}`;
-            throw new Error(errorMsg);
+            const errorMsg = (data as any)?.message || (data as any)?.error || (typeof data === 'string' ? data : '') || `API error: ${response.status}`;
+            const friendly = toFriendlyMessage(errorMsg);
+            console.error(`API error calling ${url}:`, { status: response.status, errorMsg, data });
+            throw new Error(friendly);
         }
 
         return data;
     } catch (error: any) {
-        const detailedError = `Network error calling ${url}: ${error.message}. 
-        - Backend URL: ${process.env.BACKEND_URL || 'Not Set'}
-        - API URL: ${baseUrl}
-        - Ensure API server (NestJS) is running.
-        - Check for CORS issues if calling across domains.`;
+        // If we already have a friendly error (response was received), keep it.
+        const msg = String(error?.message || '').trim();
+        if (msg && !msg.toLowerCase().includes('failed to fetch')) {
+            throw new Error(msg);
+        }
 
-        console.error(detailedError);
+        const detailedError = `Network error calling ${url}. Please check your internet connection and try again.`;
+        console.error(`Network error calling ${url}:`, error);
         throw new Error(detailedError);
     }
 }
