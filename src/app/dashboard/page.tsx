@@ -238,20 +238,55 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: NewMemberIdCardPr
             </div>
           </div>
 
-          <div className="mt-8 font-bold text-[18px] uppercase tracking-wide relative z-10" style={{ color: '#ffffff' }}>
-            {loading ? '...' : (user?.name || t.dashboard.placeholderName)}
-          </div>
-          <div className="mt-1 text-[12px] font-semibold relative z-10" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
-            {loading ? '...' : designation}
-          </div>
-          <div className="mt-1 text-[12px] font-semibold relative z-10 max-w-[290px] truncate whitespace-nowrap" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-            {loading ? '...' : (placeLine || t.dashboard.placeholderWard)}
+          <div className="mt-6 relative z-10 pr-14" style={{ paddingTop: '8px', fontFamily: 'Arial, sans-serif' }}>
+            <div
+              className="font-bold text-[18px] uppercase tracking-wide"
+              style={{
+                color: '#ffffff',
+                lineHeight: '34px'
+              }}
+            >
+              {loading ? '...' : (user?.name || t.dashboard.placeholderName)}
+            </div>
+            <div
+              className="text-[12px] font-semibold"
+              style={{
+                color: 'rgba(255, 255, 255, 0.85)',
+                lineHeight: '18px'
+              }}
+            >
+              {loading ? '...' : designation}
+            </div>
+            <div
+              className="text-[12px] font-semibold"
+              style={{
+                color: 'rgba(255, 255, 255, 0.8)',
+                lineHeight: '18px',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {loading ? '...' : (placeLine || t.dashboard.placeholderWard)}
+            </div>
           </div>
 
-          <div className="absolute bottom-4 left-5 text-[12px] font-bold tracking-widest z-10" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+          <div
+            className="absolute text-[12px] font-bold tracking-widest z-10"
+            style={{
+              left: '20px',
+              bottom: '20px',
+              color: 'rgba(255, 255, 255, 0.9)'
+            }}
+          >
             {loading ? '...' : (user?.memberId || t.dashboard.placeholderMembershipId)}
           </div>
-          <div className="absolute bottom-4 right-5 w-10 h-10 rounded z-10" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }} />
+          <div
+            className="absolute w-10 h-10 rounded z-10"
+            style={{
+              right: '20px',
+              bottom: '16px',
+              backgroundColor: 'rgba(255, 255, 255, 0.15)'
+            }}
+          />
         </div>
       </div>
 
@@ -433,29 +468,31 @@ const DashboardContent = () => {
           recruits: newRecruits
         }));
 
-        // Load committee members only for leaders (best-effort; doesn't block dashboard)
-        try {
-          const isLeader = !!(progressRes as any)?.isLeader;
-          if (isLeader) {
-            const auth = await getAuthHeader();
-            if (auth?.Authorization) {
-              const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
-              const res = await fetch(`${baseUrl}/cwc/my-team`, { headers: { ...auth }, cache: 'no-store' });
-              if (res.ok) {
-                const data = await res.json();
-                if (!cancelled) {
-                  setCommittee(data.committee || null);
-                  setCwcMembers(Array.isArray(data.members) ? data.members :[]);
+        // Load committee members only for leaders (best-effort; does not block core dashboard render)
+        void (async () => {
+          try {
+            const isLeader = !!(progressRes as any)?.isLeader;
+            if (isLeader) {
+              const auth = await getAuthHeader();
+              if (auth?.Authorization) {
+                const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+                const res = await fetch(`${baseUrl}/cwc/my-team`, { headers: { ...auth }, cache: 'no-store' });
+                if (res.ok) {
+                  const data = await res.json();
+                  if (!cancelled) {
+                    setCommittee(data.committee || null);
+                    setCwcMembers(Array.isArray(data.members) ? data.members :[]);
+                  }
                 }
               }
+            } else if (!cancelled) {
+              setCommittee(null);
+              setCwcMembers([]);
             }
-          } else if (!cancelled) {
-            setCommittee(null);
-            setCwcMembers([]);
+          } catch (e) {
+            console.warn('Failed to load CWC team', e);
           }
-        } catch (e) {
-          console.warn('Failed to load CWC team', e);
-        }
+        })();
 
       } catch (err: any) {
         if (cancelled) return;

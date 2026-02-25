@@ -462,21 +462,35 @@ const JoinPageContent = () => {
 
   useEffect(() => {
     const vidhansabhaId = formData.vidhansabhaId;
+    setFormData(prev => ({ ...prev, localUnitId: '' }));
     if (!vidhansabhaId) {
       setLocalUnits([]);
       return;
     }
 
+    let isCancelled = false;
+    setLocalUnits([]);
     setLocLoading(prev => ({ ...prev, localUnits: true }));
     import('../../lib/api').then(({ fetchApi }) => {
       fetchApi(`geo/vidhansabhas/${vidhansabhaId}/local-units`)
-        .then((data) => setLocalUnits(Array.isArray(data) ? data : []))
+        .then((data) => {
+          if (isCancelled) return;
+          setLocalUnits(Array.isArray(data) ? data : []);
+        })
         .catch((err) => {
+          if (isCancelled) return;
           console.error('Failed to load Local Units', err);
           setLocalUnits([]);
         })
-        .finally(() => setLocLoading(prev => ({ ...prev, localUnits: false })));
+        .finally(() => {
+          if (isCancelled) return;
+          setLocLoading(prev => ({ ...prev, localUnits: false }));
+        });
     });
+
+    return () => {
+      isCancelled = true;
+    };
   }, [formData.vidhansabhaId]);
 
   async function downloadAsPng(ref: React.RefObject<HTMLDivElement | null>, filename: string) {
@@ -717,6 +731,11 @@ const JoinPageContent = () => {
     } finally {
       setLocLoading(prev => ({ ...prev, vidhansabhas: false }));
     }
+  }
+
+  function handleVidhansabhaChange(event: ChangeEvent<HTMLSelectElement>): void {
+    const vidhansabhaId = event.target.value;
+    setFormData(prev => ({ ...prev, vidhansabhaId, localUnitId: '' }));
   }
 
   async function handleVerifyOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
@@ -994,7 +1013,7 @@ const JoinPageContent = () => {
 
                     <select
                       value={formData.vidhansabhaId}
-                      onChange={(e) => setFormData({ ...formData, vidhansabhaId: e.target.value })}
+                      onChange={handleVidhansabhaChange}
                       disabled={!formData.loksabhaId || locLoading.vidhansabhas}
                       className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#587E67] bg-white outline-none"
                     >
