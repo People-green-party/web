@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from "next/link";
 import {
   MapPin,
@@ -19,6 +19,8 @@ import { Footer } from '../../components/Footer';
 import { useLanguage } from '../../components/LanguageContext';
 import { fetchApi } from '../../lib/api';
 import { RequireAuth } from '../components/RequireAuth';
+import html2canvas from 'html2canvas';
+import { getAuthHeader } from '../../lib/supabaseClient';
 
 // --- Types ---
 interface DashboardUserSummary {
@@ -37,6 +39,7 @@ interface DashboardUserSummary {
       type: string;
       vidhansabha: { id: number; name: string; loksabha: { id: number; name: string } };
     } | null;
+    cwcName?: string | null;
   };
   recruitsCount: number;
   votesCast: number;
@@ -47,6 +50,7 @@ interface DashboardRecruitProgress {
   total: number;
   target: number;
   remaining: number;
+  localTotal?: number;
 }
 
 interface DashboardRecruitsListItem {
@@ -55,243 +59,334 @@ interface DashboardRecruitsListItem {
   phone: string;
   createdAt: string;
   photoUrl: string | null;
+  localUnitId?: number | null;
 }
+
+type CwcTeamMember = {
+  userId: number;
+  role: string | null;
+  user: { id: number; name: string; phone: string; role: string };
+};
 
 // --- Components ---
-import ImageCropperModal from '../../components/ImageCropperModal';
+const normalizeCssColor = (() => {
+  if (typeof document === 'undefined') return (c: string, _fallback: string) => c;
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return (c: string, _fallback: string) => c;
+  return (c: string, fallback: string) => {
+    const v = (c || '').trim();
+    if (!v || v === 'none') return v;
+    if (/\b(lab|lch|oklab|oklch|color-mix)\(/i.test(v)) return fallback;
+    ctx.fillStyle = '#000';
+    try {
+      ctx.fillStyle = v;
+      return ctx.fillStyle as string;
+    } catch {
+      return fallback;
+    }
+  };
+})();
 
-interface MemberIdCardProps {
-  summary: DashboardUserSummary | null;
-  loading: boolean;
-  onPhotoUpdate: () => void;
+function inlineComputedColors(root: HTMLElement) {
+  const nodes = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*'))];
+  for (const el of nodes) {
+    const cs = window.getComputedStyle(el);
+    el.style.color = normalizeCssColor(cs.color, 'rgb(0, 0, 0)');
+    el.style.backgroundColor = normalizeCssColor(cs.backgroundColor, 'transparent');
+    el.style.borderColor = normalizeCssColor(cs.borderColor, 'rgba(0, 0, 0, 0)');
+    el.style.outlineColor = normalizeCssColor(cs.outlineColor, 'rgba(0, 0, 0, 0)');
+    el.style.textDecorationColor = normalizeCssColor((cs as any).textDecorationColor || cs.color, 'rgb(0, 0, 0)');
+    el.style.boxShadow = cs.boxShadow;
+  }
 }
 
-const MemberIdCard = ({ summary, loading, onPhotoUpdate }: MemberIdCardProps) => {
-  const { t, language } = useLanguage();
-  const currentLang = language as 'en' | 'hi'; // ensuring type safety
+function sanitizeForCanvas(root: HTMLElement) {
+  const nodes = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*'))];
+  for (const el of nodes) {
+    el.style.boxShadow = 'none';
+    (el.style as any).textShadow = 'none';
+    (el.style as any).filter = 'none';
+    (el.style as any).backdropFilter = 'none';
+  }
+
+  // Preserve the green look in downloads (avoid relying on Tailwind gradient tokens).
+  const gradientNodes = root.querySelectorAll<HTMLElement>('.bg-gradient-to-br');
+  gradientNodes.forEach((el) => {
+    el.style.backgroundImage = 'linear-gradient(135deg, rgb(4, 51, 11), rgb(11, 90, 42))';
+    el.style.backgroundColor = 'rgb(4, 51, 11)';
+  });
+}
+
+async function downloadAsPng(ref: React.RefObject<HTMLDivElement | null>, filename: string) {
+  if (!ref.current) return;
+  const canvas = await html2canvas(ref.current, {
+    scale: 3,
+    backgroundColor: null,
+    useCORS: true,
+    onclone: (doc: Document) => {
+      const win = doc.defaultView as any;
+      if (win && !win.__pgpPatchedGetComputedStyle) {
+        const BAD_COLOR_RE = /\b(lab|lch|oklab|oklch|color-mix)\(/i;
+        const origGetComputed = win.getComputedStyle.bind(win);
+        win.__pgpPatchedGetComputedStyle = true;
+        win.getComputedStyle = ((elt: Element) => {
+          const cs = origGetComputed(elt);
+          return new Proxy(cs, {
+            get(target, prop, receiver) {
+              const value = Reflect.get(target, prop, receiver);
+              if (typeof value === 'string' && BAD_COLOR_RE.test(value)) {
+                const key = String(prop).toLowerCase();
+                if (key.includes('color')) return 'rgb(0,0,0)';
+                if (key.includes('background')) return 'none';
+                return '';
+              }
+              return value;
+            },
+          }) as any;
+        }) as any;
+      }
+
+      const cloned = doc.getElementById('pgp-dashboard-capture-root') as HTMLElement | null;
+      if (!cloned) return;
+      const nodes = [cloned, ...Array.from(cloned.querySelectorAll<HTMLElement>('*'))];
+      for (const el of nodes) {
+        const cs = doc.defaultView?.getComputedStyle(el);
+        if (!cs) continue;
+        el.style.boxShadow = 'none';
+        (el.style as any).textShadow = 'none';
+        (el.style as any).filter = 'none';
+        (el.style as any).backdropFilter = 'none';
+
+        const hasBadColor = (value: string | null | undefined) => {
+          if (!value) return false;
+          return /\b(lab|lch|oklab|oklch|color-mix)\(/i.test(value);
+        };
+
+        // Neutralize only properties that contain unsupported color functions
+        const bgImg = cs.backgroundImage || cs.background;
+        if (hasBadColor(bgImg)) {
+          el.style.backgroundImage = 'none';
+        }
+
+        const borderImg = (cs as any).borderImageSource as string | undefined;
+        if (hasBadColor(borderImg)) {
+          (el.style as any).borderImage = 'none';
+        }
+
+        const outlineColor = cs.outlineColor;
+        if (hasBadColor(outlineColor)) {
+          el.style.outlineColor = 'transparent';
+        }
+
+        const borderColor = cs.borderColor;
+        if (hasBadColor(borderColor)) {
+          el.style.borderColor = 'transparent';
+        }
+      }
+
+      const gradientNodes = cloned.querySelectorAll<HTMLElement>('.bg-gradient-to-br');
+      gradientNodes.forEach((el) => {
+        el.style.backgroundImage = 'linear-gradient(135deg, rgb(4, 51, 11), rgb(11, 90, 42))';
+        el.style.backgroundColor = 'rgb(4, 51, 11)';
+
+        // Ensure text on the card remains light for readability
+        const innerTextNodes = Array.from(el.querySelectorAll<HTMLElement>('*'));
+        for (const t of innerTextNodes) {
+          const cs = doc.defaultView?.getComputedStyle(t);
+          if (!cs) continue;
+          if (cs.color && cs.color !== 'rgb(0, 0, 0)') {
+            // keep non-black colors as-is
+            t.style.color = cs.color;
+          } else {
+            // nudge truly black text to white to avoid dark-on-dark
+            t.style.color = '#ffffff';
+          }
+        }
+      });
+    },
+  });
+  const blob: Blob | null = await new Promise((resolve) => canvas.toBlob((b: Blob | null) => resolve(b), 'image/png'));
+  if (!blob) return;
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+interface NewMemberIdCardProps {
+  summary: DashboardUserSummary | null;
+  loading: boolean;
+  onPhotoUpdated: () => void;
+}
+
+const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: NewMemberIdCardProps) => {
+  const { t } = useLanguage();
+  const user = summary?.user;
+  const idCardRef = useRef<HTMLDivElement | null>(null);
+
   const [uploading, setUploading] = useState(false);
-  const [selectedImageSrc, setSelectedImageSrc] = useState<string | null>(null);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    // Clear input so same file can be selected again
     event.target.value = '';
 
-    const reader = new FileReader();
-    reader.addEventListener('load', () => {
-      setSelectedImageSrc(reader.result?.toString() || null);
-    });
-    reader.readAsDataURL(file);
-  };
-
-  const handleCropComplete = async (croppedBlob: Blob) => {
     setUploading(true);
-    setSelectedImageSrc(null); // Close modal
-
     try {
-      const { getAuthHeader } = await import('../../lib/supabaseClient');
       const authHeader = await getAuthHeader();
       const formData = new FormData();
-      formData.append('file', croppedBlob, 'profile.jpg');
+      formData.append('file', file, file.name || 'profile.jpg');
 
-      // Ensure we are hitting the correct endpoint. 
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'; // Fallback to localhost:3002 for direct usage if env missing
-
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
       const response = await fetch(`${baseUrl}/users/me/photo`, {
         method: 'POST',
-        headers: {
-          ...authHeader,
-          // Do NOT set Content-Type here; user browser sets it to multipart/form-data with boundary
-        },
+        headers: { ...authHeader },
         body: formData,
       });
 
       if (!response.ok) {
         const txt = await response.text();
-        throw new Error(`Upload failed: ${txt}`);
+        throw new Error(txt || 'Upload failed');
       }
-
-      onPhotoUpdate();
-    } catch (error) {
-      console.error('Photo upload failed:', error);
-      alert('Failed to update profile photo');
+      onPhotoUpdated();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to upload photo');
     } finally {
       setUploading(false);
     }
   };
 
-  const handleRemovePhoto = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation(); // Prevent file input from opening
-    // Confirm dialog removed as requested
-    // if (!confirm('Are you sure you want to remove your profile photo?')) return;
-
+  const handleRemovePhoto = async () => {
+    if (!confirm('Remove your photo?')) return;
     setUploading(true);
     try {
-      const { getAuthHeader } = await import('../../lib/supabaseClient');
       const authHeader = await getAuthHeader();
-
       const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
       const response = await fetch(`${baseUrl}/users/me/photo`, {
         method: 'DELETE',
-        headers: {
-          ...authHeader,
-        },
+        headers: { ...authHeader },
       });
 
       if (!response.ok) {
-        throw new Error('Failed to remove photo');
+        const txt = await response.text();
+        throw new Error(txt || 'Remove failed');
       }
-
-      onPhotoUpdate();
-    } catch (error) {
-      console.error('Photo removal failed:', error);
-      alert('Failed to remove profile photo');
+      onPhotoUpdated();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to remove photo');
     } finally {
       setUploading(false);
     }
   };
 
-  const displayName = summary?.user?.name || (currentLang === 'hi' ? t.dashboard.placeholderNameHi : t.dashboard.placeholderNameEn);
-  const membershipId = summary?.user?.memberId || t.dashboard.placeholderMemberId;
-  const role = summary?.user?.role || 'Member';
+  const designation = useMemo(() => {
+    const role = (user?.role || 'Member') as string;
+    const cwcName = (user?.cwcName || '') as string;
+    if (role === 'CWCPresident') return cwcName ? `${cwcName} President` : 'CWC President';
+    if (role === 'CWCMember') return cwcName ? `${cwcName} Member` : 'CWC Member';
+    if (role === 'ExtendedMember') return cwcName ? `${cwcName} Extended Member` : 'Extended Member';
+    return 'Member';
+  }, [user?.role, user?.cwcName]);
 
-  // Logic to determine ward text: Use legacy 'ward' relation if available, otherwise check 'localUnit' relation
-  const effectiveWard = summary?.user?.ward
-    ? summary.user.ward
-    : (summary?.user?.localUnit?.type === 'Ward' ? { wardNumber: summary.user.localUnit.name.replace(/\D/g, '') || '?', gp: { name: summary.user.localUnit.vidhansabha?.name || 'Unknown' } } : null);
-
-  const wardText = effectiveWard
-    ? `${t.dashboard.wardLabel} ${effectiveWard.wardNumber || ''} – ${effectiveWard.gp?.name || ''}`
-    : t.dashboard.placeholderWard;
-
-  const roleLabel = role === 'Worker' ? t.dashboard.roles.worker : t.dashboard.roles.member;
+  const placeLine = useMemo(() => {
+    const lok = user?.localUnit?.vidhansabha?.loksabha?.name;
+    const vid = user?.localUnit?.vidhansabha?.name;
+    const lu = user?.localUnit ? `${user.localUnit.name}${user.localUnit.type ? ` (${user.localUnit.type})` : ''}` : '';
+    return [lok, vid, lu].filter(Boolean).join(', ');
+  }, [user?.localUnit]);
 
   return (
-    <div className="w-full lg:w-[30%] min-w-[320px] h-auto lg:h-[419px] bg-white rounded-[8px] p-[24px] pt-[20px] flex flex-col gap-[16px] border border-[#B9D3C4] shadow-[0px_4px_20px_0px_#0000001A]">
-      <h2 className="text-[20px] font-bold text-[#04330B] font-['Familjen_Grotesk'] leading-[26px]">
-        {t.dashboard.memberCardTitle}
-      </h2>
+    <div className="w-full bg-white rounded-[16px] p-[20px] flex flex-col gap-[14px] border border-[#B9D3C4] shadow-[0px_4px_20px_0px_#0000001A]">
+      <div className="flex items-center justify-between">
+        <h2 className="text-[24px] font-bold text-[#04330B] font-['Familjen_Grotesk']">{t.dashboard.memberCardTitle}</h2>
+      </div>
 
-      {/* Photo */}
-      <div className="w-full h-[200px] overflow-hidden rounded-[8px] bg-gray-100 relative group flex items-center justify-center">
-        {loading ? (
-          <div className="w-full h-full bg-gray-200 animate-pulse" />
-        ) : summary?.user?.photoUrl ? (
-          <img
-            src={summary.user.photoUrl.startsWith('http') ? summary.user.photoUrl : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002').replace(/\/v1\/?$/, '')}${summary.user.photoUrl}`}
-            alt={displayName}
-            className="w-full h-full object-cover object-top"
-          />
-        ) : (
-          <div className="flex flex-col items-center justify-center text-gray-400 gap-2">
-            <User size={64} strokeWidth={1} />
-            <span className="text-sm font-medium">Add Photo</span>
+      <div ref={idCardRef} id="pgp-dashboard-capture-root" className="flex items-center justify-center">
+        <div className="w-[360px] h-[210px] rounded-[18px] bg-gradient-to-br from-[#04330B] to-[#0B5A2A] p-5 text-white shadow-[0px_18px_40px_rgba(0,0,0,0.25)] relative overflow-hidden">
+          <div className="absolute -right-10 -top-10 w-[180px] h-[180px] rounded-full bg-white/10" />
+          <div className="absolute -left-10 -bottom-10 w-[140px] h-[140px] rounded-full bg-white/10" />
+
+          <div className="flex items-start justify-between">
+            <div className="bg-white rounded-md px-2 py-1">
+              <img src="/PGPlogo.svg" alt="PGP" className="h-6" />
+            </div>
+            <div className="w-10 h-10 rounded-md bg-white/15 flex items-center justify-center">
+              <User className="w-5 h-5 text-white" />
+            </div>
           </div>
-        )}
 
-        {/* Edit Overlay - Visible on Hover (Desktop) */}
-        <div className="absolute inset-0 bg-black/40 flex flex-row items-center justify-center gap-8 opacity-0 group-hover:opacity-100 transition-opacity z-10 transition-all duration-300">
-          {/* Upload Input Label */}
-          <label className="cursor-pointer flex flex-col items-center gap-2 text-white hover:scale-105 transition-transform group/edit">
-            <input
-              type="file"
-              accept="image/png, image/jpeg"
-              className="hidden"
-              onChange={handleFileChange}
-              disabled={uploading}
-            />
-            {uploading ? (
-              <span className="text-sm font-semibold">Processing...</span>
-            ) : (
-              <>
-                <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm group-hover/edit:bg-[#65A27F] transition-colors border border-white/20 shadow-lg">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                </div>
-                <span className="text-xs font-medium tracking-wide drop-shadow-md">Change</span>
-              </>
-            )}
-          </label>
+          <div className="mt-8 font-bold text-[18px] uppercase tracking-wide">
+            {loading ? '...' : (user?.name || t.dashboard.placeholderName)}
+          </div>
+          <div className="mt-1 text-[12px] text-white/85 font-semibold">
+            {loading ? '...' : designation}
+          </div>
+          <div className="mt-1 text-[12px] text-white/80 font-semibold">
+            {loading ? '...' : (placeLine || t.dashboard.placeholderWard)}
+          </div>
 
-          {/* Remove Button (only if photo exists) */}
-          {summary?.user?.photoUrl && !uploading && (
-            <button
-              onClick={handleRemovePhoto}
-              className="flex flex-col items-center gap-2 text-white hover:scale-105 transition-transform group/remove"
-              title="Remove Photo"
-            >
-              <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm group-hover/remove:bg-red-500/60 transition-colors border border-white/20 shadow-lg">
-                <Trash2 size={24} color="white" strokeWidth={2} />
-              </div>
-              <span className="text-xs font-medium tracking-wide drop-shadow-md">Remove</span>
-            </button>
-          )}
+          <div className="absolute bottom-4 left-5 text-[12px] font-bold tracking-widest text-white/90">
+            {loading ? '...' : (user?.memberId || t.dashboard.placeholderMembershipId)}
+          </div>
+          <div className="absolute bottom-4 right-5 w-10 h-10 rounded bg-white/15" />
         </div>
       </div>
 
-      {/* Mobile-only Edit Buttons (Visible below image on small screens) */}
-      <div className="flex lg:hidden w-full justify-center gap-4 mt-[-8px]">
-        <label className="cursor-pointer flex items-center gap-2 text-[#0D5229] bg-[#EAF7EE] px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#d4eadd] transition-colors">
-          <input
-            type="file"
-            accept="image/png, image/jpeg"
-            className="hidden"
-            onChange={handleFileChange}
-            disabled={uploading}
-          />
-          <span>{summary?.user?.photoUrl ? 'Change Photo' : 'Upload Photo'}</span>
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <label className="cursor-pointer text-[#0D5229] bg-[#F1FBF6] px-4 py-2 rounded-full text-sm font-semibold border border-[#B9D3C4] hover:bg-[#E6F6EE] transition-colors">
+          <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          {uploading ? t.dashboard.uploading : (user?.photoUrl ? t.dashboard.changePhoto : t.dashboard.uploadPhoto)}
         </label>
-
-        {summary?.user?.photoUrl && !uploading && (
+        {user?.photoUrl && !uploading && (
           <button
+            type="button"
             onClick={handleRemovePhoto}
-            className="flex items-center gap-2 text-red-600 bg-red-50 px-4 py-2 rounded-full text-sm font-semibold hover:bg-red-100 transition-colors"
+            className="flex items-center gap-2 text-red-600 bg-red-50 px-4 py-2 rounded-full text-sm font-semibold border border-red-200 hover:bg-red-100 transition-colors"
           >
             <Trash2 size={16} />
-            <span>Remove</span>
+            <span>{t.dashboard.remove}</span>
           </button>
         )}
       </div>
 
-      {/* Details Grid */}
-      <div className="flex flex-col gap-[12px] text-[14px]">
-        <div className="flex justify-between items-center h-[22px]">
-          <span className="text-[#587E67] font-semibold font-['Familjen_Grotesk']">{t.dashboard.name}</span>
-          {loading ? <div className="w-24 h-4 bg-gray-200 animate-pulse rounded" /> : <span className="text-[#04330B] font-bold font-['Familjen_Grotesk'] text-right">{displayName}</span>}
-        </div>
-        <div className="flex justify-between items-center h-[22px]">
-          <span className="text-[#587E67] font-semibold font-['Familjen_Grotesk']">{t.dashboard.membershipId}</span>
-          {loading ? <div className="w-20 h-4 bg-gray-200 animate-pulse rounded" /> : <span className="text-[#04330B] font-bold font-['Familjen_Grotesk'] text-right">{membershipId}</span>}
-        </div>
-        <div className="flex justify-between items-center h-[22px]">
-          <span className="text-[#587E67] font-semibold font-['Familjen_Grotesk']">{t.dashboard.role}</span>
-          {loading ? <div className="w-16 h-4 bg-gray-200 animate-pulse rounded" /> : <span className="text-[#04330B] font-bold font-['Familjen_Grotesk'] text-right">{roleLabel}</span>}
-        </div>
-        <div className="flex justify-between items-start h-auto">
-          <span className="text-[#587E67] font-semibold font-['Familjen_Grotesk'] shrink-0">{t.dashboard.ward}</span>
-          {loading ? <div className="w-32 h-4 bg-gray-200 animate-pulse rounded" /> : <span className="text-[#04330B] font-bold font-['Familjen_Grotesk'] text-right break-words max-w-[200px]">{wardText}</span>}
-        </div>
-      </div>
-
-
-      {/* Cropper Modal */}
-      {
-        selectedImageSrc && (
-          <ImageCropperModal
-            imageSrc={selectedImageSrc!}
-            onCancel={() => setSelectedImageSrc(null)}
-            onCropComplete={handleCropComplete}
-          />
-        )
-      }
-    </div >
+      <button
+        type="button"
+        onClick={() => downloadAsPng(idCardRef, `PGP-ID-${(user?.name || 'Member').replace(/\s+/g, '-')}.png`)}
+        className="w-full h-[46px] rounded-[10px] border border-[#B9D3C4] text-[#04330B] font-semibold bg-[#F1FBF6] mt-1"
+        disabled={loading}
+      >
+        {t.dashboard.downloadCard}
+      </button>
+    </div>
   );
 };
+
+function SlotCircle({ label, filled, name, photoUrl }: { label: string; filled: boolean; name?: string; photoUrl?: string | null }) {
+  return (
+    <div className="flex flex-col items-center gap-2 w-[92px]">
+      <div className={filled ? 'w-14 h-14 rounded-full bg-[#04330B] text-white flex items-center justify-center border-4 border-[#EAF7EE] overflow-hidden' : 'w-14 h-14 rounded-full bg-white text-[#587E67] flex items-center justify-center border border-dashed border-[#B9D3C4]'}>
+        {filled && photoUrl ? (
+          <img src={photoUrl.startsWith('http') ? photoUrl : photoUrl} alt={name || label} className="w-full h-full object-cover" />
+        ) : (
+          <User className="w-5 h-5" />
+        )}
+      </div>
+      <div className="text-[10px] font-bold text-[#587E67] uppercase tracking-wide">{label}</div>
+      {filled && name ? (
+        <div className="text-[11px] font-bold text-[#04330B] text-center leading-[1.1] line-clamp-2">
+          {name}
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 interface RecruitsPanelProps {
   summary: DashboardUserSummary | null;
@@ -303,6 +398,12 @@ interface RecruitsPanelProps {
 const RecruitsPanel = ({ summary, progress, recruits, loading }: RecruitsPanelProps) => {
   const { t, language } = useLanguage();
   const currentLang = language as 'en' | 'hi';
+
+  const effectiveOrigin = typeof window !== 'undefined'
+    ? (['peoplesgreen.org', 'www.peoplesgreen.org'].includes(window.location.hostname)
+      ? 'https://peoplesgreen.org'
+      : window.location.origin)
+    : 'https://peoplesgreen.org';
 
   const handleCopy = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -321,7 +422,7 @@ const RecruitsPanel = ({ summary, progress, recruits, loading }: RecruitsPanelPr
 
     // Construct the share link
     // If not production, we might want to ensure we point to the public URL, but window.location.origin handles the current host
-    const shareUrl = `${window.location.origin}/join?ref=${referralCode}`;
+    const shareUrl = `${effectiveOrigin}/join?ref=${referralCode}`;
     const shareText = `Join Peoples Green Party using my referral code: ${referralCode}`;
 
     if (navigator.share) {
@@ -347,7 +448,7 @@ const RecruitsPanel = ({ summary, progress, recruits, loading }: RecruitsPanelPr
   const progressLabel = target > 0 ? `${total}/${target}` : `${total}`;
 
   // QR Code URL - points to the join page with ref code
-  const qrData = typeof window !== 'undefined' ? `${window.location.origin}/join?ref=${referralCode}` : `https://peoplesgreenparty.org/join?ref=${referralCode}`;
+  const qrData = typeof window !== 'undefined' ? `${effectiveOrigin}/join?ref=${referralCode}` : `https://peoplesgreen.org/join?ref=${referralCode}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=118x118&data=${encodeURIComponent(qrData)}`;
 
   return (
@@ -439,8 +540,61 @@ const DashboardContent = () => {
   const [summary, setSummary] = useState<DashboardUserSummary | null>(null);
   const [progress, setProgress] = useState<DashboardRecruitProgress | null>(null);
   const [recruits, setRecruits] = useState<DashboardRecruitsListItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [committee, setCommittee] = useState<{ id: number; name: string } | null>(null);
+  const [cwcMembers, setCwcMembers] = useState<CwcTeamMember[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const appointmentRef = useRef<HTMLDivElement | null>(null);
+
+  const effectiveOrigin = typeof window !== 'undefined'
+    ? (['peoplesgreen.org', 'www.peoplesgreen.org'].includes(window.location.hostname)
+      ? 'https://peoplesgreen.org'
+      : window.location.origin)
+    : 'https://peoplesgreen.org';
+
+  const referralCode = summary?.user?.referralCode || '';
+  const isLeader = !!(progress as any)?.isLeader;
+
+  const [showLeadershipTracker, setShowLeadershipTracker] = useState(false);
+
+  useEffect(() => {
+    // Auto-show tracker if they already have recruits, OR if they clicked it previously
+    if (
+      (progress?.localTotal && progress.localTotal > 0) ||
+      (typeof window !== 'undefined' && localStorage.getItem('optedInLeader') === 'true')
+    ) {
+      setShowLeadershipTracker(true);
+    }
+  }, [progress?.localTotal]);
+
+  const handleOptInLeader = () => {
+    setShowLeadershipTracker(true);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('optedInLeader', 'true');
+    }
+  };
+
+  const visibleRecruits = useMemo(() => {
+    return (recruits || []).slice(0, 5);
+  }, [recruits]);
+
+  const localUnitId = summary?.user?.localUnit?.id ?? null;
+  const localUnitRecruits = useMemo(() => {
+    if (!localUnitId) return [];
+    return (recruits || []).filter((r) => Number((r as any).localUnitId) === Number(localUnitId));
+  }, [recruits, localUnitId]);
+
+  const canDownloadAppointment = isLeader;
+
+  const refreshSummary = async () => {
+    try {
+      const summaryRes = await fetchApi('users/me/summary');
+      setSummary(summaryRes as DashboardUserSummary);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const dashboardLinks = [
     { name: t.nav.dashboard, href: '/dashboard' },
@@ -497,6 +651,30 @@ const DashboardContent = () => {
           recruits: newRecruits
         }));
 
+        // Load committee members only for leaders (best-effort; doesn't block dashboard)
+        try {
+          const isLeader = !!(progressRes as any)?.isLeader;
+          if (isLeader) {
+            const auth = await getAuthHeader();
+            if (auth?.Authorization) {
+              const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+              const res = await fetch(`${baseUrl}/cwc/my-team`, { headers: { ...auth }, cache: 'no-store' });
+              if (res.ok) {
+                const data = await res.json();
+                if (!cancelled) {
+                  setCommittee(data.committee || null);
+                  setCwcMembers(Array.isArray(data.members) ? data.members : []);
+                }
+              }
+            }
+          } else if (!cancelled) {
+            setCommittee(null);
+            setCwcMembers([]);
+          }
+        } catch (e) {
+          console.warn('Failed to load CWC team', e);
+        }
+
       } catch (err: any) {
         if (cancelled) return;
         console.error('Failed to load dashboard data:', err);
@@ -519,38 +697,278 @@ const DashboardContent = () => {
       {/* Navbar with showProfileButton=true and isDashboard=true */}
       <Navbar links={dashboardLinks} showAuthButtons={false} showProfileButton={true} isDashboard={true} />
 
-      <main className="w-full max-w-[1320px] mx-auto flex flex-col items-center px-4 lg:px-8">
+      <main className="w-full max-w-[1180px] mx-auto flex flex-col items-center px-4 lg:px-8">
         {/* Main Content Container - 1320x420, Gap 40px */}
         {error && (
           <div className="w-full max-w-[1320px] px-4 mb-4 text-red-700 bg-red-50 border border-red-200 rounded-md text-sm font-['Familjen_Grotesk']">
             {error}
           </div>
         )}
+        <section className="w-full mt-6 bg-[#F7FCF9] rounded-[24px] border border-[#E4F2EA] shadow-[0px_20px_60px_rgba(0,0,0,0.08)] overflow-hidden">
+          <div className="p-6 lg:p-10">
+            <div className="text-center">
+              <div className="text-[20px] font-bold text-[#04330B]">{t.dashboard.leadershipTitle}</div>
+              <div className="mt-2 w-full rounded-[12px] border border-[#DDEEE4] bg-[#F1FBF6] text-[#04330B] font-semibold text-center py-3">
+                {t.dashboard.leadershipJoined}
+              </div>
+            </div>
 
-        <div className="w-full flex flex-col lg:flex-row gap-[40px] justify-between">
+            <div className="mt-7 grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6 items-start">
+              <NewMemberIdCard summary={summary} loading={loading} onPhotoUpdated={refreshSummary} />
 
-          {/* Left Column: Member Card (Responsive) */}
-          <MemberIdCard
-            summary={summary}
-            loading={loading}
-            onPhotoUpdate={() => {
-              // Refresh data
-              const loadDashboardData = async () => {
-                try {
-                  const summaryRes = await fetchApi('users/me/summary');
-                  setSummary(summaryRes as DashboardUserSummary);
-                } catch (e) { console.error(e); }
-              };
-              loadDashboardData();
-            }}
-          />
+              {(isLeader || showLeadershipTracker) && (
+              <div className="w-full flex flex-col gap-4">
+                <div className="rounded-[14px] border border-[#DDEEE4] bg-white p-5 shadow-sm">
+                  <div className="text-[#04330B] font-bold">{t.dashboard.inviteTitle}</div>
+                  <div className="mt-1 text-[12px] text-[#587E67] font-semibold">
+                    {t.dashboard.inviteSubtitle}
+                  </div>
 
-          {/* Right Column: Recruits Panel (Responsive) */}
-          <RecruitsPanel summary={summary} progress={progress} recruits={recruits} loading={loading} />
+                  <div className="mt-4 flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const code = referralCode;
+                        const inviteUrl = code ? `${effectiveOrigin}/join?ref=${code}` : `${effectiveOrigin}/join`;
+                        const text = `${t.dashboard.inviteShareText} ${inviteUrl}`;
+                        const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                        window.open(waUrl, '_blank');
+                      }}
+                      className="flex-1 h-[46px] rounded-[12px] bg-[#10B981] text-white font-semibold"
+                      disabled={!referralCode}
+                    >
+                      {t.dashboard.shareWhatsApp}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const code = referralCode;
+                        const inviteUrl = code ? `${effectiveOrigin}/join?ref=${code}` : `${effectiveOrigin}/join`;
+                        await navigator.clipboard.writeText(inviteUrl);
+                      }}
+                      className="h-[46px] px-4 rounded-[12px] border border-[#B9D3C4] text-[#04330B] font-semibold bg-[#F1FBF6]"
+                      disabled={!referralCode}
+                    >
+                      {t.dashboard.copyLink}
+                    </button>
+                  </div>
+                </div>
 
-        </div>
+                <div className="rounded-[16px] border border-[#E4F2EA] bg-white p-5 shadow-sm">
+                  <div className="text-[#04330B] font-bold">{t.dashboard.referralTitle}</div>
+                  <div className="mt-1 text-[12px] text-[#587E67] font-semibold">{t.dashboard.referralSubtitle}</div>
+                  <div className="mt-4 flex items-center justify-between gap-4">
+                    <div>
+                      <div className="text-[#587E67] font-semibold">{t.dashboard.referralLabel}</div>
+                      <div className="text-[22px] font-bold text-[#04330B] tracking-[0.2em]">
+                        {(referralCode || '--------').toString().toUpperCase()}
+                      </div>
+                    </div>
+                    <div className="w-[96px] h-[96px] rounded-[14px] border border-[#DDEEE4] bg-[#F7FCF9] flex items-center justify-center overflow-hidden">
+                      {String(referralCode || '').trim() ? (
+                        <img
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
+                            `${effectiveOrigin}/join?ref=${String(referralCode || '').trim().toUpperCase()}`
+                          )}`}
+                          alt="QR Code"
+                          className="w-[88px] h-[88px]"
+                        />
+                      ) : (
+                        <div className="text-[12px] font-bold text-[#587E67]">QR</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              )}
+            </div>
 
-        {/* Removed the empty spacer div as requested */}
+            {!isLeader && (
+              <div className="mt-10 w-full">
+                {!showLeadershipTracker ? (
+                  <button
+                    type="button"
+                    onClick={handleOptInLeader}
+                    className="w-full rounded-[18px] border border-[#DDEEE4] bg-white px-6 py-5 shadow-sm text-left"
+                  >
+                    <div className="text-[#04330B] font-bold text-[18px]">{t.dashboard.leaderOptInPrompt}</div>
+                    <div className="mt-2 inline-flex items-center justify-center h-[44px] px-5 rounded-[12px] bg-[#10B981] text-white font-bold">
+                      {t.dashboard.leaderOptInYes}
+                    </div>
+                  </button>
+                ) : (
+                  <>
+                    <div className="mt-2 w-full rounded-[16px] border border-[#DDEEE4] bg-white p-6 shadow-sm">
+                      <div className="text-[#04330B] font-bold text-[18px]">{t.dashboard.becomeLeaderTitle}</div>
+                      <div className="mt-1 text-[12px] text-[#587E67] font-semibold">{t.dashboard.becomeLeaderSubtitle}</div>
+
+                      <div className="mt-4 flex gap-3 flex-wrap">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const code = referralCode;
+                            const inviteUrl = code ? `${effectiveOrigin}/join?ref=${code}` : `${effectiveOrigin}/join`;
+                            const text = `${t.dashboard.inviteShareText} ${inviteUrl}`;
+                            const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                            window.open(waUrl, '_blank');
+                          }}
+                          className="h-[46px] px-5 rounded-[12px] bg-[#10B981] text-white font-semibold"
+                          disabled={!referralCode}
+                        >
+                          {t.dashboard.shareWhatsApp}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            const code = referralCode;
+                            const inviteUrl = code ? `${effectiveOrigin}/join?ref=${code}` : `${effectiveOrigin}/join`;
+                            await navigator.clipboard.writeText(inviteUrl);
+                          }}
+                          className="h-[46px] px-5 rounded-[12px] border border-[#B9D3C4] text-[#04330B] font-semibold bg-[#F1FBF6]"
+                          disabled={!referralCode}
+                        >
+                          {t.dashboard.copyLink}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="mt-8">
+                      <div className="flex items-center justify-center gap-6 flex-wrap">
+                        <SlotCircle label={t.dashboard.leaderLabel} filled name={summary?.user?.name || 'You'} photoUrl={summary?.user?.photoUrl || null} />
+                        {Array.from({ length: 5 }).map((_, i) => {
+                          const recruit = localUnitRecruits[i];
+                          return (
+                            <SlotCircle
+                              key={i}
+                              label={`${t.dashboard.slotLabel} ${i + 1}`}
+                              filled={!!recruit}
+                              name={recruit?.name}
+                              photoUrl={recruit?.photoUrl || null}
+                            />
+                          );
+                        })}
+                      </div>
+                      <div className="mt-6 text-center text-[#587E67] font-semibold text-[13px]">
+                        {t.dashboard.slotsHint}
+                      </div>
+                    </div>
+
+                    <div className="mt-10 rounded-[16px] border border-[#E4F2EA] bg-white p-6 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-[#04330B] font-bold text-[18px]">{t.dashboard.appointmentTitle}</div>
+                          <div className="mt-1 text-[12px] text-[#587E67] font-semibold">
+                            {t.dashboard.appointmentLocked}
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          disabled
+                          className="w-12 h-12 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center cursor-not-allowed"
+                          title={t.dashboard.locked}
+                        >
+                          <span className="text-[18px] font-bold">↓</span>
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {isLeader && (
+              <div className="mt-10 rounded-[16px] border border-[#E4F2EA] bg-white p-6 shadow-sm">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <div>
+                    <div className="text-[#04330B] font-bold text-[18px]">{committee?.name || t.dashboard.myTeamTitle}</div>
+                    <div className="mt-1 text-[12px] text-[#587E67] font-semibold">Your CWC members</div>
+                  </div>
+                  <Link
+                    href="/cwc/my-team"
+                    className="h-[38px] px-4 rounded-[12px] border border-[#B9D3C4] text-[#04330B] font-semibold bg-[#F1FBF6] flex items-center"
+                  >
+                    View
+                  </Link>
+                </div>
+
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {cwcMembers.length === 0 ? (
+                    <div className="text-sm text-[#587E67] font-semibold">No members yet.</div>
+                  ) : (
+                    cwcMembers.map((m) => (
+                      <div key={String(m.userId)} className="flex items-center justify-between gap-3 rounded-[12px] border border-[#E4F2EA] bg-[#F7FCF9] px-4 py-3">
+                        <div className="min-w-0">
+                          <div className="font-bold text-[#04330B] truncate">{m.user?.name}</div>
+                          <div className="text-[12px] text-[#587E67] font-semibold truncate">{m.user?.phone}</div>
+                        </div>
+                        <div className="shrink-0 text-[11px] px-3 py-1 rounded-full bg-[#EAF7EE] text-[#0D5229] border border-[#B9D3C4] font-bold">
+                          {m.role || m.user?.role || 'Member'}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {isLeader && (
+            <div className="mt-10 rounded-[16px] border border-[#E4F2EA] bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-[#04330B] font-bold text-[18px]">{t.dashboard.appointmentTitle}</div>
+                  <div className="mt-1 text-[12px] text-[#587E67] font-semibold">
+                    {canDownloadAppointment ? t.dashboard.appointmentReady : t.dashboard.appointmentLocked}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled={!canDownloadAppointment}
+                  onClick={() => downloadAsPng(appointmentRef, `PGP-Appointment-${(summary?.user?.name || 'Member').replace(/\s+/g, '-')}.png`)}
+                  className={canDownloadAppointment
+                    ? 'w-12 h-12 rounded-full bg-[#04330B] text-white flex items-center justify-center'
+                    : 'w-12 h-12 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center cursor-not-allowed'}
+                  title={canDownloadAppointment ? t.dashboard.download : t.dashboard.locked}
+                >
+                  <span className="text-[18px] font-bold">↓</span>
+                </button>
+              </div>
+
+              <div className="mt-4 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-md bg-[#F1FBF6] flex items-center justify-center border border-[#DDEEE4]">
+                  <Mail className="text-[#04330B]" />
+                </div>
+                <div>
+                  <div className="font-bold text-[#04330B]">{t.dashboard.appointmentTitle}</div>
+                  <div className="text-[12px] text-[#587E67] font-semibold">
+                    {canDownloadAppointment ? t.dashboard.appointmentReady : t.dashboard.appointmentLocked}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6" ref={appointmentRef}>
+                <div className="w-full rounded-[18px] border border-[#DDEEE4] bg-[#F7FCF9] p-6">
+                  <div className="text-[18px] font-bold text-[#04330B]">{t.dashboard.partyName}</div>
+                  <div className="mt-3 text-[#04330B] font-semibold">{t.dashboard.dear} {summary?.user?.name || 'Member'},</div>
+                  <div className="mt-3 text-[13px] text-[#587E67] font-semibold leading-relaxed">
+                    {t.dashboard.appointmentBody}
+                  </div>
+                  <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-[12px]">
+                    <div>
+                      <div className="text-[#587E67] font-semibold">{t.dashboard.designationLabel}</div>
+                      <div className="text-[#04330B] font-bold">{t.dashboard.cwcPresident}</div>
+                    </div>
+                    <div>
+                      <div className="text-[#587E67] font-semibold">{t.dashboard.dateLabel}</div>
+                      <div className="text-[#04330B] font-bold">{new Date().toLocaleDateString()}</div>
+                    </div>
+                  </div>
+                  <div className="mt-8 text-[12px] text-[#587E67] font-semibold">{t.dashboard.authorizedSignatory}</div>
+                </div>
+              </div>
+            </div>
+            )}
+          </div>
+        </section>
       </main>
 
       <Footer />
