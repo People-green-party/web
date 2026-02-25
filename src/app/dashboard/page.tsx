@@ -69,153 +69,35 @@ type CwcTeamMember = {
 };
 
 // --- Components ---
-const normalizeCssColor = (() => {
-  if (typeof document === 'undefined') return (c: string, _fallback: string) => c;
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return (c: string, _fallback: string) => c;
-  return (c: string, fallback: string) => {
-    const v = (c || '').trim();
-    if (!v || v === 'none') return v;
-    if (/\b(lab|lch|oklab|oklch|color-mix)\(/i.test(v)) return fallback;
-    ctx.fillStyle = '#000';
-    try {
-      ctx.fillStyle = v;
-      return ctx.fillStyle as string;
-    } catch {
-      return fallback;
-    }
-  };
-})();
 
-function inlineComputedColors(root: HTMLElement) {
-  const nodes = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*'))];
-  for (const el of nodes) {
-    const cs = window.getComputedStyle(el);
-    el.style.color = normalizeCssColor(cs.color, 'rgb(0, 0, 0)');
-    el.style.backgroundColor = normalizeCssColor(cs.backgroundColor, 'transparent');
-    el.style.borderColor = normalizeCssColor(cs.borderColor, 'rgba(0, 0, 0, 0)');
-    el.style.outlineColor = normalizeCssColor(cs.outlineColor, 'rgba(0, 0, 0, 0)');
-    el.style.textDecorationColor = normalizeCssColor((cs as any).textDecorationColor || cs.color, 'rgb(0, 0, 0)');
-    el.style.boxShadow = cs.boxShadow;
-  }
-}
-
-function sanitizeForCanvas(root: HTMLElement) {
-  const nodes = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*'))];
-  for (const el of nodes) {
-    el.style.boxShadow = 'none';
-    (el.style as any).textShadow = 'none';
-    (el.style as any).filter = 'none';
-    (el.style as any).backdropFilter = 'none';
-  }
-
-  // Preserve the green look in downloads (avoid relying on Tailwind gradient tokens).
-  const gradientNodes = root.querySelectorAll<HTMLElement>('.bg-gradient-to-br');
-  gradientNodes.forEach((el) => {
-    el.style.backgroundImage = 'linear-gradient(135deg, rgb(4, 51, 11), rgb(11, 90, 42))';
-    el.style.backgroundColor = 'rgb(4, 51, 11)';
-  });
-}
-
+// Clean, standard download function without dangerous DOM hacks
 async function downloadAsPng(ref: React.RefObject<HTMLDivElement | null>, filename: string) {
   if (!ref.current) return;
-  const canvas = await html2canvas(ref.current, {
-    scale: 3,
-    backgroundColor: null,
-    useCORS: true,
-    onclone: (doc: Document) => {
-      const win = doc.defaultView as any;
-      if (win && !win.__pgpPatchedGetComputedStyle) {
-        const BAD_COLOR_RE = /\b(lab|lch|oklab|oklch|color-mix)\(/i;
-        const origGetComputed = win.getComputedStyle.bind(win);
-        win.__pgpPatchedGetComputedStyle = true;
-        win.getComputedStyle = ((elt: Element) => {
-          const cs = origGetComputed(elt);
-          return new Proxy(cs, {
-            get(target, prop, receiver) {
-              const value = Reflect.get(target, prop, receiver);
-              if (typeof value === 'string' && BAD_COLOR_RE.test(value)) {
-                const key = String(prop).toLowerCase();
-                if (key.includes('color')) return 'rgb(0,0,0)';
-                if (key.includes('background')) return 'none';
-                return '';
-              }
-              return value;
-            },
-          }) as any;
-        }) as any;
-      }
 
-      const cloned = doc.getElementById('pgp-dashboard-capture-root') as HTMLElement | null;
-      if (!cloned) return;
-      const nodes = [cloned, ...Array.from(cloned.querySelectorAll<HTMLElement>('*'))];
-      for (const el of nodes) {
-        const cs = doc.defaultView?.getComputedStyle(el);
-        if (!cs) continue;
-        el.style.boxShadow = 'none';
-        (el.style as any).textShadow = 'none';
-        (el.style as any).filter = 'none';
-        (el.style as any).backdropFilter = 'none';
+  try {
+    const canvas = await html2canvas(ref.current, {
+      scale: 3, // High resolution
+      useCORS: true, // Crucial for external profile photos
+      allowTaint: false,
+      backgroundColor: null,
+      logging: false, // Turn on if debugging is needed
+    });
 
-        const hasBadColor = (value: string | null | undefined) => {
-          if (!value) return false;
-          return /\b(lab|lch|oklab|oklch|color-mix)\(/i.test(value);
-        };
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error('Canvas conversion failed');
 
-        // Neutralize only properties that contain unsupported color functions
-        const bgImg = cs.backgroundImage || cs.background;
-        if (hasBadColor(bgImg)) {
-          el.style.backgroundImage = 'none';
-        }
-
-        const borderImg = (cs as any).borderImageSource as string | undefined;
-        if (hasBadColor(borderImg)) {
-          (el.style as any).borderImage = 'none';
-        }
-
-        const outlineColor = cs.outlineColor;
-        if (hasBadColor(outlineColor)) {
-          el.style.outlineColor = 'transparent';
-        }
-
-        const borderColor = cs.borderColor;
-        if (hasBadColor(borderColor)) {
-          el.style.borderColor = 'transparent';
-        }
-      }
-
-      const gradientNodes = cloned.querySelectorAll<HTMLElement>('.bg-gradient-to-br');
-      gradientNodes.forEach((el) => {
-        el.style.backgroundImage = 'linear-gradient(135deg, rgb(4, 51, 11), rgb(11, 90, 42))';
-        el.style.backgroundColor = 'rgb(4, 51, 11)';
-
-        // Ensure text on the card remains light for readability
-        const innerTextNodes = Array.from(el.querySelectorAll<HTMLElement>('*'));
-        for (const t of innerTextNodes) {
-          const cs = doc.defaultView?.getComputedStyle(t);
-          if (!cs) continue;
-          if (cs.color && cs.color !== 'rgb(0, 0, 0)') {
-            // keep non-black colors as-is
-            t.style.color = cs.color;
-          } else {
-            // nudge truly black text to white to avoid dark-on-dark
-            t.style.color = '#ffffff';
-          }
-        }
-      });
-    },
-  });
-  const blob: Blob | null = await new Promise((resolve) => canvas.toBlob((b: Blob | null) => resolve(b), 'image/png'));
-  if (!blob) return;
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Failed to download image:", error);
+    alert("Could not download image. If the profile photo is loading, please wait a second and try again.");
+  }
 }
 
 interface NewMemberIdCardProps {
@@ -288,18 +170,31 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: NewMemberIdCardPr
 
   const designation = useMemo(() => {
     const role = (user?.role || 'Member') as string;
-    const cwcName = (user?.cwcName || '') as string;
-    if (role === 'CWCPresident') return cwcName ? `${cwcName} President` : 'CWC President';
-    if (role === 'CWCMember') return cwcName ? `${cwcName} Member` : 'CWC Member';
-    if (role === 'ExtendedMember') return cwcName ? `${cwcName} Extended Member` : 'Extended Member';
+    // cwcName is of the form "CWC Ward 1 2"; extract just the trailing sequence number for display
+    const rawName = (user?.cwcName || '') as string;
+    let cwcLabel = '';
+    if (rawName) {
+      const parts = rawName.trim().split(/\s+/);
+      const last = parts[parts.length - 1];
+      const num = Number.parseInt(last, 10);
+      if (!Number.isNaN(num)) {
+        cwcLabel = `CWC ${num}`;
+      } else {
+        cwcLabel = 'CWC';
+      }
+    }
+
+    if (role === 'CWCPresident') return cwcLabel ? `${cwcLabel} President` : 'CWC President';
+    if (role === 'CWCMember') return cwcLabel ? `${cwcLabel} Member` : 'CWC Member';
+    if (role === 'ExtendedMember') return cwcLabel ? `${cwcLabel} Extended Member` : 'Extended Member';
     return 'Member';
-  }, [user?.role, user?.cwcName]);
+  },[user?.role, user?.cwcName]);
 
   const placeLine = useMemo(() => {
     const lok = user?.localUnit?.vidhansabha?.loksabha?.name;
     const vid = user?.localUnit?.vidhansabha?.name;
     const lu = user?.localUnit ? `${user.localUnit.name}${user.localUnit.type ? ` (${user.localUnit.type})` : ''}` : '';
-    return [lok, vid, lu].filter(Boolean).join(', ');
+    return[lok, vid, lu].filter(Boolean).join(', ');
   }, [user?.localUnit]);
 
   return (
@@ -308,34 +203,55 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: NewMemberIdCardPr
         <h2 className="text-[24px] font-bold text-[#04330B] font-['Familjen_Grotesk']">{t.dashboard.memberCardTitle}</h2>
       </div>
 
-      <div ref={idCardRef} id="pgp-dashboard-capture-root" className="flex items-center justify-center">
-        <div className="w-[360px] h-[210px] rounded-[18px] bg-gradient-to-br from-[#04330B] to-[#0B5A2A] p-5 text-white shadow-[0px_18px_40px_rgba(0,0,0,0.25)] relative overflow-hidden">
-          <div className="absolute -right-10 -top-10 w-[180px] h-[180px] rounded-full bg-white/10" />
-          <div className="absolute -left-10 -bottom-10 w-[140px] h-[140px] rounded-full bg-white/10" />
+      <div className="flex items-center justify-center">
+        {/* We use strict inline styles here because html2canvas ignores Tailwind CSS variable gradients */}
+        <div
+          ref={idCardRef}
+          id="pgp-dashboard-capture-root"
+          className="w-[360px] h-[210px] rounded-[18px] p-5 pb-10 relative overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #04330B 0%, #0B5A2A 100%)',
+            color: '#ffffff'
+          }}
+        >
+          {/* Background shapes using inline RGBA so html2canvas renders them correctly */}
+          <div className="absolute -right-10 -top-10 w-[180px] h-[180px] rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)' }} />
+          <div className="absolute -left-10 -bottom-10 w-[140px] h-[140px] rounded-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)' }} />
 
-          <div className="flex items-start justify-between">
-            <div className="bg-white rounded-md px-2 py-1">
-              <img src="/PGPlogo.svg" alt="PGP" className="h-6" />
+          <div className="flex items-start justify-between relative z-10">
+            <div className="bg-white rounded-md px-2 py-1" style={{ backgroundColor: '#ffffff' }}>
+              <img src="/PGPlogo.svg" alt="PGP" className="h-6" crossOrigin="anonymous" />
             </div>
-            <div className="w-10 h-10 rounded-md bg-white/15 flex items-center justify-center">
-              <User className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-md flex items-center justify-center overflow-hidden" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }}>
+              {user?.photoUrl ? (
+                <img
+                  src={user.photoUrl.startsWith('http')
+                    ? user.photoUrl
+                    : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002').replace(/\/v1\/?$/, '')}${user.photoUrl}`}
+                  alt={user.name || 'Member'}
+                  className="w-full h-full object-cover"
+                  crossOrigin="anonymous" // CRITICAL: This allows html2canvas to fetch the image
+                />
+              ) : (
+                <User className="w-5 h-5 text-white" />
+              )}
             </div>
           </div>
 
-          <div className="mt-8 font-bold text-[18px] uppercase tracking-wide">
+          <div className="mt-8 font-bold text-[18px] uppercase tracking-wide relative z-10" style={{ color: '#ffffff' }}>
             {loading ? '...' : (user?.name || t.dashboard.placeholderName)}
           </div>
-          <div className="mt-1 text-[12px] text-white/85 font-semibold">
+          <div className="mt-1 text-[12px] font-semibold relative z-10" style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
             {loading ? '...' : designation}
           </div>
-          <div className="mt-1 text-[12px] text-white/80 font-semibold">
+          <div className="mt-1 text-[12px] font-semibold relative z-10 max-w-[290px] truncate whitespace-nowrap" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
             {loading ? '...' : (placeLine || t.dashboard.placeholderWard)}
           </div>
 
-          <div className="absolute bottom-4 left-5 text-[12px] font-bold tracking-widest text-white/90">
+          <div className="absolute bottom-4 left-5 text-[12px] font-bold tracking-widest z-10" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
             {loading ? '...' : (user?.memberId || t.dashboard.placeholderMembershipId)}
           </div>
-          <div className="absolute bottom-4 right-5 w-10 h-10 rounded bg-white/15" />
+          <div className="absolute bottom-4 right-5 w-10 h-10 rounded z-10" style={{ backgroundColor: 'rgba(255, 255, 255, 0.15)' }} />
         </div>
       </div>
 
@@ -388,160 +304,14 @@ function SlotCircle({ label, filled, name, photoUrl }: { label: string; filled: 
   );
 }
 
-interface RecruitsPanelProps {
-  summary: DashboardUserSummary | null;
-  progress: DashboardRecruitProgress | null;
-  recruits: DashboardRecruitsListItem[];
-  loading: boolean;
-}
-
-const RecruitsPanel = ({ summary, progress, recruits, loading }: RecruitsPanelProps) => {
-  const { t, language } = useLanguage();
-  const currentLang = language as 'en' | 'hi';
-
-  const effectiveOrigin = typeof window !== 'undefined'
-    ? (['peoplesgreen.org', 'www.peoplesgreen.org'].includes(window.location.hostname)
-      ? 'https://peoplesgreen.org'
-      : window.location.origin)
-    : 'https://peoplesgreen.org';
-
-  const handleCopy = () => {
-    if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      const code = summary?.user?.referralCode || '';
-      if (code) {
-        navigator.clipboard.writeText(code);
-        alert('Referral code copied!');
-      }
-    }
-  };
-
-  const referralCode = summary?.user?.referralCode || t.dashboard.placeholderReferralCode;
-
-  const handleShare = async () => {
-    if (typeof window === 'undefined') return;
-
-    // Construct the share link
-    // If not production, we might want to ensure we point to the public URL, but window.location.origin handles the current host
-    const shareUrl = `${effectiveOrigin}/join?ref=${referralCode}`;
-    const shareText = `Join Peoples Green Party using my referral code: ${referralCode}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Join Peoples Green Party',
-          text: shareText,
-          url: shareUrl,
-        });
-      } catch (error) {
-        console.error('Error sharing:', error);
-      }
-    } else {
-      // Fallback to copying URL
-      navigator.clipboard.writeText(shareUrl);
-      alert('Share link copied to clipboard!');
-    }
-  };
-
-  const total = progress?.total ?? 0;
-  const target = progress?.target ?? 0;
-  const percentage = target > 0 ? Math.min(Math.round((total / target) * 100), 100) : 0;
-  const progressLabel = target > 0 ? `${total}/${target}` : `${total}`;
-
-  // QR Code URL - points to the join page with ref code
-  const qrData = typeof window !== 'undefined' ? `${effectiveOrigin}/join?ref=${referralCode}` : `https://peoplesgreen.org/join?ref=${referralCode}`;
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=118x118&data=${encodeURIComponent(qrData)}`;
-
-  return (
-    <div className="w-full lg:flex-1 h-auto lg:min-h-[420px] bg-white rounded-[8px] p-[24px] pt-[20px] pb-[20px] flex flex-col gap-[20px] border border-[#B9D3C4] shadow-[0px_4px_20px_0px_#0000001A]">
-      {/* Top Section: Header & QR */}
-      <div className="w-full flex flex-col md:flex-row justify-between items-start">
-        <div className="w-full md:w-3/4 flex flex-col gap-[12px]">
-          <h2 className="text-[24px] font-bold text-[#04330B] font-['Familjen_Grotesk'] leading-[30px]">{t.dashboard.recruitsTitle}</h2>
-
-          <div className="flex items-center gap-2 h-[22px]">
-            <span className="text-[#587E67] font-semibold font-['Familjen_Grotesk'] text-[16px]">{t.dashboard.referralCode}</span>
-            <span className="text-[#04330B] font-bold font-['Familjen_Grotesk'] text-[16px]">{referralCode}</span>
-
-            {/* Copy Button */}
-            <button
-              onClick={handleCopy}
-              className="cursor-pointer hover:opacity-80 transition-opacity ml-2"
-              title={t.dashboard.copy}
-            >
-              <img src="/CopiedIcon.svg" alt="Copy" className="w-[18px] h-[18px]" />
-            </button>
-
-            {/* Share Button */}
-            <button
-              onClick={handleShare}
-              className="cursor-pointer hover:opacity-80 transition-opacity ml-1"
-              title="Share Link"
-            >
-              <Share2 size={18} className="text-[#0D5229]" />
-            </button>
-          </div>
-
-          <p className="text-[14px] text-[#587E67] font-semibold font-['Familjen_Grotesk'] leading-[18px]">
-            {target > 0 ? t.dashboard.target : t.dashboard.targetNone}
-          </p>
-
-          {/* Progress Bar */}
-          <div className="relative w-full max-w-[500px] h-[32px] bg-[#C6E0D1] rounded-[8px] overflow-hidden flex items-center">
-            <div
-              className="absolute left-0 top-0 h-full bg-[#65A27F] rounded-r-lg"
-              style={{ width: `${percentage}%` }}
-            ></div>
-            <span className="relative z-10 pl-3 text-[14px] font-bold text-white font-['Familjen_Grotesk']">{progressLabel}</span>
-          </div>
-        </div>
-
-        {/* QR Code */}
-        <div className="mt-4 md:mt-0 flex-shrink-0 w-[134px] h-[134px] p-[8px] border border-dashed border-[#0D5229] flex items-center justify-center">
-          <img
-            src={qrCodeUrl}
-            alt="QR Code"
-            className="w-[118px] h-[118px]"
-          />
-        </div>
-      </div>
-
-      {/* Recruited Members Grid */}
-      <div className="w-full flex flex-col gap-[16px]">
-        <h3 className="text-[16px] font-bold text-[#04330B] font-['Familjen_Grotesk']">{t.dashboard.recruitedMembers}</h3>
-        <div className="w-full h-[188px] overflow-y-auto pr-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-[52px] gap-y-[28px]">
-          {recruits.map((recruit) => (
-            <div key={recruit.id} className="flex items-center gap-[12px] w-[172px] h-[44px]">
-              {recruit.photoUrl ? (
-                <img
-                  src={recruit.photoUrl.startsWith('http') ? recruit.photoUrl : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002').replace(/\/v1\/?$/, '')}${recruit.photoUrl}`}
-                  alt={recruit.name}
-                  className="w-[44px] h-[44px] rounded-[8px] object-cover bg-gray-100 shrink-0"
-                />
-              ) : (
-                <div className="w-[44px] h-[44px] rounded-[8px] flex items-center justify-center bg-gray-200 text-gray-600 shrink-0">
-                  <User size={20} />
-                </div>
-              )}
-              <div className="flex flex-col w-[116px] h-[44px]">
-                <span className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] truncate block h-[22px]">{recruit.name}</span>
-                <span className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] block h-[22px]">{t.dashboard.roles.member}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // --- Main Layout Content ---
 const DashboardContent = () => {
   const { t } = useLanguage();
   const [summary, setSummary] = useState<DashboardUserSummary | null>(null);
-  const [progress, setProgress] = useState<DashboardRecruitProgress | null>(null);
-  const [recruits, setRecruits] = useState<DashboardRecruitsListItem[]>([]);
+  const[progress, setProgress] = useState<DashboardRecruitProgress | null>(null);
+  const[recruits, setRecruits] = useState<DashboardRecruitsListItem[]>([]);
   const [committee, setCommittee] = useState<{ id: number; name: string } | null>(null);
-  const [cwcMembers, setCwcMembers] = useState<CwcTeamMember[]>([]);
+  const[cwcMembers, setCwcMembers] = useState<CwcTeamMember[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -581,8 +351,8 @@ const DashboardContent = () => {
 
   const localUnitId = summary?.user?.localUnit?.id ?? null;
   const localUnitRecruits = useMemo(() => {
-    if (!localUnitId) return [];
-    return (recruits || []).filter((r) => Number((r as any).localUnitId) === Number(localUnitId));
+    if (!localUnitId) return[];
+    return (recruits ||[]).filter((r) => Number((r as any).localUnitId) === Number(localUnitId));
   }, [recruits, localUnitId]);
 
   const canDownloadAppointment = isLeader;
@@ -591,12 +361,24 @@ const DashboardContent = () => {
     try {
       const summaryRes = await fetchApi('users/me/summary');
       setSummary(summaryRes as DashboardUserSummary);
+      if (typeof window !== 'undefined') {
+        const cached = window.localStorage.getItem('dashboard_cache');
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            parsed.summary = summaryRes;
+            window.localStorage.setItem('dashboard_cache', JSON.stringify(parsed));
+          } catch (e) {
+            console.error('Failed to update dashboard_cache after refreshSummary', e);
+          }
+        }
+      }
     } catch (e) {
       console.error(e);
     }
   };
 
-  const dashboardLinks = [
+  const dashboardLinks =[
     { name: t.nav.dashboard, href: '/dashboard' },
     { name: t.nav.election, href: '/election' }
   ];
@@ -614,7 +396,7 @@ const DashboardContent = () => {
           if (parsed.summary && parsed.progress) {
             setSummary(parsed.summary);
             setProgress(parsed.progress);
-            setRecruits(parsed.recruits || []);
+            setRecruits(parsed.recruits ||[]);
             setLoading(false); // Show cached content immediately
           }
         } catch (e) {
@@ -629,7 +411,7 @@ const DashboardContent = () => {
 
       try {
         // Fetch all data in parallel
-        const [summaryRes, progressRes, recruitsRes] = await Promise.all([
+        const[summaryRes, progressRes, recruitsRes] = await Promise.all([
           fetchApi('users/me/summary'),
           fetchApi('users/me/recruitment-progress'),
           fetchApi('users/me/recruits')
@@ -637,7 +419,7 @@ const DashboardContent = () => {
 
         if (cancelled) return;
 
-        const newRecruits = recruitsRes?.recruits || [];
+        const newRecruits = recruitsRes?.recruits ||[];
 
         // Update state with fresh data
         setSummary(summaryRes as DashboardUserSummary);
@@ -663,7 +445,7 @@ const DashboardContent = () => {
                 const data = await res.json();
                 if (!cancelled) {
                   setCommittee(data.committee || null);
-                  setCwcMembers(Array.isArray(data.members) ? data.members : []);
+                  setCwcMembers(Array.isArray(data.members) ? data.members :[]);
                 }
               }
             }
@@ -689,7 +471,7 @@ const DashboardContent = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  },[]);
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800 pt-[104px] overflow-x-hidden">

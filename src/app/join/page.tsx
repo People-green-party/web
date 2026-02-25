@@ -9,6 +9,59 @@ import { Phone } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import html2canvas from 'html2canvas';
 
+// --- Canvas / color helpers ---
+const normalizeCssColor = (() => {
+  if (typeof document === 'undefined') {
+    return (c: string, _fallback: string) => c;
+  }
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    return (c: string, _fallback: string) => c;
+  }
+  return (c: string, fallback: string) => {
+    const v = (c || '').trim();
+    if (!v || v === 'none') return v;
+    if (/\b(lab|lch|oklab|oklch|color-mix)\(/i.test(v)) return fallback;
+    ctx.fillStyle = '#000';
+    try {
+      ctx.fillStyle = v;
+      return ctx.fillStyle as string;
+    } catch {
+      return fallback;
+    }
+  };
+})();
+
+function inlineComputedColors(root: HTMLElement) {
+  const nodes = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*'))];
+  for (const el of nodes) {
+    const cs = window.getComputedStyle(el);
+    el.style.color = normalizeCssColor(cs.color, 'rgb(0, 0, 0)');
+    el.style.backgroundColor = normalizeCssColor(cs.backgroundColor, 'transparent');
+    el.style.borderColor = normalizeCssColor(cs.borderColor, 'rgba(0, 0, 0, 0)');
+    el.style.outlineColor = normalizeCssColor(cs.outlineColor, 'rgba(0, 0, 0, 0)');
+    (el.style as any).textDecorationColor = normalizeCssColor((cs as any).textDecorationColor || cs.color, 'rgb(0, 0, 0)');
+    el.style.boxShadow = cs.boxShadow;
+  }
+}
+
+function sanitizeForCanvas(root: HTMLElement) {
+  const nodes = [root, ...Array.from(root.querySelectorAll<HTMLElement>('*'))];
+  for (const el of nodes) {
+    el.style.boxShadow = 'none';
+    (el.style as any).textShadow = 'none';
+    (el.style as any).filter = 'none';
+    (el.style as any).backdropFilter = 'none';
+  }
+
+  const gradientNodes = root.querySelectorAll<HTMLElement>('.bg-gradient-to-br');
+  gradientNodes.forEach((el) => {
+    el.style.backgroundImage = 'linear-gradient(135deg, rgb(4, 51, 11), rgb(11, 90, 42))';
+    el.style.backgroundColor = 'rgb(4, 51, 11)';
+  });
+}
+
 // --- Translations ---
 const translations = {
   en: {
@@ -428,6 +481,17 @@ const JoinPageContent = () => {
 
   async function downloadAsPng(ref: React.RefObject<HTMLDivElement | null>, filename: string) {
     if (!ref.current) return;
+
+    // Pre-sanitize the live subtree to strip problematic color functions before cloning
+    try {
+      if (typeof window !== 'undefined') {
+        inlineComputedColors(ref.current as HTMLElement);
+        sanitizeForCanvas(ref.current as HTMLElement);
+      }
+    } catch (e) {
+      console.warn('Pre-sanitize for canvas failed', e);
+    }
+
     const canvas = await html2canvas(ref.current, {
       scale: 3,
       backgroundColor: null,
@@ -796,10 +860,22 @@ const JoinPageContent = () => {
 
   const idCardDesignation = useMemo(() => {
     const role = (meSummary?.user?.role || 'Member') as string;
-    const cwcName = (meSummary?.user?.cwcName || '') as string;
-    if (role === 'CWCPresident') return cwcName ? `${cwcName} President` : 'CWC President';
-    if (role === 'CWCMember') return cwcName ? `${cwcName} Member` : 'CWC Member';
-    if (role === 'ExtendedMember') return cwcName ? `${cwcName} Extended Member` : 'Extended Member';
+    const rawName = (meSummary?.user?.cwcName || '') as string;
+    let cwcLabel = '';
+    if (rawName) {
+      const parts = rawName.trim().split(/\s+/);
+      const last = parts[parts.length - 1];
+      const num = Number.parseInt(last, 10);
+      if (!Number.isNaN(num)) {
+        cwcLabel = `CWC ${num}`;
+      } else {
+        cwcLabel = 'CWC';
+      }
+    }
+
+    if (role === 'CWCPresident') return cwcLabel ? `${cwcLabel} President` : 'CWC President';
+    if (role === 'CWCMember') return cwcLabel ? `${cwcLabel} Member` : 'CWC Member';
+    if (role === 'ExtendedMember') return cwcLabel ? `${cwcLabel} Extended Member` : 'Extended Member';
     return 'Member';
   }, [meSummary?.user?.role, meSummary?.user?.cwcName]);
 
