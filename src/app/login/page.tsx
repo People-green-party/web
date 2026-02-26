@@ -24,6 +24,19 @@ export default function LoginScreen() {
 
   const router = useRouter();
 
+  const sanitizePhoneInput = (value: string) => {
+    const digitsOnly = String(value || '').replace(/\D/g, '');
+    return digitsOnly.slice(0, 10);
+  };
+
+  const validateIndianMobile = (value: string): string | null => {
+    const v = sanitizePhoneInput(value);
+    if (!v) return 'Phone number is required';
+    if (v.length !== 10) return 'Phone number must be exactly 10 digits';
+    if (v.startsWith('0')) return 'Phone number cannot start with 0';
+    return null;
+  };
+
   // Helper to extract clean error message
   const cleanError = (msg: string) => {
     if (!msg) return '';
@@ -42,8 +55,13 @@ export default function LoginScreen() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone || !pin) {
-      setError('Phone and PIN are required');
+    const phoneErr = validateIndianMobile(phone);
+    if (phoneErr) {
+      setError(phoneErr);
+      return;
+    }
+    if (!pin) {
+      setError('PIN is required');
       return;
     }
 
@@ -51,7 +69,8 @@ export default function LoginScreen() {
     setError('');
 
     try {
-      const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
+      const cleanedPhone = sanitizePhoneInput(phone);
+      const phoneNumber = `+91${cleanedPhone}`;
 
       const data = await fetchApi('users/login-pin', {
         method: 'POST',
@@ -79,8 +98,9 @@ export default function LoginScreen() {
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone) {
-      setError('Phone number is required');
+    const phoneErr = validateIndianMobile(phone);
+    if (phoneErr) {
+      setError(phoneErr);
       return;
     }
 
@@ -88,7 +108,8 @@ export default function LoginScreen() {
     setError('');
 
     try {
-      const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
+      const cleanedPhone = sanitizePhoneInput(phone);
+      const phoneNumber = `+91${cleanedPhone}`;
 
       const { error } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
@@ -116,6 +137,11 @@ export default function LoginScreen() {
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+    const phoneErr = validateIndianMobile(phone);
+    if (phoneErr) {
+      setError(phoneErr);
+      return;
+    }
     if (!otp) {
       setError('Please enter the OTP');
       return;
@@ -125,7 +151,8 @@ export default function LoginScreen() {
     setError('');
 
     try {
-      const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
+      const cleanedPhone = sanitizePhoneInput(phone);
+      const phoneNumber = `+91${cleanedPhone}`;
 
       const { data, error } = await supabase.auth.verifyOtp({
         phone: phoneNumber,
@@ -188,7 +215,7 @@ export default function LoginScreen() {
         const { supabase } = await import('../../lib/supabaseClient');
         const { data } = await supabase.auth.getSession();
         if (!data.session && window.location.hostname === 'localhost') {
-          const phoneNumber = phone.startsWith('+') ? phone : `+91${phone}`;
+          const phoneNumber = `+91${sanitizePhoneInput(phone)}`;
           headers = { 'Authorization': `Bearer dev-token:${phoneNumber}` };
         }
       }
@@ -272,8 +299,20 @@ export default function LoginScreen() {
                     type="tel"
                     placeholder="Phone Number"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => {
+                      const next = sanitizePhoneInput(e.target.value);
+                      if (next.length === 1 && next.startsWith('0')) {
+                        setError('Phone number cannot start with 0');
+                        return;
+                      }
+                      setPhone(next);
+                      if (error) setError('');
+                    }}
                     className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
+                    inputMode="numeric"
+                    pattern="[1-9][0-9]{9}"
+                    maxLength={10}
+                    autoComplete="tel-national"
                   />
                 </div>
               )}
