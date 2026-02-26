@@ -17,12 +17,12 @@ export const SynergyEngine = ({ language }: { language: string }) => {
             // 0 से 1 के बीच स्क्रॉल प्रोग्रेस निकाल रहे हैं
             const progress = Math.min(Math.max(-rect.top / totalHeight, 0), 1);
 
-            // 5 फेज़: 0 (Default), 1 (Water), 2 (Energy), 3 (Farming), 4 (Skills)
-            // Very tight timing for 110vh track
-            if (progress < 0.05) setActivePillar(0);
-            else if (progress < 0.25) setActivePillar(1);
-            else if (progress < 0.45) setActivePillar(2);
-            else if (progress < 0.65) setActivePillar(3);
+            // 5 phases: 0 (Default), 1 (Water), 2 (Energy), 3 (Farming), 4 (Skills)
+            // Balanced timing for mobile and desktop
+            if (progress < 0.08) setActivePillar(0);
+            else if (progress < 0.28) setActivePillar(1);
+            else if (progress < 0.48) setActivePillar(2);
+            else if (progress < 0.68) setActivePillar(3);
             else setActivePillar(4);
         };
 
@@ -68,11 +68,11 @@ export const SynergyEngine = ({ language }: { language: string }) => {
     const pillarColors = ["#3B82F6", "#F59E0B", "#10B981", "#8B5CF6"];
 
     return (
-        /* Reduced height to 110vh for minimal gap at the bottom */
-        <section ref={containerRef} className="relative z-0 -mt-1 h-[110vh] bg-white m-0 p-0">
+        /* Increased mobile height to 140vh to prevent content cut-off */
+        <section ref={containerRef} className="relative z-0 h-[140vh] md:h-[110vh] bg-white m-0 p-0">
 
-            {/* STICKY CONTENT: Pins to the screen */}
-            <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+            {/* STICKY CONTENT: Pins to the screen. Added padding-top on mobile to avoid overlap with previous section */}
+            <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden pt-12 md:pt-0">
 
 
                 <div className="container mx-auto px-6 lg:px-16 relative z-10">
@@ -143,16 +143,16 @@ export const SynergyEngine = ({ language }: { language: string }) => {
                                             style={{ color: pillarColors[i], borderColor: `${pillarColors[i]}30` }}>
                                             {pillar.label}
                                         </div>
-                                        <h3 className="text-3xl lg:text-5xl font-bold text-[#04330B]">{pillar.title}</h3>
-                                        <p className="text-[#587E67] text-lg lg:text-xl leading-snug">{pillar.desc}</p>
+                                        <h3 className="text-2xl md:text-3xl lg:text-5xl font-bold text-[#04330B]">{pillar.title}</h3>
+                                        <p className="text-[#587E67] text-sm md:text-lg lg:text-xl leading-snug">{pillar.desc}</p>
 
-                                        <div className="flex items-center gap-5 mt-4">
-                                            <div className="bg-[#F8FBF9] p-4 rounded-2xl border border-[#0D5229]/5 flex-1 max-w-[200px]">
+                                        <div className="flex items-center gap-4 mt-2 lg:mt-4">
+                                            <div className="bg-[#F8FBF9] p-3 md:p-4 rounded-xl md:rounded-2xl border border-[#0D5229]/5 flex-1 max-w-[180px] md:max-w-[200px]">
                                                 <p className="text-[10px] font-bold text-[#587E67] uppercase mb-1">{t.impactTarget}</p>
                                                 <p className="text-2xl font-bold" style={{ color: pillarColors[i] }}>{pillar.stats}</p>
                                             </div>
-                                            <button className="h-14 w-14 rounded-full bg-[#04330B] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-xl">
-                                                <ArrowRight size={24} />
+                                            <button className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-[#04330B] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-xl">
+                                                <ArrowRight size={22} />
                                             </button>
                                         </div>
                                     </div>
