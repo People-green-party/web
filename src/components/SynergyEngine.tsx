@@ -18,11 +18,11 @@ export const SynergyEngine = ({ language }: { language: string }) => {
             const progress = Math.min(Math.max(-rect.top / totalHeight, 0), 1);
 
             // 5 phases: 0 (Default), 1 (Water), 2 (Energy), 3 (Farming), 4 (Skills)
-            // Balanced timing for mobile and desktop
-            if (progress < 0.08) setActivePillar(0);
-            else if (progress < 0.28) setActivePillar(1);
-            else if (progress < 0.48) setActivePillar(2);
-            else if (progress < 0.68) setActivePillar(3);
+            // Increased thresholds for mobile comfort with 200vh track
+            if (progress < 0.05) setActivePillar(0);
+            else if (progress < 0.22) setActivePillar(1);
+            else if (progress < 0.44) setActivePillar(2);
+            else if (progress < 0.66) setActivePillar(3);
             else setActivePillar(4);
         };
 
@@ -68,8 +68,8 @@ export const SynergyEngine = ({ language }: { language: string }) => {
     const pillarColors = ["#3B82F6", "#F59E0B", "#10B981", "#8B5CF6"];
 
     return (
-        /* Increased mobile height to 140vh to prevent content cut-off */
-        <section ref={containerRef} className="relative z-0 h-[140vh] md:h-[110vh] bg-white m-0 p-0">
+        /* Increased mobile height to 200vh for safer scroll room and clipping prevention */
+        <section ref={containerRef} className="relative z-0 h-[200vh] md:h-[110vh] bg-white mt-16 md:mt-0 mb-16 md:mb-0 p-0">
 
             {/* STICKY CONTENT: Pins to the screen. Added padding-top on mobile to avoid overlap with previous section */}
             <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden pt-12 md:pt-0">
