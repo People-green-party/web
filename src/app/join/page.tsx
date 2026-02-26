@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from '../../lib/supabaseClient';
 import { getTranslation } from './location_utils';
 import { useLanguage } from '../../components/LanguageContext';
-import { Phone } from 'lucide-react';
+import { Phone, Eye, EyeOff } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import html2canvas from 'html2canvas';
 
@@ -268,6 +268,7 @@ const JoinPageContent = () => {
     agreeResponsibility: false
   });
   const [showReferralInput, setShowReferralInput] = useState(false);
+  const [showPin, setShowPin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState('');
   const [otpError, setOtpError] = useState('');
@@ -875,8 +876,8 @@ const JoinPageContent = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="grid grid-cols-[100px_1fr] gap-3 min-w-0">
-                      <div className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 flex items-center font-semibold text-[#587E67] bg-white">+91</div>
+                    <div className="grid grid-cols-[70px_1fr] gap-3 min-w-0">
+                      <div className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-3 flex items-center justify-center font-semibold text-[#587E67] bg-white">+91</div>
                       <input
                         type="tel"
                         value={formData.mobile}
@@ -892,15 +893,24 @@ const JoinPageContent = () => {
                       />
                     </div>
 
-                    <input
-                      type="password"
-                      value={formData.pin}
-                      onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '').slice(0, 6) })}
-                      inputMode="numeric"
-                      className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none"
-                      placeholder="Create Login PIN"
-                      autoComplete="off"
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPin ? "text" : "password"}
+                        value={formData.pin}
+                        onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '').slice(0, 6) })}
+                        inputMode="numeric"
+                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none"
+                        placeholder="Create Login PIN"
+                        autoComplete="off"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPin(!showPin)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
+                      >
+                        {showPin ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

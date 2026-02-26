@@ -913,7 +913,7 @@ const LandingPageContent = () => {
 
 
       {/* 4. MEET OUR IDEOLOGICAL LEADER */}
-      < section className="bg-white mt-[60px] lg:mt-[120px] w-full flex justify-center" >
+      <section className="bg-white w-full flex justify-center">
         <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col lg:flex-row items-end justify-between gap-[32px] lg:gap-0">
 
           {/* Text First on Mobile via flex-col order (DOM order) */}

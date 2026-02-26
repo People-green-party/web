@@ -13,7 +13,7 @@ import {
     Paintbrush, Building, Siren, Briefcase, Globe, Bus,
     Moon, Gift, Handshake, Calendar, FileText, Sparkles
 } from 'lucide-react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import ScrollReveal from '@/components/ScrollReveal';
 
 const VisionCarousel = ({ language }: { language: string }) => {
@@ -671,7 +671,7 @@ const VisionCarousel = ({ language }: { language: string }) => {
                         alt={content.title}
                         fill
                         sizes="(max-width: 768px) 100vw, 400px"
-                        className={`absolute inset-0 object-cover transition-transform duration-700 ${isActive ? 'scale-100 opacity-100' : 'scale-110 opacity-60 grayscale'}`}
+                        className={`absolute inset-0 object-cover transition-transform duration-700 ${isActive ? 'scale-100' : 'scale-110'}`}
                         priority={point.id <= 3}
                     />
                     <div className={`absolute inset-0 bg-gradient-to-t from-black/60 to-transparent ${isActive ? 'opacity-80' : 'opacity-40'}`}></div>
@@ -723,17 +723,46 @@ const VisionCarousel = ({ language }: { language: string }) => {
         setActiveIndex((prev) => (prev - 1 + visionPoints.length) % visionPoints.length);
     };
 
-    // Auto-play with continuous slow slide (Marquee effect)
+    const [touchStart, setTouchStart] = useState<number | null>(null);
+    const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+    // Minimum swipe distance (in px)
+    const minSwipeDistance = 50;
+
+    const onTouchStart = (e: React.TouchEvent) => {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+        setIsAutoPlaying(false);
+    };
+
+    const onTouchMove = (e: React.TouchEvent) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const onTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+        const distance = touchStart - touchEnd;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe) handleNext();
+        if (isRightSwipe) handlePrev();
+
+        // Resume autoplay after a delay
+        setTimeout(() => setIsAutoPlaying(true), 5000);
+    };
+
+    // Auto-play with perfectly synchronized nonstop sliding
     useEffect(() => {
         if (!isAutoPlaying) return;
-        const interval = setInterval(handleNext, 3000);
+        const interval = setInterval(handleNext, 3000); // 3-second interval
         return () => clearInterval(interval);
     }, [isAutoPlaying]);
 
 
     return (
         <section
-            className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center overflow-hidden py-12"
+            className="relative z-10 bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center pt-12 pb-0"
         >
             <div className="text-center mb-12 px-4">
                 <ScrollReveal animation="fade-up" duration={800}>
@@ -772,14 +801,17 @@ const VisionCarousel = ({ language }: { language: string }) => {
                 </button>
 
                 {/* Cards Track */}
-                <div className="flex items-center justify-center w-full perspective-1000">
+                <div
+                    className="flex items-center justify-center w-full perspective-1000 select-none"
+                    onTouchStart={onTouchStart}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd}
+                >
                     {[-4, -3, -2, -1, 0, 1, 2, 3, 4].map((offset) => {
                         const index = (activeIndex + offset + visionPoints.length * 10) % visionPoints.length;
                         const point = visionPoints[index];
                         const isActive = offset === 0;
-                        const isSide = offset !== 0;
 
-                        // Calculate styles based on offset
                         let translateX = '0%';
                         let zIndex = 30;
                         let opacity = 1;
@@ -812,12 +844,16 @@ const VisionCarousel = ({ language }: { language: string }) => {
                             opacity = 0.2;
                         }
 
+                        const isSide = offset !== 0;
+
                         return (
                             <div
-                                key={`${point.id}-${offset}`}
-                                className="absolute transition-all duration-[3000ms] ease-linear"
+                                key={point.id}
+                                className="absolute"
                                 style={{
-                                    transform: `translateX(${isMobile ? offset * 110 + '%' : translateX}) scale(${isActive ? 1 : scale})`,
+                                    transition: 'transform 3000ms linear, opacity 3000ms linear',
+                                    transform: `translate3d(${isMobile ? offset * 110 + '%' : translateX}, 0, 0) scale(${scale})`,
+                                    willChange: 'transform',
                                     zIndex: zIndex,
                                     opacity: opacity,
                                     pointerEvents: isActive ? 'auto' : 'none'
