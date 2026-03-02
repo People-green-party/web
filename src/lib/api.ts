@@ -70,7 +70,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
                     });
                 }
                 console.warn(`Session expired (401 calling ${url}), clearing tokens`);
-                return null; // Graceful return
+                throw new Error((data as any)?.message || 'Session expired or unauthorized. Please login again.');
             }
 
             console.error(`API error calling ${url}:`, { status: response.status, errorMsg, data });
