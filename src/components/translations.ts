@@ -214,7 +214,51 @@ export const translations = {
             placeholderNameHi: "Name Here",
             placeholderMemberId: "PGP-XXXXXX",
             placeholderWard: "Ward Details",
-            wardLabel: "Ward No."
+            wardLabel: "Ward No.",
+            memberTier: "Elite Member",
+            verifiedStatus: "Verified Member",
+            membershipPending: "PGP-PENDING",
+            letterStatus: {
+                unlocked: "Unlocked Letter",
+                locked: "Locked Letter",
+                congrats: "Congratulations! Your official appointment letter is ready for download.",
+                recruitMore: "Recruit",
+                toUnlock: "more high-profile members to unlock your Appointment Letter.",
+                status: "Status",
+                recruitsCap: "Recruits"
+            },
+            statusActive: "Active",
+            stats: {
+                membershipId: "Membership ID",
+                mobileRegistry: "Mobile Registry",
+                loksabha: "Loksabha",
+                registryDate: "Registry Date",
+                downloadId: "Download ID Card",
+                viewCredentials: "View All Credentials"
+            },
+            leaderPoll: {
+                question: "Do you want to become a leader of your area??",
+                description: "Become a pillar of the movement. Leaders unlock exclusive recruitment tools and official appointment credentials.",
+                yes: "Yes, I'm Interested",
+                no: "No, Just a Member"
+            },
+            sections: {
+                referral: "Referral Link",
+                referralDesc: "Empower the movement by inviting your professional network. Earn elite credits for every verified sign-up.",
+                appointment: "Appointment Letter",
+                recruits: "Recruits",
+                recruitsDesc: "Active coordinators under your direct unit",
+                noMembers: "No members found in your unit yet.",
+                filter: "Filter",
+                whatsappShare: "Join the Movement at PGP:",
+                table: {
+                    identity: "Member Identity",
+                    position: "Position",
+                    region: "Regional Unit",
+                    status: "Status",
+                    actions: "Actions"
+                }
+            }
         },
         join: {
             inviteShareText: "Join Peoples Green Party using my invite link:",
@@ -476,7 +520,51 @@ export const translations = {
             placeholderNameHi: "नाम यहाँ",
             placeholderMemberId: "PGP-XXXXXX",
             placeholderWard: "वार्ड विवरण",
-            wardLabel: "वार्ड नं."
+            wardLabel: "वार्ड नं.",
+            memberTier: "एलीट सदस्य",
+            verifiedStatus: "सत्यापित सदस्य",
+            membershipPending: "पीपीजीपी-प्रतीक्षा",
+            letterStatus: {
+                unlocked: "अनलॉक नियुक्ति पत्र",
+                locked: "लॉक नियुक्ति पत्र",
+                congrats: "बधाई हो! आपका आधिकारिक नियुक्ति पत्र डाउनलोड के लिए तैयार है।",
+                recruitMore: "नियुक्ति पत्र अनलॉक करने के लिए",
+                toUnlock: "और उच्च-प्रोफ़ाइल सदस्यों को जोड़ें।",
+                status: "स्थिति",
+                recruitsCap: "भर्ती"
+            },
+            statusActive: "सक्रिय",
+            stats: {
+                membershipId: "सदस्यता आईडी",
+                mobileRegistry: "मोबाइल रजिस्ट्री",
+                loksabha: "लोकसभा",
+                registryDate: "पंजीकरण तिथि",
+                downloadId: "आईडी कार्ड डाउनलोड करें",
+                viewCredentials: "सभी क्रेडेंशियल देखें"
+            },
+            leaderPoll: {
+                question: "क्या आप अपने क्षेत्र का लीडर बनना चाहते हैं?",
+                description: "आंदोलन का स्तंभ बनें। लीडर्स विशेष भर्ती टूल और आधिकारिक नियुक्ति पत्र अनलॉक करते हैं।",
+                yes: "हाँ, मैं इच्छुक हूँ",
+                no: "नहीं, अभी केवल सदस्य"
+            },
+            sections: {
+                referral: "रेफरल लिंक",
+                referralDesc: "अपने पेशेवर नेटवर्क को आमंत्रित करके आंदोलन को सशक्त बनाएं। प्रत्येक सत्यापित साइन-अप के लिए एलीट क्रेडिट अर्जित करें।",
+                appointment: "नियुक्ति पत्र",
+                recruits: "भर्ती",
+                recruitsDesc: "आपकी प्रत्यक्ष इकाई के तहत सक्रिय समन्वयक",
+                noMembers: "आपकी इकाई में अभी कोई सदस्य नहीं मिला।",
+                filter: "फिल्टर",
+                whatsappShare: "PGP से जुड़ें और बदलाव का हिस्सा बनें:",
+                table: {
+                    identity: "सदस्य पहचान",
+                    position: "पद",
+                    region: "क्षेत्रीय इकाई",
+                    status: "स्थिति",
+                    actions: "कार्य"
+                }
+            }
         },
         election: {
             title: "चुनाव 2026",

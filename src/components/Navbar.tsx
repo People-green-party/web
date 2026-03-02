@@ -11,10 +11,17 @@ interface NavbarProps {
     links?: { name: string; href: string; target?: string }[];
     showAuthButtons?: boolean;
     showProfileButton?: boolean; // New Prop
+    showDonateButton?: boolean; // New Prop
     isDashboard?: boolean; // New Prop to control alignment
 }
 
-export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfileButton = false, isDashboard = false }: NavbarProps) => {
+export const Navbar = ({
+    links: customLinks,
+    showAuthButtons = true,
+    showProfileButton = false,
+    showDonateButton = true,
+    isDashboard = false
+}: NavbarProps) => {
     const { language, setLanguage, t } = useLanguage();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -41,9 +48,9 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
     const defaultLinks = [
         { name: t.nav.home, href: '/' },
-        { name: t.nav.leaders, href: '/leaders' },
-        { name: t.nav.constitution, href: '/constitution' },
-        { name: t.nav.weAreAravali, href: 'https://wearearavali.org/', target: '_blank' },
+        { name: t.nav.donate, href: '/donation' },
+        { name: t.nav.dashboard, href: '/dashboard' },
+        { name: t.nav.election || 'Election', href: '/election' },
     ];
 
     const links = customLinks || defaultLinks;
@@ -213,12 +220,14 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                         </div>
                     )}
 
-                    <Link
-                        href="/donation"
-                        className="hidden xl:flex px-[20px] h-[42px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-green-50 transition-colors whitespace-nowrap"
-                    >
-                        {t.nav.donate}
-                    </Link>
+                    {showDonateButton && (
+                        <Link
+                            href="/donation"
+                            className="hidden xl:flex px-[20px] h-[42px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-green-50 transition-colors whitespace-nowrap"
+                        >
+                            {t.nav.donate}
+                        </Link>
+                    )}
 
                     {showAuthButtons && (
                         <>
