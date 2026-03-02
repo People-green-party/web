@@ -111,6 +111,16 @@ export default function LoginScreen() {
       const cleanedPhone = sanitizePhoneInput(phone);
       const phoneNumber = `+91${cleanedPhone}`;
 
+      const check = await fetchApi('users/check-phone', {
+        method: 'POST',
+        body: JSON.stringify({ phone: phoneNumber }),
+      });
+
+      if (!check?.exists) {
+        setError('No account found for this mobile number. Please join first, then try login.');
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
       });

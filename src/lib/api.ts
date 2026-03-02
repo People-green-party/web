@@ -1,5 +1,7 @@
 "use client";
 
+import { getAuthHeader } from './supabaseClient';
+
 /**
  * Standard fetch wrapper for PGP Backend API calls.
  * Handles base URL, auth tokens, and common error scenarios.
@@ -12,17 +14,27 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
     const toFriendlyMessage = (msg: string) => {
         const m = String(msg || '').trim();
+        const lower = m.toLowerCase();
         if (!m) return 'Something went wrong. Please try again.';
-        if (m.toLowerCase().includes('phone already registered')) {
+        if (lower.includes('phone already registered')) {
             return 'This mobile number is already registered. Please log in.';
         }
-        if (m.toLowerCase().includes('invalid referral code')) {
+        if (lower.includes('account not found')) {
+            return 'No account found for this mobile number. Please join first, then log in.';
+        }
+        if (lower.includes('incorrect pin')) {
+            return 'Incorrect PIN. Please try again.';
+        }
+        if (lower.includes('pin not set')) {
+            return 'PIN is not set for this account yet. Use "Forgot PIN" to create a new PIN.';
+        }
+        if (lower.includes('invalid referral code')) {
             return 'The referral code looks incorrect. Please check and try again.';
         }
-        if (m.toLowerCase().includes('invalid phone number')) {
+        if (lower.includes('invalid phone number')) {
             return 'Please enter a valid mobile number.';
         }
-        if (m.toLowerCase().includes('pin must be shorter')) {
+        if (lower.includes('pin must be shorter')) {
             return 'Your PIN must be 4 to 6 digits.';
         }
         return m;
@@ -31,10 +43,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     // Get auth token from localStorage if available
     let authHeader: Record<string, string> = {};
     if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('access_token');
-        if (token) {
-            authHeader = { 'Authorization': `Bearer ${token}` };
-        }
+        authHeader = await getAuthHeader();
     }
 
     const defaultHeaders = {

@@ -613,40 +613,9 @@ const JoinPageContent = () => {
       const { supabase } = await import('../../lib/supabaseClient');
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
       const randomPassword = Math.random().toString(36).slice(-8) + "Aa1!";
-
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        phone: phoneNumber,
-        password: randomPassword,
-        options: {
-          data: {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            full_name: `${formData.firstName} ${formData.lastName}`,
-          },
-        },
-      });
-
-      const isPhoneSignupDisabled =
-        !!authError &&
-        (authError.message.includes('Phone signups are disabled') ||
-          authError.message.includes('Phone signups disabled'));
-
-      if (authError) {
-        if (isPhoneSignupDisabled) {
-          console.warn('Phone signups disabled; continuing with backend registration without auth user id');
-        }
-        if (authError.message.includes('already registered') ||
-          authError.message.includes('already been registered') ||
-          authError.message.includes('User already registered') ||
-          authError.message.includes('duplicate')) {
-          setOtpError('This phone number is already registered. Please sign in instead.');
-          setTimeout(() => {
-            router.push('/login');
-          }, 3000);
-          return;
-        } else if (!isPhoneSignupDisabled) {
-          throw authError;
-        }
+      const { data: authUserData, error: authUserError } = await supabase.auth.getUser();
+      if (authUserError) {
+        console.warn('Could not fetch Supabase user after OTP verification:', authUserError.message);
       }
 
       const { fetchApi } = await import('../../lib/api');
@@ -663,7 +632,7 @@ const JoinPageContent = () => {
         address: 'India',
         localUnitId: parseInt(formData.localUnitId),
         referralCode: formData.referralCode || undefined,
-        authUserId: isPhoneSignupDisabled ? undefined : authData?.user?.id,
+        authUserId: authUserData?.user?.id || undefined,
       };
 
       const userData = await fetchApi('users/register', {
@@ -814,7 +783,21 @@ const JoinPageContent = () => {
 
     try {
       const { supabase } = await import('../../lib/supabaseClient');
+      const { fetchApi } = await import('../../lib/api');
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
+
+      const check = await fetchApi('users/check-phone', {
+        method: 'POST',
+        body: JSON.stringify({ phone: phoneNumber }),
+      });
+
+      if (check?.exists) {
+        setOtpError('This mobile number is already registered. Please log in instead.');
+        setTimeout(() => {
+          router.push('/login');
+        }, 1200);
+        return;
+      }
 
       const { error } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
