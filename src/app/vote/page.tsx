@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { getAuthHeader } from "../../lib/supabaseClient";
 import { RequireAuth } from "../components/RequireAuth";
 
-const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
+const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3005/v1";
 
 type Candidate = { user: { id: number; name: string; phone: string } };
 
@@ -86,57 +86,57 @@ export default function MyBallotPage() {
     <RequireAuth>
       <div className="max-w-xl mx-auto p-6">
         <h1 className="text-2xl font-semibold mb-4">My Ballot</h1>
-      {loading && <div className="rounded border p-3 mb-3">Loading…</div>}
-      {error && (
-        <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3 mb-3">{error}</div>
-      )}
-      {voteMsg && (
-        <div className="rounded border border-green-300 bg-green-50 text-green-800 p-3 mb-3">{voteMsg}</div>
-      )}
+        {loading && <div className="rounded border p-3 mb-3">Loading…</div>}
+        {error && (
+          <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3 mb-3">{error}</div>
+        )}
+        {voteMsg && (
+          <div className="rounded border border-green-300 bg-green-50 text-green-800 p-3 mb-3">{voteMsg}</div>
+        )}
 
-      {!loading && !data?.election && (
-        <div className="rounded border bg-white p-4">No active APC election found for your district.</div>
-      )}
+        {!loading && !data?.election && (
+          <div className="rounded border bg-white p-4">No active APC election found for your district.</div>
+        )}
 
-      {data?.election && (
-        <div className="rounded border bg-white p-4">
-          <div className="mb-2">
-            <b>{data.election.councilLevel}</b> — {data.election.position}
+        {data?.election && (
+          <div className="rounded border bg-white p-4">
+            <div className="mb-2">
+              <b>{data.election.councilLevel}</b> — {data.election.position}
+            </div>
+            <div className="mb-3 text-sm text-gray-700">Select up to 21 candidates. Selected: {selected.length}/21</div>
+            <ul className="space-y-2">
+              {data.candidates.map((c) => {
+                const checked = selected.includes(c.user.id);
+                const disableNew = !checked && selected.length >= 21;
+                return (
+                  <li key={c.user.id} className="flex items-center justify-between border rounded p-2">
+                    <label className="flex items-center gap-3 w-full">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        disabled={disableNew}
+                        onChange={() => toggle(c.user.id)}
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">{c.user.name}</div>
+                        <div className="text-sm text-gray-600">{c.user.phone}</div>
+                      </div>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+            <div className="mt-4 flex justify-end">
+              <button
+                className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded disabled:opacity-50"
+                onClick={onSubmitBallot}
+                disabled={!canSubmit}
+              >
+                Submit Ballot
+              </button>
+            </div>
           </div>
-          <div className="mb-3 text-sm text-gray-700">Select up to 21 candidates. Selected: {selected.length}/21</div>
-          <ul className="space-y-2">
-            {data.candidates.map((c) => {
-              const checked = selected.includes(c.user.id);
-              const disableNew = !checked && selected.length >= 21;
-              return (
-                <li key={c.user.id} className="flex items-center justify-between border rounded p-2">
-                  <label className="flex items-center gap-3 w-full">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      disabled={disableNew}
-                      onChange={() => toggle(c.user.id)}
-                    />
-                    <div className="flex-1">
-                      <div className="font-medium">{c.user.name}</div>
-                      <div className="text-sm text-gray-600">{c.user.phone}</div>
-                    </div>
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="mt-4 flex justify-end">
-            <button
-              className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded disabled:opacity-50"
-              onClick={onSubmitBallot}
-              disabled={!canSubmit}
-            >
-              Submit Ballot
-            </button>
-          </div>
-        </div>
-      )}
+        )}
       </div>
     </RequireAuth>
   );

@@ -8,6 +8,7 @@ import { useLanguage } from '../../components/LanguageContext';
 import { Phone, Eye, EyeOff } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import html2canvas from 'html2canvas';
+import { fetchApi } from '../../lib/api';
 
 // --- Canvas / color helpers ---
 const normalizeCssColor = (() => {
@@ -610,51 +611,9 @@ const JoinPageContent = () => {
     setOtpError('');
 
     try {
-      const { supabase } = await import('../../lib/supabaseClient');
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
       const randomPassword = Math.random().toString(36).slice(-8) + "Aa1!";
 
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        phone: phoneNumber,
-        password: randomPassword,
-        options: {
-          data: {
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            full_name: `${formData.firstName} ${formData.lastName}`,
-          },
-        },
-      });
-
-      const isPhoneSignupDisabled =
-        !!authError &&
-        (authError.message.includes('Phone signups are disabled') ||
-          authError.message.includes('Phone signups disabled'));
-
-      if (authError) {
-        if (isPhoneSignupDisabled) {
-          console.warn('Phone signups disabled; continuing with backend registration without auth user id');
-        }
-        if (authError.message.includes('already registered') ||
-          authError.message.includes('already been registered') ||
-          authError.message.includes('User already registered') ||
-          authError.message.includes('duplicate')) {
-          setOtpError('This phone number is already registered. Please sign in instead.');
-          setTimeout(() => {
-            router.push('/login');
-          }, 3000);
-          return;
-        } else if (!isPhoneSignupDisabled) {
-          throw authError;
-        }
-      }
-
-      const { fetchApi } = await import('../../lib/api');
-
-      if (!formData.localUnitId) {
-        setOtpError('Please select your Local Unit');
-        return;
-      }
       const userProfileData = {
         name: `${formData.firstName} ${formData.lastName}`,
         phone: phoneNumber,
@@ -663,7 +622,6 @@ const JoinPageContent = () => {
         address: 'India',
         localUnitId: parseInt(formData.localUnitId),
         referralCode: formData.referralCode || undefined,
-        authUserId: isPhoneSignupDisabled ? undefined : authData?.user?.id,
       };
 
       const userData = await fetchApi('users/register', {
@@ -742,13 +700,6 @@ const JoinPageContent = () => {
   async function handleVerifyOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
     event.preventDefault();
 
-    const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
-    if ((devAuthMode || otpSimulated) && otp === '123456') {
-      setStep(2);
-      handleSubmit();
-      return;
-    }
-
     if (!otp) {
       setOtpError('Please enter the OTP');
       return;
@@ -758,27 +709,20 @@ const JoinPageContent = () => {
     setOtpError('');
 
     try {
-      const { supabase } = await import('../../lib/supabaseClient');
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
 
-      const { data, error } = await supabase.auth.verifyOtp({
-        phone: phoneNumber,
-        token: otp,
-        type: 'sms',
+      const data = await fetchApi('auth/verify-otp', {
+        method: 'POST',
+        body: JSON.stringify({ phone: phoneNumber, code: otp }),
       });
 
-      if (error) {
-        if (otp === '123456' && otpError?.includes('Simulating OTP sent')) {
-          console.log('Simulated OTP verification successful');
-          setStep(2);
-          handleSubmit();
-          return;
-        }
-        throw error;
+      if (data?.verified) {
+        console.log('OTP verified successfully');
+        setStep(3);
+        await handleSubmit();
+      } else {
+        throw new Error('Verification failed. Invalid OTP.');
       }
-      console.log('OTP verified successfully');
-      setStep(2);
-      handleSubmit();
     } catch (error: any) {
       console.error('Error verifying OTP:', error);
       setOtpError(error.message || 'Invalid OTP. Please try again.');
@@ -790,20 +734,6 @@ const JoinPageContent = () => {
   async function handleSendOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
     event.preventDefault();
 
-    const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
-    if (devAuthMode) {
-      if (registrationValidationError) {
-        setOtpError(registrationValidationError);
-        return;
-      }
-      setOtpSent(true);
-      setShowOtpField(true);
-      setOtpSimulated(true);
-      setOtpError('Dev mode: Simulating OTP sent. Use OTP: 123456');
-      setStep(2);
-      return;
-    }
-
     if (registrationValidationError) {
       setOtpError(registrationValidationError);
       return;
@@ -813,39 +743,24 @@ const JoinPageContent = () => {
     setOtpError('');
 
     try {
-      const { supabase } = await import('../../lib/supabaseClient');
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
 
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: phoneNumber,
+      const data = await fetchApi('auth/send-otp', {
+        method: 'POST',
+        body: JSON.stringify({ phone: phoneNumber }),
       });
 
-      if (error) {
-        console.warn('Supabase Auth Error (falling back to simulation):', error.message);
-        throw error;
-      }
-
-      setOtpSent(true);
-      setShowOtpField(true);
-      setStep(2);
-    } catch (error: any) {
-      console.error('Error sending OTP:', error);
-      const isConfigError = error.message === 'Unsupported phone provider' ||
-        error.message?.includes('Unsupported phone provider') ||
-        error.message === 'Failed to fetch' ||
-        error.message?.includes('apikey') ||
-        error.message?.includes('Signups not allowed');
-
-      if (isConfigError) {
-        console.warn('SMS provider not configured (falling back to simulation).', error.message);
+      if (data) {
+        if (data?.simulated) setOtpSimulated(true);
         setOtpSent(true);
         setShowOtpField(true);
-        setOtpSimulated(true);
-        setOtpError('SMS provider not configured. Simulating OTP sent. Use OTP: 123456');
-        setStep(2);
+        setStep(2); // Move to OTP verification step
       } else {
-        setOtpError(error.message || 'Failed to send OTP. Please try again.');
+        throw new Error('Failed to send OTP.');
       }
+    } catch (error: any) {
+      console.error('Error sending OTP:', error);
+      setOtpError(error.message || 'Failed to send OTP. Please try again.');
     } finally {
       setLoading(false);
     }

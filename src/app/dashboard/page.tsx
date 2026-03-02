@@ -12,7 +12,9 @@ import {
   User,
   Menu,
   Share2,
-  Trash2
+  Trash2,
+  Copy,
+  CheckCheck
 } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
@@ -124,7 +126,7 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: NewMemberIdCardPr
       const formData = new FormData();
       formData.append('file', file, file.name || 'profile.jpg');
 
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3005/v1';
       const response = await fetch(`${baseUrl}/users/me/photo`, {
         method: 'POST',
         headers: { ...authHeader },
@@ -188,13 +190,13 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: NewMemberIdCardPr
     if (role === 'CWCMember') return cwcLabel ? `${cwcLabel} Member` : 'CWC Member';
     if (role === 'ExtendedMember') return cwcLabel ? `${cwcLabel} Extended Member` : 'Extended Member';
     return 'Member';
-  },[user?.role, user?.cwcName]);
+  }, [user?.role, user?.cwcName]);
 
   const placeLine = useMemo(() => {
     const lok = user?.localUnit?.vidhansabha?.loksabha?.name;
     const vid = user?.localUnit?.vidhansabha?.name;
     const lu = user?.localUnit ? `${user.localUnit.name}${user.localUnit.type ? ` (${user.localUnit.type})` : ''}` : '';
-    return[lok, vid, lu].filter(Boolean).join(', ');
+    return [lok, vid, lu].filter(Boolean).join(', ');
   }, [user?.localUnit]);
 
   return (
@@ -227,7 +229,7 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: NewMemberIdCardPr
                 <img
                   src={user.photoUrl.startsWith('http')
                     ? user.photoUrl
-                    : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002').replace(/\/v1\/?$/, '')}${user.photoUrl}`}
+                    : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3005/v1').replace(/\/v1\/?$/, '')}${user.photoUrl}`}
                   alt={user.name || 'Member'}
                   className="w-full h-full object-cover"
                   crossOrigin="anonymous" // CRITICAL: This allows html2canvas to fetch the image
@@ -343,12 +345,24 @@ function SlotCircle({ label, filled, name, photoUrl }: { label: string; filled: 
 const DashboardContent = () => {
   const { t } = useLanguage();
   const [summary, setSummary] = useState<DashboardUserSummary | null>(null);
-  const[progress, setProgress] = useState<DashboardRecruitProgress | null>(null);
-  const[recruits, setRecruits] = useState<DashboardRecruitsListItem[]>([]);
+  const [progress, setProgress] = useState<DashboardRecruitProgress | null>(null);
+  const [recruits, setRecruits] = useState<DashboardRecruitsListItem[]>([]);
   const [committee, setCommittee] = useState<{ id: number; name: string } | null>(null);
-  const[cwcMembers, setCwcMembers] = useState<CwcTeamMember[]>([]);
+  const [cwcMembers, setCwcMembers] = useState<CwcTeamMember[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyCode = async () => {
+    if (!referralCode) return;
+    try {
+      await navigator.clipboard.writeText(referralCode.toString().toUpperCase());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy!', err);
+    }
+  };
 
   const appointmentRef = useRef<HTMLDivElement | null>(null);
 
@@ -386,8 +400,8 @@ const DashboardContent = () => {
 
   const localUnitId = summary?.user?.localUnit?.id ?? null;
   const localUnitRecruits = useMemo(() => {
-    if (!localUnitId) return[];
-    return (recruits ||[]).filter((r) => Number((r as any).localUnitId) === Number(localUnitId));
+    if (!localUnitId) return [];
+    return (recruits || []).filter((r) => Number((r as any).localUnitId) === Number(localUnitId));
   }, [recruits, localUnitId]);
 
   const canDownloadAppointment = isLeader;
@@ -413,7 +427,7 @@ const DashboardContent = () => {
     }
   };
 
-  const dashboardLinks =[
+  const dashboardLinks = [
     { name: t.nav.dashboard, href: '/dashboard' },
     { name: t.nav.election, href: '/election' }
   ];
@@ -431,7 +445,7 @@ const DashboardContent = () => {
           if (parsed.summary && parsed.progress) {
             setSummary(parsed.summary);
             setProgress(parsed.progress);
-            setRecruits(parsed.recruits ||[]);
+            setRecruits(parsed.recruits || []);
             setLoading(false); // Show cached content immediately
           }
         } catch (e) {
@@ -446,7 +460,7 @@ const DashboardContent = () => {
 
       try {
         // Fetch all data in parallel
-        const[summaryRes, progressRes, recruitsRes] = await Promise.all([
+        const [summaryRes, progressRes, recruitsRes] = await Promise.all([
           fetchApi('users/me/summary'),
           fetchApi('users/me/recruitment-progress'),
           fetchApi('users/me/recruits')
@@ -454,7 +468,7 @@ const DashboardContent = () => {
 
         if (cancelled) return;
 
-        const newRecruits = recruitsRes?.recruits ||[];
+        const newRecruits = recruitsRes?.recruits || [];
 
         // Update state with fresh data
         setSummary(summaryRes as DashboardUserSummary);
@@ -475,13 +489,13 @@ const DashboardContent = () => {
             if (isLeader) {
               const auth = await getAuthHeader();
               if (auth?.Authorization) {
-                const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+                const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3005/v1';
                 const res = await fetch(`${baseUrl}/cwc/my-team`, { headers: { ...auth }, cache: 'no-store' });
                 if (res.ok) {
                   const data = await res.json();
                   if (!cancelled) {
                     setCommittee(data.committee || null);
-                    setCwcMembers(Array.isArray(data.members) ? data.members :[]);
+                    setCwcMembers(Array.isArray(data.members) ? data.members : []);
                   }
                 }
               }
@@ -508,7 +522,7 @@ const DashboardContent = () => {
     return () => {
       cancelled = true;
     };
-  },[]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800 pt-[104px] overflow-x-hidden">
@@ -532,73 +546,85 @@ const DashboardContent = () => {
               </div>
             </div>
 
-            <div className="mt-7 grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6 items-start">
+            <div className="mt-7 grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-6 items-stretch">
               <NewMemberIdCard summary={summary} loading={loading} onPhotoUpdated={refreshSummary} />
 
               {(isLeader || showLeadershipTracker) && (
-              <div className="w-full flex flex-col gap-4">
-                <div className="rounded-[14px] border border-[#DDEEE4] bg-white p-5 shadow-sm">
-                  <div className="text-[#04330B] font-bold">{t.dashboard.inviteTitle}</div>
-                  <div className="mt-1 text-[12px] text-[#587E67] font-semibold">
-                    {t.dashboard.inviteSubtitle}
+                <div className="w-full flex flex-col gap-4 h-full">
+                  <div className="rounded-[14px] border border-[#DDEEE4] bg-white p-5 shadow-sm flex-1 flex flex-col justify-center">
+                    <div className="text-[#04330B] font-bold">{t.dashboard.inviteTitle}</div>
+                    <div className="mt-1 text-[12px] text-[#587E67] font-semibold">
+                      {t.dashboard.inviteSubtitle}
+                    </div>
+
+                    <div className="mt-4 flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const code = referralCode;
+                          const inviteUrl = code ? `${effectiveOrigin}/join?ref=${code}` : `${effectiveOrigin}/join`;
+                          const text = `${t.dashboard.inviteShareText} ${inviteUrl}`;
+                          const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                          window.open(waUrl, '_blank');
+                        }}
+                        className="flex-1 h-[46px] rounded-[12px] bg-[#10B981] text-white font-semibold"
+                        disabled={!referralCode}
+                      >
+                        {t.dashboard.shareWhatsApp}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const code = referralCode;
+                          const inviteUrl = code ? `${effectiveOrigin}/join?ref=${code}` : `${effectiveOrigin}/join`;
+                          await navigator.clipboard.writeText(inviteUrl);
+                        }}
+                        className="h-[46px] px-4 rounded-[12px] border border-[#B9D3C4] text-[#04330B] font-semibold bg-[#F1FBF6]"
+                        disabled={!referralCode}
+                      >
+                        {t.dashboard.copyLink}
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="mt-4 flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const code = referralCode;
-                        const inviteUrl = code ? `${effectiveOrigin}/join?ref=${code}` : `${effectiveOrigin}/join`;
-                        const text = `${t.dashboard.inviteShareText} ${inviteUrl}`;
-                        const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-                        window.open(waUrl, '_blank');
-                      }}
-                      className="flex-1 h-[46px] rounded-[12px] bg-[#10B981] text-white font-semibold"
-                      disabled={!referralCode}
-                    >
-                      {t.dashboard.shareWhatsApp}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={async () => {
-                        const code = referralCode;
-                        const inviteUrl = code ? `${effectiveOrigin}/join?ref=${code}` : `${effectiveOrigin}/join`;
-                        await navigator.clipboard.writeText(inviteUrl);
-                      }}
-                      className="h-[46px] px-4 rounded-[12px] border border-[#B9D3C4] text-[#04330B] font-semibold bg-[#F1FBF6]"
-                      disabled={!referralCode}
-                    >
-                      {t.dashboard.copyLink}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="rounded-[16px] border border-[#E4F2EA] bg-white p-5 shadow-sm">
-                  <div className="text-[#04330B] font-bold">{t.dashboard.referralTitle}</div>
-                  <div className="mt-1 text-[12px] text-[#587E67] font-semibold">{t.dashboard.referralSubtitle}</div>
-                  <div className="mt-4 flex items-center justify-between gap-4">
-                    <div>
-                      <div className="text-[#587E67] font-semibold">{t.dashboard.referralLabel}</div>
-                      <div className="text-[22px] font-bold text-[#04330B] tracking-[0.2em]">
-                        {(referralCode || '--------').toString().toUpperCase()}
+                  <div className="rounded-[16px] border border-[#E4F2EA] bg-white p-5 shadow-sm flex-1 flex flex-col justify-center">
+                    <div className="text-[#04330B] font-bold">{t.dashboard.referralTitle}</div>
+                    <div className="mt-1 text-[12px] text-[#587E67] font-semibold">{t.dashboard.referralSubtitle}</div>
+                    <div className="mt-4 flex items-center justify-between gap-4">
+                      <div className="flex flex-col">
+                        <div className="text-[#587E67] font-semibold flex items-center gap-2">
+                          {t.dashboard.referralLabel}
+                          <button
+                            onClick={handleCopyCode}
+                            className={`p-1.5 rounded-lg transition-all duration-300 ${copied
+                              ? 'bg-green-100 text-green-600 scale-110'
+                              : 'hover:bg-gray-100 text-[#587E67] active:scale-95'
+                              }`}
+                            title="Copy Code"
+                          >
+                            {copied ? <CheckCheck size={14} /> : <Copy size={14} />}
+                          </button>
+                        </div>
+                        <div className="text-[22px] font-bold text-[#04330B] tracking-[0.2em] mt-1">
+                          {(referralCode || '--------').toString().toUpperCase()}
+                        </div>
+                      </div>
+                      <div className="w-[96px] h-[96px] rounded-[14px] border border-[#DDEEE4] bg-[#F7FCF9] flex items-center justify-center overflow-hidden">
+                        {String(referralCode || '').trim() ? (
+                          <img
+                            src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
+                              `${effectiveOrigin}/join?ref=${String(referralCode || '').trim().toUpperCase()}`
+                            )}`}
+                            alt="QR Code"
+                            className="w-[88px] h-[88px]"
+                          />
+                        ) : (
+                          <div className="text-[12px] font-bold text-[#587E67]">QR</div>
+                        )}
                       </div>
                     </div>
-                    <div className="w-[96px] h-[96px] rounded-[14px] border border-[#DDEEE4] bg-[#F7FCF9] flex items-center justify-center overflow-hidden">
-                      {String(referralCode || '').trim() ? (
-                        <img
-                          src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(
-                            `${effectiveOrigin}/join?ref=${String(referralCode || '').trim().toUpperCase()}`
-                          )}`}
-                          alt="QR Code"
-                          className="w-[88px] h-[88px]"
-                        />
-                      ) : (
-                        <div className="text-[12px] font-bold text-[#587E67]">QR</div>
-                      )}
-                    </div>
                   </div>
                 </div>
-              </div>
               )}
             </div>
 
@@ -731,60 +757,60 @@ const DashboardContent = () => {
             )}
 
             {isLeader && (
-            <div className="mt-10 rounded-[16px] border border-[#E4F2EA] bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-[#04330B] font-bold text-[18px]">{t.dashboard.appointmentTitle}</div>
-                  <div className="mt-1 text-[12px] text-[#587E67] font-semibold">
-                    {canDownloadAppointment ? t.dashboard.appointmentReady : t.dashboard.appointmentLocked}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  disabled={!canDownloadAppointment}
-                  onClick={() => downloadAsPng(appointmentRef, `PGP-Appointment-${(summary?.user?.name || 'Member').replace(/\s+/g, '-')}.png`)}
-                  className={canDownloadAppointment
-                    ? 'w-12 h-12 rounded-full bg-[#04330B] text-white flex items-center justify-center'
-                    : 'w-12 h-12 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center cursor-not-allowed'}
-                  title={canDownloadAppointment ? t.dashboard.download : t.dashboard.locked}
-                >
-                  <span className="text-[18px] font-bold">↓</span>
-                </button>
-              </div>
-
-              <div className="mt-4 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-md bg-[#F1FBF6] flex items-center justify-center border border-[#DDEEE4]">
-                  <Mail className="text-[#04330B]" />
-                </div>
-                <div>
-                  <div className="font-bold text-[#04330B]">{t.dashboard.appointmentTitle}</div>
-                  <div className="text-[12px] text-[#587E67] font-semibold">
-                    {canDownloadAppointment ? t.dashboard.appointmentReady : t.dashboard.appointmentLocked}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6" ref={appointmentRef}>
-                <div className="w-full rounded-[18px] border border-[#DDEEE4] bg-[#F7FCF9] p-6">
-                  <div className="text-[18px] font-bold text-[#04330B]">{t.dashboard.partyName}</div>
-                  <div className="mt-3 text-[#04330B] font-semibold">{t.dashboard.dear} {summary?.user?.name || 'Member'},</div>
-                  <div className="mt-3 text-[13px] text-[#587E67] font-semibold leading-relaxed">
-                    {t.dashboard.appointmentBody}
-                  </div>
-                  <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-[12px]">
-                    <div>
-                      <div className="text-[#587E67] font-semibold">{t.dashboard.designationLabel}</div>
-                      <div className="text-[#04330B] font-bold">{t.dashboard.cwcPresident}</div>
-                    </div>
-                    <div>
-                      <div className="text-[#587E67] font-semibold">{t.dashboard.dateLabel}</div>
-                      <div className="text-[#04330B] font-bold">{new Date().toLocaleDateString()}</div>
+              <div className="mt-10 rounded-[16px] border border-[#E4F2EA] bg-white p-6 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-[#04330B] font-bold text-[18px]">{t.dashboard.appointmentTitle}</div>
+                    <div className="mt-1 text-[12px] text-[#587E67] font-semibold">
+                      {canDownloadAppointment ? t.dashboard.appointmentReady : t.dashboard.appointmentLocked}
                     </div>
                   </div>
-                  <div className="mt-8 text-[12px] text-[#587E67] font-semibold">{t.dashboard.authorizedSignatory}</div>
+                  <button
+                    type="button"
+                    disabled={!canDownloadAppointment}
+                    onClick={() => downloadAsPng(appointmentRef, `PGP-Appointment-${(summary?.user?.name || 'Member').replace(/\s+/g, '-')}.png`)}
+                    className={canDownloadAppointment
+                      ? 'w-12 h-12 rounded-full bg-[#04330B] text-white flex items-center justify-center'
+                      : 'w-12 h-12 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center cursor-not-allowed'}
+                    title={canDownloadAppointment ? t.dashboard.download : t.dashboard.locked}
+                  >
+                    <span className="text-[18px] font-bold">↓</span>
+                  </button>
+                </div>
+
+                <div className="mt-4 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-md bg-[#F1FBF6] flex items-center justify-center border border-[#DDEEE4]">
+                    <Mail className="text-[#04330B]" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-[#04330B]">{t.dashboard.appointmentTitle}</div>
+                    <div className="text-[12px] text-[#587E67] font-semibold">
+                      {canDownloadAppointment ? t.dashboard.appointmentReady : t.dashboard.appointmentLocked}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6" ref={appointmentRef}>
+                  <div className="w-full rounded-[18px] border border-[#DDEEE4] bg-[#F7FCF9] p-6">
+                    <div className="text-[18px] font-bold text-[#04330B]">{t.dashboard.partyName}</div>
+                    <div className="mt-3 text-[#04330B] font-semibold">{t.dashboard.dear} {summary?.user?.name || 'Member'},</div>
+                    <div className="mt-3 text-[13px] text-[#587E67] font-semibold leading-relaxed">
+                      {t.dashboard.appointmentBody}
+                    </div>
+                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-[12px]">
+                      <div>
+                        <div className="text-[#587E67] font-semibold">{t.dashboard.designationLabel}</div>
+                        <div className="text-[#04330B] font-bold">{t.dashboard.cwcPresident}</div>
+                      </div>
+                      <div>
+                        <div className="text-[#587E67] font-semibold">{t.dashboard.dateLabel}</div>
+                        <div className="text-[#04330B] font-bold">{new Date().toLocaleDateString()}</div>
+                      </div>
+                    </div>
+                    <div className="mt-8 text-[12px] text-[#587E67] font-semibold">{t.dashboard.authorizedSignatory}</div>
+                  </div>
                 </div>
               </div>
-            </div>
             )}
           </div>
         </section>

@@ -59,6 +59,20 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
         if (!response.ok) {
             const errorMsg = (data as any)?.message || (data as any)?.error || (typeof data === 'string' ? data : '') || `API error: ${response.status}`;
             const friendly = toFriendlyMessage(errorMsg);
+
+            if (response.status === 401) {
+                if (typeof window !== 'undefined') {
+                    window.localStorage.removeItem('access_token');
+                    window.localStorage.removeItem('devUserId');
+                    // Remove Supabase tokens just in case
+                    Object.keys(window.localStorage).forEach((key) => {
+                        if (key.startsWith('sb-')) window.localStorage.removeItem(key);
+                    });
+                }
+                console.warn(`Session expired (401 calling ${url}), clearing tokens`);
+                return null; // Graceful return
+            }
+
             console.error(`API error calling ${url}:`, { status: response.status, errorMsg, data });
             throw new Error(friendly);
         }

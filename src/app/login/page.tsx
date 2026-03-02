@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { ChevronLeft, X, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../../lib/supabaseClient';
 import { fetchApi } from '../../lib/api';
+import { supabase } from '../../lib/supabaseClient';
 
 export default function LoginScreen() {
   const [phone, setPhone] = useState('');
@@ -111,25 +111,18 @@ export default function LoginScreen() {
       const cleanedPhone = sanitizePhoneInput(phone);
       const phoneNumber = `+91${cleanedPhone}`;
 
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: phoneNumber,
+      const data = await fetchApi('auth/send-otp', {
+        method: 'POST',
+        body: JSON.stringify({ phone: phoneNumber }),
       });
 
-      if (error) throw error;
-
-      setMode('otp_verify');
-    } catch (err: any) {
-      if (err.message && (
-        err.message.includes('Unsupported phone provider') ||
-        err.message.includes('Signups not allowed')
-      )) {
-        // Simulation Mode
-        console.warn('Simulation: OTP sent (123456) due to config error:', err.message);
-        alert('Development Mode: Your OTP is 123456'); // Helpful alert for user
+      if (data) {
         setMode('otp_verify');
       } else {
-        setError(cleanError(err.message || 'Failed to send OTP. Please try again.'));
+        throw new Error('Failed to send OTP.');
       }
+    } catch (err: any) {
+      setError(cleanError(err.message || 'Failed to send OTP. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -154,28 +147,22 @@ export default function LoginScreen() {
       const cleanedPhone = sanitizePhoneInput(phone);
       const phoneNumber = `+91${cleanedPhone}`;
 
-      const { data, error } = await supabase.auth.verifyOtp({
-        phone: phoneNumber,
-        token: otp,
-        type: 'sms',
+      const data = await fetchApi('auth/verify-otp', {
+        method: 'POST',
+        body: JSON.stringify({ phone: phoneNumber, code: otp }),
       });
 
-      if (error) {
-        // Dev Simulation
-        if (otp === '123456') {
-          console.log('Simulation: OTP Verified');
-          // Proceed as success
-        } else {
-          throw error;
+      if (data?.verified) {
+        if (typeof window !== 'undefined' && data.access_token) {
+          window.localStorage.setItem('access_token', data.access_token);
+        } else if (typeof window !== 'undefined') {
+          // Dev fallback wrapper for set-pin
+          window.localStorage.setItem('access_token', `dev-token:${phoneNumber}`);
         }
+        setMode('set_new_pin');
+      } else {
+        throw new Error('Verification failed');
       }
-
-      // OTP Verified - now let user set new PIN
-      // Clear any old custom token so fetchApi uses the fresh Supabase session
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('access_token');
-      }
-      setMode('set_new_pin');
     } catch (err: any) {
       setError(cleanError(err.message || 'Invalid OTP. Please try again.'));
     } finally {
@@ -202,43 +189,16 @@ export default function LoginScreen() {
     setError('');
 
     try {
-      // User is authenticated via Supabase (from OTP verify), so this call should work if API supports Supabase auth or we have a way to identify user
-      // Note: We need an endpoint to update PIN. Assuming 'users/me' with PATCH can handle it or we add one.
-      // We'll update the 'me' endpoint to accept PIN updates.
-
-      // Use dedicated endpoint that verifies token and links user by phone
-      let headers = {};
-
-      // If we are in simulation mode (OTP 123456), we probably don't have a Supabase session.
-      // We need to send a Dev Bypass Token if AUTH_DEV_MODE is enabled on backend.
-      if (typeof window !== 'undefined') {
-        const { supabase } = await import('../../lib/supabaseClient');
-        const { data } = await supabase.auth.getSession();
-        if (!data.session && window.location.hostname === 'localhost') {
-          const phoneNumber = `+91${sanitizePhoneInput(phone)}`;
-          headers = { 'Authorization': `Bearer dev-token:${phoneNumber}` };
-        }
-      }
-
       await fetchApi('users/set-pin-with-token', {
         method: 'POST',
-        headers,
         body: JSON.stringify({ pin: newPin }),
       });
 
-      // After setting PIN, go back to login or dashboard?
-      // Let's go to dashboard as they are technically logged in via Supabase now.
-      // Or force them to login with new PIN to ensure the custom token flow is used.
-
       setMode('login');
       setPin('');
-      setError(''); // Clear error on success
-      // Consider showing a success message instead of error state, but for now just clear error.
-      // Ideally we should use a toast or a temporary success state.
+      setOtp('');
+      setError('');
       alert('PIN updated successfully. Please login with your new PIN.');
-
-      // Optionally logout from Supabase to force PIN login flow
-      await supabase.auth.signOut();
 
     } catch (err: any) {
       setError(cleanError(err.message || 'Failed to update PIN.'));
