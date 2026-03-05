@@ -18,6 +18,7 @@ import { Users, Trees, ArrowUpRight } from 'lucide-react';
 import { RajasthanImpactMap } from '@/components/RajasthanImpactMap';
 import { PolicyImpactToggle } from '@/components/PolicyImpactToggle';
 import { SynergyEngine } from '@/components/SynergyEngine';
+import { visionCards } from '@/data/visionData';
 
 
 
@@ -74,56 +75,12 @@ const translations = {
     visionSection: {
       title: "Our Vision for a Better Tomorrow",
       sub: "Advocating for change, fostering growth, and ensuring a prosperous and just society.",
-      cards: [
-        {
-          title: "Entrepreneurial Revolution",
-          desc: "Not just jobs, but creating opportunities. Every youth an entrepreneur, every panchayat a development hub.",
-          image: "/party-images/DSC_0030.JPG",
-          link: "/vision/entrepreneurship"
-        },
-        {
-          title: "New Farming – Capable Farmer",
-          desc: "Less water • More production • Prosperous farmer. Transforming farming into a dignified, profitable profession.",
-          image: "/party-images/DSC_0035.JPG",
-          link: "/vision/farming"
-        },
-        {
-          title: "Empowerment of Vulnerable Groups",
-          desc: "Equality is not just a promise, it's a system. Women, Dalits, and vulnerable groups at the center of power.",
-          image: "/party-images/DSC_0037.JPG",
-          link: "/vision/empowerment"
-        },
-        {
-          title: "Holistic Urban-Rural Development",
-          desc: "Progress where you are born. Decentralization of development, putting a stop to migration.",
-          image: "/party-images/DSC_0038.JPG",
-          link: "/vision/urban-rural"
-        },
-        {
-          title: "Civil Liberties and Culture",
-          desc: "Freedom is both a right and a responsibility. Building a sensitive, tolerant, and aware India.",
-          image: "/party-images/DSC_0076.JPG",
-          link: "/vision/civil-liberties"
-        },
-        {
-          title: "Open Economy – Minimum Government",
-          desc: "Minimum government, maximum opportunity. Freedom from License Raj, promoting individual growth.",
-          image: "/party-images/DSC_0081.JPG",
-          link: "/vision/open-economy"
-        },
-        {
-          title: "World-Class Standard of Living",
-          desc: "Living with dignity is every citizen's right. Guaranteeing quality education, health, and life.",
-          image: "/party-images/DSC_0085.JPG",
-          link: "/vision/living-standards"
-        },
-        {
-          title: "Nature Conservation and Sustainable Development",
-          desc: "Only if nature survives, the future survives. Today's development is tomorrow's responsibility.",
-          image: "/party-images/DSC_0091.JPG",
-          link: "/vision/nature"
-        }
-      ],
+      cards: visionCards.map(card => ({
+        title: card.en.title,
+        desc: card.en.desc,
+        image: card.image,
+        link: card.link
+      })),
       footerText: "Now the people's PGP will defeat the dishonest.",
       viewMore: "View More",
       viewLess: "View Less"
@@ -297,56 +254,12 @@ const translations = {
     visionSection: {
       title: "बेहतर कल के लिए हमारा दृष्टिकोण",
       sub: "बदलाव की वकालत, विकास को बढ़ावा देना और एक समृद्ध व न्यायपूर्ण समाज सुनिश्चित करना।",
-      cards: [
-        {
-          title: "आन्त्रेप्रेन्योर क्रांति",
-          desc: "नौकरी नहीं, अवसर पैदा करेंगे हर युवा बनेगा उद्यमी, हर पंचायत बनेगी विकास केंद्र",
-          image: "/party-images/DSC_0030.JPG",
-          link: "/vision/entrepreneurship"
-        },
-        {
-          title: "नई खेती – समर्थ किसान",
-          desc: "कम पानी • ज़्यादा उत्पादन • समृद्ध किसान खेती को घाटे से निकालकर सम्मानजनक व्यवसाय बनाएँ",
-          image: "/party-images/DSC_0035.JPG",
-          link: "/vision/farming"
-        },
-        {
-          title: "कमजोर वर्ग का सशक्तिकरण",
-          desc: "बराबरी सिर्फ़ वादा नहीं, व्यवस्था होगी महिला, दलित और कमजोर वर्ग — शक्ति के केंद्र में ",
-          image: "/party-images/DSC_0037.JPG",
-          link: "/vision/empowerment"
-        },
-        {
-          title: "शहरी–ग्रामीण समग्र विकास",
-          desc: "जहाँ पैदा हुए, वहीं प्रगति हो विकास का विकेंद्रीकरण, पलायन पर विराम",
-          image: "/party-images/DSC_0038.JPG",
-          link: "/vision/urban-rural"
-        },
-        {
-          title: "नागरिक स्वतंत्रता और संस्कृति",
-          desc: "स्वतंत्रता अधिकार और जिम्मेदारी दोनों है। एक संवेदनशील, सहनशील और जागरूक भारत का निर्माण कर रहे हैं।",
-          image: "/party-images/DSC_0076.JPG",
-          link: "/vision/civil-liberties"
-        },
-        {
-          title: "खुली अर्थव्यवस्था",
-          desc: "न्यूनतम सरकार, अधिकतम अवसर। लाइसेंस राज से मुक्ति, व्यक्तिगत विकास को बढ़ावा।",
-          image: "/party-images/DSC_0081.JPG",
-          link: "/vision/open-economy"
-        },
-        {
-          title: "विश्व स्तरीय जीवन स्तर",
-          desc: "गरिमा के साथ जीना हर नागरिक का अधिकार है। गुणवत्तापूर्ण शिक्षा, स्वास्थ्य और जीवन की गारंटी।",
-          image: "/party-images/DSC_0085.JPG",
-          link: "/vision/living-standards"
-        },
-        {
-          title: "प्रकृति संरक्षण",
-          desc: "प्रकृति बचेगी तभी भविष्य बचेगा। आज का विकास कल की जिम्मेदारी है।",
-          image: "/party-images/DSC_0091.JPG",
-          link: "/vision/nature"
-        }
-      ],
+      cards: visionCards.map(card => ({
+        title: card.hi.title,
+        desc: card.hi.desc,
+        image: card.image,
+        link: card.link
+      })),
       footerText: "अब जनता की PGP बेईमानों को हराएगी।",
       viewMore: "और देखें",
       viewLess: "कम देखें"
@@ -761,7 +674,7 @@ const LandingPageContent = () => {
   const heroIcons = [Landmark, Briefcase, HeartHandshake, BookOpen, Leaf];
 
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-800 overflow-x-hidden">
+    <div className="min-h-screen bg-white font-sans text-gray-800 overflow-x-clip">
 
       <Navbar />
 
@@ -846,7 +759,7 @@ const LandingPageContent = () => {
 
       {/* 2. VISION FOR BETTER TOMORROW (Cards) */}
       {/* 2. VISION FOR BETTER TOMORROW (Replaced with Image Grid) */}
-      <section className="bg-white px-4 mt-[350px] lg:mt-[280px] mb-20">
+      <section className="bg-white px-4 mt-[350px] lg:mt-[280px] pb-[60px] lg:pb-[100px]">
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
 
           {/* Header */}
@@ -924,7 +837,7 @@ const LandingPageContent = () => {
 
 
       {/* 4. MEET OUR IDEOLOGICAL LEADER */}
-      <section className="bg-white w-full flex justify-center">
+      <section className="bg-white w-full flex justify-center py-[60px] lg:py-[100px]">
         <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col lg:flex-row items-end justify-between gap-[32px] lg:gap-0">
 
           {/* Text First on Mobile via flex-col order (DOM order) */}
@@ -1011,7 +924,7 @@ const LandingPageContent = () => {
 
 
       {/* 5. IMPACT STATS - WHITE & IMPRESSIVE */}
-      <section className="bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center py-[10px] relative">
+      <section className="bg-white w-full flex flex-col items-center py-[60px] lg:py-[100px] relative">
 
         {/* Subtle Background Pattern (Optional: Adds texture to the white) */}
         <div className="absolute inset-0 bg-white pointer-events-none"></div>
@@ -1101,13 +1014,13 @@ const LandingPageContent = () => {
       <PolicyImpactToggle language={language} />
 
       {/* 6. NEWS AND PUBLICATIONS - Responsive Fix */}
-      <section className="bg-white mt-[5px] lg:mt-[10px] w-full flex justify-center">
+      <section className="bg-white w-full flex justify-center py-[60px] lg:py-[100px]">
         {/* 6. SOCIAL MEDIA FEED - Replaced News Section */}
         <SocialMediaFeed language={language} />
       </section>
 
       {/* 7. GALLERY SECTION - REDESIGNED */}
-      <section className="bg-[#FFFFFF] mt-[5px] lg:mt-[10px] w-full flex flex-col items-center py-[80px] relative overflow-hidden">
+      <section className="bg-[#FFFFFF] w-full flex flex-col items-center py-[60px] lg:py-[100px] relative overflow-hidden">
 
         {/* Decorative Background Elements (Consistent with other sections) */}
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#FFFFFF] rounded-full blur-3xl opacity-60 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>

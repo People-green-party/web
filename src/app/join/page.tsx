@@ -71,7 +71,7 @@ const translations = {
         subtitle: "Unite for Progress, Stand for a Better Tomorrow"
       },
       wizard: {
-        heroTitle: 'Become a Leader in Your Region, Join Our Leadership Program!',
+        heroTitle: 'Become a Leader of Your Region\nJoin Our Leadership Program!',
         newRegistration: 'New Registration',
         step1: 'Register Yourself',
         step2: 'OTP Verification',
@@ -185,7 +185,7 @@ const translations = {
         subtitle: "प्रगति के लिए एकजुट हों, बेहतर कल के लिए खड़े हों"
       },
       wizard: {
-        heroTitle: 'अपने क्षेत्र में लीडर बनें, हमारे लीडरशिप प्रोग्राम से जुड़ें!',
+        heroTitle: 'अपने क्षेत्र के लीडर बनें\nहमारे लीडरशिप प्रोग्राम से जुड़ें!',
         newRegistration: 'नया पंजीकरण',
         step1: 'पंजीकरण करें',
         step2: 'OTP सत्यापन',
@@ -890,9 +890,11 @@ const JoinPageContent = () => {
   return (
     <div className="min-h-screen bg-[#F7FCF9] text-gray-800 flex flex-col items-center font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px]">
       <Navbar />
-      <main className="w-full max-w-[1200px] px-4 lg:px-8 mt-[28px] flex flex-col items-center">
-        <h1 className="text-center font-semibold text-[28px] lg:text-[44px] leading-tight tracking-[-0.3px] text-[#04330B] max-w-[880px]">
-          {t.joinPage.wizard.heroTitle}
+      <main className="w-full max-w-[1200px] px-4 lg:px-8 mt-[28px] mb-12 lg:mb-24 flex flex-col items-center">
+        <h1 className="text-center font-semibold text-[28px] lg:text-[44px] leading-tight tracking-[-0.3px] text-[#04330B] max-w-[880px] flex flex-col gap-3 lg:gap-2">
+          {t.joinPage.wizard.heroTitle.split('\n').map((line: string, index: number) => (
+            <span key={index}>{line}</span>
+          ))}
         </h1>
 
         <section className="w-full mt-10 bg-white rounded-[28px] border border-[#E4F2EA] shadow-[0px_20px_60px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col lg:flex-row">
@@ -932,7 +934,7 @@ const JoinPageContent = () => {
             </div>
 
             {step === 1 && (
-              <div className="mt-8 max-w-[520px] mx-auto">
+              <div className="mt-8 mb-5 max-w-[520px] mx-auto">
                 <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input

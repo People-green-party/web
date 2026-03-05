@@ -1,34 +1,116 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Sun, Droplets, BookOpen, Tractor, Zap, ArrowRight } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Sun, Droplets, BookOpen, Tractor, Zap, ArrowRight, LucideIcon } from 'lucide-react';
+import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from 'framer-motion';
+
+const SynergyCard = React.memo(({ item, i, scrollYProgress, activeIndex, pillarColors, t }: any) => {
+    // The scroll location where this card should be exactly at 0px and fully opaque
+    const centerPoint = i * 0.25;
+
+    // The exact window size where the animation happens
+    const duration = 0.15;
+
+    const enterStartPos = Math.max(0, centerPoint - duration);
+    const leaveEndPos = Math.min(1, centerPoint + duration);
+
+    const mappingPoints = [enterStartPos, centerPoint, leaveEndPos];
+
+    let yArray = [400, 0, -60];
+    let scaleArray = [1, 1, 0.94];
+    let opacityArray = [0.0, 1, 0.0];
+
+    if (i === 0) {
+        yArray = [0, 0, -60];
+        scaleArray = [1, 1, 0.94];
+        opacityArray = [1, 1, 0.0];
+    }
+
+    if (i === 4) { // items.length - 1 is 4
+        yArray = [400, 0, 0];
+        scaleArray = [1, 1, 1];
+        opacityArray = [0.0, 1, 1];
+    }
+
+    const y = useTransform(scrollYProgress, mappingPoints, yArray, {
+        clamp: true,
+        ease: (t) => 1 - Math.pow(1 - t, 3)
+    });
+
+    const scale = useTransform(scrollYProgress, mappingPoints, scaleArray, {
+        clamp: true,
+        ease: (t) => 1 - Math.pow(1 - t, 3)
+    });
+
+    const opacity = useTransform(scrollYProgress, mappingPoints, opacityArray, {
+        clamp: true,
+        ease: (t) => 1 - Math.pow(1 - t, 2)
+    });
+
+    return (
+        <motion.div
+            style={{
+                y,
+                scale,
+                opacity,
+                zIndex: i,
+                willChange: "transform, opacity",
+                transform: "translateZ(0)"
+            }}
+            className="absolute top-0 left-0 w-full h-[320px] md:h-[400px] bg-white p-6 md:p-10 rounded-[28px] shadow-[0_15px_45px_-10px_rgba(0,0,0,0.08)] border border-[#EAF7EE] flex flex-col justify-center origin-top overflow-hidden"
+        >
+            {item.isDefault ? (
+                <div className="flex flex-col gap-4">
+                    <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#04330B] leading-tight">
+                        {item.title}
+                    </h3>
+                    <p className="text-[#587E67] text-base md:text-lg lg:text-xl leading-relaxed">
+                        {item.desc}
+                    </p>
+                </div>
+            ) : (
+                <div className="flex flex-col gap-3 md:gap-5 justify-between h-full">
+                    <div>
+                        <div className="inline-block self-start px-3 py-1.5 rounded-md text-[10px] md:text-[11px] font-black tracking-widest bg-white shadow-sm border mb-4 md:mb-6 mt-2"
+                            style={{ color: pillarColors[i - 1], borderColor: `${pillarColors[i - 1]}30`, backgroundColor: `${pillarColors[i - 1]}05` }}>
+                            {item.label}
+                        </div>
+                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-[#04330B] mb-2">{item.title}</h3>
+                        <p className="text-[#587E67] text-sm md:text-base lg:text-lg leading-relaxed">{item.desc}</p>
+                    </div>
+
+                    <div className="flex items-center gap-4 mt-auto pb-2">
+                        <div className="bg-[#F8FBF9] p-4 md:p-5 rounded-2xl border border-[#0D5229]/5 flex-1 max-w-[220px]">
+                            <p className="text-[10px] md:text-[11px] font-bold text-[#587E67]/70 uppercase mb-1 tracking-wider">{t.impactTarget}</p>
+                            <p className="text-2xl md:text-3xl font-black tracking-tight" style={{ color: pillarColors[i - 1] }}>{item.stats}</p>
+                        </div>
+                        <button className="h-14 w-14 md:h-16 md:w-16 rounded-full bg-[#04330B] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-xl shrink-0 group">
+                            <ArrowRight size={24} className="group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    </div>
+                </div>
+            )}
+        </motion.div>
+    );
+});
+
+SynergyCard.displayName = "SynergyCard";
 
 export const SynergyEngine = ({ language }: { language: string }) => {
-    const [activePillar, setActivePillar] = useState<number>(0);
     const containerRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"]
+    });
 
-    useEffect(() => {
-        const handleScroll = () => {
-            if (!containerRef.current) return;
+    const [activeIndex, setActiveIndex] = useState(0);
 
-            const rect = containerRef.current.getBoundingClientRect();
-            const totalHeight = containerRef.current.offsetHeight - window.innerHeight;
-
-            // 0 से 1 के बीच स्क्रॉल प्रोग्रेस निकाल रहे हैं
-            const progress = Math.min(Math.max(-rect.top / totalHeight, 0), 1);
-
-            // 5 phases: 0 (Default), 1 (Water), 2 (Energy), 3 (Farming), 4 (Skills)
-            // Increased thresholds for mobile comfort with 200vh track
-            if (progress < 0.05) setActivePillar(0);
-            else if (progress < 0.22) setActivePillar(1);
-            else if (progress < 0.44) setActivePillar(2);
-            else if (progress < 0.66) setActivePillar(3);
-            else setActivePillar(4);
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        const index = Math.min(4, Math.max(0, Math.round(latest * 4)));
+        if (index !== activeIndex) {
+            setActiveIndex(index);
+        }
+    });
 
     const translations: any = {
         en: {
@@ -64,99 +146,88 @@ export const SynergyEngine = ({ language }: { language: string }) => {
     };
 
     const t = translations[language] || translations.en;
-    const pillarIcons = [Droplets, Sun, Tractor, BookOpen];
+    const pillarIcons: LucideIcon[] = [Droplets, Sun, Tractor, BookOpen];
     const pillarColors = ["#3B82F6", "#F59E0B", "#10B981", "#8B5CF6"];
 
+    const items = [
+        {
+            id: 0,
+            isDefault: true,
+            title: t.defaultTitle,
+            desc: t.defaultDesc,
+        },
+        ...t.pillars.map((p: any) => ({ ...p, isDefault: false }))
+    ];
+
     return (
-        /* Increased mobile height to 200vh for safer scroll room and clipping prevention */
-        <section ref={containerRef} className="relative z-0 h-[200vh] md:h-[110vh] bg-white mt-16 md:mt-0 mb-16 md:mb-0 p-0">
+        <section ref={containerRef} className="relative z-0 h-[400vh] bg-white my-[60px] lg:my-[100px]">
+            <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+                <div className="container mx-auto px-6 lg:px-16 relative z-10 flex flex-col items-center">
 
-            {/* STICKY CONTENT: Pins to the screen. Added padding-top on mobile to avoid overlap with previous section */}
-            <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden pt-12 md:pt-0">
-
-
-                <div className="container mx-auto px-6 lg:px-16 relative z-10">
-
-                    {/* Header: Fades out when pillars start */}
-                    <div className={`text-center mb-10 transition-all duration-700 ${activePillar > 0 ? 'opacity-0 -translate-y-10 scale-90 pointer-events-none' : 'opacity-100'}`}>
+                    <div className={`text-center mb-8 md:mb-16 transition-all duration-700 ease-out ${activeIndex > 0 ? 'scale-95 opacity-80' : 'scale-100 opacity-100'}`}>
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#0D5229]/10 bg-[#EAF7EE] mb-4">
                             <Zap size={14} className="text-[#10B981]" />
                             <span className="text-[#587E67] text-[10px] font-bold uppercase tracking-widest">{t.tag}</span>
                         </div>
-                        <h2 className="text-4xl md:text-6xl font-extrabold text-[#04330B] tracking-tighter leading-tight">
+                        <h2 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-[#04330B] tracking-tighter leading-tight transition-all duration-700">
                             {t.title} <span className="text-[#10B981]">{t.highlight}</span>
                         </h2>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center w-full max-w-6xl">
 
-                        {/* LEFT: Morphing Graphic (Diamond Design) */}
                         <div className="relative flex items-center justify-center">
-                            <div className="relative w-72 h-72 md:w-96 md:h-96">
-                                {/* Aura Light */}
-                                <div className="absolute inset-0 blur-[100px] opacity-20 transition-colors duration-1000"
-                                    style={{ backgroundColor: activePillar > 0 ? pillarColors[activePillar - 1] : '#10B981' }} />
+                            <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-[400px] lg:h-[400px]">
+                                <div className="absolute inset-0 blur-[60px] opacity-25 transition-colors duration-700 pointer-events-none"
+                                    style={{ backgroundColor: activeIndex > 0 ? pillarColors[activeIndex - 1] : '#10B981' }} />
 
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    {/* The Rotating Diamond Frame */}
-                                    <div className={`relative w-56 h-56 md:w-64 md:h-64 transition-all duration-1000 ease-in-out border-2 border-[#0D5229]/10 rounded-[48px] flex items-center justify-center bg-white/50 backdrop-blur-sm shadow-sm
-                                        ${activePillar === 0 ? 'rotate-0' : 'rotate-45 scale-110'}`}>
+                                    <div className={`relative w-48 h-48 md:w-64 md:h-64 lg:w-[320px] lg:h-[320px] transition-all duration-700 border border-[#0D5229]/10 rounded-[40px] flex items-center justify-center bg-white/80 backdrop-blur-md shadow-[0_15px_45px_-10px_rgba(0,0,0,0.08)]
+                                        ${activeIndex === 0 ? 'rotate-0' : 'rotate-45'}`}>
 
-                                        <div className={`transition-all duration-500 ${activePillar > 0 ? '-rotate-45' : ''}`}>
-                                            {activePillar === 0 ? (
-                                                <img src="/PGPlogo.svg" className="w-20 h-20 opacity-90" alt="Logo" />
-                                            ) : (
-                                                <div className="flex flex-col items-center gap-3">
-                                                    {React.createElement(pillarIcons[activePillar - 1], {
-                                                        size: 56,
-                                                        style: { color: pillarColors[activePillar - 1] }
-                                                    })}
-                                                    <span className="text-[10px] font-black tracking-[0.3em] text-[#04330B]">{t.pillars[activePillar - 1].label}</span>
-                                                </div>
-                                            )}
+                                        <div className={`transition-all duration-700 ${activeIndex > 0 ? '-rotate-45' : ''}`}>
+                                            <AnimatePresence mode="wait">
+                                                <motion.div
+                                                    key={activeIndex}
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.9 }}
+                                                    transition={{ duration: 0.25 }}
+                                                    className="flex flex-col items-center justify-center"
+                                                >
+                                                    {activeIndex === 0 ? (
+                                                        <img src="/PGPlogo.svg" className="w-16 h-16 md:w-24 md:h-24 opacity-90" alt="Logo" />
+                                                    ) : (
+                                                        <div className="flex flex-col items-center gap-3 md:gap-4">
+                                                            {React.createElement(pillarIcons[activeIndex - 1], {
+                                                                size: 56,
+                                                                className: "md:w-20 md:h-20 lg:w-24 lg:h-24",
+                                                                style: { color: pillarColors[activeIndex - 1] }
+                                                            })}
+                                                            <span className="text-[12px] md:text-sm font-black tracking-[0.35em] text-[#04330B]">
+                                                                {items[activeIndex].label}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </motion.div>
+                                            </AnimatePresence>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* RIGHT: Text Content (Slide Up/Down like Sarvam AI) */}
-                        <div className="relative h-[300px] flex items-center">
-                            {/* Default State */}
-                            <div className={`absolute w-full transition-all duration-700
-                                ${activePillar === 0 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-16 pointer-events-none'}`}>
-                                <h3 className="text-3xl lg:text-5xl font-bold text-[#04330B] mb-6 leading-tight">
-                                    {t.defaultTitle}
-                                </h3>
-                                <p className="text-[#587E67] text-lg lg:text-xl leading-relaxed">
-                                    {t.defaultDesc}
-                                </p>
-                            </div>
-
-                            {/* Pillars Content */}
-                            {t.pillars.map((pillar: any, i: number) => (
-                                <div key={pillar.id} className={`absolute w-full transition-all duration-700
-                                    ${activePillar === pillar.id ? 'opacity-100 translate-y-0' :
-                                        activePillar > pillar.id ? 'opacity-0 -translate-y-16' : 'opacity-0 translate-y-16 pointer-events-none'}`}>
-                                    <div className="flex flex-col gap-5">
-                                        <div className="inline-block self-start px-3 py-1 rounded-md text-[10px] font-black tracking-widest bg-white shadow-sm border"
-                                            style={{ color: pillarColors[i], borderColor: `${pillarColors[i]}30` }}>
-                                            {pillar.label}
-                                        </div>
-                                        <h3 className="text-2xl md:text-3xl lg:text-5xl font-bold text-[#04330B]">{pillar.title}</h3>
-                                        <p className="text-[#587E67] text-sm md:text-lg lg:text-xl leading-snug">{pillar.desc}</p>
-
-                                        <div className="flex items-center gap-4 mt-2 lg:mt-4">
-                                            <div className="bg-[#F8FBF9] p-3 md:p-4 rounded-xl md:rounded-2xl border border-[#0D5229]/5 flex-1 max-w-[180px] md:max-w-[200px]">
-                                                <p className="text-[10px] font-bold text-[#587E67] uppercase mb-1">{t.impactTarget}</p>
-                                                <p className="text-2xl font-bold" style={{ color: pillarColors[i] }}>{pillar.stats}</p>
-                                            </div>
-                                            <button className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-[#04330B] text-white flex items-center justify-center hover:scale-110 transition-transform shadow-xl">
-                                                <ArrowRight size={22} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="relative h-[320px] md:h-[400px] flex items-center w-full">
+                            {items.map((item, i) => (
+                                <SynergyCard
+                                    key={item.id}
+                                    item={item}
+                                    i={i}
+                                    scrollYProgress={scrollYProgress}
+                                    activeIndex={activeIndex}
+                                    pillarColors={pillarColors}
+                                    t={t}
+                                />
                             ))}
                         </div>
 

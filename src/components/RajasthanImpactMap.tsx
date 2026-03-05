@@ -107,7 +107,7 @@ export const RajasthanImpactMap = ({ language }: { language: string }) => {
     };
 
     return (
-        <section className="py-[100px] lg:py-[180px] bg-[#FFFFFF] relative overflow-hidden flex justify-center">
+        <section className="bg-[#FFFFFF] relative overflow-hidden flex justify-center py-[60px] lg:py-[100px]">
             {/* Background Watermark Section Title */}
             <div className="absolute top-20 left-1/2 -translate-x-1/2 opacity-[0.03] pointer-events-none select-none">
                 <h2 className="text-[150px] lg:text-[250px] font-bold text-[#04330B] leading-none whitespace-nowrap">{t.watermark}</h2>

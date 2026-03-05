@@ -7,6 +7,7 @@ import { ArrowLeft, CheckCircle2, Heart, ChevronRight, Trophy } from "lucide-rea
 import Link from "next/link";
 import { useLanguage } from "../../../components/LanguageContext";
 import ScrollReveal from '../../../components/ScrollReveal';
+import { visionCards } from "@/data/visionData";
 
 // Theme for Living Standards
 const theme = {
@@ -263,25 +264,16 @@ export default function LivingStandardsPage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[
-                            { title: currentLang === 'hi' ? "आन्त्रेप्रेन्योर क्रांति" : "Entrepreneurial Revolution", image: "/herosection/2.png", link: "/vision/entrepreneurship" },
-                            { title: currentLang === 'hi' ? "नई खेती – समर्थ किसान" : "New Farming – Capable Farmer", image: "/herosection/5.jpg", link: "/vision/farming" },
-                            { title: currentLang === 'hi' ? "कमजोर वर्ग का सशक्तिकरण" : "Empowerment of Vulnerable Groups", image: "/herosection/9.jpg", link: "/vision/empowerment" },
-                            { title: currentLang === 'hi' ? "शहरी–ग्रामीण समग्र विकास" : "Holistic Urban-Rural Development", image: "/herosection/1.png", link: "/vision/urban-rural" },
-                            { title: currentLang === 'hi' ? "नागरिक स्वतंत्रता और संस्कृति" : "Civil Liberties and Culture", image: "/herosection/6.jpg", link: "/vision/civil-liberties" },
-                            { title: currentLang === 'hi' ? "खुली अर्थव्यवस्था" : "Open Economy", image: "/herosection/8.jpg", link: "/vision/open-economy" },
-                            { title: currentLang === 'hi' ? "विश्व स्तरीय जीवन स्तर" : "World-Class Standard of Living", image: "/herosection/10.jpg", link: "/vision/living-standards" },
-                            { title: currentLang === 'hi' ? "प्रकृति संरक्षण" : "Nature Conservation", image: "/herosection/4.jpg", link: "/vision/nature" }
-                        ].map((card, idx) => (
+                        {visionCards.map((card: any, idx: number) => (
                             <ScrollReveal key={idx} animation="fade-up" delay={idx * 100}>
                                 <Link href={card.link} className="block group h-full bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                                     <div className="relative h-48 overflow-hidden">
                                         <div className={`absolute inset-0 ${theme.primary} opacity-0 group-hover:opacity-20 transition-opacity z-10`} />
-                                        <img src={card.image} alt={card.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
+                                        <img src={card.image} alt={language === 'hi' ? card.hi.title : card.en.title} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
                                     </div>
                                     <div className="p-6">
                                         <h3 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-900 group-hover:text-green-700 transition-colors">
-                                            {card.title}
+                                            {language === 'hi' ? card.hi.title : card.en.title}
                                         </h3>
                                     </div>
                                 </Link>

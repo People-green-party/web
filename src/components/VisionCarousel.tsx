@@ -701,69 +701,44 @@ const VisionCarousel = ({ language }: { language: string }) => {
         );
     };
 
-    const [activeIndex, setActiveIndex] = useState(0);
-    const containerRef = useRef<HTMLDivElement>(null);
+    const [activeIndex, setActiveIndex] = useState(visionPoints.length * 100);
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
+        const handleResize = () => setIsMobile(window.innerWidth < 1024);
         handleResize();
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const handleNext = () => {
-        setActiveIndex((prev) => (prev + 1) % visionPoints.length);
-    };
-
-    const handlePrev = () => {
-        setActiveIndex((prev) => (prev - 1 + visionPoints.length) % visionPoints.length);
-    };
+    const handleNext = () => setActiveIndex(prev => prev + 1);
+    const handlePrev = () => setActiveIndex(prev => prev - 1);
 
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-    // Minimum swipe distance (in px)
-    const minSwipeDistance = 50;
-
     const onTouchStart = (e: React.TouchEvent) => {
-        setTouchEnd(null);
         setTouchStart(e.targetTouches[0].clientX);
         setIsAutoPlaying(false);
     };
-
-    const onTouchMove = (e: React.TouchEvent) => {
-        setTouchEnd(e.targetTouches[0].clientX);
-    };
-
+    const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
     const onTouchEnd = () => {
         if (!touchStart || !touchEnd) return;
-        const distance = touchStart - touchEnd;
-        const isLeftSwipe = distance > minSwipeDistance;
-        const isRightSwipe = distance < -minSwipeDistance;
-
-        if (isLeftSwipe) handleNext();
-        if (isRightSwipe) handlePrev();
-
-        // Resume autoplay after a delay
+        const dist = touchStart - touchEnd;
+        if (dist > 50) handleNext();
+        else if (dist < -50) handlePrev();
         setTimeout(() => setIsAutoPlaying(true), 5000);
     };
 
-    // Auto-play with perfectly synchronized nonstop sliding
     useEffect(() => {
         if (!isAutoPlaying) return;
-        const interval = setInterval(handleNext, 3000); // 3-second interval
+        const interval = setInterval(handleNext, 4000);
         return () => clearInterval(interval);
     }, [isAutoPlaying]);
 
-
     return (
-        <section
-            className="relative z-10 bg-white mt-[60px] lg:mt-[120px] w-full flex flex-col items-center pt-12 pb-0"
-        >
+        <section className="relative z-10 bg-white w-full flex flex-col items-center py-[60px] lg:py-[100px] overflow-hidden">
             <div className="text-center mb-12 px-4">
                 <ScrollReveal animation="fade-up" duration={800}>
                     <h2 className="font-['Familjen_Grotesk'] font-bold text-[24px] md:text-[32px] lg:text-[48px] leading-tight text-[#04330B] mb-4 uppercase max-w-4xl mx-auto">
@@ -773,19 +748,11 @@ const VisionCarousel = ({ language }: { language: string }) => {
                 <ScrollReveal animation="fade-up" duration={800} delay={200}>
                     <p className="font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[20px] text-[#587E67] max-w-3xl mx-auto">
                         {language === 'hi' ? 'गुलाबी नगरी को बदलने के लिए 50 विचार' : '50 IDEAS TO TRANSFORM THE PINK CITY'}
-                        <br />
-                        <span className="text-sm md:text-base opacity-80 mt-2 block">
-                            {language === 'hi'
-                                ? 'एक स्थायी, समावेशी और विश्व स्तर पर प्रशंसित जयपुर के लिए एक ब्लूप्रिंट।'
-                                : 'A blueprint for a sustainable, inclusive, and globally admired Jaipur.'}
-                        </span>
                     </p>
                 </ScrollReveal>
             </div>
 
-            {/* Carousel Container */}
             <div className="relative w-full max-w-[1700px] flex items-center justify-center h-[550px]">
-
                 {/* Navigation Buttons (Desktop) */}
                 <button
                     onClick={handlePrev}
@@ -800,15 +767,15 @@ const VisionCarousel = ({ language }: { language: string }) => {
                     <ChevronRight size={24} />
                 </button>
 
-                {/* Cards Track */}
+                {/* Cards Track (Absolute Layout) */}
                 <div
-                    className="flex items-center justify-center w-full perspective-1000 select-none"
+                    className="flex items-center justify-center w-full perspective-1000 select-none h-full"
                     onTouchStart={onTouchStart}
                     onTouchMove={onTouchMove}
                     onTouchEnd={onTouchEnd}
                 >
                     {[-4, -3, -2, -1, 0, 1, 2, 3, 4].map((offset) => {
-                        const index = (activeIndex + offset + visionPoints.length * 10) % visionPoints.length;
+                        const index = ((activeIndex + offset) % visionPoints.length + visionPoints.length) % visionPoints.length;
                         const point = visionPoints[index];
                         const isActive = offset === 0;
 
@@ -821,7 +788,6 @@ const VisionCarousel = ({ language }: { language: string }) => {
                             translateX = '0%';
                             zIndex = 50;
                             scale = 1;
-                            opacity = 1;
                         } else if (Math.abs(offset) === 1) {
                             translateX = offset > 0 ? '55%' : '-55%';
                             zIndex = 40;
@@ -844,14 +810,12 @@ const VisionCarousel = ({ language }: { language: string }) => {
                             opacity = 0.2;
                         }
 
-                        const isSide = offset !== 0;
-
                         return (
                             <div
-                                key={point.id}
+                                key={`${point.id}-${activeIndex + offset}`}
                                 className="absolute"
                                 style={{
-                                    transition: 'transform 3000ms linear, opacity 3000ms linear',
+                                    transition: 'transform 800ms cubic-bezier(0.25, 1, 0.5, 1), opacity 800ms cubic-bezier(0.25, 1, 0.5, 1)',
                                     transform: `translate3d(${isMobile ? offset * 110 + '%' : translateX}, 0, 0) scale(${scale})`,
                                     willChange: 'transform',
                                     zIndex: zIndex,
@@ -859,13 +823,12 @@ const VisionCarousel = ({ language }: { language: string }) => {
                                     pointerEvents: isActive ? 'auto' : 'none'
                                 }}
                             >
-                                <VisionCard point={point} isActive={isActive} isSide={isSide} />
+                                <VisionCard point={point} isActive={isActive} isSide={offset !== 0} />
                             </div>
                         );
                     })}
                 </div>
             </div>
-
         </section>
     );
 };

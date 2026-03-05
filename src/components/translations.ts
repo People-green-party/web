@@ -1,3 +1,5 @@
+import { visionCards } from "@/data/visionData";
+
 export const translations = {
     en: {
         nav: {
@@ -50,56 +52,12 @@ export const translations = {
         visionSection: {
             title: "Our Vision for a Better Tomorrow",
             sub: "Advocating for change, fostering growth, and ensuring a prosperous and just society.",
-            cards: [
-                {
-                    title: "Entrepreneurship Revolution",
-                    desc: "Foundation of Middle Class Empowerment & Economic Freedom.",
-                    image: "/party-images/DSC_0030.JPG",
-                    link: "/vision/entrepreneurship"
-                },
-                {
-                    title: "New Farming – Capable Farmer",
-                    desc: "Modern Agriculture, Less Water, More Income.",
-                    image: "/party-images/DSC_0035.JPG",
-                    link: "/vision/farming"
-                },
-                {
-                    title: "Empowerment of Vulnerable Sections",
-                    desc: "Equality, Dignity, and Social Justice.",
-                    image: "/party-images/DSC_0037.JPG",
-                    link: "/vision/empowerment"
-                },
-                {
-                    title: "Holistic Urban & Rural Development",
-                    desc: "Balanced Development, Limited Migration.",
-                    image: "/party-images/DSC_0038.JPG",
-                    link: "/vision/urban-rural"
-                },
-                {
-                    title: "Civil Liberties & Cultural Values",
-                    desc: "Sensitive, Tolerant, and Aware Society.",
-                    image: "/party-images/DSC_0076.JPG",
-                    link: "/vision/civil-liberties"
-                },
-                {
-                    title: "Open Economy & Min Government",
-                    desc: "Individual Freedom, Faster Growth.",
-                    image: "/party-images/DSC_0081.JPG",
-                    link: "/vision/open-economy"
-                },
-                {
-                    title: "World Class Standard of Living",
-                    desc: "Guarantee of Education, Health & Dignified Life.",
-                    image: "/party-images/DSC_0085.JPG",
-                    link: "/vision/living-standards"
-                },
-                {
-                    title: "Nature Conservation & Green Vision",
-                    desc: "Today & Tomorrow – Nature First.",
-                    image: "/party-images/DSC_0091.JPG",
-                    link: "/vision/nature"
-                }
-            ],
+            cards: visionCards.map(card => ({
+                title: card.en.title,
+                desc: card.en.desc,
+                image: card.image,
+                link: card.link
+            })),
             footerText: "Now the people's PGP will defeat the dishonest.",
             viewMore: "View More",
             viewLess: "View Less"
@@ -210,8 +168,7 @@ export const translations = {
                 member: "Member",
                 worker: "Worker"
             },
-            placeholderNameEn: "Name Here",
-            placeholderNameHi: "Name Here",
+            placeholderName: "Name Here",
             placeholderMemberId: "PGP-XXXXXX",
             placeholderWard: "Ward Details",
             wardLabel: "Ward No."
@@ -312,56 +269,12 @@ export const translations = {
         visionSection: {
             title: "बेहतर कल के लिए हमारा दृष्टिकोण",
             sub: "बदलाव की वकालत, विकास को बढ़ावा देना और एक समृद्ध व न्यायपूर्ण समाज सुनिश्चित करना।",
-            cards: [
-                {
-                    title: "आन्त्रेप्रेन्योर क्रांति",
-                    desc: "मध्यम वर्ग के सशक्तिकरण और आर्थिक स्वतंत्रता का आधार।",
-                    image: "/party-images/DSC_0030.JPG",
-                    link: "/vision/entrepreneurship"
-                },
-                {
-                    title: "नई खेती – समर्थ किसान",
-                    desc: "आधुनिक कृषि, कम पानी, अधिक आय।",
-                    image: "/party-images/DSC_0035.JPG",
-                    link: "/vision/farming"
-                },
-                {
-                    title: "वंचित वर्गों का सशक्तिकरण",
-                    desc: "समानता, गरिमा और सामाजिक न्याय।",
-                    image: "/party-images/DSC_0037.JPG",
-                    link: "/vision/empowerment"
-                },
-                {
-                    title: "समग्र शहरी और ग्रामीण विकास",
-                    desc: "संतुलित विकास, सीमित पलायन।",
-                    image: "/party-images/DSC_0038.JPG",
-                    link: "/vision/urban-rural"
-                },
-                {
-                    title: "नागरिक स्वतंत्रता और सांस्कृतिक मूल्य",
-                    desc: "संवेदनशील, सहिष्णु और जागरूक समाज।",
-                    image: "/party-images/DSC_0076.JPG",
-                    link: "/vision/civil-liberties"
-                },
-                {
-                    title: "खुली अर्थव्यवस्था और न्यूनतम सरकार",
-                    desc: "व्यक्तिगत स्वतंत्रता, तेज़ विकास।",
-                    image: "/party-images/DSC_0081.JPG",
-                    link: "/vision/open-economy"
-                },
-                {
-                    title: "विश्व स्तरीय जीवन स्तर",
-                    desc: "शिक्षा, स्वास्थ्य और गरिमामय जीवन की गारंटी।",
-                    image: "/party-images/DSC_0085.JPG",
-                    link: "/vision/living-standards"
-                },
-                {
-                    title: "प्रकृति संरक्षण और हरित दृष्टि",
-                    desc: "आज और कल – प्रकृति पहले।",
-                    image: "/party-images/DSC_0091.JPG",
-                    link: "/vision/nature"
-                }
-            ],
+            cards: visionCards.map(card => ({
+                title: card.hi.title,
+                desc: card.hi.desc,
+                image: card.image,
+                link: card.link
+            })),
             footerText: "अब जनता की PGP बेईमानों को हराएगी।",
             viewMore: "और देखें",
             viewLess: "कम देखें"
@@ -472,8 +385,7 @@ export const translations = {
                 member: "सदस्य",
                 worker: "कार्यकर्ता"
             },
-            placeholderNameEn: "नाम यहाँ",
-            placeholderNameHi: "नाम यहाँ",
+            placeholderName: "नाम यहाँ",
             placeholderMemberId: "PGP-XXXXXX",
             placeholderWard: "वार्ड विवरण",
             wardLabel: "वार्ड नं."

@@ -101,7 +101,7 @@ export const PolicyImpactToggle = ({ language }: { language: string }) => {
     ];
 
     return (
-        <section className="py-[120px] lg:py-[200px] bg-white relative overflow-hidden flex justify-center">
+        <section className="bg-white relative overflow-hidden flex justify-center py-[60px] lg:py-[100px]">
             {/* Background Decor */}
             <div className="absolute inset-0 opacity-[0.4]" style={{ backgroundImage: 'radial-gradient(#0D522915 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
