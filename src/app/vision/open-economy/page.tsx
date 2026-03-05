@@ -76,7 +76,7 @@ export default function OpenEconomyPage() {
             <Navbar />
 
             {/* 1. IMMERSIVE HERO SECTION WITH THEME GRADIENT */}
-            <div className={`relative w-full min-h-[85vh] lg:h-[85vh] flex items-center overflow-hidden mt-[70px] lg:mt-[90px] pb-16 lg:pb-0`}>
+            <div className={`relative w-full min-h-[600px] lg:min-h-[85vh] flex flex-col justify-center mt-[70px] lg:mt-[90px] py-24 lg:py-32 overflow-visible`}>
                 {/* Background Image */}
                 <div className="absolute inset-0 z-0">
                     <img
@@ -106,10 +106,10 @@ export default function OpenEconomyPage() {
                             <div className={`w-16 h-16 rounded-2xl ${theme.button} flex items-center justify-center mb-8 shadow-lg shadow-black/20 border border-white/20`}>
                                 <Icon size={32} className="text-white" />
                             </div>
-                            <h1 className="font-['Familjen_Grotesk'] font-bold text-[36px] md:text-[56px] lg:text-[64px] leading-[1.1] mb-6 drop-shadow-md">
+                            <h1 className="font-['Familjen_Grotesk'] font-bold text-[40px] md:text-[56px] lg:text-[72px] leading-[1.2] mb-8 drop-shadow-lg break-words overflow-visible">
                                 {content.title}
                             </h1>
-                            <p className="font-['Familjen_Grotesk'] text-[18px] lg:text-[24px] text-white/90 font-light tracking-wide max-w-xl leading-relaxed">
+                            <p className="font-['Familjen_Grotesk'] text-[20px] lg:text-[26px] text-white/90 font-light tracking-wide max-w-2xl leading-relaxed whitespace-normal h-auto overflow-visible">
                                 {content.subtitle}
                             </p>
                         </ScrollReveal>
@@ -129,11 +129,11 @@ export default function OpenEconomyPage() {
             {/* 2. OVERLAP CONTENT CARD SECTION */}
             <div className={`relative z-30 -mt-12 lg:-mt-32 px-4 pb-20`}>
                 <div className="max-w-[1320px] mx-auto">
-                    <ScrollReveal animation="fade-up" delay={300}>
-                        <div className="bg-white rounded-[32px] shadow-2xl overflow-hidden flex flex-col lg:flex-row border border-gray-100">
+                    <ScrollReveal animation="fade-up" delay={300} className="overflow-visible">
+                        <div className="bg-white rounded-[32px] shadow-2xl flex flex-col lg:flex-row border border-gray-100 min-h-fit overflow-visible">
 
                             {/* Left: Image Side (Desktop) */}
-                            <div className="lg:w-2/5 h-[300px] lg:h-auto relative">
+                            <div className="lg:w-2/5 h-[300px] lg:h-auto relative overflow-hidden rounded-t-[32px] lg:rounded-l-[32px] lg:rounded-tr-none">
                                 <img
                                     src={content.image}
                                     className="w-full h-full object-cover"
@@ -150,10 +150,10 @@ export default function OpenEconomyPage() {
                                         {content.missionTitle}
                                     </span>
                                 </div>
-                                <h3 className="font-['Familjen_Grotesk'] text-3xl font-bold text-gray-900 mb-6">
+                                <h3 className="font-['Familjen_Grotesk'] text-3xl font-bold text-gray-900 mb-6 drop-shadow-none">
                                     {content.subtitle}
                                 </h3>
-                                <p className="font-['Familjen_Grotesk'] text-lg text-gray-600 leading-[1.8] text-justify">
+                                <p className="font-['Familjen_Grotesk'] text-lg text-gray-600 leading-[1.8] h-auto overflow-visible">
                                     {content.description}
                                 </p>
                             </div>

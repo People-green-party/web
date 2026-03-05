@@ -659,7 +659,7 @@ export default function Page() {
                     <h1 className="font-['Familjen_Grotesk'] font-bold text-4xl md:text-6xl text-[#0D5229] mb-4">
                         {language === 'hi' ? 'जयपुर विजन 2040' : 'JAIPUR VISION 2040'}
                     </h1>
-                    <p className="text-xl md:text-2xl text-[#0D5229] font-medium max-w-none mx-auto whitespace-nowrap lg:whitespace-normal">
+                    <p className="text-xl md:text-2xl text-[#0D5229] font-medium max-w-none mx-auto whitespace-normal">
                         {language === 'hi'
                             ? 'पिंक सिटी को स्थिरता, संस्कृति और नवाचार के वैश्विक मॉडल में बदलने के लिए 50-सूत्रीय खाका।'
                             : 'A 50-point blueprint to transform The Pink City into a global model of sustainability, culture, and innovation.'}

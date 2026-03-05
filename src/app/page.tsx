@@ -683,11 +683,11 @@ const LandingPageContent = () => {
         {/* Slider Images */}
         <div className="absolute inset-0 overflow-hidden">
           {[
-            "/party-images/DSC_0006.JPG",
-            "/party-images/DSC_0024.JPG",
-            "/party-images/DSC_0048.JPG",
-            "/party-images/DSC_0064.JPG",
-            "/party-images/DSC_0091.JPG"
+            "/party-images/hero_effigy.jpg",
+            "/party-images/hero_trophy.jpg",
+            "/party-images/hero_press.jpg",
+            "/party-images/hero_stage_1.jpg",
+            "/party-images/hero_stage_2.jpg"
           ].map((img, index) => (
             <div
               key={index}
@@ -783,10 +783,10 @@ const LandingPageContent = () => {
               <ScrollReveal key={idx} animation="scale-up" delay={idx * 150} className="h-full">
                 <Link
                   href={card.link || '#'}
-                  className="group relative w-full h-[300px] lg:h-[350px] rounded-[12px] overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer block"
+                  className="group relative w-full min-h-[380px] lg:min-h-[420px] transition-all duration-500 cursor-pointer block"
                 >
-                  {/* Background Image */}
-                  <div className="absolute inset-0 overflow-hidden">
+                  {/* Background Image Container */}
+                  <div className="absolute inset-0 overflow-hidden rounded-[16px] shadow-md hover:shadow-2xl transition-all duration-500">
                     <Image
                       src={card.image}
                       alt={card.title}
@@ -799,11 +799,11 @@ const LandingPageContent = () => {
                   </div>
 
                   {/* Floating Title Box */}
-                  <div className="absolute bottom-[16px] left-[50%] translate-x-[-50%] w-[90%] bg-white rounded-[8px] p-[10px] shadow-lg flex flex-col items-center transition-all duration-500 ease-out group-hover:bottom-[24px] group-hover:scale-105">
-                    <h3 className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[1.3] text-center text-[#04330B] whitespace-nowrap overflow-hidden text-ellipsis w-full py-0.5 px-2">
+                  <div className="absolute bottom-[16px] left-[50%] translate-x-[-50%] w-[92%] bg-white rounded-[12px] p-4 lg:p-5 shadow-xl flex flex-col items-center transition-all duration-500 ease-out group-hover:bottom-[24px] group-hover:scale-[1.02] border border-gray-100 z-10">
+                    <h3 className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[1.3] text-center text-[#04330B] whitespace-normal h-auto overflow-visible w-full py-0.5 px-2">
                       {card.title}
                     </h3>
-                    <p className="font-['Familjen_Grotesk'] text-[12px] leading-[1.3] text-center text-[#587E67] line-clamp-2 mt-0.5 px-1">
+                    <p className="font-['Familjen_Grotesk'] text-[12px] leading-[1.3] text-center text-[#587E67] h-auto overflow-visible mt-0.5 px-1">
                       {card.desc}
                     </p>
                     {/* Optional: Explore Indicator */}
@@ -1048,6 +1048,11 @@ const LandingPageContent = () => {
           {/* Bento Grid Layout */}
           <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 auto-rows-[200px] lg:auto-rows-[240px] gap-4 lg:gap-6">
             {[
+              "/party-images/hero_effigy.jpg",
+              "/party-images/hero_trophy.jpg",
+              "/party-images/hero_press.jpg",
+              "/party-images/hero_stage_1.jpg",
+              "/party-images/hero_stage_2.jpg",
               "/party-images/DSC_0006.JPG",
               "/party-images/DSC_0007.JPG",
               "/party-images/DSC_0008.JPG",
@@ -1103,7 +1108,7 @@ const LandingPageContent = () => {
               "/party-images/DSC_0105.JPG",
               "/party-images/DSC_0106.JPG",
               "/party-images/DSC_0107.JPG"
-            ].slice(0, showMoreGallery ? 59 : 7).map((src, index) => {
+            ].slice(0, showMoreGallery ? 60 : 7).map((src, index) => {
 
               // Dynamic Class Logic for Bento Layout
               // This creates a pattern: Big, Tall, Wide, Normal, etc.
@@ -1138,7 +1143,14 @@ const LandingPageContent = () => {
                     <div className="flex justify-between items-end">
                       <div>
                         <p className="text-[#EAF7EE] text-xs font-bold uppercase tracking-wider mb-1">PGP Event</p>
-                        <h4 className="text-white font-['Familjen_Grotesk'] font-semibold text-lg leading-tight">Gallery Moment {index + 1}</h4>
+                        <h4 className="text-white font-['Familjen_Grotesk'] font-semibold text-lg leading-tight">
+                          {index === 0 ? (language === 'hi' ? 'भ्रष्टाचार के खिलाफ प्रदर्शन' : 'Protest Against Corruption')
+                            : index === 1 ? (language === 'hi' ? 'सम्मान समारोह' : 'Trophy Ceremony')
+                              : index === 2 ? (language === 'hi' ? 'प्रेस वार्ता' : 'Press Conference')
+                                : index === 3 ? (language === 'hi' ? 'महिला सशक्तीकरण' : 'Women Empowerment')
+                                  : index === 4 ? (language === 'hi' ? 'जन सभा' : 'Public Gathering')
+                                    : `${language === 'hi' ? 'गैलरी क्षण' : 'Gallery Moment'} ${index + 1}`}
+                        </h4>
                       </div>
 
                       {/* Icon Button */}
