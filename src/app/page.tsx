@@ -683,11 +683,11 @@ const LandingPageContent = () => {
         {/* Slider Images */}
         <div className="absolute inset-0 overflow-hidden">
           {[
-            "/party-images/hero_effigy.jpg",
-            "/party-images/hero_trophy.jpg",
+            "/herosection/10.jpg",
+            "/party-images/DSC_0006.JPG",
             "/party-images/hero_press.jpg",
-            "/party-images/hero_stage_1.jpg",
-            "/party-images/hero_stage_2.jpg"
+            "/party-images/hero_trophy.jpg",
+            "/herosection/10.jpg"
           ].map((img, index) => (
             <div
               key={index}
