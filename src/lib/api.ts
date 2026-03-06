@@ -7,7 +7,20 @@ import { getAuthHeader } from './supabaseClient';
  * Handles base URL, auth tokens, and common error scenarios.
  */
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || '/api';
+    let baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+
+    // Smart fallback if environment variables are missing in production
+    if (!baseUrl && typeof window !== 'undefined') {
+        const host = window.location.hostname;
+        if (host === 'peoplesgreen.org' || host === 'www.peoplesgreen.org') {
+            baseUrl = 'https://api-production-da5f.up.railway.app/v1';
+        } else {
+            baseUrl = '/api';
+        }
+    } else if (!baseUrl) {
+        baseUrl = '/api';
+    }
+
     const url = endpoint.startsWith('http')
         ? endpoint
         : `${baseUrl.replace(/\/$/, '')}/${endpoint.replace(/^\//, '')}`;
@@ -68,7 +81,15 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
         if (!response.ok) {
             const errorMsg = (data as any)?.message || (data as any)?.error || (typeof data === 'string' ? data : '') || `API error: ${response.status}`;
             const friendly = toFriendlyMessage(errorMsg);
-            console.error(`API error calling ${url}:`, { status: response.status, errorMsg, data });
+
+            // Detailed logging for debugging production connectivity
+            console.error(`[API Error] ${response.status} ${response.statusText}`, {
+                url,
+                endpoint,
+                errorMsg,
+                data
+            });
+
             throw new Error(friendly);
         }
 
@@ -80,8 +101,8 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
             throw new Error(msg);
         }
 
-        const detailedError = `Network error calling ${url}. Please check your internet connection and try again.`;
-        console.error(`Network error calling ${url}:`, error);
+        const detailedError = `Network error calling backend. Please check your internet connection.`;
+        console.error(`[Network Error] Failed to reach ${url}:`, error);
         throw new Error(detailedError);
     }
 }

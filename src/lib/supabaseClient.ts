@@ -13,16 +13,22 @@ function requirePublicEnv(name: string, value: string | undefined) {
   return value;
 }
 
-const checkedSupabaseUrl = requirePublicEnv("NEXT_PUBLIC_SUPABASE_URL", supabaseUrl || "https://placeholder.supabase.co");
-const checkedSupabaseAnonKey = requirePublicEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", supabaseAnonKey || "placeholder-key");
+const checkedSupabaseUrl = requirePublicEnv("NEXT_PUBLIC_SUPABASE_URL", supabaseUrl);
+const checkedSupabaseAnonKey = requirePublicEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", supabaseAnonKey);
 
-try {
-  new URL(checkedSupabaseUrl);
-} catch {
-  console.warn(`NEXT_PUBLIC_SUPABASE_URL is not a valid URL: ${checkedSupabaseUrl}`);
+if (typeof window !== "undefined") {
+  if (!checkedSupabaseUrl || checkedSupabaseUrl === "https://placeholder.supabase.co") {
+    console.error("CRITICAL: NEXT_PUBLIC_SUPABASE_URL is missing or invalid. Auth will fail.");
+  }
+  if (!checkedSupabaseAnonKey || checkedSupabaseAnonKey === "placeholder-key") {
+    console.error("CRITICAL: NEXT_PUBLIC_SUPABASE_ANON_KEY is missing or invalid. Auth will fail.");
+  }
 }
 
-export const supabase = createClient(checkedSupabaseUrl, checkedSupabaseAnonKey);
+export const supabase = createClient(
+  checkedSupabaseUrl || "https://placeholder.supabase.co",
+  checkedSupabaseAnonKey || "placeholder-key"
+);
 
 export async function getAuthHeader(): Promise<Record<string, string>> {
   if (typeof window !== "undefined") {
