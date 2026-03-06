@@ -1048,7 +1048,13 @@ const LandingPageContent = () => {
           {/* Bento Grid Layout */}
           <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 auto-rows-[200px] lg:auto-rows-[240px] gap-4 lg:gap-6">
             {[
-              "/party-images/hero_effigy.jpg",
+              "/GIF/GIF-1.gif",
+              "/GIF/GIF-2.gif",
+              "/GIF/GIF-3.gif",
+              "/GIF/GIF-4.gif",
+              "/GIF/GIF-5.gif",
+              "/GIF/GIF-6.gif",
+              "/GIF/GIF-7.gif",
               "/party-images/hero_trophy.jpg",
               "/party-images/hero_press.jpg",
               "/party-images/hero_stage_1.jpg",
@@ -1108,7 +1114,7 @@ const LandingPageContent = () => {
               "/party-images/DSC_0105.JPG",
               "/party-images/DSC_0106.JPG",
               "/party-images/DSC_0107.JPG"
-            ].slice(0, showMoreGallery ? 60 : 7).map((src, index) => {
+            ].slice(0, showMoreGallery ? 66 : 7).map((src, index) => {
 
               // Dynamic Class Logic for Bento Layout
               // This creates a pattern: Big, Tall, Wide, Normal, etc.
@@ -1144,12 +1150,18 @@ const LandingPageContent = () => {
                       <div>
                         <p className="text-[#EAF7EE] text-xs font-bold uppercase tracking-wider mb-1">PGP Event</p>
                         <h4 className="text-white font-['Familjen_Grotesk'] font-semibold text-lg leading-tight">
-                          {index === 0 ? (language === 'hi' ? 'भ्रष्टाचार के खिलाफ प्रदर्शन' : 'Protest Against Corruption')
-                            : index === 1 ? (language === 'hi' ? 'सम्मान समारोह' : 'Trophy Ceremony')
-                              : index === 2 ? (language === 'hi' ? 'प्रेस वार्ता' : 'Press Conference')
-                                : index === 3 ? (language === 'hi' ? 'महिला सशक्तीकरण' : 'Women Empowerment')
-                                  : index === 4 ? (language === 'hi' ? 'जन सभा' : 'Public Gathering')
-                                    : `${language === 'hi' ? 'गैलरी क्षण' : 'Gallery Moment'} ${index + 1}`}
+                          {index === 0 ? (language === 'hi' ? 'इवेंट हाइलाइट 1' : 'Event Highlight 1')
+                            : index === 1 ? (language === 'hi' ? 'इवेंट हाइलाइट 2' : 'Event Highlight 2')
+                              : index === 2 ? (language === 'hi' ? 'इवेंट हाइलाइट 3' : 'Event Highlight 3')
+                                : index === 3 ? (language === 'hi' ? 'इवेंट हाइलाइट 4' : 'Event Highlight 4')
+                                  : index === 4 ? (language === 'hi' ? 'इवेंट हाइलाइट 5' : 'Event Highlight 5')
+                                    : index === 5 ? (language === 'hi' ? 'इवेंट हाइलाइट 6' : 'Event Highlight 6')
+                                      : index === 6 ? (language === 'hi' ? 'भ्रष्टाचार के खिलाफ प्रदर्शन' : 'Protest Against Corruption')
+                                        : index === 7 ? (language === 'hi' ? 'सम्मान समारोह' : 'Trophy Ceremony')
+                                          : index === 8 ? (language === 'hi' ? 'प्रेस वार्ता' : 'Press Conference')
+                                            : index === 9 ? (language === 'hi' ? 'महिला सशक्तीकरण' : 'Women Empowerment')
+                                              : index === 10 ? (language === 'hi' ? 'जन सभा' : 'Public Gathering')
+                                                : `${language === 'hi' ? 'गैलरी क्षण' : 'Gallery Moment'} ${index + 1}`}
                         </h4>
                       </div>
 
