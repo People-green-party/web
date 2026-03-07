@@ -14,7 +14,7 @@ import {
 import { useLanguage } from '../../components/LanguageContext';
 import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
-import { fetchApi } from '../../lib/api';
+import { fetchApi, getApiBaseUrl } from '../../lib/api';
 import { RequireAuth } from '../components/RequireAuth';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -155,7 +155,7 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: { summary: Dashbo
             const authHeader = await getAuthHeader();
             const formData = new FormData();
             formData.append('file', file, file.name || 'profile.jpg');
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002';
+            const baseUrl = getApiBaseUrl();
             const response = await fetch(`${baseUrl}/users/me/photo`, {
                 method: 'POST',
                 headers: { ...authHeader },
@@ -202,7 +202,7 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: { summary: Dashbo
                     <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center overflow-hidden border border-white/30">
                         {user?.photoUrl ? (
                             <img
-                                src={user.photoUrl.startsWith('http') ? user.photoUrl : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002').replace(/\/v1\/?$/, '')}${user.photoUrl}`}
+                                src={user.photoUrl.startsWith('http') ? user.photoUrl : `${getApiBaseUrl().replace(/\/v1\/?$/, '')}${user.photoUrl}`}
                                 alt="Profile"
                                 className="w-full h-full object-cover"
                                 crossOrigin="anonymous"
@@ -350,7 +350,7 @@ export default function DemoDashboard() {
                             <div className="relative shrink-0">
                                 <div className="w-40 h-40 rounded-full border-[6px] border-white p-1.5 bg-white shadow-xl flex items-center justify-center overflow-hidden">
                                     {summary?.user?.photoUrl ? (
-                                        <img className="w-full h-full object-cover rounded-full" src={summary.user.photoUrl.startsWith('http') ? summary.user.photoUrl : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002').replace(/\/v1\/?$/, '')}${summary.user.photoUrl}`} />
+                                        <img className="w-full h-full object-cover rounded-full" src={summary.user.photoUrl.startsWith('http') ? summary.user.photoUrl : `${getApiBaseUrl().replace(/\/v1\/?$/, '')}${summary.user.photoUrl}`} />
                                     ) : (
                                         <div className="w-full h-full bg-slate-50 flex items-center justify-center"><User size={48} className="text-slate-200" /></div>
                                     )}
@@ -367,7 +367,7 @@ export default function DemoDashboard() {
                                     const formData = new FormData();
                                     formData.append('file', file);
                                     const auth = await getAuthHeader();
-                                    const res = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002')}/users/me/photo`, {
+                                    const res = await fetch(`${getApiBaseUrl()}/users/me/photo`, {
                                         method: 'POST',
                                         headers: { ...auth },
                                         body: formData

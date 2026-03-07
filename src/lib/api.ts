@@ -2,28 +2,27 @@
 
 import { getAuthHeader } from './supabaseClient';
 
+export function getApiBaseUrl() {
+    let baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
+
+    if (!baseUrl && typeof window !== 'undefined') {
+        const host = window.location.hostname;
+        if (host === 'peoplesgreen.org' || host === 'www.peoplesgreen.org') {
+            return 'https://api-production-da5f.up.railway.app/v1';
+        }
+    }
+    return baseUrl.replace(/\/$/, '') || '/api';
+}
+
 /**
  * Standard fetch wrapper for PGP Backend API calls.
  * Handles base URL, auth tokens, and common error scenarios.
  */
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
-    let baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
-
-    // Smart fallback if environment variables are missing in production
-    if (!baseUrl && typeof window !== 'undefined') {
-        const host = window.location.hostname;
-        if (host === 'peoplesgreen.org' || host === 'www.peoplesgreen.org') {
-            baseUrl = 'https://api-production-da5f.up.railway.app/v1';
-        } else {
-            baseUrl = '/api';
-        }
-    } else if (!baseUrl) {
-        baseUrl = '/api';
-    }
-
+    const baseUrl = getApiBaseUrl();
     const url = endpoint.startsWith('http')
         ? endpoint
-        : `${baseUrl.replace(/\/$/, '')}/${endpoint.replace(/^\//, '')}`;
+        : `${baseUrl}/${endpoint.replace(/^\//, '')}`;
 
     const toFriendlyMessage = (msg: string) => {
         const m = String(msg || '').trim();
