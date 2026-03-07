@@ -71,7 +71,7 @@ const translations = {
         subtitle: "Unite for Progress, Stand for a Better Tomorrow"
       },
       wizard: {
-        heroTitle: 'Become a Leader of Your Region\nJoin Our Leadership Program!',
+        heroTitle: 'Become a Leader of Your Area\nJoin Our Leadership Program!',
         newRegistration: 'New Registration',
         step1: 'Register Yourself',
         step2: 'OTP Verification',
@@ -99,7 +99,7 @@ const translations = {
         referralLabel: 'Your referral code',
         leaderLabel: 'Leader',
         slotLabel: 'SLOT',
-        slotsHint: 'Complete your team by adding 5 influential people from your region.',
+        slotsHint: 'Complete your team by adding 5 influential people from your area.',
         appointmentTitle: 'Appointment Letter',
         appointmentReady: 'Your official appointment letter is ready for download.',
         appointmentLocked: 'Recruit 5 members in your Local Unit to unlock your appointment letter.',
@@ -1025,7 +1025,7 @@ const JoinPageContent = () => {
                     disabled={!formData.vidhansabhaId || locLoading.localUnits}
                     className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#587E67] bg-white outline-none"
                   >
-                    <option value="">Select Local Unit (Ward/Village)</option>
+                    <option value="">Select Local area (Ward/Village)</option>
                     {localUnits.map((u: any) => (
                       <option key={u.id} value={u.id}>{getTranslation(u.name, language)}{u.type ? ` (${u.type})` : ''}</option>
                     ))}
