@@ -16,7 +16,7 @@ import { Navbar } from '../../components/Navbar';
 import { Footer } from '../../components/Footer';
 import { fetchApi, getApiBaseUrl } from '../../lib/api';
 import { RequireAuth } from '../components/RequireAuth';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { getAuthHeader } from '../../lib/supabaseClient';
 
@@ -74,44 +74,85 @@ interface DashboardRecruitsListItem {
 async function downloadAsPng(ref: React.RefObject<HTMLDivElement | null>, filename: string) {
     if (!ref.current) return;
     try {
-        const canvas = await html2canvas(ref.current, {
-            scale: 3,
-            useCORS: true,
-            allowTaint: false,
-            backgroundColor: null,
-            logging: false,
+        const element = ref.current;
+
+        // Ensure all fonts and images are fully loaded before capturing
+        await document.fonts.ready;
+        await new Promise(r => setTimeout(r, 300));
+
+        // Patch CSSStyleSheet to prevent SecurityError from html-to-image
+        // The library attempts to read cross-origin stylesheets (like external icons) and crashes.
+        const originalCssRules = Object.getOwnPropertyDescriptor(CSSStyleSheet.prototype, 'cssRules');
+        if (originalCssRules) {
+            Object.defineProperty(CSSStyleSheet.prototype, 'cssRules', {
+                get() {
+                    try {
+                        return originalCssRules.get?.call(this) || [];
+                    } catch (e) {
+                        return []; // Ignore CORS security errors!
+                    }
+                },
+                configurable: true
+            });
+        }
+
+        const dataUrl = await toPng(element, {
+            pixelRatio: 3, // Premium quality
+            // Ensure any hidden elements (like appointment letter) become visible during clone
+            style: { opacity: '1', visibility: 'visible', pointerEvents: 'auto' },
+            // Use native browser canvas renderer, no CSS parsing crashes!
         });
-        const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
-        if (!blob) throw new Error('Canvas conversion failed');
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error("Failed to download image:", error);
-        alert("Could not download image.");
+
+        // Restore original after capture
+        if (originalCssRules) {
+            Object.defineProperty(CSSStyleSheet.prototype, 'cssRules', originalCssRules);
+        }
+
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = dataUrl;
+        link.click();
+    } catch (error: any) {
+        console.error("Capture Error:", error);
+        alert("Download failed. Please try again or take a screenshot.");
     }
 }
 
 async function downloadAsPdf(ref: React.RefObject<HTMLDivElement | null>, filename: string) {
     if (!ref.current) return;
     try {
-        const canvas = await html2canvas(ref.current, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: false,
-            backgroundColor: "#ffffff",
+        const element = ref.current;
+        await document.fonts.ready;
+
+        // Patch CSSStyleSheet to prevent SecurityError from html-to-image
+        const originalCssRules = Object.getOwnPropertyDescriptor(CSSStyleSheet.prototype, 'cssRules');
+        if (originalCssRules) {
+            Object.defineProperty(CSSStyleSheet.prototype, 'cssRules', {
+                get() {
+                    try {
+                        return originalCssRules.get?.call(this) || [];
+                    } catch (e) {
+                        return [];
+                    }
+                },
+                configurable: true
+            });
+        }
+
+        const dataUrl = await toPng(element, {
+            pixelRatio: 2,
+            style: { opacity: '1', visibility: 'visible', pointerEvents: 'auto' }
         });
-        const imgData = canvas.toDataURL('image/png');
+
+        if (originalCssRules) {
+            Object.defineProperty(CSSStyleSheet.prototype, 'cssRules', originalCssRules);
+        }
+
         const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgProps = pdf.getImageProperties(imgData);
+        const imgProps = pdf.getImageProperties(dataUrl);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
         pdf.save(filename);
     } catch (error) {
         console.error("Failed to download PDF:", error);
@@ -189,6 +230,7 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: { summary: Dashbo
             {/* ID Card Display */}
             <div
                 ref={idCardRef}
+                data-download-root
                 className="w-full max-w-[400px] aspect-[1.6/1] rounded-[24px] p-6 relative overflow-hidden shadow-2xl mb-6 flex flex-col justify-between"
                 style={{ background: 'linear-gradient(135deg, #04330B 0%, #0B5A2A 100%)', color: '#ffffff' }}
             >
@@ -197,7 +239,7 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: { summary: Dashbo
 
                 <div className="flex justify-between items-start relative z-10 mb-auto">
                     <div className="bg-white rounded-lg p-1.5 flex items-center justify-center">
-                        <img src="/PGPlogo.svg" alt="PGP" className="h-7" crossOrigin="anonymous" />
+                        <img src="/PGPlogo.svg" alt="PGP" className="h-7" />
                     </div>
                     <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center overflow-hidden border border-white/30">
                         {user?.photoUrl ? (
@@ -250,6 +292,7 @@ export default function DemoDashboard() {
     const [progress, setProgress] = useState<DashboardRecruitProgress | null>(null);
     const [recruits, setRecruits] = useState<DashboardRecruitsListItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [copied, setCopied] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const appointmentRef = useRef<HTMLDivElement>(null);
 
@@ -262,7 +305,7 @@ export default function DemoDashboard() {
     }, [recruits, localUnitId]);
 
     const referralCode = summary?.user?.referralCode || '';
-    const referralLink = referralCode ? `${PRODUCTION_ORIGIN}/join?ref=${referralCode}` : '';
+    const referralLink = referralCode ? `${PRODUCTION_ORIGIN}/join/?ref=${referralCode}` : '';
     const progressValue = Math.min(localUnitRecruits.length * 20, 100);
     const isUnlocked = progressValue >= 100;
 
@@ -317,7 +360,8 @@ export default function DemoDashboard() {
 
     const handleCopyLink = () => {
         navigator.clipboard.writeText(referralLink);
-        alert(language === 'en' ? 'Link copied to clipboard!' : 'लिंक क्लिपबोर्ड पर कॉपी हो गया!');
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000);
     };
 
     const dashboardLinks = [
@@ -400,15 +444,15 @@ export default function DemoDashboard() {
                             <h3 className="text-xl font-bold text-[#04330B] mb-2 min-h-[28px]">{t.dashboard.inviteTitle}</h3>
                             <p className="text-[#04330B]/60 text-sm leading-relaxed mb-6 min-h-[40px] line-clamp-2">{t.dashboard.inviteSubtitle}</p>
 
-                            <div className="flex items-center justify-between gap-4 bg-white/50 p-5 rounded-xl border border-[#04330B]/10 mb-4">
+                            <div className="flex items-center justify-between gap-4 bg-white/50 p-5 rounded-xl border border-[#04330B]/10 mb-4 h-[152px]">
                                 <div>
                                     <p className="text-[#04330B]/50 font-bold text-[10px] uppercase mb-1">{t.dashboard.referralLabel}</p>
                                     <p className="text-2xl font-black text-[#04330B] tracking-widest">{(referralCode || '--------').toString().toUpperCase()}</p>
                                 </div>
-                                <div className="w-20 h-20 bg-white rounded-xl p-1.5 border border-[#04330B]/5 shadow-sm overflow-hidden flex items-center justify-center shrink-0">
+                                <div className="w-28 h-28 bg-white rounded-xl p-2 border border-[#04330B]/5 shadow-sm overflow-hidden flex items-center justify-center shrink-0">
                                     {referralLink ? (
                                         <img
-                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(referralLink)}`}
+                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(referralLink)}`}
                                             alt="QR Code"
                                             className="w-full h-full"
                                         />
@@ -427,8 +471,8 @@ export default function DemoDashboard() {
                                         WhatsApp
                                     </button>
                                     <button onClick={handleCopyLink} className="col-span-1 py-3 bg-[#04330B]/5 text-[#04330B] rounded-2xl font-bold border border-[#04330B]/10 flex items-center justify-center text-xs gap-2 hover:bg-[#04330B]/10 transition-all">
-                                        <span className="material-symbols-outlined text-[16px]">content_copy</span>
-                                        {t.dashboard.copy}
+                                        <span className="material-symbols-outlined text-[16px]">{copied ? 'check_circle' : 'content_copy'}</span>
+                                        {copied ? (language === 'en' ? 'Copied' : 'कॉपी हो गया') : t.dashboard.copy}
                                     </button>
                                 </div>
                                 <button onClick={handleNativeShare} className="w-full py-4 bg-[#04330B] text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all overflow-hidden">
@@ -443,7 +487,7 @@ export default function DemoDashboard() {
                             <h3 className="text-xl font-bold text-[#04330B] mb-2 min-h-[28px]">{t.dashboard.appointmentTitle}</h3>
                             <p className="text-[#04330B]/60 text-sm leading-relaxed mb-6 min-h-[40px] line-clamp-2">{t.dashboard.appointmentLocked}</p>
 
-                            <div className="flex items-center justify-between gap-4 bg-white/50 p-5 rounded-xl border border-[#04330B]/10 mb-8">
+                            <div className="flex items-center justify-between gap-4 bg-white/50 p-5 rounded-xl border border-[#04330B]/10 mb-4 h-[152px]">
                                 <div>
                                     <p className="text-[#04330B]/50 font-bold text-[10px] uppercase mb-1">{t.dashboard.status}</p>
                                     {isUnlocked ? (
@@ -452,8 +496,8 @@ export default function DemoDashboard() {
                                         <p className="text-xl font-black text-[#04330B]">{t.dashboard.appointmentTitle}</p>
                                     )}
                                 </div>
-                                <div className={`w-20 h-20 rounded-xl p-1.5 border shadow-sm flex items-center justify-center shrink-0 bg-white border-[#04330B]/5`}>
-                                    <span className={`material-symbols-outlined text-4xl ${isUnlocked ? 'text-[#04330B]/60' : 'text-[#04330B]/30'}`}>{isUnlocked ? 'workspace_premium' : 'lock'}</span>
+                                <div className={`w-28 h-28 rounded-2xl p-2 border shadow-sm flex items-center justify-center shrink-0 bg-white border-[#04330B]/5`}>
+                                    <span className={`material-symbols-outlined text-5xl ${isUnlocked ? 'text-[#04330B]/60' : 'text-[#04330B]/30'}`}>{isUnlocked ? 'workspace_premium' : 'lock'}</span>
                                 </div>
                             </div>
 
@@ -545,27 +589,97 @@ export default function DemoDashboard() {
                     </div>
 
                     {/* Hidden Appointment Letter for Download */}
-                    <div className="fixed -left-[10000px] top-0" ref={appointmentRef}>
-                        <div className="w-[800px] p-16 bg-white text-[#04330B] font-['Times_New_Roman']" style={{ border: '20px solid #04330B' }}>
-                            <div className="flex justify-between items-center border-b-2 border-[#04330B] pb-8 mb-12">
-                                <div className="bg-[#04330B] p-4 rounded-xl"><img src="/PGPlogo.svg" className="h-16 invert brightness-0" alt="Logo" crossOrigin="anonymous" /></div>
-                                <div className="text-right">
-                                    <h1 className="text-4xl font-black">{t.dashboard.partyName}</h1>
-                                    <p className="text-xl font-bold italic">{t.dashboard.empoweringIndia}</p>
+                    <div className="fixed overflow-hidden pointer-events-none" style={{ top: '-10000px', left: '-10000px', width: '800px', height: '1130px' }}>
+                        <div
+                            ref={appointmentRef}
+                            data-download-root
+                            className="w-[800px] bg-white p-12 relative overflow-hidden flex flex-col items-center"
+                            style={{
+                                minHeight: '1130px', // A4 Aspect Ratio 
+                                border: '30px solid #04330B',
+                                borderStyle: 'double',
+                                padding: '60px'
+                            }}
+                        >
+                            {/* Decorative Corner Borders */}
+                            <div className="absolute top-0 left-0 w-32 h-32 border-t-[10px] border-l-[10px] border-[#04330B]/10"></div>
+                            <div className="absolute top-0 right-0 w-32 h-32 border-t-[10px] border-r-[10px] border-[#04330B]/10"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 border-b-[10px] border-l-[10px] border-[#04330B]/10"></div>
+                            <div className="absolute bottom-0 right-0 w-32 h-32 border-b-[10px] border-r-[10px] border-[#04330B]/10"></div>
+
+                            {/* Header Section */}
+                            <div className="w-full border-b-[3px] border-[#04330B] pb-8 mb-12 flex items-center gap-8">
+                                <div className="bg-[#04330B] p-5 rounded-2xl shadow-lg">
+                                    <img src="/PGPlogo.svg" className="h-20" style={{ filter: 'brightness(0) invert(1)' }} alt="Logo" />
+                                </div>
+                                <div className="flex-1">
+                                    <h1 className="text-[52px] font-black leading-tight text-[#04330B] tracking-tight m-0 uppercase" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                                        {t.dashboard.partyName}
+                                    </h1>
+                                    <div className="h-1.5 w-full bg-[#04330B] mt-1 mb-2 opacity-20"></div>
+                                    <p className="text-2xl font-bold tracking-[0.3em] text-[#04330B]/60 uppercase m-0 italic">
+                                        {t.dashboard.empoweringIndia}
+                                    </p>
                                 </div>
                             </div>
-                            <h2 className="text-3xl font-black text-center mb-12 underline decoration-4 uppercase">{t.dashboard.appointmentLetterHeader}</h2>
-                            <div className="space-y-8 text-xl leading-relaxed">
-                                <p>{t.dashboard.dateLabel}: {new Date().toLocaleDateString(language === 'en' ? 'en-GB' : 'hi-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
-                                <p>{t.dashboard.dear} <strong>{summary?.user?.name || 'Member'}</strong>,</p>
-                                <p>{t.dashboard.appointmentBody.replace('you', `you as a ${currentDesignation}`)}</p>
-                                <p>{t.dashboard.loksabhaLabel}: <strong>{summary?.user?.localUnit?.vidhansabha?.loksabha?.name || 'Rajasthan'}</strong></p>
-                                <p>{t.dashboard.cwcLabel}: <strong>{summary?.user?.cwcName || 'State Representative'}</strong></p>
-                                <p>{t.dashboard.appointmentClosing}</p>
-                            </div>
-                            <div className="mt-32 flex justify-between items-end border-t border-[#04330B]/20 pt-12">
-                                <div><p className="font-bold underline">{t.dashboard.membershipIdLabel}: {summary?.user?.memberId}</p></div>
-                                <div className="text-center w-64 border-t-2 border-[#04330B] pt-2"><p className="font-black uppercase tracking-widest text-sm">{t.dashboard.authorizedSignatory}</p></div>
+
+                            {/* Letter Content */}
+                            <div className="w-full flex-1 flex flex-col">
+                                <div className="flex justify-between items-baseline mb-12">
+                                    <div className="text-xl">
+                                        <p className="font-bold text-[#04330B]/40 uppercase tracking-widest text-xs mb-1">{t.dashboard.membershipIdLabel}</p>
+                                        <p className="font-black text-2xl text-[#04330B]">{summary?.user?.memberId || 'PGP-000000'}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-bold text-[#04330B]/40 uppercase tracking-widest text-xs mb-1">{t.dashboard.dateLabel}</p>
+                                        <p className="font-black text-xl text-[#04330B]">
+                                            {new Date().toLocaleDateString(language === 'en' ? 'en-GB' : 'hi-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="text-center mb-16">
+                                    <h2 className="text-4xl font-black text-[#04330B] uppercase tracking-wider relative inline-block py-2">
+                                        {t.dashboard.appointmentLetterHeader}
+                                        <div className="absolute bottom-0 left-0 w-full h-1 bg-[#04330B]"></div>
+                                    </h2>
+                                </div>
+
+                                <div className="space-y-10 text-2xl text-[#04330B] leading-relaxed" style={{ fontFamily: "'Times New Roman', serif" }}>
+                                    <p className="text-3xl font-bold">
+                                        {t.dashboard.dear} <strong>{summary?.user?.name || 'Member'}</strong>,
+                                    </p>
+
+                                    <p className="text-2xl italic leading-relaxed">
+                                        {t.dashboard.appointmentBody.replace('you', `you as a ${currentDesignation}`)}
+                                    </p>
+
+                                    <div className="grid grid-cols-2 gap-12 pt-8">
+                                        <div className="p-8 rounded-3xl bg-[#B9D3C4]/10 border border-[#04330B]/10">
+                                            <p className="text-sm font-bold text-[#04330B]/40 uppercase tracking-widest mb-2">{t.dashboard.loksabhaLabel}</p>
+                                            <p className="text-2xl font-black text-[#04330B]">{summary?.user?.localUnit?.vidhansabha?.loksabha?.name || 'Rajasthan Sector'}</p>
+                                        </div>
+                                        <div className="p-8 rounded-3xl bg-[#B9D3C4]/10 border border-[#04330B]/10">
+                                            <p className="text-sm font-bold text-[#04330B]/40 uppercase tracking-widest mb-2">{t.dashboard.cwcLabel}</p>
+                                            <p className="text-2xl font-black text-[#04330B]">{summary?.user?.cwcName || 'Regional CWC'}</p>
+                                        </div>
+                                    </div>
+
+                                    <p className="pt-8 italic text-[#04330B]/80 font-medium">
+                                        {t.dashboard.appointmentClosing}
+                                    </p>
+                                </div>
+
+                                <div className="mt-auto pt-24 flex justify-between items-end border-t-2 border-[#04330B]/10">
+                                    <div className="w-16 h-16 opacity-10">
+                                        <img src="/PGPlogo.svg" className="w-full grayscale brightness-0" alt="Watermark" />
+                                    </div>
+                                    <div className="text-center w-80">
+                                        <div className="h-0.5 w-full bg-[#04330B] mb-2"></div>
+                                        <p className="font-black uppercase tracking-[0.2em] text-sm text-[#04330B]">{t.dashboard.authorizedSignatory}</p>
+                                        <p className="text-xs font-bold text-[#04330B]/40 mt-1">PEOPLES GREEN PARTY (INDIA)</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

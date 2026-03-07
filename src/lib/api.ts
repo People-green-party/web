@@ -66,6 +66,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     try {
         const response = await fetch(url, {
             ...options,
+            cache: 'no-store',
             headers: {
                 ...defaultHeaders,
                 ...options.headers,
