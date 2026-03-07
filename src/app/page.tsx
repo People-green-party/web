@@ -22,6 +22,76 @@ import { visionCards } from '@/data/visionData';
 
 
 
+// --- Hero Slides Data (clubbed image + text for consistency) ---
+
+const heroSlides = [
+  {
+    img: "/herosection/hero-1.jpg",
+    en: {
+      titleLine1: "Catalyzing innovation",
+      titleLine2: "for a better future",
+      subtitle: "Committed to sustainable progress and transformative ideas."
+    },
+    hi: {
+      titleLine1: "बेहतर भविष्य के लिए",
+      titleLine2: "नवाचार को प्रेरित करना",
+      subtitle: "सतत प्रगति और परिवर्तनकारी विचारों के लिए प्रतिबद्ध।"
+    }
+  },
+  {
+    img: "/herosection/hero-2.jpg",
+    en: {
+      titleLine1: "Empowering Rural",
+      titleLine2: "Communities Together",
+      subtitle: "Building self-reliant villages through modern agriculture."
+    },
+    hi: {
+      titleLine1: "ग्रामीण समुदायों को",
+      titleLine2: "सशक्त बनाना",
+      subtitle: "आधुनिक कृषि के माध्यम से आत्मनिर्भर गांव बनाना।"
+    }
+  },
+  {
+    img: "/herosection/hero-3.jpg",
+    en: {
+      titleLine1: "Green Energy",
+      titleLine2: "Revolution Begins",
+      subtitle: "Adopting sustainable energy for a cleaner tomorrow."
+    },
+    hi: {
+      titleLine1: "हरित ऊर्जा",
+      titleLine2: "क्रांति की शुरुआत",
+      subtitle: "स्वच्छ कल के लिए स्थायी ऊर्जा अपनाना।"
+    }
+  },
+  {
+    img: "/herosection/hero-4.jpg",
+    en: {
+      titleLine1: "Education for All",
+      titleLine2: "Knowledge is Power",
+      subtitle: "Ensuring quality education reaches every child."
+    },
+    hi: {
+      titleLine1: "सभी के लिए शिक्षा",
+      titleLine2: "ज्ञान ही शक्ति है",
+      subtitle: "हर बच्चे तक गुणवत्तापूर्ण शिक्षा सुनिश्चित करना।"
+    }
+  },
+  {
+    img: "/herosection/hero-5.jpg",
+    en: {
+      titleLine1: "Justice & Equality",
+      titleLine2: "For Every Citizen",
+      subtitle: "Standing up for the rights of the people."
+    },
+    hi: {
+      titleLine1: "न्याय और समानता",
+      titleLine2: "हर नागरिक के लिए",
+      subtitle: "जनता के अधिकारों के लिए खड़े होना।"
+    }
+  }
+];
+
 // --- 1. Translation Data ---
 
 const translations = {
@@ -37,33 +107,7 @@ const translations = {
       weAreAravali: "We are Aravali",
       leaders: "Leadership"
     },
-    heroSlides: [
-      {
-        titleLine1: "Catalyzing innovation",
-        titleLine2: "for a better future",
-        subtitle: "Committed to sustainable progress and transformative ideas."
-      },
-      {
-        titleLine1: "Empowering Rural",
-        titleLine2: "Communities Together",
-        subtitle: "Building self-reliant villages through modern agriculture."
-      },
-      {
-        titleLine1: "Green Energy",
-        titleLine2: "Revolution Begins",
-        subtitle: "Adopting sustainable energy for a cleaner tomorrow."
-      },
-      {
-        titleLine1: "Education for All",
-        titleLine2: "Knowledge is Power",
-        subtitle: "Ensuring quality education reaches every child."
-      },
-      {
-        titleLine1: "Justice & Equality",
-        titleLine2: "For Every Citizen",
-        subtitle: "Standing up for the rights of the people."
-      }
-    ],
+    heroSlides: heroSlides.map(slide => slide.en),
     quickLinks: [
       { title: "Join the New Era\nof Politics", path: "/join" },
       { title: "Our New Rajasthan Bill Will Change the World", path: "/rajasthan-bill" },
@@ -216,33 +260,7 @@ const translations = {
       weAreAravali: "वी आर अरावली",
       leaders: "नेतृत्व"
     },
-    heroSlides: [
-      {
-        titleLine1: "बेहतर भविष्य के लिए",
-        titleLine2: "नवाचार को प्रेरित करना",
-        subtitle: "सतत प्रगति और परिवर्तनकारी विचारों के लिए प्रतिबद्ध।"
-      },
-      {
-        titleLine1: "ग्रामीण समुदायों को",
-        titleLine2: "सशक्त बनाना",
-        subtitle: "आधुनिक कृषि के माध्यम से आत्मनिर्भर गांव बनाना।"
-      },
-      {
-        titleLine1: "हरित ऊर्जा",
-        titleLine2: "क्रांति की शुरुआत",
-        subtitle: "स्वच्छ कल के लिए स्थायी ऊर्जा अपनाना।"
-      },
-      {
-        titleLine1: "सभी के लिए शिक्षा",
-        titleLine2: "ज्ञान ही शक्ति है",
-        subtitle: "हर बच्चे तक गुणवत्तापूर्ण शिक्षा सुनिश्चित करना।"
-      },
-      {
-        titleLine1: "न्याय और समानता",
-        titleLine2: "हर नागरिक के लिए",
-        subtitle: "जनता के अधिकारों के लिए खड़े होना।"
-      }
-    ],
+    heroSlides: heroSlides.map(slide => slide.hi),
     quickLinks: [
       { title: "नए युग की राजनीति\nसे जुड़िए", path: "/join" },
       { title: "हमारा नया राजस्थान बिल बदलेगा दुनिया", path: "/rajasthan-bill" },
@@ -595,6 +613,8 @@ const Navbar = () => {
 
 // --- 5. Main Page Component ---
 
+// heroSlides array is now defined at the top of the file for easy management
+
 const LandingPageContent = () => {
   const { language, t } = useLanguage();
   const [rotatedCards, setRotatedCards] = useState<any[]>([]);
@@ -607,10 +627,10 @@ const LandingPageContent = () => {
   // Auto-rotate Hero Slider
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentHeroIndex((prev) => (prev + 1) % 5); // 5 is number of hero images
-    }, 3000);
+      setCurrentHeroIndex((prev) => (prev + 1) % heroSlides.length);
+    }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [t]); // Sync with language/translations
 
   // State for "View More" sections
   const [showMoreVision, setShowMoreVision] = useState(false);
@@ -681,50 +701,45 @@ const LandingPageContent = () => {
 
       {/* 1. HERO SECTION */}
       <section className="w-full relative h-[650px] md:h-[700px] lg:h-[800px] mt-[70px] lg:mt-[90px]">
-        {/* Slider Images */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[
-            "/herosection/10.jpg",
-            "/party-images/DSC_0006.JPG",
-            "/party-images/hero_press.jpg",
-            "/party-images/hero_trophy.jpg",
-            "/herosection/10.jpg"
-          ].map((img, index) => (
+        {/* Slider: Each slide clubs its own image + text together */}
+        <div className="absolute inset-0 overflow-hidden bg-black">
+          {heroSlides.map((slide, index) => (
             <div
               key={index}
-              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentHeroIndex ? 'opacity-100' : 'opacity-0'}`}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentHeroIndex
+                ? 'opacity-100 z-10'
+                : 'opacity-0 z-0 pointer-events-none'
+                }`}
             >
+              {/* Background Image */}
               <Image
-                src={img}
+                src={slide.img}
                 alt={`Hero ${index + 1}`}
                 fill
                 priority={index === 0}
-                sizes="100vw"
                 className="object-cover"
+                sizes="100vw"
+                quality={90}
               />
-              <div className="absolute inset-0 bg-black/40" /> {/* Dark Overlay for text readability */}
+              <div className="absolute inset-0 bg-black/40 z-20" />
+
+              {/* Text Overlay — lives INSIDE the slide so image+text are always paired */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center z-30 px-4 pb-[180px] md:pb-[140px]">
+                <div className="w-full max-w-[1320px] flex flex-col items-center text-center gap-[12px] lg:gap-[24px]">
+                  <h1 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[48px] lg:text-[72px] leading-[1.1] tracking-[-0.3px] text-white max-w-[900px]">
+                    {slide[language as 'en' | 'hi'].titleLine1} <br className="hidden md:block" /> {slide[language as 'en' | 'hi'].titleLine2}
+                  </h1>
+                  <p className="font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[24px] leading-[24px] lg:leading-[32px] tracking-[-0.3px] text-white/90 max-w-[600px]">
+                    {slide[language as 'en' | 'hi'].subtitle}
+                  </p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Text Overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-4 pb-[180px] md:pb-[140px]"> {/* pb increased to avoid overlap */}
-          <div className="w-full max-w-[1320px] flex flex-col items-center text-center gap-[12px] lg:gap-[24px]">
-            <ScrollReveal animation="fade-up" duration={1000} delay={200}>
-              <h1 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[48px] lg:text-[72px] leading-[1.1] tracking-[-0.3px] text-white max-w-[900px]">
-                {t.heroSlides[currentHeroIndex].titleLine1} <br className="hidden md:block" /> {t.heroSlides[currentHeroIndex].titleLine2}
-              </h1>
-            </ScrollReveal>
-            <ScrollReveal animation="fade-up" duration={1000} delay={400}>
-              <p className="font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[24px] leading-[24px] lg:leading-[32px] tracking-[-0.3px] text-white/90 max-w-[600px]">
-                {t.heroSlides[currentHeroIndex].subtitle}
-              </p>
-            </ScrollReveal>
-          </div>
-        </div>
-
         {/* Overlapping Quick Action Cards & Highlight */}
-        <div className="absolute bottom-0 left-0 w-full z-20 flex flex-col items-center justify-center translate-y-[50%]">
+        <div className="absolute bottom-0 left-0 w-full z-30 flex flex-col items-center justify-center translate-y-[50%]">
           {/* Cards Grid */}
           <div className="w-full max-w-[1320px] bg-white/95 backdrop-blur-sm shadow-xl grid grid-cols-2 md:grid-cols-5 divide-x divide-gray-200/50 border-t-4 border-[#0D5229] rounded-t-[4px]">
             {t.quickLinks.map((item: any, i: number) => {

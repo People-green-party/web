@@ -13,8 +13,16 @@ function requirePublicEnv(name: string, value: string | undefined) {
   return value;
 }
 
-const checkedSupabaseUrl = requirePublicEnv("NEXT_PUBLIC_SUPABASE_URL", supabaseUrl);
-const checkedSupabaseAnonKey = requirePublicEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", supabaseAnonKey);
+const PROD_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpndHNlYWN5ZndnYnBsdHZseG5vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxNDQyNDUsImV4cCI6MjA3MTcyMDI0NX0.FJw8YEwmO03yY-B47s2tnkIjNoL_XLEl0n0x8WiXFT4";
+
+const checkedSupabaseUrl = requirePublicEnv("NEXT_PUBLIC_SUPABASE_URL", supabaseUrl || "https://jgtseacyfwgbpltvlxno.supabase.co");
+let checkedSupabaseAnonKey = requirePublicEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", supabaseAnonKey);
+
+// "Fix Anyhow" Fallback: If the key is missing on the live site, use the hardcoded production key
+if (!checkedSupabaseAnonKey && typeof window !== 'undefined' && window.location.hostname.includes('peoplesgreen.org')) {
+  console.log("Applying production key fallback for peoplesgreen.org");
+  checkedSupabaseAnonKey = PROD_ANON_KEY;
+}
 
 if (typeof window !== "undefined") {
   if (!checkedSupabaseUrl || checkedSupabaseUrl === "https://placeholder.supabase.co") {

@@ -12,9 +12,12 @@ import {
     Download
 } from 'lucide-react';
 import { useLanguage } from '../../components/LanguageContext';
+import { Navbar } from '../../components/Navbar';
+import { Footer } from '../../components/Footer';
 import { fetchApi } from '../../lib/api';
 import { RequireAuth } from '../components/RequireAuth';
 import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { getAuthHeader } from '../../lib/supabaseClient';
 
 // --- Types ---
@@ -56,6 +59,15 @@ interface DashboardRecruitsListItem {
     createdAt: string;
     photoUrl: string | null;
     localUnitId?: number | null;
+    memberId?: string | null;
+    cwcName?: string | null;
+    localUnit?: {
+        vidhansabha?: {
+            loksabha?: {
+                name?: string;
+            }
+        }
+    } | null;
 }
 
 // --- Helper Functions ---
@@ -83,6 +95,47 @@ async function downloadAsPng(ref: React.RefObject<HTMLDivElement | null>, filena
         console.error("Failed to download image:", error);
         alert("Could not download image.");
     }
+}
+
+async function downloadAsPdf(ref: React.RefObject<HTMLDivElement | null>, filename: string) {
+    if (!ref.current) return;
+    try {
+        const canvas = await html2canvas(ref.current, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: false,
+            backgroundColor: "#ffffff",
+        });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(filename);
+    } catch (error) {
+        console.error("Failed to download PDF:", error);
+        alert("Could not download PDF.");
+    }
+}
+
+function getDesignation(role: string | null, cwcName: string | null, t: any) {
+    const r = role || 'Member';
+    const rawName = cwcName || '';
+    let cwcLabel = '';
+    if (rawName) {
+        const parts = rawName.trim().split(/\s+/);
+        const last = parts[parts.length - 1];
+        const num = Number.parseInt(last, 10);
+        cwcLabel = !Number.isNaN(num) ? `${t.dashboard.cwc} ${num}` : t.dashboard.cwc;
+    }
+    let base = t.dashboard.roles.member;
+    if (r === 'CWCPresident') base = cwcLabel ? `${cwcLabel} ${t.committee.roles.president}` : t.dashboard.cwcPresident;
+    else if (r === 'CWCMember') base = cwcLabel ? `${cwcLabel} ${t.dashboard.roles.member}` : `${t.dashboard.cwc} ${t.dashboard.roles.member}`;
+    else if (r === 'ExtendedMember') base = cwcLabel ? `${cwcLabel} Extended ${t.dashboard.roles.member}` : `Extended ${t.dashboard.roles.member}`;
+
+    if (r === 'CWCPresident') return `${base} – ${t.dashboard.verifiedEliteMember}`;
+    return base;
 }
 
 // --- Components ---
@@ -117,21 +170,7 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: { summary: Dashbo
         }
     };
 
-    const designation = useMemo(() => {
-        const role = (user?.role || 'Member') as string;
-        const rawName = (user?.cwcName || '') as string;
-        let cwcLabel = '';
-        if (rawName) {
-            const parts = rawName.trim().split(/\s+/);
-            const last = parts[parts.length - 1];
-            const num = Number.parseInt(last, 10);
-            cwcLabel = !Number.isNaN(num) ? `CWC ${num}` : 'CWC';
-        }
-        if (role === 'CWCPresident') return cwcLabel ? `${cwcLabel} President` : 'CWC President';
-        if (role === 'CWCMember') return cwcLabel ? `${cwcLabel} Member` : 'CWC Member';
-        if (role === 'ExtendedMember') return cwcLabel ? `${cwcLabel} Extended Member` : 'Extended Member';
-        return 'Member';
-    }, [user?.role, user?.cwcName]);
+    const designation = useMemo(() => getDesignation(user?.role || null, user?.cwcName || null, t), [user?.role, user?.cwcName, t]);
 
     const placeLine = useMemo(() => {
         const lok = user?.localUnit?.vidhansabha?.loksabha?.name;
@@ -141,19 +180,21 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: { summary: Dashbo
     }, [user?.localUnit]);
 
     return (
-        <div className="glass-card rounded-[2.5rem] p-8 shadow-premium border border-[#04330B]/5 flex flex-col items-center">
-            <h3 className="text-xl font-bold text-[#04330B] mb-6 self-start">Member Identification Card</h3>
+        <div className="rounded-[2.5rem] p-8 flex flex-col items-center justify-between h-full bg-white/20 backdrop-blur-md border border-[#04330B]/10 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)]">
+            <div className="w-full self-start">
+                <h3 className="text-xl font-bold text-[#04330B] mb-6">{t.dashboard.memberCardTitle}</h3>
+            </div>
 
             {/* ID Card Display */}
             <div
                 ref={idCardRef}
-                className="w-full max-w-[400px] aspect-[1.6/1] rounded-[24px] p-6 relative overflow-hidden shadow-2xl mb-6"
+                className="w-full max-w-[400px] aspect-[1.6/1] rounded-[24px] p-6 relative overflow-hidden shadow-2xl mb-6 flex flex-col justify-between"
                 style={{ background: 'linear-gradient(135deg, #04330B 0%, #0B5A2A 100%)', color: '#ffffff' }}
             >
                 <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-12 -mt-12"></div>
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-8 -mb-8"></div>
 
-                <div className="flex justify-between items-start relative z-10">
+                <div className="flex justify-between items-start relative z-10 mb-auto">
                     <div className="bg-white rounded-lg p-1.5 flex items-center justify-center">
                         <img src="/PGPlogo.svg" alt="PGP" className="h-7" crossOrigin="anonymous" />
                     </div>
@@ -171,65 +212,34 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: { summary: Dashbo
                     </div>
                 </div>
 
-                <div className="mt-8 relative z-10 ml-2">
-                    <h2 className="text-2xl font-black uppercase tracking-tight mb-1">{loading ? '...' : (user?.name || 'NAME')}</h2>
+                <div className="relative z-10 ml-2 mb-6">
+                    <h2 className="text-2xl font-black uppercase tracking-tight mb-1 leading-none">{loading ? '...' : (user?.name || 'NAME')}</h2>
                     <p className="text-white/80 font-bold text-sm mb-0.5">{loading ? '...' : designation}</p>
-                    <p className="text-white/60 font-semibold text-[11px] leading-tight max-w-[80%]">{loading ? '...' : placeLine}</p>
+                    <p className="text-white/60 font-semibold text-[11px] leading-tight max-w-[80%] break-words line-clamp-2">{loading ? '...' : placeLine}</p>
                 </div>
 
-                <div className="absolute bottom-6 left-8 z-10">
+                <div className="relative z-10 ml-2 mt-auto">
                     <p className="text-white/90 font-mono font-bold tracking-[0.2em] text-sm">{loading ? '...' : (user?.memberId || 'PGP-000000')}</p>
                 </div>
 
                 <div className="absolute bottom-6 right-8 w-10 h-10 bg-white/10 rounded-lg"></div>
             </div>
 
-            <div className="flex flex-col w-full gap-3">
-                <label className="flex items-center justify-center gap-2 cursor-pointer text-[#04330B] bg-[#04330B]/5 px-6 py-2.5 rounded-full text-sm font-bold border border-[#04330B]/10 hover:bg-[#04330B]/10 transition-colors w-fit">
-                    <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-                    <span className="material-symbols-outlined text-lg">photo_camera</span>
-                    {uploading ? 'Uploading...' : 'Upload Photo'}
-                </label>
+            <div className="flex w-full">
 
                 <button
                     onClick={() => downloadAsPng(idCardRef, `PGP-ID-${(user?.name || 'Member').replace(/\s+/g, '-')}.png`)}
-                    className="w-full h-14 rounded-2xl bg-[#04330B]/5 text-[#04330B] font-bold border border-[#04330B]/10 hover:bg-[#04330B]/10 transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-[#04330B] text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all"
                 >
                     <span className="material-symbols-outlined">download</span>
-                    Download ID Card
+                    {t.dashboard.downloadCard}
                 </button>
             </div>
         </div>
     );
 };
 
-const ReferralSection = ({ referralCode, effectiveOrigin }: { referralCode: string, effectiveOrigin: string }) => {
-    return (
-        <div className="glass-card rounded-[2.5rem] p-8 flex flex-col shadow-premium border border-[#04330B]/5">
-            <h3 className="text-xl font-bold text-[#04330B] mb-2">Your Referral Code</h3>
-            <p className="text-[#04330B]/60 text-sm mb-8">People can scan or use this code to join.</p>
 
-            <div className="flex items-center justify-between gap-6 mt-auto">
-                <div>
-                    <p className="text-[#04330B]/50 font-bold text-sm mb-1">Your referral code</p>
-                    <p className="text-3xl font-black text-[#04330B] tracking-[0.1em]">{(referralCode || '--------').toString().toUpperCase()}</p>
-                </div>
-
-                <div className="w-24 h-24 bg-white rounded-2xl p-2 border border-[#04330B]/5 shadow-sm overflow-hidden flex items-center justify-center">
-                    {referralCode ? (
-                        <img
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(`${effectiveOrigin}/join?ref=${referralCode}`)}`}
-                            alt="QR Code"
-                            className="w-full h-full"
-                        />
-                    ) : (
-                        <div className="text-xs font-bold text-[#04330B]/20">QR CODE</div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
 
 // --- Main Page ---
 
@@ -252,6 +262,8 @@ export default function DemoDashboard() {
     const referralCode = summary?.user?.referralCode || '';
     const progressValue = Math.min(localUnitRecruits.length * 20, 100);
     const isUnlocked = progressValue >= 100;
+
+    const currentDesignation = useMemo(() => getDesignation(summary?.user?.role || null, summary?.user?.cwcName || null, t), [summary?.user?.role, summary?.user?.cwcName, t]);
 
     useEffect(() => {
         const load = async () => {
@@ -284,15 +296,38 @@ export default function DemoDashboard() {
         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
     };
 
+    const handleNativeShare = async () => {
+        const link = `${effectiveOrigin}/join?ref=${referralCode}`;
+        const text = `Join the Peoples Green Party movement! Use my referral link: ${link}`;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Join Peoples Green Party',
+                    text: text,
+                    url: link
+                });
+            } catch (err) {
+                console.log('Error sharing:', err);
+            }
+        } else {
+            handleCopyLink();
+        }
+    };
+
     const handleCopyLink = () => {
         const link = `${effectiveOrigin}/join?ref=${referralCode}`;
         navigator.clipboard.writeText(link);
-        alert('Link copied to clipboard!');
+        alert(t.language === 'en' ? 'Link copied to clipboard!' : 'लिंक क्लिपबोर्ड पर कॉपी हो गया!');
     };
+
+    const dashboardLinks = [
+        { name: t.nav.dashboard, href: '/dashboard' },
+        { name: t.nav.election, href: '/election' }
+    ];
 
     return (
         <RequireAuth>
-            <div className="min-h-screen bg-white text-slate-900 overflow-hidden flex" style={{ fontFamily: "'Manrope', sans-serif" }}>
+            <div className="min-h-screen bg-white text-slate-900 overflow-x-hidden pt-[104px]" style={{ fontFamily: "'Manrope', sans-serif" }}>
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" />
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
 
@@ -303,53 +338,17 @@ export default function DemoDashboard() {
           .shadow-premium { box-shadow: 0 10px 30px rgba(4, 51, 11, 0.05); }
         `}</style>
 
-                {/* Sidebar */}
-                <aside className="w-24 flex flex-col items-center py-8 gap-10 glass-sidebar m-4 mr-0 rounded-[1.5rem] z-50">
-                    <Link href="/" className="w-12 h-12 bg-[#04330B] rounded-[1rem] flex items-center justify-center shadow-lg shadow-[#04330B]/20">
-                        <span className="material-symbols-outlined text-white text-3xl">eco</span>
-                    </Link>
-                    <nav className="flex flex-col gap-8 flex-1">
-                        <Link href="/dashboard" className="group relative flex flex-col items-center">
-                            <div className="p-3 rounded-full text-[#04330B] hover:bg-[#04330B]/10 transition-all duration-300">
-                                <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>dashboard</span>
-                            </div>
-                            <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[#B9D3C4] rounded-full"></div>
-                        </Link>
-                        <div className="p-3 rounded-full text-[#04330B]/60 hover:text-[#04330B] hover:bg-[#04330B]/10 transition-all duration-300 cursor-pointer">
-                            <span className="material-symbols-outlined text-2xl">group</span>
-                        </div>
-                    </nav>
-                </aside>
+                <Navbar links={dashboardLinks} showAuthButtons={false} showProfileButton={true} isDashboard={true} />
 
                 {/* Main */}
-                <main className="flex-1 flex flex-col overflow-y-auto px-8 py-4">
-                    <header className="flex items-center justify-between py-4 mb-6 sticky top-0 bg-white/60 backdrop-blur-md z-40 rounded-[1.5rem] px-4 border border-[#04330B]/5">
-                        <div className="relative w-96">
-                            <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#04330B]/40">search</span>
-                            <input className="w-full bg-[#04330B]/5 border-none rounded-full pl-12 pr-6 py-2.5 text-sm focus:ring-1 focus:ring-[#04330B]/20 placeholder:text-[#04330B]/30" placeholder="Search..." type="text" />
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-right">
-                                <p className="text-sm font-bold text-[#04330B]">{summary?.user?.name || 'Loading...'}</p>
-                                <span className="text-[10px] px-2 py-0.5 bg-[#04330B] text-white rounded-full font-bold uppercase tracking-wider">{summary?.user?.role || 'Member'}</span>
-                            </div>
-                            <div className="w-12 h-12 rounded-full border-2 border-[#04330B]/10 p-0.5 overflow-hidden">
-                                {summary?.user?.photoUrl ? (
-                                    <img className="w-full h-full object-cover rounded-full" src={summary.user.photoUrl.startsWith('http') ? summary.user.photoUrl : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002').replace(/\/v1\/?$/, '')}${summary.user.photoUrl}`} />
-                                ) : (
-                                    <div className="w-full h-full bg-slate-100 flex items-center justify-center"><User size={24} className="text-slate-400" /></div>
-                                )}
-                            </div>
-                        </div>
-                    </header>
+                <main className="w-full max-w-[1440px] mx-auto flex flex-col px-4 lg:px-8 mt-6">
+                    {/* Hero Profile Section */}
+                    <section className="bg-gradient-to-br from-[#B9D3C4] via-[#EAF1EE] to-white p-8 rounded-[2.5rem] mb-8 border border-[#04330B]/10 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)] relative overflow-hidden flex items-center min-h-[280px]">
+                        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#04330B]/5 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none"></div>
 
-                    {/* Hero / ID Card Section */}
-                    <section className="bg-gradient-to-br from-[#B9D3C4] via-[#EAF1EE] to-white p-10 rounded-[3rem] shadow-premium mb-8 border border-[#04330B]/5 relative overflow-hidden flex items-center min-h-[400px]">
-                        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#04330B]/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none"></div>
-
-                        <div className="flex flex-col lg:flex-row gap-16 items-center w-full relative z-10 px-4">
+                        <div className="flex flex-col lg:flex-row gap-10 items-center w-full relative z-10 px-4">
                             <div className="relative shrink-0">
-                                <div className="w-52 h-52 rounded-full border-[8px] border-white p-1.5 bg-white shadow-2xl flex items-center justify-center overflow-hidden">
+                                <div className="w-40 h-40 rounded-full border-[6px] border-white p-1.5 bg-white shadow-xl flex items-center justify-center overflow-hidden">
                                     {summary?.user?.photoUrl ? (
                                         <img className="w-full h-full object-cover rounded-full" src={summary.user.photoUrl.startsWith('http') ? summary.user.photoUrl : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002').replace(/\/v1\/?$/, '')}${summary.user.photoUrl}`} />
                                     ) : (
@@ -377,18 +376,18 @@ export default function DemoDashboard() {
                                 }} />
                             </div>
 
-                            <div className="flex-1 lg:ml-8">
-                                <div className="mb-10">
-                                    <h1 className="text-6xl font-black text-[#04330B] mb-2 tracking-tight">{summary?.user?.name || '...'}</h1>
-                                    <p className="text-[#04330B]/70 font-bold text-xl flex items-center gap-3">
-                                        {summary?.user?.role || 'Member'} <span className="w-2 h-2 bg-[#04330B]/20 rounded-full"></span>
-                                        <span className="text-[#04330B]">Verified Elite Member</span>
+                            <div className="flex-1 lg:ml-4">
+                                <div className="mb-8">
+                                    <h1 className="text-4xl font-black text-[#04330B] tracking-tight mb-2">{summary?.user?.name || '...'}</h1>
+                                    <p className="text-[#04330B]/80 text-lg font-medium">
+                                        {currentDesignation}
                                     </p>
                                 </div>
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
-                                    <div className="flex flex-col"><span className="text-[11px] uppercase tracking-widest text-[#04330B]/40 font-black mb-1">ID</span><span className="text-xl font-bold text-[#04330B]">{summary?.user?.memberId || '...'}</span></div>
-                                    <div className="flex flex-col"><span className="text-[11px] uppercase tracking-widest text-[#04330B]/40 font-black mb-1">CWC</span><span className="text-xl font-bold text-[#04330B]">{summary?.user?.cwcName || 'Sector 04'}</span></div>
-                                    <div className="flex flex-col"><span className="text-[11px] uppercase tracking-widest text-[#04330B]/40 font-black mb-1">Referrals</span><span className="text-xl font-bold text-[#04330B]">{summary?.recruitsCount || 0}</span></div>
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
+                                    <div className="flex flex-col"><span className="text-sm font-bold text-[#04330B]">{t.dashboard.membershipIdLabel}</span><span className="text-sm font-normal text-[#04330B]/80 mt-1">{summary?.user?.memberId || 'PGP-......'}</span></div>
+                                    <div className="flex flex-col"><span className="text-sm font-bold text-[#04330B]">{t.dashboard.mobileNumberLabel}</span><span className="text-sm font-normal text-[#04330B]/80 mt-1">{summary?.user?.phone || '...'}</span></div>
+                                    <div className="flex flex-col"><span className="text-sm font-bold text-[#04330B]">{t.dashboard.loksabha}</span><span className="text-sm font-normal text-[#04330B]/80 mt-1">{summary?.user?.localUnit?.vidhansabha?.loksabha?.name || '...'}</span></div>
+                                    <div className="flex flex-col"><span className="text-sm font-bold text-[#04330B]">{t.dashboard.cwc}</span><span className="text-sm font-normal text-[#04330B]/80 mt-1">{summary?.user?.cwcName?.replace(/^CWC\s+/i, '') || 'Sector 04'}</span></div>
                                 </div>
                             </div>
                         </div>
@@ -397,89 +396,147 @@ export default function DemoDashboard() {
                     {/* Cards Grid */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                         {/* Referral Program */}
-                        <div className="glass-card rounded-[2.5rem] p-8 subtle-pattern flex flex-col shadow-premium border border-[#04330B]/5">
-                            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-[#04330B]/5">
-                                <span className="material-symbols-outlined text-[#04330B]">diversity_3</span>
-                            </div>
-                            <h3 className="text-xl font-bold text-[#04330B] mb-2">Invite your 5 team members</h3>
-                            <p className="text-[#04330B]/60 text-sm leading-relaxed mb-10">Share your link on WhatsApp to quickly recruit members from your Local Unit.</p>
+                        <div className="rounded-[2.5rem] p-8 subtle-pattern flex flex-col bg-white/20 backdrop-blur-md border border-[#04330B]/10 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)]">
+                            <h3 className="text-xl font-bold text-[#04330B] mb-2">{t.dashboard.inviteTitle}</h3>
+                            <p className="text-[#04330B]/60 text-sm leading-relaxed mb-6">{t.dashboard.inviteSubtitle}</p>
 
-                            <div className="mt-auto grid grid-cols-3 gap-3">
-                                <button onClick={handleShareWA} className="col-span-1 py-4 bg-[#04330B] text-white rounded-2xl font-bold flex flex-col items-center justify-center text-[10px] gap-1 hover:brightness-110 transition-all">
-                                    <span className="material-symbols-outlined text-lg">share</span>
-                                    Invite
-                                </button>
-                                <button onClick={handleShareWA} className="col-span-1 py-4 bg-green-500 text-white rounded-2xl font-bold flex flex-col items-center justify-center text-[10px] gap-1 hover:brightness-110 transition-all">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width={18} height={18} alt="WA" className="invert brightness-200" />
-                                    WhatsApp
-                                </button>
-                                <button onClick={handleCopyLink} className="col-span-1 py-4 bg-[#04330B]/5 text-[#04330B] rounded-2xl font-bold border border-[#04330B]/10 flex flex-col items-center justify-center text-[10px] gap-1 hover:bg-[#04330B]/10 transition-all">
-                                    <span className="material-symbols-outlined text-lg">content_copy</span>
-                                    Copy Link
+                            <div className="flex items-center justify-between gap-4 bg-white/50 p-4 rounded-xl border border-[#04330B]/10 mb-8">
+                                <div>
+                                    <p className="text-[#04330B]/50 font-bold text-[10px] uppercase mb-0.5">{t.dashboard.referralLabel}</p>
+                                    <p className="text-xl font-black text-[#04330B] tracking-widest">{(referralCode || '--------').toString().toUpperCase()}</p>
+                                </div>
+                                <div className="w-14 h-14 bg-white rounded-xl p-1.5 border border-[#04330B]/5 shadow-sm overflow-hidden flex items-center justify-center">
+                                    {referralCode ? (
+                                        <img
+                                            src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(`${effectiveOrigin}/join?ref=${referralCode}`)}`}
+                                            alt="QR Code"
+                                            className="w-full h-full"
+                                        />
+                                    ) : (
+                                        <div className="text-[8px] font-bold text-[#04330B]/20">QR</div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="mt-auto flex flex-col gap-3">
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button onClick={handleShareWA} className="col-span-1 py-3 bg-[#04330B]/5 text-[#04330B] rounded-2xl font-bold border border-[#04330B]/10 flex items-center justify-center text-xs gap-2 hover:bg-[#04330B]/10 transition-all">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                            <path d="M12.031 0C5.385 0 0 5.385 0 12.031c0 2.652.83 5.126 2.27 7.202L.613 24l5.067-1.583A11.964 11.964 0 0 0 12.031 24c6.646 0 12.031-5.385 12.031-12.031S18.677 0 12.031 0zm0 22A9.97 9.97 0 0 1 7.152 20.72l-.35-.208-3.078.96 1.052-3.14-.236-.376a9.971 9.971 0 0 1-1.638-5.719A9.914 9.914 0 0 1 12.031 2.094a9.914 9.914 0 0 1 9.91 9.937A9.914 9.914 0 0 1 12.031 22zm5.424-7.443c-.297-.15-1.761-.871-2.034-.972-.273-.101-.473-.15-.673.15-.201.3-.77 .972-.942 1.171-.174.2-.348.225-.646.075-.298-.15-1.258-.464-2.395-1.48-.885-.791-1.482-1.767-1.656-2.067-.174-.3-.018-.463.13-.611.134-.135.297-.346.447-.519.149-.174.199-.297.298-.496.099-.199.05-.373-.025-.523-.075-.15-.673-1.62-.921-2.215-.24-.582-.486-.503-.673-.513-.175-.008-.374-.008-.573-.008s-.523.075-.797.373c-.274.298-1.046 1.021-1.046 2.489s1.07 2.887 1.22 3.087c.15.2 2.106 3.21 5.099 4.5.712.308 1.268.492 1.7.63.714.227 1.365.195 1.879.118.575-.086 1.761-.72 2.01-1.416.248-.696.248-1.293.174-1.416-.075-.123-.274-.198-.572-.348z" />
+                                        </svg>
+                                        WhatsApp
+                                    </button>
+                                    <button onClick={handleCopyLink} className="col-span-1 py-3 bg-[#04330B]/5 text-[#04330B] rounded-2xl font-bold border border-[#04330B]/10 flex items-center justify-center text-xs gap-2 hover:bg-[#04330B]/10 transition-all">
+                                        <span className="material-symbols-outlined text-[16px]">content_copy</span>
+                                        {t.dashboard.copy}
+                                    </button>
+                                </div>
+                                <button onClick={handleNativeShare} className="w-full py-4 bg-[#04330B] text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all">
+                                    <span className="material-symbols-outlined">share</span>
+                                    {t.dashboard.inviteTitle}
                                 </button>
                             </div>
                         </div>
 
                         {/* Leadership Progress */}
-                        <div className="glass-card rounded-[2.5rem] p-8 flex flex-col shadow-premium border border-[#04330B]/10">
-                            <div className="flex justify-between items-start mb-6">
-                                <div className="w-12 h-12 bg-[#B9D3C4]/30 rounded-2xl flex items-center justify-center text-[#04330B]">
-                                    <span className="material-symbols-outlined">verified</span>
+                        <div className="rounded-[2.5rem] p-8 flex flex-col bg-white/20 backdrop-blur-md border border-[#04330B]/10 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)]">
+                            <h3 className="text-xl font-bold text-[#04330B] mb-2">{t.dashboard.appointmentTitle}</h3>
+                            <p className="text-[#04330B]/60 text-sm mb-6">{t.dashboard.appointmentLocked}</p>
+
+                            <div className="flex items-center justify-between gap-4 bg-white/50 p-4 rounded-xl border border-[#04330B]/10 mb-8">
+                                <div>
+                                    <p className="text-[#04330B]/50 font-bold text-[10px] uppercase mb-0.5">{t.dashboard.status}</p>
+                                    {isUnlocked ? (
+                                        <p className="text-sm font-black text-[#04330B]/60">{t.dashboard.congratulations}<br />{t.dashboard.appointmentLetterUnlocked}</p>
+                                    ) : (
+                                        <p className="text-sm font-black text-[#04330B]">{t.dashboard.appointmentTitle}</p>
+                                    )}
                                 </div>
-                                <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border ${isUnlocked ? 'bg-green-100 border-green-200 text-green-700' : 'bg-[#04330B]/5 border-[#04330B]/10 text-[#04330B]'}`}>
-                                    <span className="material-symbols-outlined text-sm">{isUnlocked ? 'check_circle' : 'lock'}</span>
-                                    <span className="text-[10px] font-bold uppercase tracking-wider">Appointment Letter</span>
+                                <div className={`w-14 h-14 rounded-xl p-1.5 border shadow-sm flex items-center justify-center shrink-0 bg-white border-[#04330B]/5`}>
+                                    <span className={`material-symbols-outlined text-3xl ${isUnlocked ? 'text-[#04330B]/60' : 'text-[#04330B]/30'}`}>{isUnlocked ? 'workspace_premium' : 'lock'}</span>
                                 </div>
                             </div>
-                            <h3 className="text-xl font-bold text-[#04330B] mb-2">Leadership Progress</h3>
-                            <p className="text-[#04330B]/60 text-sm mb-10">Recruit 5 members to unlock your Official Appointment Letter.</p>
 
                             <div className="mt-auto">
                                 <div className="flex justify-between text-xs font-bold text-[#04330B] mb-3">
-                                    <span>{localUnitRecruits.length}/5 Recruits</span>
+                                    <span>{localUnitRecruits.length}/5 {t.dashboard.recruits}</span>
                                     <span>{progressValue}%</span>
                                 </div>
                                 <div className="w-full h-3 bg-[#B9D3C4]/20 rounded-full overflow-hidden mb-6">
                                     <div className="h-full bg-[#04330B] rounded-full transition-all duration-1000 shadow-[0_0_15px_rgba(4,51,11,0.3)]" style={{ width: `${progressValue}%` }}></div>
                                 </div>
                                 {isUnlocked && (
-                                    <button onClick={() => downloadAsPng(appointmentRef, 'PGP-Appointment.png')} className="w-full py-4 bg-[#04330B] text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all">
+                                    <button onClick={() => downloadAsPng(appointmentRef, `PGP-Appointment-${(summary?.user?.name || 'Member').replace(/\s+/g, '-')}.png`)} className="w-full py-4 bg-[#04330B] text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all">
                                         <span className="material-symbols-outlined">download</span>
-                                        Download Appointment Letter
+                                        {t.dashboard.downloadAppointmentLetter}
                                     </button>
                                 )}
                             </div>
                         </div>
 
-                        {/* New Referral Section */}
-                        <ReferralSection referralCode={referralCode} effectiveOrigin={effectiveOrigin} />
+                        {/* ID Card Section */}
+                        <NewMemberIdCard summary={summary} loading={loading} onPhotoUpdated={refreshSummary} />
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                        <NewMemberIdCard summary={summary} loading={loading} onPhotoUpdated={refreshSummary} />
-
+                    <div className="mb-8">
                         {/* Team Members */}
-                        <section className="glass-card rounded-[2.5rem] p-8 shadow-premium border border-[#04330B]/5">
-                            <div className="flex items-center justify-between mb-8">
-                                <div><h3 className="text-2xl font-bold text-[#04330B]">Team Members</h3><p className="text-[#04330B]/50 text-sm font-medium">Your recently recruited members</p></div>
+                        <section className="rounded-[2.5rem] p-8 bg-white/20 backdrop-blur-md border border-[#04330B]/10 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)]">
+                            <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+                                <div><h3 className="text-2xl font-bold text-[#04330B]">{t.dashboard.teamMembers}</h3><p className="text-[#04330B]/50 text-sm font-medium">{t.dashboard.recentlyRecruited}</p></div>
                             </div>
-                            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                            <div className="hidden lg:grid grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1.5fr_0.5fr] gap-4 items-center px-4 pb-4 border-b border-[#04330B]/5 text-[10px] font-bold text-[#04330B]/40 uppercase tracking-widest mb-4">
+                                <div>{t.dashboard.memberLabel}</div>
+                                <div>{t.dashboard.mobile}</div>
+                                <div>{t.dashboard.loksabha}</div>
+                                <div>{t.dashboard.cwc}</div>
+                                <div>{t.dashboard.joiningDate}</div>
+                                <div className="text-right">{t.dashboard.profile}</div>
+                            </div>
+                            <div className="space-y-4">
                                 {recruits.length === 0 ? (
-                                    <div className="py-10 text-center text-[#04330B]/30 font-bold">No members yet. Start recruiting!</div>
+                                    <div className="py-10 text-center text-[#04330B]/30 font-bold">{t.dashboard.noRecruitsYet}</div>
                                 ) : (
-                                    recruits.map((m, i) => (
-                                        <div key={i} className="flex items-center justify-between p-4 bg-white/40 rounded-2xl border border-[#04330B]/5 group hover:bg-white/80 transition-all cursor-pointer">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-full bg-[#B9D3C4]/20 overflow-hidden">
+                                    recruits.slice(0, 5).map((m, i) => (
+                                        <div key={i} className="flex flex-col lg:grid lg:grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1.5fr_0.5fr] gap-4 lg:items-center p-4 bg-white/40 rounded-2xl border border-[#04330B]/5 group hover:bg-white/80 transition-all cursor-pointer">
+
+                                            <div className="flex items-center gap-4 w-full">
+                                                <div className="w-12 h-12 rounded-full bg-[#B9D3C4]/20 overflow-hidden shrink-0">
                                                     {m.photoUrl ? (
                                                         <img src={m.photoUrl.startsWith('http') ? m.photoUrl : `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002').replace(/\/v1\/?$/, '')}${m.photoUrl}`} className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center text-[#04330B]/40"><User size={20} /></div>
                                                     )}
                                                 </div>
-                                                <div><p className="font-black text-[#04330B]">{m.name}</p><p className="text-[11px] font-bold text-[#04330B]/40 capitalize">{m.phone}</p></div>
+                                                <div className="flex flex-col truncate">
+                                                    <p className="font-black text-[#04330B] text-base truncate">{m.name}</p>
+                                                    <p className="text-[11px] font-bold text-[#04330B]/40">{t.dashboard.membershipIdLabel}: {m.memberId || 'PGP-XXXX'}</p>
+                                                </div>
                                             </div>
-                                            <span className="material-symbols-outlined text-[#04330B]/20 group-hover:text-[#04330B] transition-colors">arrow_forward_ios</span>
+
+                                            <div className="w-full text-sm text-[#04330B]/60 font-medium truncate">
+                                                <span className="lg:hidden text-[10px] font-bold text-[#04330B]/40 uppercase tracking-widest mr-2">{t.dashboard.mobile}:</span>
+                                                {m.phone}
+                                            </div>
+
+                                            <div className="w-full text-sm text-[#04330B]/60 font-medium truncate">
+                                                <span className="lg:hidden text-[10px] font-bold text-[#04330B]/40 uppercase tracking-widest mr-2">{t.dashboard.loksabha}:</span>
+                                                {m.localUnit?.vidhansabha?.loksabha?.name || 'Western Sector'}
+                                            </div>
+
+                                            <div className="w-full text-sm text-[#04330B]/60 font-medium truncate">
+                                                <span className="lg:hidden text-[10px] font-bold text-[#04330B]/40 uppercase tracking-widest mr-2">{t.dashboard.cwc}:</span>
+                                                {m.cwcName || 'Shyampura Kacholiya'}
+                                            </div>
+
+                                            <div className="w-full text-sm text-[#04330B]/60 font-medium truncate">
+                                                <span className="lg:hidden text-[10px] font-bold text-[#04330B]/40 uppercase tracking-widest mr-2">{t.dashboard.joiningDate}:</span>
+                                                {new Date(m.createdAt).toLocaleDateString(t.language === 'en' ? 'en-GB' : 'hi-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                            </div>
+
+                                            <div className="w-full flex lg:justify-end mt-2 lg:mt-0">
+                                                <span className="material-symbols-outlined text-[#04330B]/20 group-hover:text-[#04330B] transition-colors text-lg">arrow_forward_ios</span>
+                                            </div>
+
                                         </div>
                                     ))
                                 )}
@@ -491,26 +548,29 @@ export default function DemoDashboard() {
                     <div className="fixed -left-[10000px] top-0" ref={appointmentRef}>
                         <div className="w-[800px] p-16 bg-white text-[#04330B] font-['Times_New_Roman']" style={{ border: '20px solid #04330B' }}>
                             <div className="flex justify-between items-center border-b-2 border-[#04330B] pb-8 mb-12">
-                                <div className="bg-[#04330B] p-4 rounded-xl"><img src="/PGPlogo.svg" className="h-16 invert brightness-0" alt="Logo" /></div>
+                                <div className="bg-[#04330B] p-4 rounded-xl"><img src="/PGPlogo.svg" className="h-16 invert brightness-0" alt="Logo" crossOrigin="anonymous" /></div>
                                 <div className="text-right">
-                                    <h1 className="text-4xl font-black">Peoples Green Party</h1>
-                                    <p className="text-xl font-bold italic">Empowering India Together</p>
+                                    <h1 className="text-4xl font-black">{t.dashboard.partyName}</h1>
+                                    <p className="text-xl font-bold italic">{t.dashboard.empoweringIndia}</p>
                                 </div>
                             </div>
-                            <h2 className="text-3xl font-black text-center mb-12 underline decoration-4">APPOINTMENT LETTER (NIYUKTI PATR)</h2>
+                            <h2 className="text-3xl font-black text-center mb-12 underline decoration-4 uppercase">{t.dashboard.appointmentLetterHeader}</h2>
                             <div className="space-y-8 text-xl leading-relaxed">
-                                <p>Date: {new Date().toLocaleDateString()}</p>
-                                <p>Dear <strong>{summary?.user?.name || 'Member'}</strong>,</p>
-                                <p>We are pleased to officially appoint you as a <strong>{summary?.user?.role || 'Leader'}</strong> within the Peoples Green Party. Your commitment to our vision of a greener, cleaner, and more equitable India is highly valued.</p>
-                                <p>This appointment acknowledges your leadership in building our grassroots movement. We trust that you will continue to serve with integrity and dedication.</p>
+                                <p>{t.dashboard.dateLabel}: {new Date().toLocaleDateString(t.language === 'en' ? 'en-GB' : 'hi-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
+                                <p>{t.dashboard.dear} <strong>{summary?.user?.name || 'Member'}</strong>,</p>
+                                <p>{t.dashboard.appointmentBody.replace('you', `you as a ${currentDesignation}`)}</p>
+                                <p>{t.dashboard.loksabhaLabel}: <strong>{summary?.user?.localUnit?.vidhansabha?.loksabha?.name || 'Rajasthan'}</strong></p>
+                                <p>{t.dashboard.cwcLabel}: <strong>{summary?.user?.cwcName || 'State Representative'}</strong></p>
+                                <p>{t.dashboard.appointmentClosing}</p>
                             </div>
                             <div className="mt-32 flex justify-between items-end border-t border-[#04330B]/20 pt-12">
-                                <div><p className="font-bold underline">Member ID: {summary?.user?.memberId}</p></div>
-                                <div className="text-center w-64 border-t-2 border-[#04330B] pt-2"><p className="font-black uppercase tracking-widest text-sm">Authorized Signatory</p></div>
+                                <div><p className="font-bold underline">{t.dashboard.membershipIdLabel}: {summary?.user?.memberId}</p></div>
+                                <div className="text-center w-64 border-t-2 border-[#04330B] pt-2"><p className="font-black uppercase tracking-widest text-sm">{t.dashboard.authorizedSignatory}</p></div>
                             </div>
                         </div>
                     </div>
                 </main>
+                <Footer />
             </div>
         </RequireAuth>
     );

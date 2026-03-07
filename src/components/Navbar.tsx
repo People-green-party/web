@@ -77,8 +77,8 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
     }, []);
 
     return (
-        <nav className={`bg-white fixed top-0 z-50 w-full ${isDashboard ? 'flex justify-center' : ''}`}>
-            <div className={`w-full ${isDashboard ? 'max-w-[1320px] lg:h-[92px]' : 'lg:h-[90px] relative'} h-[70px] flex items-center justify-between px-4 lg:px-8 bg-white`}>
+        <nav className={`bg-white fixed top-0 z-50 w-full ${isDashboard ? 'border-b border-[#04330B]/5' : ''}`}>
+            <div className={`w-full relative mx-auto ${isDashboard ? 'max-w-[1440px] lg:h-[92px]' : 'max-w-[1440px] lg:h-[90px]'} h-[70px] flex items-center justify-between px-4 lg:px-8 bg-white`}>
 
                 {/* Left Side: Logo */}
                 {/* For Dashboard, we want Dashboard/Election buttons centered. 
@@ -103,7 +103,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
                         <div className="hidden xl:flex items-center justify-center gap-[8px] absolute left-1/2 -translate-x-1/2">
                             {links.map((link) => {
-                                const isActive = pathname === link.href;
+                                const isActive = pathname === link.href || (pathname === '/demo-dashboard' && link.href === '/dashboard');
                                 return (
                                     <a
                                         key={link.name}
@@ -136,7 +136,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
                         <div className="hidden xl:flex items-center justify-center gap-[8px] absolute left-1/2 -translate-x-1/2">
                             {links.map((link) => {
-                                const isActive = pathname === link.href;
+                                const isActive = pathname === link.href || (pathname === '/demo-dashboard' && link.href === '/dashboard');
                                 return (
                                     <a
                                         key={link.name}
@@ -255,9 +255,19 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                         </Link>
                     )}
 
-                    {links.map((link) => (
-                        <a key={link.name} href={link.href} className="text-gray-700 font-medium py-2 border-b border-gray-50 text-lg text-center w-full">{link.name}</a>
-                    ))}
+                    {links.map((link) => {
+                        const isActive = pathname === link.href || (pathname === '/demo-dashboard' && link.href === '/dashboard');
+                        return (
+                            <a
+                                key={link.name}
+                                href={link.href}
+                                className={`font-medium py-3 rounded-lg text-lg text-center w-full transition-colors ${isActive ? 'bg-[#EAF7EE] text-[#04330B]' : 'text-gray-700 border-b border-gray-50'
+                                    }`}
+                            >
+                                {link.name}
+                            </a>
+                        );
+                    })}
 
                     {showProfileButton && (
                         <button
