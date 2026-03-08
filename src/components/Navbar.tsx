@@ -103,7 +103,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
                         <div className="hidden xl:flex items-center justify-center gap-[8px] absolute left-1/2 -translate-x-1/2">
                             {links.map((link) => {
-                                const isActive = pathname === link.href || (pathname === '/demo-dashboard' && link.href === '/dashboard');
+                                const isActive = pathname === link.href;
                                 return (
                                     <a
                                         key={link.name}
@@ -136,7 +136,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
                         <div className="hidden xl:flex items-center justify-center gap-[8px] absolute left-1/2 -translate-x-1/2">
                             {links.map((link) => {
-                                const isActive = pathname === link.href || (pathname === '/demo-dashboard' && link.href === '/dashboard');
+                                const isActive = pathname === link.href;
                                 return (
                                     <a
                                         key={link.name}
@@ -256,7 +256,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     )}
 
                     {links.map((link) => {
-                        const isActive = pathname === link.href || (pathname === '/demo-dashboard' && link.href === '/dashboard');
+                        const isActive = pathname === link.href;
                         return (
                             <a
                                 key={link.name}

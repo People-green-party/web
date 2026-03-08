@@ -500,7 +500,7 @@ const Navbar = () => {
     { name: t.nav.leaders, href: '/leaders' },
     { name: t.nav.constitution, href: '/constitution' },
     { name: t.nav.weAreAravali, href: 'https://wearearavali.org/', target: '_blank' },
-    { name: "New Dashboard", href: '/demo-dashboard' },
+    // Removed New Dashboard button here as it's now the default dashboard
   ];
 
   return (
