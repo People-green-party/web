@@ -2,6 +2,13 @@
 
 import { getAuthHeader } from './supabaseClient';
 
+function normalizeApiBaseUrl(baseUrl: string) {
+    const cleaned = String(baseUrl || '').replace(/\/$/, '');
+    if (!cleaned) return '/api';
+    if (cleaned.endsWith('/v1')) return cleaned;
+    return `${cleaned}/v1`;
+}
+
 export function getApiBaseUrl() {
     let baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
@@ -11,7 +18,7 @@ export function getApiBaseUrl() {
             return 'https://api-production-da5f.up.railway.app/v1';
         }
     }
-    return baseUrl.replace(/\/$/, '') || '/api';
+    return normalizeApiBaseUrl(baseUrl);
 }
 
 /**
@@ -24,10 +31,16 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
         ? endpoint
         : `${baseUrl}/${endpoint.replace(/^\//, '')}`;
 
-    const toFriendlyMessage = (msg: string) => {
+    const toFriendlyMessage = (msg: string, status?: number, endpointName?: string) => {
         const m = String(msg || '').trim();
         const lower = m.toLowerCase();
         if (!m) return 'Something went wrong. Please try again.';
+        if (status === 404 && endpointName?.includes('login-pin')) {
+            return 'Login service is not reachable right now. The website was calling the wrong backend route. Please refresh and try again.';
+        }
+        if (status === 404 && lower.includes('cannot post')) {
+            return 'The requested backend route was not found. This usually means the frontend API URL is misconfigured.';
+        }
         if (lower.includes('phone already registered')) {
             return 'This mobile number is already registered. Please log in.';
         }
@@ -80,7 +93,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
         if (!response.ok) {
             const errorMsg = (data as any)?.message || (data as any)?.error || (typeof data === 'string' ? data : '') || `API error: ${response.status}`;
-            const friendly = toFriendlyMessage(errorMsg);
+            const friendly = toFriendlyMessage(errorMsg, response.status, endpoint);
 
             // Detailed logging for debugging production connectivity
             console.error(`[API Error] ${response.status} ${response.statusText}`, {
