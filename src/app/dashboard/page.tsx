@@ -39,6 +39,7 @@ interface DashboardUserSummary {
         } | null;
         cwcName?: string | null;
         isLeader?: boolean;
+        unionName?: string | null;
     };
     recruitsCount: number;
     votesCast: number;
@@ -181,6 +182,72 @@ function getDesignation(role: string | null, cwcName: string | null, t: any) {
 }
 
 // --- Components ---
+
+// Union ID Card Component (Green theme)
+const UnionIdCard = ({ summary, loading }: { summary: DashboardUserSummary | null, loading: boolean }) => {
+    const { t } = useLanguage();
+    const user = summary?.user;
+    const idCardRef = useRef<HTMLDivElement | null>(null);
+
+    return (
+        <div className="rounded-[2.5rem] p-8 flex flex-col items-center justify-between h-full bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7] border border-[#22C55E]/20 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)] min-h-[420px]">
+            <div className="w-full self-start">
+                <h3 className="text-xl font-bold text-[#04330B] mb-2">संघ सदस्य कार्ड</h3>
+                <div className="min-h-[40px] mb-6 invisible lg:block text-sm leading-relaxed">Space aligner</div>
+            </div>
+
+            {/* Union ID Card Display */}
+            <div
+                ref={idCardRef}
+                data-download-root
+                className="w-full max-w-[400px] aspect-[1.6/1] rounded-[24px] p-6 relative overflow-hidden shadow-2xl mb-6 flex flex-col justify-between"
+                style={{ background: 'linear-gradient(135deg, #04330B 0%, #0B5A2A 100%)', color: '#ffffff' }}
+            >
+                <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-12 -mt-12"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-8 -mb-8"></div>
+
+                <div className="flex justify-between items-start relative z-10 mb-auto">
+                    <div className="bg-white rounded-lg p-1.5 flex items-center justify-center">
+                        <span className="text-[#04330B] font-bold text-xs">संघ</span>
+                    </div>
+                    <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center overflow-hidden border border-white/30">
+                        {user?.photoUrl ? (
+                            <img
+                                src={user.photoUrl.startsWith('http') ? user.photoUrl : `${getApiBaseUrl().replace(/\/v1\/?$/, '')}${user.photoUrl}`}
+                                alt="Profile"
+                                className="w-full h-full object-cover"
+                                crossOrigin="anonymous"
+                            />
+                        ) : (
+                            <span className="material-symbols-outlined text-white text-3xl">person</span>
+                        )}
+                    </div>
+                </div>
+
+                <div className="relative z-10 ml-2 mb-6">
+                    <h2 className="text-2xl font-black uppercase tracking-tight mb-1 leading-none">{loading ? '...' : (user?.name || 'नाम')}</h2>
+                    <p className="text-white/80 font-bold text-sm mb-0.5">{loading ? '...' : (user?.unionName || 'संघ सदस्य')}</p>
+                </div>
+
+                <div className="relative z-10 ml-2 mt-auto">
+                    <p className="text-white/90 font-mono font-bold tracking-[0.2em] text-sm">{loading ? '...' : (user?.memberId || 'U-000000')}</p>
+                </div>
+
+                <div className="absolute bottom-6 right-8 w-10 h-10 bg-white/10 rounded-lg"></div>
+            </div>
+
+            <div className="flex w-full">
+                <button
+                    onClick={() => downloadAsPng(idCardRef, `Union-ID-${(user?.name || 'Member').replace(/\s+/g, '-')}.png`)}
+                    className="w-full py-4 bg-gradient-to-r from-[#04330B] to-[#0B5A2A] text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all overflow-hidden"
+                >
+                    <span className="material-symbols-outlined shrink-0">download</span>
+                    <span className="truncate">कार्ड डाउनलोड करें</span>
+                </button>
+            </div>
+        </div>
+    );
+};
 
 const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: { summary: DashboardUserSummary | null, loading: boolean, onPhotoUpdated: () => void }) => {
     const { t } = useLanguage();
@@ -388,9 +455,12 @@ export default function DemoDashboard() {
         { name: t.nav.election, href: '/election' }
     ];
 
+    // Check if user is a union worker
+    const isUnionWorker = !!summary?.user?.unionName;
+
     return (
         <RequireAuth>
-            <div className="min-h-screen bg-white text-slate-900 overflow-x-hidden pt-[104px]" style={{ fontFamily: "'Manrope', sans-serif" }}>
+            <div className={`min-h-screen ${isUnionWorker ? 'bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7]' : 'bg-white'} text-slate-900 overflow-x-hidden pt-[104px]`} style={{ fontFamily: "'Manrope', sans-serif" }}>
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" />
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
 
@@ -470,8 +540,22 @@ export default function DemoDashboard() {
                     </section>
 
                     {/* Cards Grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                        {!summary?.user?.isLeader ? (
+                    {isUnionWorker ? (
+                        // UNION WORKER DASHBOARD
+                        <div className="lg:col-span-3">
+                            <div className="rounded-[2.5rem] p-8 bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7] border border-[#22C55E]/20 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)] mb-8">
+                                <h2 className="text-2xl font-black text-[#04330B] mb-2">{summary?.user?.unionName} में आपका स्वागत है</h2>
+                                <p className="text-[#04330B]/70 font-medium">आप संघ के एक महत्वपूर्ण सदस्य हैं। एक साथ खड़े रहें, अपने अधिकारों के लिए लड़ें!</p>
+                            </div>
+                            <div className="max-w-[500px] mx-auto">
+                                {/* Union ID Card */}
+                                <UnionIdCard summary={summary} loading={loading} />
+                            </div>
+                        </div>
+                    ) : (
+                        // POLITICAL DASHBOARD (existing logic)
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                    {!summary?.user?.isLeader ? (
                             <div className="lg:col-span-2 rounded-[2.5rem] p-8 subtle-pattern flex flex-col items-center justify-center text-center bg-white/20 backdrop-blur-md border border-[#04330B]/10 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)] min-h-[420px]">
                                 <div className="w-24 h-24 mb-6 rounded-[2rem] bg-gradient-to-br from-[#04330B] to-[#0B5A2A] flex items-center justify-center shadow-[0_10px_30px_rgba(4,51,11,0.2)]">
                                     <span className="material-symbols-outlined text-[56px] text-white/90">emoji_events</span>
@@ -572,9 +656,10 @@ export default function DemoDashboard() {
 
                         {/* ID Card Section */}
                         <NewMemberIdCard summary={summary} loading={loading} onPhotoUpdated={refreshSummary} />
-                    </div>
+                        </div>
+                    )}
 
-                    {summary?.user?.isLeader && (
+                    {!isUnionWorker && summary?.user?.isLeader && (
                         <div className="mb-8">
                             {/* Team Members */}
                             <section className="rounded-[2.5rem] p-8 bg-white/20 backdrop-blur-md border border-[#04330B]/10 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)]">

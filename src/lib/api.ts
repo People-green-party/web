@@ -95,13 +95,15 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
             const errorMsg = (data as any)?.message || (data as any)?.error || (typeof data === 'string' ? data : '') || `API error: ${response.status}`;
             const friendly = toFriendlyMessage(errorMsg, response.status, endpoint);
 
-            // Detailed logging for debugging production connectivity
-            console.error(`[API Error] ${response.status} ${response.statusText}`, {
-                url,
-                endpoint,
-                errorMsg,
-                data
-            });
+            // Only log non-401 errors (401 is expected for unauthenticated users on public pages)
+            if (response.status !== 401) {
+                console.error(`[API Error] ${response.status} ${response.statusText}`, {
+                    url,
+                    endpoint,
+                    errorMsg,
+                    data
+                });
+            }
 
             throw new Error(friendly);
         }
