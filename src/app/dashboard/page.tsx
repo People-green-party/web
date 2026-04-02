@@ -38,7 +38,8 @@ interface DashboardUserSummary {
             vidhansabha: { id: number; name: string; loksabha: { id: number; name: string } };
         } | null;
         cwcName?: string | null;
-        isLeader?: boolean;
+        hasOptedIn?: boolean;  // True if user clicked the "Become a Leader" button
+        isLeader?: boolean;    // True ONLY if user recruited 5 people and got promoted
         unionName?: string | null;
     };
     recruitsCount: number;
@@ -458,6 +459,20 @@ export default function DemoDashboard() {
     // Check if user is a union worker
     const isUnionWorker = !!summary?.user?.unionName;
 
+    // Don't render content until we know the user type
+    if (loading) {
+        return (
+            <RequireAuth>
+                <div className="min-h-screen bg-white text-slate-900 flex items-center justify-center" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                    <div className="flex flex-col items-center gap-4">
+                        <div className="w-12 h-12 border-4 border-[#04330B] border-t-transparent rounded-full animate-spin"></div>
+                        <p className="text-[#04330B] font-semibold">लोड हो रहा है...</p>
+                    </div>
+                </div>
+            </RequireAuth>
+        );
+    }
+
     return (
         <RequireAuth>
             <div className={`min-h-screen ${isUnionWorker ? 'bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7]' : 'bg-white'} text-slate-900 overflow-x-hidden pt-[104px]`} style={{ fontFamily: "'Manrope', sans-serif" }}>
@@ -555,7 +570,7 @@ export default function DemoDashboard() {
                     ) : (
                         // POLITICAL DASHBOARD (existing logic)
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                    {!summary?.user?.isLeader ? (
+                    {!summary?.user?.hasOptedIn ? (
                             <div className="lg:col-span-2 rounded-[2.5rem] p-8 subtle-pattern flex flex-col items-center justify-center text-center bg-white/20 backdrop-blur-md border border-[#04330B]/10 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)] min-h-[420px]">
                                 <div className="w-24 h-24 mb-6 rounded-[2rem] bg-gradient-to-br from-[#04330B] to-[#0B5A2A] flex items-center justify-center shadow-[0_10px_30px_rgba(4,51,11,0.2)]">
                                     <span className="material-symbols-outlined text-[56px] text-white/90">emoji_events</span>
