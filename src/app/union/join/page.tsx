@@ -119,11 +119,11 @@ const UnionJoinPageContent = () => {
   const [formData, setFormData] = useState({
     name: '',
     mobile: '',
-    pin: '',
     unionName: '',
     vehicleNumber: '',
+    governmentId: '',
     address: '',
-    referralCode: '',
+    photoUrl: '',
   });
   const [showPin, setShowPin] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -133,42 +133,43 @@ const UnionJoinPageContent = () => {
   const [showOtpField, setShowOtpField] = useState(false);
   const [otpSimulated, setOtpSimulated] = useState(false);
   const [meSummary, setMeSummary] = useState<any>(null);
+  const [phoneVerified, setPhoneVerified] = useState(false);
 
   const registrationValidationError = useMemo(() => {
     if (!formData.name.trim()) return 'Please enter your full name.';
     const mobile = formData.mobile.replace(/\D/g, '');
     if (mobile.length < 10) return 'Please enter a valid 10-digit mobile number.';
-    const pin = formData.pin.replace(/\D/g, '');
-    if (pin.length < 4 || pin.length > 6) return 'Please create a 4–6 digit login PIN.';
+    if (!phoneVerified) return 'Please verify your phone number with OTP.';
     if (!formData.unionName) return 'Please select your Union.';
     // Vehicle number required for E-Rickshaw and Vahan Chalak unions
     const requiresVehicle = ['ई-रिक्शा चालक संघ', 'राजस्थान वाहन चालक संघ'].includes(formData.unionName);
     if (requiresVehicle && !formData.vehicleNumber.trim()) return 'Please enter your vehicle number.';
+    if (!formData.governmentId.trim()) return 'Please enter your Government ID number.';
     if (!formData.address.trim()) return 'Please enter your address.';
     return null;
-  }, [formData.name, formData.mobile, formData.pin, formData.unionName, formData.vehicleNumber, formData.address]);
+  }, [formData.name, formData.mobile, phoneVerified, formData.unionName, formData.vehicleNumber, formData.governmentId, formData.address]);
 
   const isRegistrationReady = useMemo(() => {
     return !registrationValidationError;
   }, [registrationValidationError]);
 
-  // Clear form on mount but preserve referral code if present in URL
+  // Clear form on mount
   useEffect(() => {
-    const urlRefCode = searchParams.get('ref') || '';
     setFormData({
       name: '',
       mobile: '',
-      pin: '',
       unionName: '',
       vehicleNumber: '',
+      governmentId: '',
       address: '',
-      referralCode: urlRefCode,
+      photoUrl: '',
     });
     setOtp('');
     setOtpError('');
     setOtpSent(false);
     setShowOtpField(false);
-  }, [searchParams]);
+    setPhoneVerified(false);
+  }, []);
 
   async function handleSubmit() {
     if (registrationValidationError) {
@@ -193,11 +194,11 @@ const UnionJoinPageContent = () => {
         name: formData.name,
         phone: phoneNumber,
         password: randomPassword,
-        pin: formData.pin,
         address: formData.address,
         unionName: formData.unionName,
         vehicleNumber: formData.vehicleNumber || undefined,
-        referralCode: formData.referralCode || undefined,
+        governmentId: formData.governmentId || undefined,
+        photoUrl: formData.photoUrl || undefined,
         authUserId: authUserData?.user?.id || undefined,
       };
 
@@ -208,17 +209,15 @@ const UnionJoinPageContent = () => {
 
       console.log('Union registration successful:', userData);
 
-      const loginRes = await fetchApi('users/login-pin', {
-        method: 'POST',
-        body: JSON.stringify({ phone: phoneNumber, pin: formData.pin }),
-      });
-
+      // Auto-login after registration using the access token from Supabase
+      const { data: sessionData } = await supabase.auth.getSession();
+      
       if (typeof window !== 'undefined') {
         if (userData?.user?.id) {
           window.localStorage.setItem('devUserId', String(userData.user.id));
         }
-        if (loginRes?.access_token) {
-          window.localStorage.setItem('access_token', loginRes.access_token);
+        if (sessionData?.session?.access_token) {
+          window.localStorage.setItem('access_token', sessionData.session.access_token);
         }
       }
 
@@ -238,73 +237,40 @@ const UnionJoinPageContent = () => {
     }
   }
 
-  async function handleVerifyOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
-    event.preventDefault();
-
-    const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
-    if ((devAuthMode || otpSimulated) && otp === '123456') {
-      setStep(2);
-      handleSubmit();
-      return;
-    }
-
-    if (!otp) {
-      setOtpError('Please enter the OTP');
-      return;
-    }
-
-    setLoading(true);
-    setOtpError('');
-
-    try {
-      const { supabase } = await import('../../../lib/supabaseClient');
-      const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
-
-      const { data, error } = await supabase.auth.verifyOtp({
-        phone: phoneNumber,
-        token: otp,
-        type: 'sms',
-      });
-
-      if (error) {
-        if (otp === '123456' && otpError?.includes('Simulating OTP sent')) {
-          console.log('Simulated OTP verification successful');
-          setStep(2);
-          handleSubmit();
-          return;
-        }
-        throw error;
-      }
-      console.log('OTP verified successfully');
-      setStep(2);
-      handleSubmit();
-    } catch (error: any) {
-      console.error('Error verifying OTP:', error);
-      setOtpError(error.message || 'Invalid OTP. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  }
-
   async function handleSendOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
     event.preventDefault();
 
-    const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
-    if (devAuthMode) {
-      if (registrationValidationError) {
-        setOtpError(registrationValidationError);
-        return;
-      }
-      setOtpSent(true);
-      setShowOtpField(true);
-      setOtpSimulated(true);
-      setOtpError('Dev mode: Simulating OTP sent. Use OTP: 123456');
-      setStep(2);
+    // Only check phone number validation for OTP send
+    const mobile = formData.mobile.replace(/\D/g, '');
+    if (mobile.length < 10) {
+      setOtpError('Please enter a valid 10-digit mobile number.');
       return;
     }
 
-    if (registrationValidationError) {
-      setOtpError(registrationValidationError);
+    // Auto-save partial registration data
+    try {
+      const { fetchApi } = await import('../../../lib/api');
+      const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
+      await fetchApi('users/partial-register', {
+        method: 'POST',
+        body: JSON.stringify({
+          phone: phoneNumber,
+          name: formData.name || undefined,
+          unionName: formData.unionName || undefined,
+          vehicleNumber: formData.vehicleNumber || undefined,
+          governmentId: formData.governmentId || undefined,
+          address: formData.address || undefined,
+        }),
+      });
+    } catch (e) {
+      console.warn('Partial save failed (non-critical):', e);
+    }
+
+    const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
+    if (devAuthMode) {
+      setShowOtpField(true);
+      setOtpSimulated(true);
+      setOtpError('Dev mode: Use OTP: 123456');
       return;
     }
 
@@ -338,9 +304,7 @@ const UnionJoinPageContent = () => {
         throw error;
       }
 
-      setOtpSent(true);
       setShowOtpField(true);
-      setStep(2);
     } catch (error: any) {
       console.error('Error sending OTP:', error);
       const isConfigError = error.message === 'Unsupported phone provider' ||
@@ -351,14 +315,56 @@ const UnionJoinPageContent = () => {
 
       if (isConfigError) {
         console.warn('SMS provider not configured (falling back to simulation).', error.message);
-        setOtpSent(true);
         setShowOtpField(true);
         setOtpSimulated(true);
-        setOtpError('SMS provider not configured. Simulating OTP sent. Use OTP: 123456');
-        setStep(2);
+        setOtpError('SMS provider not configured. Use OTP: 123456');
       } else {
         setOtpError(error.message || 'Failed to send OTP. Please try again.');
       }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleVerifyOtp(): Promise<void> {
+    setLoading(true);
+    setOtpError('');
+
+    try {
+      const { supabase } = await import('../../../lib/supabaseClient');
+      const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
+
+      if (otpSimulated || process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true') {
+        // Dev mode - accept 123456
+        if (otp === '123456') {
+          setPhoneVerified(true);
+          setShowOtpField(false);
+          setOtpError('');
+          return;
+        } else {
+          setOtpError('Invalid OTP. Use: 123456');
+          setLoading(false);
+          return;
+        }
+      }
+
+      const { error } = await supabase.auth.verifyOtp({
+        phone: phoneNumber,
+        token: otp,
+        type: 'sms',
+      });
+
+      if (error) {
+        setOtpError(error.message || 'Invalid OTP. Please try again.');
+        return;
+      }
+
+      setPhoneVerified(true);
+      setShowOtpField(false);
+      setOtpError('');
+    } catch (error: any) {
+      console.error('Error verifying OTP:', error);
+      setOtpError(error.message || 'Failed to verify OTP. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -447,24 +453,43 @@ const UnionJoinPageContent = () => {
                       />
                     </div>
 
-                    <div className="relative">
-                      <input
-                        type={showPin ? "text" : "password"}
-                        value={formData.pin}
-                        onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '').slice(0, 6) })}
-                        inputMode="numeric"
-                        className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none"
-                        placeholder="लॉगिन PIN बनाएं"
-                        autoComplete="off"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPin(!showPin)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#04330B] hover:text-[#0B5A2A] transition-colors"
-                      >
-                        {showPin ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    </div>
+                    {/* OTP Send Button - below phone */}
+                    <button
+                      type="button"
+                      onClick={handleSendOtp}
+                      disabled={loading || formData.mobile.length < 10}
+                      className="w-full h-[46px] rounded-[10px] bg-[#04330B] text-white font-semibold disabled:opacity-60 flex items-center justify-center gap-2"
+                    >
+                      {loading ? (
+                        <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
+                      ) : (
+                        phoneVerified ? '✓ Verified' : 'Send OTP'
+                      )}
+                    </button>
+
+                    {/* OTP Input Field */}
+                    {showOtpField && !phoneVerified && (
+                      <div className="flex flex-col gap-2">
+                        <input
+                          type="text"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                          inputMode="numeric"
+                          className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none text-center tracking-[0.5em]"
+                          placeholder="Enter OTP"
+                          autoComplete="one-time-code"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleVerifyOtp}
+                          disabled={loading || otp.length < 6}
+                          className="w-full h-[40px] rounded-[10px] bg-[#22C55E] text-white font-semibold disabled:opacity-60"
+                        >
+                          {loading ? 'Verifying...' : 'Verify OTP'}
+                        </button>
+                        {otpError && <div className="text-center text-[12px] text-red-500 font-semibold">{otpError}</div>}
+                      </div>
+                    )}
                   </div>
 
                   {/* Union Selection Dropdown */}
@@ -491,6 +516,52 @@ const UnionJoinPageContent = () => {
                     />
                   )}
 
+                  {/* Government ID */}
+                  <input
+                    type="text"
+                    value={formData.governmentId}
+                    onChange={(e) => setFormData({ ...formData, governmentId: e.target.value.toUpperCase() })}
+                    className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none uppercase"
+                    placeholder="सरकारी ID नंबर (आधार/पैन/वोटर ID)"
+                    autoComplete="off"
+                  />
+
+                  {/* Photo Upload */}
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[#04330B] font-semibold text-sm">फोटो अपलोड करें</label>
+                    <div className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] bg-white flex items-center px-4">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            // Convert to base64 for preview and storage
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              setFormData({ ...formData, photoUrl: reader.result as string });
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="hidden"
+                        id="photo-upload"
+                      />
+                      <label
+                        htmlFor="photo-upload"
+                        className="py-2 px-4 rounded-full bg-[#DCFCE7] text-[#04330B] font-semibold cursor-pointer hover:bg-[#BBF7D0] transition-colors"
+                      >
+                        Choose File
+                      </label>
+                      <span className="ml-3 text-[#04330B]/60 text-sm truncate">
+                        {formData.photoUrl ? 'Photo selected' : 'No file chosen'}
+                      </span>
+                    </div>
+                    {formData.photoUrl && (
+                      <img src={formData.photoUrl} alt="Preview" className="w-20 h-20 rounded-full object-cover mx-auto" />
+                    )}
+                  </div>
+
                   {/* Free Text Address */}
                   <textarea
                     value={formData.address}
@@ -499,23 +570,13 @@ const UnionJoinPageContent = () => {
                     placeholder={t.joinPage.form.addressPlaceholder}
                   />
 
-                  {/* Referral Code (Optional) */}
-                  <input
-                    type="text"
-                    value={formData.referralCode}
-                    onChange={(e) => setFormData({ ...formData, referralCode: e.target.value.toUpperCase() })}
-                    className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none uppercase"
-                    placeholder="रेफरल कोड (वैकल्पिक)"
-                    autoComplete="off"
-                  />
-
                   <button
                     type="button"
-                    onClick={handleSendOtp}
+                    onClick={handleSubmit}
                     disabled={loading || !isRegistrationReady}
                     className="w-full h-[50px] rounded-[12px] bg-gradient-to-r from-[#04330B] to-[#0B5A2A] text-white font-semibold disabled:opacity-60"
                   >
-                    {loading ? t.joinPage.wizard.sending : t.joinPage.wizard.sendOtp}
+                    {loading ? 'Submitting...' : 'Submit Registration'}
                   </button>
 
                   {otpError && <div className="text-center text-[12px] text-red-500 font-semibold">{otpError}</div>}
