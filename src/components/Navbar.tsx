@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { X, Menu, User, LogOut } from 'lucide-react'; // Added User icon
 import { useLanguage } from "./LanguageContext";
-import { fetchApi } from "../lib/api";
+import { getApiBaseUrl } from "../lib/api";
 
 interface NavbarProps {
     links?: { name: string; href: string; target?: string }[];
@@ -59,10 +59,26 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                 return;
             }
             try {
-                const res: any = await fetchApi('users/me/summary');
+                const response = await fetch(`${getApiBaseUrl()}/users/me/summary`, {
+                    cache: 'no-store',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    if (response.status === 400 || response.status === 401) {
+                        window.localStorage.removeItem('access_token');
+                        window.localStorage.removeItem('user_info');
+                    }
+                    if (!cancelled) setIsAdmin(false);
+                    return;
+                }
+
+                const res: any = await response.json();
                 const role = res?.user?.role;
-                if (!cancelled && role === 'Admin') {
-                    setIsAdmin(true);
+                if (!cancelled) {
+                    setIsAdmin(role === 'Admin');
                 }
             } catch {
                 if (!cancelled) setIsAdmin(false);

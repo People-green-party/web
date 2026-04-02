@@ -31,36 +31,52 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
         ? endpoint
         : `${baseUrl}/${endpoint.replace(/^\//, '')}`;
 
-    const toFriendlyMessage = (msg: string, status?: number, endpointName?: string) => {
-        const m = String(msg || '').trim();
+    const toFriendlyMessage = (msg: string | string[], status?: number, endpointName?: string) => {
+        // Handle array messages from NestJS validation
+        const m = Array.isArray(msg) ? msg.join(', ') : String(msg || '').trim();
         const lower = m.toLowerCase();
-        if (!m) return 'Something went wrong. Please try again.';
+        if (!m) return 'कुछ गलत हो गया। कृपया दोबारा कोशिश करें।';
         if (status === 404 && endpointName?.includes('login-pin')) {
-            return 'Login service is not reachable right now. The website was calling the wrong backend route. Please refresh and try again.';
+            return 'लॉगिन सेवा अभी उपलब्ध नहीं है। कृपया पेज रिफ्रेश करें।';
         }
         if (status === 404 && lower.includes('cannot post')) {
-            return 'The requested backend route was not found. This usually means the frontend API URL is misconfigured.';
+            return 'बैकएंड सर्वर से कनेक्शन नहीं हो पा रहा।';
         }
         if (lower.includes('phone already registered')) {
-            return 'This mobile number is already registered. Please log in.';
+            return 'यह मोबाइल नंबर पहले से रजिस्टर है। कृपया लॉगिन करें।';
         }
         if (lower.includes('account not found')) {
-            return 'No account found for this mobile number. Please join first, then log in.';
+            return 'इस मोबाइल नंबर से कोई खाता नहीं मिला। कृपया पहले जुड़ें।';
         }
         if (lower.includes('incorrect pin')) {
-            return 'Incorrect PIN. Please try again.';
+            return 'PIN गलत है। कृपया दोबारा कोशिश करें।';
         }
         if (lower.includes('pin not set')) {
-            return 'PIN is not set for this account yet. Use "Forgot PIN" to create a new PIN.';
+            return 'इस खाते का PIN सेट नहीं है। "PIN भूल गए" का उपयोग करें।';
         }
         if (lower.includes('invalid referral code')) {
-            return 'The referral code looks incorrect. Please check and try again.';
+            return 'रेफरल कोड गलत है। कृपया जांचें।';
         }
         if (lower.includes('invalid phone number')) {
-            return 'Please enter a valid mobile number.';
+            return 'कृपया सही मोबाइल नंबर डालें।';
         }
         if (lower.includes('pin must be shorter')) {
-            return 'Your PIN must be 4 to 6 digits.';
+            return 'PIN 4 से 6 अंकों का होना चाहिए।';
+        }
+        if (lower.includes('photourl must be shorter')) {
+            return 'फोटो का साइज़ बहुत बड़ा है। कृपया छोटी फोटो चुनें।';
+        }
+        if (lower.includes('address must be')) {
+            return 'कृपया सही पता डालें।';
+        }
+        if (lower.includes('name must be')) {
+            return 'कृपया सही नाम डालें।';
+        }
+        if (lower.includes('must be a string')) {
+            return 'कृपया सही जानकारी भरें।';
+        }
+        if (lower.includes('bad request')) {
+            return 'फॉर्म में कुछ गलत जानकारी है। कृपया जांचें।';
         }
         return m;
     };

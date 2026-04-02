@@ -134,6 +134,18 @@ const UnionJoinPageContent = () => {
   const [otpSimulated, setOtpSimulated] = useState(false);
   const [meSummary, setMeSummary] = useState<any>(null);
   const [phoneVerified, setPhoneVerified] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0); // Countdown in seconds
+  const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null); // Store File for upload after registration
+
+  // Countdown timer for resend OTP
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [resendTimer]);
 
   const registrationValidationError = useMemo(() => {
     if (!formData.name.trim()) return 'Please enter your full name.';
@@ -198,7 +210,7 @@ const UnionJoinPageContent = () => {
         unionName: formData.unionName,
         vehicleNumber: formData.vehicleNumber || undefined,
         governmentId: formData.governmentId || undefined,
-        photoUrl: formData.photoUrl || undefined,
+        // photoUrl removed - upload photo separately after registration
         authUserId: authUserData?.user?.id || undefined,
       };
 
@@ -221,14 +233,26 @@ const UnionJoinPageContent = () => {
         }
       }
 
-      try {
-        const summaryRes = await fetchApi('users/me/summary');
-        setMeSummary(summaryRes);
-      } catch (e) {
-        console.warn('Failed to load post-registration user data', e);
+      // Upload photo separately after registration
+      if (selectedPhoto && sessionData?.session?.access_token) {
+        try {
+          const { getApiBaseUrl } = await import('../../../lib/api');
+          const photoData = new FormData();
+          photoData.append('file', selectedPhoto);
+          
+          await fetch(`${getApiBaseUrl()}/users/me/photo`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${sessionData.session.access_token}` },
+            body: photoData
+          });
+          console.log('Photo uploaded successfully');
+        } catch (photoError) {
+          console.warn('Photo upload failed, but registration succeeded:', photoError);
+        }
       }
 
-      setStep(3);
+      // Redirect to union dashboard after successful registration
+      router.push('/union/dashboard');
     } catch (error: any) {
       console.error('Registration error:', error);
       setOtpError(error.message || 'Registration failed. Please try again.');
@@ -245,25 +269,6 @@ const UnionJoinPageContent = () => {
     if (mobile.length < 10) {
       setOtpError('Please enter a valid 10-digit mobile number.');
       return;
-    }
-
-    // Auto-save partial registration data
-    try {
-      const { fetchApi } = await import('../../../lib/api');
-      const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
-      await fetchApi('users/partial-register', {
-        method: 'POST',
-        body: JSON.stringify({
-          phone: phoneNumber,
-          name: formData.name || undefined,
-          unionName: formData.unionName || undefined,
-          vehicleNumber: formData.vehicleNumber || undefined,
-          governmentId: formData.governmentId || undefined,
-          address: formData.address || undefined,
-        }),
-      });
-    } catch (e) {
-      console.warn('Partial save failed (non-critical):', e);
     }
 
     const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
@@ -288,11 +293,25 @@ const UnionJoinPageContent = () => {
       });
 
       if (check?.exists) {
-        setOtpError('This mobile number is already registered. Please log in instead.');
-        setTimeout(() => {
-          router.push('/login');
-        }, 1200);
+        setOtpError('यह मोबाइल नंबर पहले से पंजीकृत है। कृपया लॉगिन करें। (Already registered. Please log in.)');
+        setLoading(false);
         return;
+      }
+
+      try {
+        await fetchApi('users/partial-register', {
+          method: 'POST',
+          body: JSON.stringify({
+            phone: phoneNumber,
+            name: formData.name || undefined,
+            unionName: formData.unionName || undefined,
+            vehicleNumber: formData.vehicleNumber || undefined,
+            governmentId: formData.governmentId || undefined,
+            address: formData.address || undefined,
+          }),
+        });
+      } catch (e) {
+        console.warn('Partial save failed (non-critical):', e);
       }
 
       const { error } = await supabase.auth.signInWithOtp({
@@ -305,6 +324,7 @@ const UnionJoinPageContent = () => {
       }
 
       setShowOtpField(true);
+      setResendTimer(60); // Start 60 second countdown
     } catch (error: any) {
       console.error('Error sending OTP:', error);
       const isConfigError = error.message === 'Unsupported phone provider' ||
@@ -318,6 +338,7 @@ const UnionJoinPageContent = () => {
         setShowOtpField(true);
         setOtpSimulated(true);
         setOtpError('SMS provider not configured. Use OTP: 123456');
+        setResendTimer(60); // Start countdown for simulation mode too
       } else {
         setOtpError(error.message || 'Failed to send OTP. Please try again.');
       }
@@ -457,13 +478,13 @@ const UnionJoinPageContent = () => {
                     <button
                       type="button"
                       onClick={handleSendOtp}
-                      disabled={loading || formData.mobile.length < 10}
+                      disabled={loading || formData.mobile.length < 10 || (showOtpField && !phoneVerified) || phoneVerified}
                       className="w-full h-[46px] rounded-[10px] bg-[#04330B] text-white font-semibold disabled:opacity-60 flex items-center justify-center gap-2"
                     >
                       {loading ? (
                         <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
                       ) : (
-                        phoneVerified ? '✓ Verified' : 'Send OTP'
+                        phoneVerified ? '✓ Verified' : (showOtpField ? 'OTP Sent' : 'Send OTP')
                       )}
                     </button>
 
@@ -486,6 +507,15 @@ const UnionJoinPageContent = () => {
                           className="w-full h-[40px] rounded-[10px] bg-[#22C55E] text-white font-semibold disabled:opacity-60"
                         >
                           {loading ? 'Verifying...' : 'Verify OTP'}
+                        </button>
+                        {/* Resend OTP Button */}
+                        <button
+                          type="button"
+                          onClick={handleSendOtp}
+                          disabled={resendTimer > 0 || loading}
+                          className="w-full h-[40px] rounded-[10px] border border-[#04330B] text-[#04330B] font-semibold disabled:opacity-40 disabled:border-gray-300 disabled:text-gray-400"
+                        >
+                          {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
                         </button>
                         {otpError && <div className="text-center text-[12px] text-red-500 font-semibold">{otpError}</div>}
                       </div>
@@ -533,15 +563,12 @@ const UnionJoinPageContent = () => {
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={async (e) => {
+                        onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            // Convert to base64 for preview and storage
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setFormData({ ...formData, photoUrl: reader.result as string });
-                            };
-                            reader.readAsDataURL(file);
+                            setSelectedPhoto(file); // Save the file to upload later
+                            // Create a temporary local URL just for the UI preview (NOT base64)
+                            setFormData({ ...formData, photoUrl: URL.createObjectURL(file) });
                           }
                         }}
                         className="hidden"
@@ -554,7 +581,7 @@ const UnionJoinPageContent = () => {
                         Choose File
                       </label>
                       <span className="ml-3 text-[#04330B]/60 text-sm truncate">
-                        {formData.photoUrl ? 'Photo selected' : 'No file chosen'}
+                        {selectedPhoto ? 'Photo selected' : 'No file chosen'}
                       </span>
                     </div>
                     {formData.photoUrl && (
