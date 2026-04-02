@@ -39,6 +39,8 @@ const translations = {
         fullName: "पूरा नाम",
         mobile: "मोबाइल नंबर",
         selectUnion: "अपना संघ चुनें",
+        vehicleNumber: "वाहन नंबर",
+        vehicleNumberPlaceholder: "अपना वाहन नंबर दर्ज करें (जैसे: RJ14AB1234)",
         address: "पूरा घर का पता",
         addressPlaceholder: "अपना पूरा पता दर्ज करें",
         submit: "जुड़ें"
@@ -80,6 +82,8 @@ const translations = {
         fullName: "Full Name",
         mobile: "Mobile Number",
         selectUnion: "Select Your Union",
+        vehicleNumber: "Vehicle Number",
+        vehicleNumberPlaceholder: "Enter your vehicle number (e.g., RJ14AB1234)",
         address: "Full Home Address",
         addressPlaceholder: "Enter your complete address",
         submit: "Join Us"
@@ -95,11 +99,11 @@ const translations = {
 
 // Union options (in Hindi)
 const UNION_OPTIONS = [
-  { value: 'E-Rickshaw Union', label: 'ई-रिक्शा चालक संघ' },
-  { value: 'Haat Worker Union', label: 'हाट व ठेला विक्रेता संघ' },
-  { value: 'Gig Worker Union', label: 'राजस्थान गिग वर्कर्स संघ' },
-  { value: 'Vahan Chalak Union', label: 'राजस्थान वाहन चालक संघ' },
-  { value: 'Other', label: 'अन्य (विवरण दें)' },
+  { value: 'ई-रिक्शा चालक संघ', label: 'ई-रिक्शा चालक संघ' },
+  { value: 'हाट व ठेला विक्रेता संघ', label: 'हाट व ठेला विक्रेता संघ' },
+  { value: 'राजस्थान गिग वर्कर्स संघ', label: 'राजस्थान गिग वर्कर्स संघ' },
+  { value: 'राजस्थान वाहन चालक संघ', label: 'राजस्थान वाहन चालक संघ' },
+  { value: 'अन्य', label: 'अन्य (विवरण दें)' },
 ];
 
 // --- Join Page Content ---
@@ -117,6 +121,7 @@ const UnionJoinPageContent = () => {
     mobile: '',
     pin: '',
     unionName: '',
+    vehicleNumber: '',
     address: '',
     referralCode: '',
   });
@@ -136,9 +141,12 @@ const UnionJoinPageContent = () => {
     const pin = formData.pin.replace(/\D/g, '');
     if (pin.length < 4 || pin.length > 6) return 'Please create a 4–6 digit login PIN.';
     if (!formData.unionName) return 'Please select your Union.';
+    // Vehicle number required for E-Rickshaw and Vahan Chalak unions
+    const requiresVehicle = ['ई-रिक्शा चालक संघ', 'राजस्थान वाहन चालक संघ'].includes(formData.unionName);
+    if (requiresVehicle && !formData.vehicleNumber.trim()) return 'Please enter your vehicle number.';
     if (!formData.address.trim()) return 'Please enter your address.';
     return null;
-  }, [formData.name, formData.mobile, formData.pin, formData.unionName, formData.address]);
+  }, [formData.name, formData.mobile, formData.pin, formData.unionName, formData.vehicleNumber, formData.address]);
 
   const isRegistrationReady = useMemo(() => {
     return !registrationValidationError;
@@ -152,6 +160,7 @@ const UnionJoinPageContent = () => {
       mobile: '',
       pin: '',
       unionName: '',
+      vehicleNumber: '',
       address: '',
       referralCode: urlRefCode,
     });
@@ -187,6 +196,7 @@ const UnionJoinPageContent = () => {
         pin: formData.pin,
         address: formData.address,
         unionName: formData.unionName,
+        vehicleNumber: formData.vehicleNumber || undefined,
         referralCode: formData.referralCode || undefined,
         authUserId: authUserData?.user?.id || undefined,
       };
@@ -468,6 +478,18 @@ const UnionJoinPageContent = () => {
                       <option key={u.value} value={u.value}>{u.label}</option>
                     ))}
                   </select>
+
+                  {/* Vehicle Number - Only for E-Rickshaw and Vahan Chalak unions */}
+                  {['ई-रिक्शा चालक संघ', 'राजस्थान वाहन चालक संघ'].includes(formData.unionName) && (
+                    <input
+                      type="text"
+                      value={formData.vehicleNumber}
+                      onChange={(e) => setFormData({ ...formData, vehicleNumber: e.target.value.toUpperCase() })}
+                      className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none uppercase"
+                      placeholder={t.joinPage.form.vehicleNumberPlaceholder}
+                      autoComplete="off"
+                    />
+                  )}
 
                   {/* Free Text Address */}
                   <textarea
