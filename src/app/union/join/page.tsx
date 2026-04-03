@@ -221,31 +221,29 @@ const UnionJoinPageContent = () => {
 
       console.log('Union registration successful:', userData);
 
-      // Auto-login after registration using the access token from Supabase
-      const { data: sessionData } = await supabase.auth.getSession();
-      
-      if (typeof window !== 'undefined') {
-        if (userData?.user?.id) {
-          window.localStorage.setItem('devUserId', String(userData.user.id));
-        }
-        if (sessionData?.session?.access_token) {
-          window.localStorage.setItem('access_token', sessionData.session.access_token);
-        }
-      }
+      // NOTE: We do NOT save the Supabase token to localStorage manually.
+      // The Supabase SDK already saves it securely under its own sb-...-auth-token key
+      // and handles refreshing it automatically. Saving it manually would trap
+      // the 1-hour token that never refreshes.
 
       // Upload photo separately after registration
-      if (selectedPhoto && sessionData?.session?.access_token) {
+      if (selectedPhoto) {
         try {
-          const { getApiBaseUrl } = await import('../../../lib/api');
-          const photoData = new FormData();
-          photoData.append('file', selectedPhoto);
+          const { data: photoSession } = await supabase.auth.getSession();
+          const photoToken = photoSession?.session?.access_token;
           
-          await fetch(`${getApiBaseUrl()}/users/me/photo`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${sessionData.session.access_token}` },
-            body: photoData
-          });
-          console.log('Photo uploaded successfully');
+          if (photoToken) {
+            const { getApiBaseUrl } = await import('../../../lib/api');
+            const photoData = new FormData();
+            photoData.append('file', selectedPhoto);
+            
+            await fetch(`${getApiBaseUrl()}/users/me/photo`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${photoToken}` },
+              body: photoData
+            });
+            console.log('Photo uploaded successfully');
+          }
         } catch (photoError) {
           console.warn('Photo upload failed, but registration succeeded:', photoError);
         }
