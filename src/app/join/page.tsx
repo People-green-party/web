@@ -328,6 +328,7 @@ const JoinPageContent = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [showOtpField, setShowOtpField] = useState(false);
   const [otpSimulated, setOtpSimulated] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0); // Countdown in seconds
   const [apiError, setApiError] = useState<string | null>(null);
   const [locLoading, setLocLoading] = useState({ loksabhas: false, vidhansabhas: false, localUnits: false });
   const [userReferralCode, setUserReferralCode] = useState<string | null>(null);
@@ -336,6 +337,16 @@ const JoinPageContent = () => {
   const [meRecruits, setMeRecruits] = useState<any[]>([]);
   const idCardRef = useRef<HTMLDivElement | null>(null);
   const appointmentRef = useRef<HTMLDivElement | null>(null);
+
+  // Countdown timer for resend OTP
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [resendTimer]);
 
   const registrationValidationError = useMemo(() => {
     if (!formData.firstName.trim()) return 'Please enter your first name.';
@@ -769,6 +780,7 @@ const JoinPageContent = () => {
       setShowOtpField(true);
       setOtpSimulated(true);
       setOtpError('Dev mode: Simulating OTP sent. Use OTP: 123456');
+      setResendTimer(60); // Start 60 second countdown
       setStep(2);
       return;
     }
@@ -810,6 +822,7 @@ const JoinPageContent = () => {
 
       setOtpSent(true);
       setShowOtpField(true);
+      setResendTimer(60); // Start 60 second countdown
       setStep(2);
     } catch (error: any) {
       console.error('Error sending OTP:', error);
@@ -825,6 +838,7 @@ const JoinPageContent = () => {
         setShowOtpField(true);
         setOtpSimulated(true);
         setOtpError('SMS provider not configured. Simulating OTP sent. Use OTP: 123456');
+        setResendTimer(60); // Start countdown for simulation mode too
         setStep(2);
       } else {
         setOtpError(error.message || 'Failed to send OTP. Please try again.');
@@ -1104,6 +1118,16 @@ const JoinPageContent = () => {
                   className="mt-8 w-[280px] h-[50px] rounded-[12px] bg-[#10B981] text-white font-semibold shadow disabled:opacity-60"
                 >
                   {loading ? t.joinPage.wizard.verifying : t.joinPage.wizard.verifyContinue}
+                </button>
+                
+                {/* Resend OTP Button */}
+                <button
+                  type="button"
+                  onClick={handleSendOtp}
+                  disabled={resendTimer > 0 || loading}
+                  className="mt-4 w-[280px] h-[40px] rounded-[10px] border border-[#04330B] text-[#04330B] font-semibold disabled:opacity-40 disabled:border-gray-300 disabled:text-gray-400"
+                >
+                  {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
                 </button>
               </div>
             )}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, X, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabaseClient';
@@ -21,8 +21,19 @@ export default function LoginScreen() {
   const [newPin, setNewPin] = useState('');
   const [confirmNewPin, setConfirmNewPin] = useState('');
   const [showNewPin, setShowNewPin] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0); // Countdown in seconds
 
   const router = useRouter();
+
+  // Countdown timer for resend OTP
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [resendTimer]);
 
   const sanitizePhoneInput = (value: string) => {
     const digitsOnly = String(value || '').replace(/\D/g, '');
@@ -128,6 +139,7 @@ export default function LoginScreen() {
       if (error) throw error;
 
       setMode('otp_verify');
+      setResendTimer(60); // Start 60 second countdown
     } catch (err: any) {
       if (err.message && (
         err.message.includes('Unsupported phone provider') ||
@@ -137,6 +149,7 @@ export default function LoginScreen() {
         console.warn('Simulation: OTP sent (123456) due to config error:', err.message);
         alert('Development Mode: Your OTP is 123456'); // Helpful alert for user
         setMode('otp_verify');
+        setResendTimer(60); // Start 60 second countdown
       } else {
         setError(cleanError(err.message || 'Failed to send OTP. Please try again.'));
       }
@@ -382,9 +395,10 @@ export default function LoginScreen() {
                     <button
                       type="button"
                       onClick={handleSendOtp}
-                      className="text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] hover:underline"
+                      disabled={resendTimer > 0 || loading}
+                      className="text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] hover:underline disabled:opacity-40 disabled:text-gray-400"
                     >
-                      Resend OTP
+                      {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
                     </button>
                   </div>
                 </div>

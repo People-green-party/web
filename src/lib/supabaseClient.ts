@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 // ✅ STRICTLY USE ENVIRONMENT VARIABLES
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+const DEV_MODE = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === "true";
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
