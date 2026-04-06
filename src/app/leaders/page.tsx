@@ -11,23 +11,25 @@ export default function LeadersPage() {
     const { t } = useLanguage();
     const [showMoreCommittee, setShowMoreCommittee] = useState(false);
 
-    // Committee Members Data
     const initialCommittee = [
-        { name: "Dr. Sudhanshu", role: "President", image: "/Members/CM.png" },
-        { name: "Bhanwar Lal Nayak", role: "Vice President", image: "/leadersection/Bhanwar-lal-ji.png" },
-        { name: "Naseem Ansari", role: "Vice President", image: "/nassem-removebg-preview.png" },
-        { name: "Adv. Kapil", role: "Gen. Secretary", image: "/kapil-removebg-preview.png" },
-        { name: "Er. Gaurav", role: "Secretary", image: "/Gaurav-removebg-preview.png" },
-        { name: "Dr. Tanmay", role: "Gen. Secretary", image: "/Tanmay-removebg-preview.png" },
-        { name: "Satish Nagpal", role: "Pradesh Adhyaksh Rajasthan", image: "/Satish-removebg-preview.png" },
-        { name: "Dr. Hari Singh Chauhan", role: "Vice President", image: "/Hari-removebg-preview.png" }
+        { name: t.committee.members.drSudhanshu, role: t.committee.roles.president, image: "/Members/Dr.Sudhanshu.png", rawName: "Dr. Sudhanshu" },
+        { name: t.committee.members.bhanwarLal, role: t.committee.roles.vicePresident, image: "/Members/BhanwarLal.png", rawName: "Bhanwar Lal Nayak" },
+        { name: t.committee.members.naseemAnsari, role: t.committee.roles.vicePresident, image: "/Members/NaseemAnsari.png", rawName: "Naseem Ansari" },
+        { name: t.committee.members.advKapil, role: t.committee.roles.generalSecretary, image: "/Members/Adv.Kapil.png", rawName: "Adv. Kapil" },
+        { name: t.committee.members.erGaurav, role: t.committee.roles.secretaryAndTreasurer, image: "/Members/Er.Gaurav.png", rawName: "Er. Gaurav" },
+        { name: t.committee.members.drTanmay, role: t.committee.roles.generalSecretary, image: "/Members/Dr.Tanmay.png", rawName: "Dr. Tanmay" },
+        { name: t.committee.members.satishNagpal, role: t.committee.roles.pradeshAdhyaksh, image: "/Satish-removebg-preview.png", rawName: "Satish Nagpal" },
+        { name: t.committee.members.drHariSingh, role: t.committee.roles.vicePresident, image: "/Hari-removebg-preview.png", rawName: "Dr. Hari Singh Chauhan" }
     ];
 
     const extraCommittee = [
-        { name: "Amit Verma", role: "Executive Member", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=400" },
-        { name: "Sunita Gupta", role: "Secretary", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400" },
-        { name: "Rajesh Kumar", role: "Coordinator", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400" },
-        { name: "Priya Singh", role: "Spokesperson", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=400" }
+        { name: t.committee.members.satyanarayan, role: t.committee.roles.statePresident, image: "/Members/satyanrayan.png", rawName: "Satyanarayan Saini" },
+        { name: t.committee.members.dineshSaraf, role: t.committee.roles.executiveMember, image: "/Members/dineshsaraf.png", rawName: "Dinesh Saraf" },
+        { name: t.committee.members.drSuchi, role: t.committee.roles.executiveMember, image: "/Members/Dr.suchi.png", rawName: "Dr. Suchi" },
+        { name: t.committee.members.jpBhadu, role: t.committee.roles.executiveMember, image: "/Members/Jpbhadu.png", rawName: "J.P. Bhadu" },
+        { name: t.committee.members.rajaram, role: t.committee.roles.executiveMember, image: "/Members/RajaramNayak.png", rawName: "Rajaram Nayak" },
+        { name: t.committee.members.rajendra, role: t.committee.roles.executiveMember, image: "/Members/RajendraMeena.png", rawName: "Rajendra Meena" },
+        { name: t.committee.members.shankerLal, role: t.committee.roles.executiveMember, image: "/Members/shankerlal.png", rawName: "Shanker Lal" }
     ];
 
     const allCommittee = [...initialCommittee, ...extraCommittee];
@@ -50,9 +52,14 @@ export default function LeadersPage() {
                             </h2>
                         </ScrollReveal>
                         <ScrollReveal animation="fade-up" duration={800} delay={200}>
-                            <p className="max-w-[572px] w-full text-center font-[family-name:var(--font-inter)] font-semibold text-[16px] lg:text-[24px] leading-[24px] lg:leading-[30px] tracking-[-0.3px] text-[#587E67]">
+                            <p className="w-full text-center font-[family-name:var(--font-inter)] font-semibold text-[16px] lg:text-[24px] whitespace-normal md:whitespace-nowrap tracking-[-0.3px] text-[#587E67]">
                                 {t.committee.sub}
                             </p>
+                        </ScrollReveal>
+                        <ScrollReveal animation="fade-up" duration={800} delay={300}>
+                            <div className="mt-8 w-full max-w-[800px] flex justify-center">
+                                <img src="/Members/Leaders.jpeg" alt="Leaders" className="w-full h-auto object-contain rounded-lg shadow-md" />
+                            </div>
                         </ScrollReveal>
                     </div>
 
@@ -69,8 +76,8 @@ export default function LeadersPage() {
                                             {member.role}
                                         </p>
                                     </div>
-                                    <div className="relative w-full h-[226px] rounded-[8px] overflow-hidden" style={{ background: 'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)' }}>
-                                        <img src={member.image} alt={member.name} className="w-full h-full object-contain object-bottom" onError={(e) => (e.currentTarget.src = 'https://placehold.co/272x226/E8F3EC/587E67?text=Photo')} />
+                                    <div className="relative w-full h-[226px] rounded-[8px] overflow-hidden" style={{ background: 'linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 100%)' }}>
+                                        <img src={member.image} alt={member.rawName} className={`absolute bottom-0 w-full h-[95%] object-contain object-bottom ${member.rawName === 'Satish Nagpal' ? 'scale-[1.2] origin-bottom -translate-y-3' : ['Dr. Hari Singh Chauhan', 'Rajaram Nayak'].includes(member.rawName) ? 'scale-110 origin-bottom' : ''}`} onError={(e) => (e.currentTarget.src = 'https://placehold.co/272x226/E8F3EC/587E67?text=Photo')} />
                                         {index === 0 && (
                                             <div className="absolute bottom-[16px] left-[16px] flex gap-[12px] z-10">
                                                 <div className="w-[32px] h-[32px] bg-white rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors">

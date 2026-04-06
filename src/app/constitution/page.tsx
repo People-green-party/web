@@ -122,7 +122,7 @@ const ConstitutionPageContent = () => {
             </div>
 
             <div className="w-full h-[246px] rounded-[8px] overflow-hidden bg-gray-100">
-              <img src="/party-images/DSC_0006.JPG" alt="Hero 1" className="w-full h-full object-cover" />
+              <img src="/Constitution/Constitution-1.jpg" alt="Hero 1" className="w-full h-full object-cover" />
             </div>
           </div>
 
@@ -133,11 +133,11 @@ const ConstitutionPageContent = () => {
           <div className="hidden lg:flex flex-col w-[23%] shrink-0 gap-[24px]">
             {/* Image 2 */}
             <ScrollReveal animation="scale-up" duration={800} delay={100} className="w-full h-[256px] rounded-[8px] overflow-hidden bg-gray-100">
-              <img src="/party-images/DSC_0007.JPG" alt="Hero 2" className="w-full h-full object-cover" />
+              <img src="/Constitution/Constitution-2.jpg" alt="Hero 2" className="w-full h-full object-cover" />
             </ScrollReveal>
             {/* Image 3 */}
             <ScrollReveal animation="scale-up" duration={800} delay={200} className="w-full h-[222px] rounded-[8px] overflow-hidden bg-gray-100">
-              <img src="/party-images/DSC_0008.JPG" alt="Hero 3" className="w-full h-full object-cover" />
+              <img src="/Constitution/Constitution-3.jpg" alt="Hero 3" className="w-full h-full object-cover" />
             </ScrollReveal>
           </div>
 
@@ -148,11 +148,11 @@ const ConstitutionPageContent = () => {
           <div className="hidden lg:flex flex-col w-[22%] shrink-0 gap-[24px]">
             {/* Image 4 */}
             <ScrollReveal animation="scale-up" duration={800} delay={300} className="w-full h-[230px] rounded-[8px] overflow-hidden bg-gray-100">
-              <img src="/party-images/DSC_0009.JPG" alt="Hero 4" className="w-full h-full object-cover" />
+              <img src="/Constitution/Constitution-4.jpg" alt="Hero 4" className="w-full h-full object-cover" />
             </ScrollReveal>
             {/* Image 5 */}
             <ScrollReveal animation="scale-up" duration={800} delay={400} className="w-full h-[246px] rounded-[8px] overflow-hidden bg-gray-100">
-              <img src="/party-images/DSC_0014.JPG" alt="Hero 5" className="w-full h-full object-cover" />
+              <img src="/Constitution/Constitution-5.jpg" alt="Hero 5" className="w-full h-full object-cover" />
             </ScrollReveal>
           </div>
         </div>
@@ -164,7 +164,7 @@ const ConstitutionPageContent = () => {
         {/* Layer 1: Image (Z-Index 10) */}
         <ScrollReveal animation="scale-up" duration={1000} className="relative z-10 w-full max-w-[1240px] h-auto aspect-[1240/533] rounded-[16px] overflow-hidden shadow-lg mx-4 lg:mx-0 px-4 lg:px-8">
           <img
-            src="/party-images/DSC_0019.JPG"
+            src="/Constitution/Artical-1 copy.jpg"
             alt="Preamble Banner"
             className="w-full h-full object-cover rounded-[16px]"
           />
@@ -247,9 +247,9 @@ const ConstitutionPageContent = () => {
           {/* Right Column: Image */}
           <ScrollReveal animation="fade-in" duration={800} delay={200} className="w-full lg:w-[35%] h-[304px] rounded-[8px] shadow-[0px_4px_20px_0px_#0000001A] overflow-hidden shrink-0 order-1 lg:order-3 mb-[24px] lg:mb-0">
             <img
-              src="/party-images/DSC_0020.JPG"
+              src="/Constitution/Artical-2.JPG"
               alt="Vision"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           </ScrollReveal>
         </div>

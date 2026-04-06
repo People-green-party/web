@@ -201,7 +201,7 @@ const translations = {
       viewLess: "View Less"
     },
     committee: {
-      title: "Meet Our Committee Members",
+      title: "Meet Our Action Committee",
       sub: "Dedicated leaders working together to guide our vision for a sustainable future.",
       button: "View More",
       roles: {
@@ -848,7 +848,7 @@ const LandingPageContent = () => {
       <VisionCarousel language={language} />
 
       {/* SYNERGY ENGINE - Explaining how policies connect */}
-      <SynergyEngine language={language} />
+      {/* <SynergyEngine language={language} /> */}
 
 
 
@@ -905,7 +905,7 @@ const LandingPageContent = () => {
             <div className="order-2 lg:hidden w-full flex justify-center mb-[24px]">
               <div className="relative w-full max-w-[400px] h-auto aspect-square group">
                 <Image
-                  src="/Shudhanshu.svg"
+                  src="/Members/Dr.Sudhanshu.png"
                   alt="Dr Sudhanshu"
                   fill
                   loading="lazy"
@@ -921,7 +921,7 @@ const LandingPageContent = () => {
             <div className="relative w-full max-w-[400px] h-auto aspect-square lg:w-[419px] lg:h-[444px] group">
               <ScrollReveal animation="fade-in" duration={1000} delay={300} className="w-full h-full">
                 <Image
-                  src="/Shudhanshu.svg"
+                  src="/Members/Dr.Sudhanshu.png"
                   alt="Dr Sudhanshu"
                   fill
                   loading="lazy"
@@ -940,14 +940,13 @@ const LandingPageContent = () => {
 
 
       {/* 5. IMPACT STATS - WHITE & IMPRESSIVE */}
+      {/* 
       <section className="bg-white w-full flex flex-col items-center py-[60px] lg:py-[100px] relative">
 
-        {/* Subtle Background Pattern (Optional: Adds texture to the white) */}
         <div className="absolute inset-0 bg-white pointer-events-none"></div>
 
         <div className="w-full max-w-[1320px] px-4 lg:px-8 relative z-10 flex flex-col items-start">
 
-          {/* Header */}
           <div className="w-full flex flex-col items-start text-left gap-[16px] mb-[60px]">
 
 
@@ -965,11 +964,9 @@ const LandingPageContent = () => {
             </ScrollReveal>
           </div>
 
-          {/* Stats Grid */}
           <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {stats.map((stat: any, idx: number) => {
 
-              // Dynamic Icons
               const icons = [Users, MapPin, Trees, HandHeart];
               const Icon = icons[idx] || Users;
 
@@ -982,15 +979,12 @@ const LandingPageContent = () => {
                 >
                   <div className="group relative h-full bg-white rounded-[20px] border border-gray-100 p-8 overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_-12px_rgba(13,82,41,0.15)] hover:border-[#B9D3C4] hover:-translate-y-2">
 
-                    {/* 1. Watermark Icon (Big & Faded in background) */}
                     <div className="absolute -right-6 -top-6 text-[#EAF7EE] opacity-50 group-hover:opacity-100 group-hover:text-[#E4F2EA] group-hover:scale-110 transition-all duration-700 pointer-events-none">
                       <Icon size={140} strokeWidth={1} />
                     </div>
 
-                    {/* 2. Content Wrapper */}
                     <div className="relative z-10 flex flex-col h-full justify-between">
 
-                      {/* Top: Icon & Number */}
                       <div>
                         <div className="w-12 h-12 mb-6 rounded-xl bg-[#F8FBF9] border border-[#E4F2EA] flex items-center justify-center text-[#0D5229] group-hover:bg-[#0D5229] group-hover:text-white transition-colors duration-300">
                           <Icon size={24} strokeWidth={2} />
@@ -1005,7 +999,6 @@ const LandingPageContent = () => {
                         </h4>
                       </div>
 
-                      {/* Bottom: Description & Line */}
                       <div>
                         <div className="w-12 h-[2px] bg-[#E4F2EA] group-hover:w-full group-hover:bg-[#0D5229] transition-all duration-500 mb-4" />
                         <p className="font-['Familjen_Grotesk'] text-[15px] leading-relaxed text-gray-500 group-hover:text-[#04330B] transition-colors">
@@ -1022,12 +1015,13 @@ const LandingPageContent = () => {
 
         </div>
       </section>
+      */}
 
       {/* RAJASTHAN IMPACT MAP - Visualizing state-wide presence */}
-      <RajasthanImpactMap language={language} />
+      {/* <RajasthanImpactMap language={language} /> */}
 
       {/* POLICY IMPACT TOGGLE - Comparative choice after seeing the map */}
-      <PolicyImpactToggle language={language} />
+      {/* <PolicyImpactToggle language={language} /> */}
 
       {/* 6. NEWS AND PUBLICATIONS - Responsive Fix */}
       <section className="bg-white w-full flex justify-center py-[60px] lg:py-[100px]">

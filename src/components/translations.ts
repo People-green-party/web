@@ -107,15 +107,36 @@ export const translations = {
             viewLess: "View Less"
         },
         committee: {
-            title: "Meet Our Committee Members",
+            title: "Meet Our Action Committee ",
             sub: "Dedicated leaders working together to guide our vision for a sustainable future.",
             button: "View More",
             roles: {
                 president: "President",
                 vicePresident: "Vice President",
                 genSecretary: "Gen. Secretary",
+                generalSecretary: "General Secretary",
                 secretary: "Secretary",
-                pradeshAdhyaksh: "Pradesh Adhyaksh Rajasthan"
+                secretaryAndTreasurer: "Secretary and Treasurer",
+                pradeshAdhyaksh: "Pradesh Adhyaksh Rajasthan",
+                statePresident: "State President",
+                executiveMember: "Executive Member"
+            },
+            members: {
+                drSudhanshu: "Dr. Sudhanshu",
+                bhanwarLal: "Bhanwar Lal Nayak",
+                naseemAnsari: "Naseem Ansari",
+                advKapil: "Adv. Kapil",
+                erGaurav: "Er. Gaurav",
+                drTanmay: "Dr. Tanmay",
+                satishNagpal: "Satish Nagpal",
+                drHariSingh: "Dr. Hari Singh Chauhan",
+                satyanarayan: "Satyanarayan Saini",
+                dineshSaraf: "Dinesh Saraf",
+                drSuchi: "Dr. Suchi",
+                jpBhadu: "J.P. Bhadu",
+                rajaram: "Rajaram Nayak",
+                rajendra: "Rajendra Meena",
+                shankerLal: "Shanker Lal"
             }
         },
         dashboard: {
@@ -353,8 +374,29 @@ export const translations = {
                 president: "अध्यक्ष",
                 vicePresident: "उपाध्यक्ष",
                 genSecretary: "महासचिव",
+                generalSecretary: "महासचिव",
                 secretary: "सचिव",
-                pradeshAdhyaksh: "प्रदेश अध्यक्ष राजस्थान"
+                secretaryAndTreasurer: "सचिव और कोषाध्यक्ष",
+                pradeshAdhyaksh: "प्रदेश अध्यक्ष राजस्थान",
+                statePresident: "प्रदेश अध्यक्ष",
+                executiveMember: "कार्यकारी सदस्य"
+            },
+            members: {
+                drSudhanshu: "डॉ. सुधांशु",
+                bhanwarLal: "भंवर लाल नायक",
+                naseemAnsari: "नसीम अंसारी",
+                advKapil: "एडवोकेट कपिल",
+                erGaurav: "इंजी. गौरव",
+                drTanmay: "डॉ. तन्मय",
+                satishNagpal: "सतीश नागपाल",
+                drHariSingh: "डॉ. हरि सिंह चौहान",
+                satyanarayan: "सत्यनारायण सैनी",
+                dineshSaraf: "दिनेश सर्राफ",
+                drSuchi: "डॉ. शुचि",
+                jpBhadu: "जे.पी. भादू",
+                rajaram: "राजाराम नायक",
+                rajendra: "राजेन्द्र मीणा",
+                shankerLal: "शंकर लाल"
             }
         },
         dashboard: {
