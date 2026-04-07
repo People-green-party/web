@@ -743,7 +743,7 @@ const JoinPageContent = () => {
     const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
     if ((devAuthMode || otpSimulated) && otp === '123456') {
       setStep(2);
-      handleSubmit();
+      await handleSubmit(); // <-- ADDED AWAIT
       return;
     }
 
@@ -769,20 +769,28 @@ const JoinPageContent = () => {
         if (otp === '123456' && otpError?.includes('Simulating OTP sent')) {
           console.log('Simulated OTP verification successful');
           setStep(2);
-          handleSubmit();
+          await handleSubmit(); // <-- ADDED AWAIT
           return;
         }
         throw error;
       }
+      
       console.log('OTP verified successfully');
       setStep(2);
-      handleSubmit();
+      
+      // Wait for the background registration to finish completely
+      await handleSubmit(); 
+
     } catch (error: any) {
       console.error('Error verifying OTP:', error);
       setOtpError(error.message || 'Invalid OTP. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+      
+      // Only turn off the loading spinner if there was an actual error
+      setLoading(false); 
+    } 
+    
+    // NOTE: We completely removed the `finally { setLoading(false) }` block here. 
+    // This ensures the button stays in "Verifying..." mode until router.push('/dashboard') executes!
   }
 
   async function handleSendOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
