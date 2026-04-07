@@ -34,15 +34,32 @@ export default function UnionDashboardPage() {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const loadSummary = async () => {
+  const loadSummary = async (retryCount = 0) => {
     try {
+      // 1. Wait for auth to settle BEFORE hitting the backend
+      const auth = await getAuthHeader();
+      
+      if (!auth.Authorization) {
+        // If no token is ready, wait 600ms and try again (up to 3 times)
+        // This prevents sending unauthorized requests to the backend!
+        if (retryCount < 3) {
+          console.log("Waiting for auth session to settle...");
+          setTimeout(() => loadSummary(retryCount + 1), 600);
+          return; // Exit early and wait
+        }
+        throw new Error("No active session found. Please log in.");
+      }
+
+      // 2. We have a token, safe to call the backend
       const sum = await fetchApi('users/me/summary');
       setSummary(sum as UnionUserSummary);
+      setError(null);
+      setLoading(false); // Stop loading ONLY on success
+
     } catch (e: any) {
-      console.error("Dashboard Load Error:", e);
+      console.error(`Dashboard Load Error:`, e);
       setError(e.message || "Authentication failed or session expired.");
-    } finally {
-      setLoading(false);
+      setLoading(false); // Stop loading on final failure
     }
   };
 
@@ -133,7 +150,7 @@ export default function UnionDashboardPage() {
           {/* Header Banner */}
           <div className="bg-gradient-to-r from-[#04330B] to-[#0B5A2A] rounded-2xl p-8 text-white mb-8 shadow-lg relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-2xl pointer-events-none"></div>
-            <h1 className="text-3xl font-black mb-2 relative z-10">संघ डैशबोर्ड</h1>
+            <h1 className="text-3xl font-black mb-2 relative z-10">यूनियन डैशबोर्ड</h1>
             <p className="text-white/80 font-medium text-lg relative z-10">{user.unionName || 'Union Dashboard'}</p>
           </div>
 
@@ -142,7 +159,7 @@ export default function UnionDashboardPage() {
             {/* Left Col: ID Card & Photo Upload */}
             <div className="flex flex-col gap-4">
                 <div className="rounded-[24px] p-6 bg-white border border-[#BBF7D0] shadow-sm">
-                    <h3 className="text-xl font-bold text-[#04330B] w-full text-left mb-6">संघ सदस्य कार्ड</h3>
+                    <h3 className="text-xl font-bold text-[#04330B] w-full text-left mb-6">यूनियन सदस्य कार्ड</h3>
                     
                     {/* Use the new UnionIdCard component */}
                     <div className="union-dashboard max-w-md mx-auto">
@@ -198,7 +215,7 @@ export default function UnionDashboardPage() {
                       <User className="w-5 h-5 text-[#0B5A2A]" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">संघ का नाम</p>
+                      <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">यूनियन का नाम</p>
                       <p className="font-bold text-[#04330B] text-lg truncate">{user.unionName}</p>
                     </div>
                   </div>

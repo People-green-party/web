@@ -193,7 +193,7 @@ const UnionIdCard = ({ summary, loading }: { summary: DashboardUserSummary | nul
     return (
         <div className="rounded-[2.5rem] p-8 flex flex-col items-center justify-between h-full bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7] border border-[#22C55E]/20 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)] min-h-[420px]">
             <div className="w-full self-start">
-                <h3 className="text-xl font-bold text-[#04330B] mb-2">संघ सदस्य कार्ड</h3>
+                <h3 className="text-xl font-bold text-[#04330B] mb-2">यूनियन सदस्य कार्ड</h3>
                 <div className="min-h-[40px] mb-6 invisible lg:block text-sm leading-relaxed">Space aligner</div>
             </div>
 
@@ -209,7 +209,7 @@ const UnionIdCard = ({ summary, loading }: { summary: DashboardUserSummary | nul
 
                 <div className="flex justify-between items-start relative z-10 mb-auto">
                     <div className="bg-white rounded-lg p-1.5 flex items-center justify-center">
-                        <span className="text-[#04330B] font-bold text-xs">संघ</span>
+                        <span className="text-[#04330B] font-bold text-xs">यूनियन</span>
                     </div>
                     <div className="w-14 h-14 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center overflow-hidden border border-white/30">
                         {user?.photoUrl ? (
@@ -227,7 +227,7 @@ const UnionIdCard = ({ summary, loading }: { summary: DashboardUserSummary | nul
 
                 <div className="relative z-10 ml-2 mb-6">
                     <h2 className="text-2xl font-black uppercase tracking-tight mb-1 leading-none">{loading ? '...' : (user?.name || 'नाम')}</h2>
-                    <p className="text-white/80 font-bold text-sm mb-0.5">{loading ? '...' : (user?.unionName || 'संघ सदस्य')}</p>
+                    <p className="text-white/80 font-bold text-sm mb-0.5">{loading ? '...' : (user?.unionName || 'यूनियन सदस्य')}</p>
                 </div>
 
                 <div className="relative z-10 ml-2 mt-auto">
@@ -399,13 +399,28 @@ export default function DemoDashboard() {
     const currentDesignation = useMemo(() => getDesignation(summary?.user?.role || null, summary?.user?.cwcName || null, t), [summary?.user?.role, summary?.user?.cwcName, t]);
 
     useEffect(() => {
-        const load = async () => {
+        const load = async (retryCount = 0) => {
             try {
+                // 1. Wait for token to load BEFORE hitting the backend
+                const auth = await getAuthHeader();
+                
+                if (!auth.Authorization) {
+                    // If no token yet, wait 600ms and try again (up to 3 times)
+                    if (retryCount < 3) {
+                        console.log("Waiting for auth session to settle...");
+                        setTimeout(() => load(retryCount + 1), 600);
+                        return; // Exit and wait
+                    }
+                    throw new Error("No active session found.");
+                }
+
+                // 2. Token is ready! Safe to make the 3 API calls.
                 const [sum, prog, rec] = await Promise.all([
                     fetchApi('users/me/summary'),
                     fetchApi('users/me/recruitment-progress'),
                     fetchApi('users/me/recruits')
                 ]);
+                
                 setSummary(sum as DashboardUserSummary);
                 setProgress(prog as DashboardRecruitProgress);
                 setRecruits(rec?.recruits || []);
@@ -560,7 +575,7 @@ export default function DemoDashboard() {
                         <div className="lg:col-span-3">
                             <div className="rounded-[2.5rem] p-8 bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7] border border-[#22C55E]/20 shadow-[0_20px_50px_-12px_rgba(4,51,11,0.15)] mb-8">
                                 <h2 className="text-2xl font-black text-[#04330B] mb-2">{summary?.user?.unionName} में आपका स्वागत है</h2>
-                                <p className="text-[#04330B]/70 font-medium">आप संघ के एक महत्वपूर्ण सदस्य हैं। एक साथ खड़े रहें, अपने अधिकारों के लिए लड़ें!</p>
+                                <p className="text-[#04330B]/70 font-medium">आप यूनियन के एक महत्वपूर्ण सदस्य हैं। एक साथ खड़े रहें, अपने अधिकारों के लिए लड़ें!</p>
                             </div>
                             <div className="max-w-[500px] mx-auto">
                                 {/* Union ID Card */}
