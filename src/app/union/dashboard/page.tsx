@@ -7,8 +7,8 @@ import { Navbar } from '../../../components/Navbar';
 import { Footer } from '../../../components/Footer';
 import { fetchApi, getApiBaseUrl } from '../../../lib/api';
 import { RequireAuth } from '../../components/RequireAuth';
-import { User, Phone, MapPin, Car, FileText, AlertCircle, Camera, Trash2, Download } from 'lucide-react';
-import { toPng } from 'html-to-image';
+import { User, Phone, MapPin, Car, FileText, AlertCircle, Camera, Trash2 } from 'lucide-react';
+import { UnionIdCard } from '../../../components/UnionIdCard';
 import { getAuthHeader } from '../../../lib/supabaseClient';
 
 interface UnionUserSummary {
@@ -25,42 +25,6 @@ interface UnionUserSummary {
   };
 }
 
-// --- Helper for ID Card Download ---
-async function downloadAsPng(ref: React.RefObject<HTMLDivElement | null>, filename: string) {
-    if (!ref.current) return;
-    try {
-        const element = ref.current;
-        await document.fonts.ready;
-        await new Promise(r => setTimeout(r, 300));
-
-        // Bypass CSSStyleSheet CORS errors
-        const originalCssRules = Object.getOwnPropertyDescriptor(CSSStyleSheet.prototype, 'cssRules');
-        if (originalCssRules) {
-            Object.defineProperty(CSSStyleSheet.prototype, 'cssRules', {
-                get() { try { return originalCssRules.get?.call(this) || []; } catch { return []; } },
-                configurable: true
-            });
-        }
-
-        const dataUrl = await toPng(element, {
-            pixelRatio: 3, 
-            style: { opacity: '1', visibility: 'visible', pointerEvents: 'auto' },
-        });
-
-        if (originalCssRules) {
-            Object.defineProperty(CSSStyleSheet.prototype, 'cssRules', originalCssRules);
-        }
-
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = dataUrl;
-        link.click();
-    } catch (error) {
-        console.error("Capture Error:", error);
-        alert("Download failed. Please try again or take a screenshot.");
-    }
-}
-
 export default function UnionDashboardPage() {
   const { language } = useLanguage();
   const router = useRouter();
@@ -68,7 +32,6 @@ export default function UnionDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const idCardRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadSummary = async () => {
@@ -178,48 +141,20 @@ export default function UnionDashboardPage() {
             
             {/* Left Col: ID Card & Photo Upload */}
             <div className="flex flex-col gap-4">
-                <div className="rounded-[24px] p-6 bg-white border border-[#BBF7D0] shadow-sm flex flex-col items-center">
+                <div className="rounded-[24px] p-6 bg-white border border-[#BBF7D0] shadow-sm">
                     <h3 className="text-xl font-bold text-[#04330B] w-full text-left mb-6">संघ सदस्य कार्ड</h3>
                     
-                    {/* The Digital ID Card */}
-                    <div
-                        ref={idCardRef}
-                        className="w-full max-w-[380px] aspect-[1.6/1] rounded-[20px] p-6 relative overflow-hidden shadow-2xl mb-6 flex flex-col justify-between"
-                        style={{ background: 'linear-gradient(135deg, #04330B 0%, #0B5A2A 100%)', color: '#ffffff' }}
-                    >
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-12 -mt-12"></div>
-                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-8 -mb-8"></div>
-
-                        <div className="flex justify-between items-start relative z-10 mb-auto">
-                            <div className="bg-white rounded-lg p-1.5 flex items-center justify-center">
-                                <span className="text-[#04330B] font-black text-sm px-1 tracking-wider">संघ</span>
-                            </div>
-                            <div className="w-16 h-16 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center overflow-hidden border border-white/30 shadow-inner">
-                                {user.photoUrl ? (
-                                    <img
-                                        src={user.photoUrl.startsWith('http') ? user.photoUrl : `${getApiBaseUrl().replace(/\/v1\/?$/, '')}${user.photoUrl}`}
-                                        alt="Profile"
-                                        className="w-full h-full object-cover"
-                                        crossOrigin="anonymous"
-                                    />
-                                ) : (
-                                    <User size={32} className="text-white/80" />
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="relative z-10 ml-2 mb-4">
-                            <h2 className="text-2xl font-black uppercase tracking-tight mb-1 truncate">{user.name || 'नाम'}</h2>
-                            <p className="text-[#BBF7D0] font-bold text-sm truncate">{user.unionName || 'संघ सदस्य'}</p>
-                        </div>
-
-                        <div className="relative z-10 ml-2 mt-auto">
-                            <p className="text-white font-mono font-bold tracking-[0.2em] text-sm">{user.memberId || 'U-000000'}</p>
-                        </div>
+                    {/* Use the new UnionIdCard component */}
+                    <div className="union-dashboard max-w-md mx-auto">
+                        <UnionIdCard user={user} />
                     </div>
-
-                    {/* Controls */}
-                    <div className="w-full flex gap-3 mb-4">
+                </div>
+                
+                {/* Photo Upload Section - Separate from ID card */}
+                <div className="rounded-[24px] p-6 bg-white border border-[#BBF7D0] shadow-sm">
+                    <h3 className="text-xl font-bold text-[#04330B] w-full text-left mb-4">फोटो प्रबंधन</h3>
+                    
+                    <div className="w-full flex gap-3">
                         <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={handlePhotoUpload} />
                         <button 
                             onClick={() => fileInputRef.current?.click()} 
@@ -239,14 +174,6 @@ export default function UnionDashboardPage() {
                             </button>
                         )}
                     </div>
-
-                    <button
-                        onClick={() => downloadAsPng(idCardRef, `Union-ID-${(user.name || 'Member').replace(/\s+/g, '-')}.png`)}
-                        className="w-full py-4 bg-[#04330B] text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#0B5A2A] transition-all"
-                    >
-                        <Download size={20} />
-                        <span>कार्ड डाउनलोड करें</span>
-                    </button>
                 </div>
             </div>
 

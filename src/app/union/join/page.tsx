@@ -99,10 +99,10 @@ const translations = {
 
 // Union options (in Hindi)
 const UNION_OPTIONS = [
-  { value: 'ई-रिक्शा चालक संघ', label: 'ई-रिक्शा चालक संघ' },
-  { value: 'हाट व ठेला विक्रेता संघ', label: 'हाट व ठेला विक्रेता संघ' },
-  { value: 'राजस्थान गिग वर्कर्स संघ', label: 'राजस्थान गिग वर्कर्स संघ' },
-  { value: 'राजस्थान वाहन चालक संघ', label: 'राजस्थान वाहन चालक संघ' },
+  { value: 'ई-रिक्शा चालक यूनियन', label: 'ई-रिक्शा चालक यूनियन' },
+  { value: 'हाट व ठेला विक्रेता यूनियन', label: 'हाट व ठेला विक्रेता यूनियन' },
+  { value: 'राजस्थान गिग वर्कर्स यूनियन', label: 'राजस्थान गिग वर्कर्स यूनियन' },
+  { value: 'राजस्थान वाहन चालक यूनियन', label: 'राजस्थान वाहन चालक यूनियन' },
   { value: 'अन्य', label: 'अन्य (विवरण दें)' },
 ];
 
@@ -154,7 +154,7 @@ const UnionJoinPageContent = () => {
     if (!phoneVerified) return 'Please verify your phone number with OTP.';
     if (!formData.unionName) return 'Please select your Union.';
     // Vehicle number required for E-Rickshaw and Vahan Chalak unions
-    const requiresVehicle = ['ई-रिक्शा चालक संघ', 'राजस्थान वाहन चालक संघ'].includes(formData.unionName);
+    const requiresVehicle = ['ई-रिक्शा चालक यूनियन', 'राजस्थान वाहन चालक यूनियन'].includes(formData.unionName);
     if (requiresVehicle && !formData.vehicleNumber.trim()) return 'Please enter your vehicle number.';
     if (!formData.governmentId.trim()) return 'Please enter your Government ID number.';
     if (!formData.address.trim()) return 'Please enter your address.';
@@ -533,7 +533,7 @@ const UnionJoinPageContent = () => {
                   </select>
 
                   {/* Vehicle Number - Only for E-Rickshaw and Vahan Chalak unions */}
-                  {['ई-रिक्शा चालक संघ', 'राजस्थान वाहन चालक संघ'].includes(formData.unionName) && (
+                  {['ई-रिक्शा चालक यूनियन', 'राजस्थान वाहन चालक यूनियन'].includes(formData.unionName) && (
                     <input
                       type="text"
                       value={formData.vehicleNumber}
