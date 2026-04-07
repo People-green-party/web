@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { User } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image'; 
 
 interface UnionIdCardProps {
   user: {
@@ -16,7 +16,6 @@ interface UnionIdCardProps {
 export function UnionIdCard({ user }: UnionIdCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Helper to format the photo URL correctly
   const getPhotoUrl = (url: string | null) => {
     if (!url) return null;
     if (url.startsWith('http')) return url;
@@ -24,142 +23,118 @@ export function UnionIdCard({ user }: UnionIdCardProps) {
     return `${baseUrl}${url}`;
   };
 
-  // Function to download the card as an image
   const downloadCard = async () => {
-    if (cardRef.current) {
-      try {
-        const canvas = await html2canvas(cardRef.current, {
-          scale: 3, 
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: null
+    if (!cardRef.current) return;
+    try {
+      const originalCssRules = Object.getOwnPropertyDescriptor(CSSStyleSheet.prototype, 'cssRules');
+      if (originalCssRules) {
+        Object.defineProperty(CSSStyleSheet.prototype, 'cssRules', {
+          get() {
+            try { return originalCssRules.get?.call(this) || []; } catch (e) { return[]; }
+          },
+          configurable: true
         });
-
-        canvas.toBlob((blob: Blob | null) => {
-          if (blob) {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.download = `PGP-Union-ID-${user.name || 'Member'}.png`;
-            link.href = url;
-            link.click();
-            URL.revokeObjectURL(url);
-          }
-        });
-      } catch (error) {
-        console.error('Download error:', error);
-        alert('Download failed. Please try taking a screenshot.');
       }
+
+      const dataUrl = await toPng(cardRef.current, {
+        pixelRatio: 3, 
+        style: { transform: 'scale(1)' } 
+      });
+
+      if (originalCssRules) {
+        Object.defineProperty(CSSStyleSheet.prototype, 'cssRules', originalCssRules);
+      }
+
+      const link = document.createElement('a');
+      link.download = `PGP-Union-ID-${user.name || 'Member'}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Download failed. Please try taking a screenshot.');
     }
   };
 
+  // SMART UNION NAME LOGIC
+  // We trim it to prevent space errors from the DB
+  const rawUnion = (user.unionName || '').trim();
+  const isSpecificUnion = rawUnion.length > 0 && !['अन्य', 'पीपल्स ग्रीन असंगठित श्रमिक यूनियन'].includes(rawUnion);
+  
+  // If we must use the generic name, we use \n to force a clean 2-line split instead of a messy 4-line wrap
+  const mainTitle = isSpecificUnion ? rawUnion : 'पीपल्स ग्रीन असंगठित\nश्रमिक यूनियन';
+  const subTitle = isSpecificUnion ? 'पीपल्स ग्रीन असंगठित श्रमिक यूनियन' : '';
+
   return (
     <div className="flex flex-col items-center w-full">
-      {/* THE ACTUAL ID CARD UI - Premium Layout */}
+      {/* THE ACTUAL ID CARD UI */}
       <div
         ref={cardRef}
-        className="w-full max-w-[400px] rounded-[16px] overflow-hidden mb-6 flex flex-col relative"
+        className="w-full max-w-[440px] rounded-[18px] overflow-hidden mb-6 relative select-none"
         style={{
-          // Standard physical ID Card aspect ratio
           aspectRatio: '1.586 / 1', 
-          background: 'linear-gradient(135deg, #04330B 0%, #0B5A2A 100%)',
+          background: 'linear-gradient(135deg, #0B4523 0%, #062812 100%)',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          border: '1px solid rgba(255, 255, 255, 0.15)'
+          border: '1px solid rgba(255, 255, 255, 0.1)'
         }}
       >
-        {/* Background decorative watermark graphics */}
-        <div 
-          className="absolute top-0 right-0 w-64 h-64 rounded-full -mr-20 -mt-20 pointer-events-none" 
-          style={{ backgroundColor: '#ffffff', opacity: 0.04 }}
-        />
-        <div 
-          className="absolute bottom-0 left-0 w-48 h-48 rounded-full -ml-16 -mb-16 pointer-events-none" 
-          style={{ backgroundColor: '#ffffff', opacity: 0.04 }}
-        />
+        <div className="absolute top-0 right-0 w-64 h-64 rounded-full -mr-20 -mt-20 pointer-events-none bg-white/5" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full -ml-16 -mb-16 pointer-events-none bg-white/5" />
 
-        {/* --- MAIN CARD CONTENT (Top & Middle) --- */}
-        <div className="flex flex-col flex-1 p-5 pb-3 relative z-10">
-          
-          {/* HEADER ROW */}
-          <div className="flex justify-between items-start gap-3 w-full">
-            {/* Logo */}
-            <div 
-              className="w-14 h-14 rounded-xl p-1.5 flex items-center justify-center shrink-0"
-              style={{ backgroundColor: '#ffffff', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-            >
-              <img src="/PGPlogo.svg" alt="PGP Logo" className="w-full h-full object-contain" crossOrigin="anonymous" />
-            </div>
-            
-            {/* Main Union Title */}
-            <div className="flex-1 flex flex-col items-center justify-center pt-1 px-1">
-              <h1 
-                className="font-black tracking-tight text-center leading-[1.15]" 
-                style={{ fontSize: '14px', color: '#ffffff' }}
-              >
-                {user.unionName || 'पीपल्स ग्रीन असंगठित श्रमिक यूनियन'}
-              </h1>
-              {user.unionName && (
-                <p className="text-center font-bold mt-1" style={{ fontSize: '9px', color: 'rgba(255, 255, 255, 0.75)' }}>
-                  पीपल्स ग्रीन असंगठित श्रमिक यूनियन
-                </p>
-              )}
-            </div>
-
-            {/* Profile Photo (Crisper white border to look like a real photo) */}
-            <div 
-              className="w-[72px] h-[92px] rounded-lg flex items-center justify-center overflow-hidden shrink-0"
-              style={{ 
-                backgroundColor: 'rgba(255, 255, 255, 0.08)', 
-                border: '2px solid rgba(255, 255, 255, 0.5)', 
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)' 
-              }}
-            >
-              {user.photoUrl ? (
-                <img
-                  src={getPhotoUrl(user.photoUrl)!}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                  crossOrigin="anonymous"
-                />
-              ) : (
-                <User size={36} color="rgba(255, 255, 255, 0.6)" />
-              )}
-            </div>
-          </div>
-
-          {/* USER DETAILS ROW (Pushes to the bottom of the middle section) */}
-          <div className="flex flex-col flex-1 justify-end pr-[70px]"> 
-            <h2 
-              className="font-black uppercase tracking-tight leading-none mb-1.5" 
-              style={{ fontSize: '22px', color: '#ffffff', textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}
-            >
-              {user.name}
-            </h2>
-            <p className="font-bold tracking-wide mb-2" style={{ fontSize: '13px', color: '#86efac' }}>
-              {user.phone}
-            </p>
-            <p className="font-medium leading-[1.3] max-w-[100%]" style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.85)' }}>
-              कार्यालय: हम बदलेंगे भवन, 02 मिशन कंपाउंड, अजमेर पुलिया, जयपुर, राजस्थान
-            </p>
-          </div>
+        {/* --- TOP LEFT: LOGO --- */}
+        <div className="absolute top-5 left-5 w-[60px] h-[60px] sm:w-[70px] sm:h-[70px] bg-white rounded-xl flex items-center justify-center p-1.5 shadow-lg">
+          <img src="/PGPlogo.svg" alt="PGP Logo" className="w-full h-full object-contain" crossOrigin="anonymous" />
         </div>
 
-        {/* --- OFFICIAL FOOTER BAR (ID Strip) --- */}
+        {/* --- TOP MIDDLE: UNION TITLES --- */}
+        <div className="absolute top-5 left-[90px] sm:left-[100px] right-[90px] sm:right-[105px]">
+          <h1 className="text-white font-black text-[16px] sm:text-[20px] leading-[1.15] drop-shadow-md whitespace-pre-wrap">
+            {mainTitle}
+          </h1>
+          {subTitle && (
+            <p className="text-white/80 font-bold text-[10px] sm:text-[11px] mt-1 leading-tight">
+              {subTitle}
+            </p>
+          )}
+        </div>
+
+        {/* --- TOP RIGHT: PHOTO --- */}
         <div 
-          className="w-full px-5 py-2.5 relative z-10 flex items-center justify-between shrink-0"
-          style={{ 
-            backgroundColor: 'rgba(0, 0, 0, 0.18)', // Dark contrast strip
-            backdropFilter: 'blur(4px)',
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-          }}
+          className="absolute top-5 right-5 w-[75px] h-[95px] sm:w-[85px] sm:h-[110px] rounded-lg flex items-center justify-center overflow-hidden shadow-lg"
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', border: '2px solid rgba(255, 255, 255, 0.3)' }}
         >
-          <p className="font-bold tracking-widest uppercase" style={{ fontSize: '12px', color: '#ffffff' }}>
-            <span style={{ color: 'rgba(255, 255, 255, 0.5)', marginRight: '6px' }}>ID:</span> 
-            {user.memberId}
+          {user.photoUrl ? (
+            <img
+              src={getPhotoUrl(user.photoUrl)!}
+              alt="Profile"
+              className="w-full h-full object-cover"
+              crossOrigin="anonymous"
+            />
+          ) : (
+            <User size={36} color="rgba(255, 255, 255, 0.6)" />
+          )}
+        </div>
+
+        {/* --- BOTTOM LEFT: USER DETAILS --- */}
+        <div className="absolute bottom-5 left-5 right-[100px]">
+          <h2 className="font-black uppercase tracking-tight leading-none text-[22px] sm:text-[26px] text-white drop-shadow-md truncate">
+            {user.name}
+          </h2>
+          <p className="font-bold mt-1 text-[15px] sm:text-[17px] text-[#86efac]">
+            {user.phone}
+          </p>
+          <p className="font-medium mt-1.5 text-[9px] sm:text-[11px] text-white/90 leading-[1.3] max-w-[90%]">
+            कार्यालय: हम बदलेंगे भवन, 02 मिशन कंपाउंड, अजमेर पुलिया, जयपुर, राजस्थान
+          </p>
+        </div>
+
+        {/* --- BOTTOM RIGHT: MEMBER ID --- */}
+        <div className="absolute bottom-5 right-5 text-right">
+          <p className="font-bold tracking-widest uppercase text-[10px] sm:text-[11px] text-white/50">
+            {user.memberId ? `ID: ${user.memberId}` : ''}
           </p>
         </div>
       </div>
 
-      {/* DOWNLOAD BUTTON */}
       <button 
         onClick={downloadCard} 
         className="flex items-center gap-2 bg-[#F0FDF4] text-[#04330B] border border-[#22C55E] font-bold px-6 py-2.5 rounded-xl hover:bg-[#DCFCE7] transition-colors shadow-sm"
