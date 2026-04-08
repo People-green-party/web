@@ -659,25 +659,43 @@ const JoinPageContent = () => {
       });
 
       if (typeof window !== 'undefined') {
-        if (userData?.user?.id) {
-          window.localStorage.setItem('devUserId', String(userData.user.id));
+        // Fix: Removed extra .user property check
+        if (userData?.id) {
+          window.localStorage.setItem('devUserId', String(userData.id));
         }
         if (loginRes?.access_token) {
           window.localStorage.setItem('access_token', loginRes.access_token);
         }
       }
 
-      try {
-        const [summaryRes, progressRes, recruitsRes] = await Promise.all([
-          fetchApi('users/me/summary'),
-          fetchApi('users/me/recruitment-progress'),
-          fetchApi('users/me/recruits'),
-        ]);
-        setMeSummary(summaryRes);
-        setMeProgress(progressRes);
-        setMeRecruits(recruitsRes?.recruits || []);
-      } catch (e) {
-        console.warn('Failed to load post-registration user data', e);
+      // 👇 THE FIX: Wait for the token to securely save before firing the 3 API calls 👇
+      const { getAuthHeader } = await import('../../lib/supabaseClient');
+      let validAuth = false;
+      
+      // Check 3 times, waiting 600ms between each check
+      for (let i = 0; i < 3; i++) {
+        const auth = await getAuthHeader();
+        if (auth.Authorization) {
+          validAuth = true;
+          break;
+        }
+        console.log("Waiting for session to securely save...");
+        await new Promise(r => setTimeout(r, 600));
+      }
+
+      if (validAuth) {
+        try {
+          const [summaryRes, progressRes, recruitsRes] = await Promise.all([
+            fetchApi('users/me/summary'),
+            fetchApi('users/me/recruitment-progress'),
+            fetchApi('users/me/recruits'),
+          ]);
+          setMeSummary(summaryRes);
+          setMeProgress(progressRes);
+          setMeRecruits(recruitsRes?.recruits || []);
+        } catch (e) {
+          console.warn('Failed to load post-registration user data', e);
+        }
       }
 
       router.push('/dashboard');
@@ -725,7 +743,7 @@ const JoinPageContent = () => {
     const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
     if ((devAuthMode || otpSimulated) && otp === '123456') {
       setStep(2);
-      handleSubmit();
+      await handleSubmit(); // <-- ADDED AWAIT
       return;
     }
 
@@ -751,20 +769,28 @@ const JoinPageContent = () => {
         if (otp === '123456' && otpError?.includes('Simulating OTP sent')) {
           console.log('Simulated OTP verification successful');
           setStep(2);
-          handleSubmit();
+          await handleSubmit(); // <-- ADDED AWAIT
           return;
         }
         throw error;
       }
+      
       console.log('OTP verified successfully');
       setStep(2);
-      handleSubmit();
+      
+      // Wait for the background registration to finish completely
+      await handleSubmit(); 
+
     } catch (error: any) {
       console.error('Error verifying OTP:', error);
       setOtpError(error.message || 'Invalid OTP. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+      
+      // Only turn off the loading spinner if there was an actual error
+      setLoading(false); 
+    } 
+    
+    // NOTE: We completely removed the `finally { setLoading(false) }` block here. 
+    // This ensures the button stays in "Verifying..." mode until router.push('/dashboard') executes!
   }
 
   async function handleSendOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {

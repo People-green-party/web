@@ -85,6 +85,23 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     let authHeader: Record<string, string> = {};
     if (typeof window !== 'undefined') {
         authHeader = await getAuthHeader();
+
+        // 👇 THE ULTIMATE FIX: Intercept naked requests before they hit the backend 👇
+        // If we are hitting a protected user route but don't have a token yet...
+        if (endpoint.includes('/me') && !authHeader.Authorization) {
+            // Wait 500ms to allow Supabase/LocalStorage to finish saving token
+            console.log(`[API Guard] Delaying request to ${endpoint} to wait for auth token...`);
+            await new Promise(r => setTimeout(r, 500));
+            authHeader = await getAuthHeader(); // Try grabbing it one more time
+
+            // If it is STILL empty, cancel the request entirely.
+            // This prevents the backend from throwing "Missing bearer token" 401 error.
+            if (!authHeader.Authorization) {
+                console.warn(`[API Guard] Blocked naked request to ${endpoint}. User needs to log in.`);
+                throw new Error("No active session found. Please log in.");
+            }
+        }
+        // 👆 END FIX 👆
     }
 
     const defaultHeaders = {
@@ -126,8 +143,12 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
         return data;
     } catch (error: any) {
-        // If we already have a friendly error (response was received), keep it.
         const msg = String(error?.message || '').trim();
+        // If our API Guard blocked it, just throw clean error (don't log network failure)
+        if (msg === "No active session found. Please log in.") {
+            throw new Error(msg);
+        }
+        
         if (msg && !msg.toLowerCase().includes('failed to fetch')) {
             throw new Error(msg);
         }

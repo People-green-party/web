@@ -12,11 +12,11 @@ const translations = {
   hi: {
     joinPage: {
       header: {
-        title: "पीपल्स ग्रीन पार्टी: असंगठित संघों का सशक्तिकरण",
+        title: "पीपल्स ग्रीन पार्टी: असंगठित यूनियनों का सशक्तिकरण",
         subtitle: "एक साथ खड़े रहें, अपने अधिकारों के लिए लड़ें"
       },
       wizard: {
-        heroTitle: 'पीपल्स ग्रीन पार्टी:\nअसंगठित संघों का सशक्तिकरण',
+        heroTitle: 'पीपल्स ग्रीन पार्टी:\nअसंगठित यूनियनों का सशक्तिकरण',
         newRegistration: 'नया पंजीकरण',
         step1: 'पंजीकरण करें',
         step2: 'OTP सत्यापन',
@@ -28,7 +28,7 @@ const translations = {
         otpSubtitlePrefix: 'कोड भेजा गया',
         verifyContinue: 'सत्यापित करें और आगे बढ़ें',
         verifying: 'सत्यापित कर रहे हैं...',
-        idCongrats: 'बधाई हो! आप अब संघ सदस्य हैं',
+        idCongrats: 'बधाई हो! आप अब यूनियन सदस्य हैं',
         idReady: 'आपका डिजिटल ID कार्ड तैयार है',
         downloadId: 'ID कार्ड डाउनलोड करें',
         goDashboard: 'डैशबोर्ड पर जाएँ',
@@ -38,7 +38,7 @@ const translations = {
         subtitle: "हमारे साथ अपनी यात्रा शुरू करने के लिए नीचे दिया गया फॉर्म भरें।",
         fullName: "पूरा नाम",
         mobile: "मोबाइल नंबर",
-        selectUnion: "अपना संघ चुनें",
+        selectUnion: "अपना यूनियन चुनें",
         vehicleNumber: "वाहन नंबर",
         vehicleNumberPlaceholder: "अपना वाहन नंबर दर्ज करें (जैसे: RJ14AB1234)",
         address: "पूरा घर का पता",
@@ -99,10 +99,10 @@ const translations = {
 
 // Union options (in Hindi)
 const UNION_OPTIONS = [
-  { value: 'ई-रिक्शा चालक संघ', label: 'ई-रिक्शा चालक संघ' },
-  { value: 'हाट व ठेला विक्रेता संघ', label: 'हाट व ठेला विक्रेता संघ' },
-  { value: 'राजस्थान गिग वर्कर्स संघ', label: 'राजस्थान गिग वर्कर्स संघ' },
-  { value: 'राजस्थान वाहन चालक संघ', label: 'राजस्थान वाहन चालक संघ' },
+  { value: 'ई-रिक्शा चालक यूनियन', label: 'ई-रिक्शा चालक यूनियन' },
+  { value: 'हाट व ठेला विक्रेता यूनियन', label: 'हाट व ठेला विक्रेता यूनियन' },
+  { value: 'राजस्थान गिग वर्कर्स यूनियन', label: 'राजस्थान गिग वर्कर्स यूनियन' },
+  { value: 'राजस्थान वाहन चालक यूनियन', label: 'राजस्थान वाहन चालक यूनियन' },
   { value: 'अन्य', label: 'अन्य (विवरण दें)' },
 ];
 
@@ -154,7 +154,7 @@ const UnionJoinPageContent = () => {
     if (!phoneVerified) return 'Please verify your phone number with OTP.';
     if (!formData.unionName) return 'Please select your Union.';
     // Vehicle number required for E-Rickshaw and Vahan Chalak unions
-    const requiresVehicle = ['ई-रिक्शा चालक संघ', 'राजस्थान वाहन चालक संघ'].includes(formData.unionName);
+    const requiresVehicle = ['ई-रिक्शा चालक यूनियन', 'राजस्थान वाहन चालक यूनियन'].includes(formData.unionName);
     if (requiresVehicle && !formData.vehicleNumber.trim()) return 'Please enter your vehicle number.';
     if (!formData.governmentId.trim()) return 'Please enter your Government ID number.';
     if (!formData.address.trim()) return 'Please enter your address.';
@@ -221,10 +221,14 @@ const UnionJoinPageContent = () => {
 
       console.log('Union registration successful:', userData);
 
-      // NOTE: We do NOT save the Supabase token to localStorage manually.
-      // The Supabase SDK already saves it securely under its own sb-...-auth-token key
-      // and handles refreshing it automatically. Saving it manually would trap
-      // the 1-hour token that never refreshes.
+      // 👇 ADD THIS DEV MODE BLOCK 👇
+      // This forces the dashboard to log you in locally when using the 123456 fake OTP
+      if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true') {
+        if (userData?.id) {
+          window.localStorage.setItem('devUserId', String(userData.id));
+        }
+      }
+      // 👆 END DEV MODE BLOCK 👆
 
       // Upload photo separately after registration
       if (selectedPhoto) {
@@ -533,7 +537,7 @@ const UnionJoinPageContent = () => {
                   </select>
 
                   {/* Vehicle Number - Only for E-Rickshaw and Vahan Chalak unions */}
-                  {['ई-रिक्शा चालक संघ', 'राजस्थान वाहन चालक संघ'].includes(formData.unionName) && (
+                  {['ई-रिक्शा चालक यूनियन', 'राजस्थान वाहन चालक यूनियन'].includes(formData.unionName) && (
                     <input
                       type="text"
                       value={formData.vehicleNumber}
