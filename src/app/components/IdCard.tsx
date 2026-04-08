@@ -189,7 +189,7 @@ const Footer = () => {
         <div>
           <h4 className="font-bold text-lg mb-4 text-gray-900">Contact Us</h4>
           <div className="space-y-4">
-            <div className="flex gap-3 items-start">
+            <div className="flex gap-3 items-center">
               <div className="p-2 border border-gray-200 rounded text-green-800">
                 <MapPin size={20} />
               </div>
@@ -199,21 +199,20 @@ const Footer = () => {
               </p>
             </div>
 
-            <div className="flex gap-3 items-start">
+            <div className="flex gap-3 items-center">
               <div className="p-2 border border-gray-200 rounded text-green-800">
                 <Phone size={20} />
               </div>
               <div className="text-sm text-gray-600 font-medium">
                 <p>9521627701</p>
-                <p>9950008786</p>
               </div>
             </div>
 
-            <div className="flex gap-3 items-start">
+            <div className="flex gap-3 items-center">
               <div className="p-2 border border-gray-200 rounded text-green-800">
                 <Mail size={20} />
               </div>
-              <p className="text-sm text-gray-600 font-medium">joinus@peoplesgreen.org</p>
+              <p className="text-sm text-gray-600 font-medium">partypeoplesgreen@gmail.com</p>
             </div>
           </div>
         </div>

@@ -90,7 +90,7 @@ export const Footer = () => {
                     </h3>
 
                     <div className="flex flex-col gap-[24px] lg:gap-[32px] w-full">
-                        <div className="flex items-start gap-[12px] w-full">
+                        <div className="flex items-center gap-[12px] w-full">
                             <div className="w-[48px] h-[48px] shrink-0 rounded-[8px] border border-[#E4F2EA] bg-white flex items-center justify-center text-[#04330B] p-[12px]">
                                 <MapPin size={24} strokeWidth={1.5} />
                             </div>
@@ -99,13 +99,12 @@ export const Footer = () => {
                             </p>
                         </div>
 
-                        <div className="flex items-start gap-[16px]">
+                        <div className="flex items-center gap-[16px]">
                             <div className="w-[48px] h-[48px] shrink-0 rounded-[8px] border border-[#E4F2EA] bg-white flex items-center justify-center text-[#04330B] p-[12px]">
                                 <Phone size={24} strokeWidth={1.5} />
                             </div>
                             <div className="flex flex-col w-[151px]">
                                 <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">9521627701</p>
-                                <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">9950008786</p>
                             </div>
                         </div>
 
@@ -114,7 +113,7 @@ export const Footer = () => {
                                 <Mail size={24} strokeWidth={1.5} />
                             </div>
                             <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">
-                                joinus@peoplesgreen.org
+                                partypeoplesgreen@gmail.com
                             </p>
                         </div>
 
