@@ -739,7 +739,7 @@ const VisionCarousel = ({ language }: { language: string }) => {
     }, [isAutoPlaying]);
 
     return (
-        <section className="relative z-10 bg-white w-full flex flex-col items-center py-[60px] lg:py-[100px] overflow-hidden">
+        <section className="relative z-10 bg-white w-full flex flex-col items-center pt-[30px] lg:pt-[50px] pb-[60px] lg:pb-[100px] overflow-hidden">
             <div className="text-center mb-12 px-4">
                 <ScrollReveal animation="fade-up" duration={800}>
                     <h2 className="font-['Familjen_Grotesk'] font-bold text-[24px] md:text-[32px] lg:text-[48px] leading-tight text-[#04330B] mb-4 uppercase max-w-4xl mx-auto">

@@ -3,7 +3,7 @@
 import React from "react";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
-import { ArrowLeft, CheckCircle2, TrendingUp, ChevronRight, Trophy } from "lucide-react";
+import { ArrowLeft, CheckCircle2, TrendingUp, Briefcase, ChevronRight, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "../../../components/LanguageContext";
 import ScrollReveal from '../../../components/ScrollReveal';
@@ -22,7 +22,7 @@ const theme = {
 // Data for Open Economy
 const pageData = {
     en: {
-        title: "Open Economy & Minimum Government",
+        title: "Open Economy and Minimum Government",
         subtitle: "Individual Freedom, Faster Growth",
         missionTitle: "Our Economic Philosophy",
         description: "The role of the state should be that of a facilitator, not a controller. We believe in liberal economic policies and minimum government interference to unleash the true potential of Indian enterprise.",
@@ -30,31 +30,43 @@ const pageData = {
         icon: TrendingUp,
         strategyTitle: "Our Strategy",
         points: [
-            "Private Property: Respect for private property and individual liberty. We believe that secure property rights are the bedrock of economic prosperity, encouraging citizens to invest, innovate, and build long-term wealth without fear of arbitrary state seizure.",
-            "End of License Raj: End of license-raj and unnecessary regulations. We will dismantle the complex web of bureaucratic red tape that stifles entrepreneurship, making it easier to start, run, and grow a business in India.",
-            "Minimum Interference: Minimum government interference in business. The government's role should be that of a neutral referee and facilitator, not a player or controller. We support free markets driven by competition and consumer choice.",
-            "Globalization: Accelerating Liberalization, Privatization, and Globalization. By integrating deeply with the global economy, we aim to attract foreign investment, access cutting-edge technology, and open new markets for Indian products and services."
+            "The primary role of the government is policy formulation, regulation, and maintaining justice and order; the government must refrain from running any form of business itself.",
+            "To encourage economic activities, the tax system should be made simple, transparent, and as low as possible.",
+            "To promote small and large businesses, industries, and startups, unnecessary licenses, permits, and complex regulations must be eliminated.",
+            "Local people must be given priority in the development of any region.",
+            "Economic activities will be completely freed from government control to develop a competitive and responsive system.",
+            "Following liberalization policies as much as possible, opportunities must be provided for world-class institutions to develop within the economy.",
+            "The current controlling model of bureaucracy must be limited and rendered ineffective. An alternative democratic model needs to be developed.",
+            "The execution of state activities should be entrusted to democratic institutions, subject matter experts, and capable organizations or individuals willing to take responsibility.",
+            "Strict and effective measures will be taken to make the governance system free from corruption.",
+            "Innovation, research and development, and knowledge creation must be promoted, and the non-government sector will be encouraged to distribute knowledge."
         ],
         outcomeTitle: "Expected Outcomes",
         outcomes: [
-            "Rapid Growth: Rapid economic growth driven by private initiative. By unleashing the animal spirits of Indian entrepreneurs, we target double-digit GDP growth that will transform India into a developed nation.",
-            "Equal Opportunities: Social mobility and equality of opportunity. An open economy rewards talent and hard work over lineage, creating a meritocratic society where everyone has a fair shot at success.",
-            "Global Innovation Hub: India emerging as a global hub for innovation and startups, attracting the best talent and capital from around the world."
+            "Minimum government, maximum opportunity. Freedom from License Raj, promoting individual growth.",
+            "A vibrant, transparent, and corruption-free economy that rewards innovation and hard work.",
+            "Increased ease of doing business, attracting global investment and fostering local entrepreneurship."
         ]
     },
     hi: {
-        title: "खुली अर्थव्यवस्था और न्यून सरकार",
-        subtitle: "व्यक्ति की आज़ादी, तेज़ विकास",
-        missionTitle: "हमारी आर्थिक सोच",
-        description: "राज्य का काम नियंत्रक नहीं, सुविधाकर्ता होना चाहिए। पीपल्स ग्रीन पार्टी उदार आर्थिक नीति और न्यूनतम सरकारी हस्तक्षेप में विश्वास रखती है ताकि भारतीय उद्यम की वास्तविक क्षमता को मुक्त किया जा सके।",
+        title: "खुली अर्थव्यवस्था – न्यून सरकार",
+        subtitle: "लाइसेंस राज से मुक्ति, व्यक्तिगत विकास की ओर",
+        missionTitle: "हमारा दृष्टिकोण",
+        description: "न्यूनतम सरकार, अधिकतम अवसर। पीपल्स ग्रीन पार्टी मानती है कि सरकार का काम व्यापार करना नहीं, बल्कि व्यापार के लिए सही माहौल बनाना है। हम भ्रष्टाचार मुक्त और पारदर्शी व्यवस्था के पक्षधर हैं।",
         image: "/party-images/DSC_0081.JPG",
-        icon: TrendingUp,
+        icon: Briefcase,
         strategyTitle: "हमारी रणनीति",
         points: [
-            "निजी संपत्ति: निजी संपत्ति और व्यक्तिगत स्वतंत्रता का सम्मान। हमारा मानना है कि सुरक्षित संपत्ति अधिकार आर्थिक समृद्धि की आधारशिला हैं, जो नागरिकों को निवेश करने, नवाचार करने और राज्य की मनमानी जब्ती के डर के बिना दीर्घकालिक धन बनाने के लिए प्रोत्साहित करते हैं।",
-            "लाइसेंस-राज का अंत: लाइसेंस-राज और अनावश्यक नियमों का अंत। हम नौकरशाही लालफीताशाही के उस जटिल जाल को खत्म करेंगे जो उद्यमिता का गला घोंटता है, जिससे भारत में व्यवसाय शुरू करना, चलाना और बढ़ाना आसान हो जाएगा।",
-            "न्यूनतम हस्तक्षेप: व्यापार में न्यूनतम सरकारी हस्तक्षेप। सरकार की भूमिका एक तटस्थ रेफरी और सुविधाप्रदाता की होनी चाहिए, न कि एक खिलाड़ी या नियंत्रक की। हम प्रतिस्पर्धा और उपभोक्ता पसंद से संचालित मुक्त बाजारों का समर्थन करते हैं।",
-            "वैश्वीकरण: उदारीकरण, निजीकरण और वैश्वीकरण में तेजी लाना। वैश्विक अर्थव्यवस्था के साथ गहराई से जुड़कर, हमारा लक्ष्य विदेशी निवेश को आकर्षित करना, अत्याधुनिक तकनीक तक पहुंच बनाना और भारतीय उत्पादों और सेवाओं के लिए नए बाजार खोलना है।"
+            "सरकार का मुख्य कार्य नीति निर्माण, उनका नियमन, और न्याय एव व्यवस्था क़ायम करना होता है ; सरकार को स्वयं किसी भी तरह का व्यापार चलाने से विरत रहना होगा।",
+            "आर्थिक गतिविधियों को प्रोत्साहित करने के लिए कर व्यवस्था को सरल, पारदर्शी और यथासंभव कम किया जाना चाहिए।",
+            "छोटे और बड़े व्यापार और उद्योग एव स्टार्ट अप को बढ़ावा देने के लिए अनावश्यक लाइसेंस, परमिट और जटिल नियमों को समाप्त करना आवश्यक है।",
+            "किसी भी क्षेत्र के विकास में स्थानीय लोगों को प्राथमिकता दिया जाना चाहिए।",
+            "आर्थिक गतिविधियों को सरकारी नियंत्रण से पूर्ण मुक्त कर प्रतिस्पर्धी और उत्तरदायी व्यवस्था विकसित की जाएगी।",
+            "अर्थव्यवस्था में यथा संभव उदारीकरण नीति का पालन करते हुए वैश्विक स्तर के संस्थानों को विकसित होने का अवसर दिया जाना चाहिए।",
+            "ब्यूरोक्रेसी का वर्तमान नियंत्रणकारी मॉडल सीमित और प्रभावीहीन किया जाना है। वैकल्पिक डेमोक्रेटिक मॉडल को विकसित करने की आवश्यकता है।",
+            "राजकीय गतिविधियों के क्रियान्वयन का जिम्मा लोकतांत्रिक संस्थाओं, विषय विशेषज्ञों और उत्तरदायित्व लेने में सक्षम संस्थाओं या व्यक्तियों को देना चाहिए।",
+            "शासन व्यवस्था को भ्रष्टाचार से मुक्त बनाने के लिए अधिक से अधिक सख्त और प्रभावी कदम उठाए जाएंगे।",
+            "नवाचार, शोध और अनुसंधान, ज्ञान की उत्पत्ति को बढ़ावा देना होगा और ज्ञान के वितरण के लिए नॉन गवर्नमेंट सेक्टर को प्रोत्साहित करना होगा।"
         ],
         outcomeTitle: "अपेक्षित परिणाम",
         outcomes: [

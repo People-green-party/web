@@ -3,7 +3,7 @@
 import React from "react";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
-import { ArrowLeft, CheckCircle2, Scale, ChevronRight, Trophy } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Scale, Globe, ChevronRight, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "../../../components/LanguageContext";
 import ScrollReveal from '../../../components/ScrollReveal';
@@ -22,7 +22,7 @@ const theme = {
 // Data for Civil Liberties
 const pageData = {
     en: {
-        title: "Civil Liberties & Cultural Consciousness",
+        title: "Civil Liberties, Duties, and Cultural Awareness",
         subtitle: "Sensitive, Tolerant, and Aware Society",
         missionTitle: "Need for Balance",
         description: "Freedom without responsibility becomes chaos, and duty without freedom becomes oppression. We need a society that values both individual rights and collective responsibility, creating a harmonious environment for growth.",
@@ -30,31 +30,36 @@ const pageData = {
         icon: Scale,
         strategyTitle: "Our Strategy",
         points: [
-            "Civil Rights: Complete protection of civil rights and individual liberties. We advocate for strong legal safeguards against censorship, arbitrary detention, and privacy violations, ensuring that every citizen feels free to express, associate, and live without fear.",
-            "Social Responsibility: Launching campaigns to create public awareness regarding duties and social responsibilities towards the nation. A rights-based approach must be balanced with a sense of duty towards fellow citizens, public property, and the environment.",
-            "Cultural Preservation: Active preservation and promotion of India's ancient civilization, traditions, and cultural diversity. We will support research, digital archiving, and festivals that celebrate our heritage while encouraging a scientific temper.",
-            "Judicial Reform: Strengthening the judicial system to ensure timely justice for all. We propose increasing the number of judges and digitizing courts to clear the backlog of pending cases."
+            "To safeguard our democracy, it is imperative that the Constitution and its institutions remain strong and autonomous. Solid structural reforms will be implemented to achieve this.",
+            "Civil rights, including speech, expression, privacy, justice, equality, and dignity, will be protected to the fullest extent.",
+            "A radical transformation will be brought to the functioning of police and administration, ensuring they treat citizens as their masters and establish a transparent, accountable system.",
+            "We will respect, preserve, and promote the local customs, traditions, and indigenous knowledge of all communities across the country.",
+            "Following the principle of 'Unity in Diversity', a society will be developed where no religion, caste, or community receives special appeasement, nor is anyone subjected to majoritarian suppression.",
+            "India's linguistic diversity will be honored. Respectful solutions will be devised for the use of various languages in education and government functions.",
+            "Our cultural heritage and monuments will be revitalized ensuring our cities remain modern while preserving their historical identities."
         ],
         outcomeTitle: "Expected Outcomes",
         outcomes: [
-            "Aware Society: Creating a sensitive, tolerant, and liberal society where diverse viewpoints are respected. Civic education will be integrated into the curriculum to foster a generation of responsible and conscious citizens.",
-            "Cultural Pride: Restoring pride in our rich heritage while embracing modernity. We envision a confident India that is rooted in its past but looks forward to the future with innovation and openness.",
-            "Strong Democracy: A vibrant democracy where institutions are robust, media is independent, and the government is held accountable by an informed citizenry."
+            "Freedom is both a right and a responsibility. Building a sensitive, tolerant, and aware India.",
+            "A society that celebrates diversity while remaining united through shared values and mutual respect.",
+            "Empowered citizens who actively participate in the democratic process with a sense of duty."
         ]
     },
     hi: {
-        title: "नागरिक स्वतंत्रता, कर्तव्य और सांस्कृतिक चेतना",
-        subtitle: "संवेदनशील, सहनशील और जागरूक समाज",
-        missionTitle: "संतुलन की आवश्यकता",
-        description: "स्वतंत्रता बिना जिम्मेदारी के अराजकता बन जाती है, और कर्तव्य बिना स्वतंत्रता के दमन। हमें एक ऐसे समाज की आवश्यकता है जो व्यक्तिगत अधिकारों और सामूहिक जिम्मेदारी दोनों को महत्व दे।",
+        title: "नागरिक स्वतंत्रता और संस्कृति",
+        subtitle: "स्वतंत्रता, गरिमा और जागरूक समाज",
+        missionTitle: "हमारा उद्देश्य",
+        description: "स्वतंत्रता अधिकार और जिम्मेदारी दोनों है। पीपल्स ग्रीन पार्टी हर नागरिक की अभिव्यक्ति की आजादी और व्यक्तिगत गरिमा की रक्षा के लिए प्रतिबद्ध है। हम एक ऐसा समाज बनाएंगे जहां संस्कृति का सम्मान हो और लोकतंत्र मजबूत हो।",
         image: "/party-images/DSC_0076.JPG",
-        icon: Scale,
+        icon: Globe,
         strategyTitle: "हमारी रणनीति",
         points: [
-            "नागरिक अधिकार: नागरिक अधिकारों और व्यक्तिगत स्वतंत्रता की पूर्ण रक्षा। हम सेंसरशिप, मनमानी हिरासत और गोपनीयता के उल्लंघन के खिलाफ मजबूत कानूनी सुरक्षा की वकालत करते हैं, यह सुनिश्चित करते हुए कि हर नागरिक स्वतंत्र और सुरक्षित महसूस करे।",
-            "सामाजिक जिम्मेदारी: राष्ट्र के प्रति कर्तव्यों और सामाजिक जिम्मेदारियों के बारे में जन-जागरूकता पैदा करने के लिए अभियान चलाना। अधिकार-आधारित दृष्टिकोण को साथी नागरिकों, सार्वजनिक संपत्ति और पर्यावरण के प्रति कर्तव्य की भावना के साथ संतुलित किया जाना चाहिए।",
-            "सांस्कृतिक संरक्षण: भारत की प्राचीन सभ्यता, परंपराओं और सांस्कृतिक विविधता का सक्रिय संरक्षण और संवर्धन। हम उन शोधों, डिजिटल अभिलेखागार और त्योहारों का समर्थन करेंगे जो हमारी विरासत का जश्न मनाते हैं और साथ ही वैज्ञानिक दृष्टिकोण को प्रोत्साहित करते हैं।",
-            "न्यायिक सुधार: सभी के लिए समय पर न्याय सुनिश्चित करने के लिए न्यायिक प्रणाली को मजबूत करना। हम लंबित मामलों को निपटाने के लिए न्यायाधीशों की संख्या बढ़ाने और अदालतों को डिजिटल बनाने का प्रस्ताव करते हैं।"
+            "प्रत्येक नागरिक की व्यक्तिगत स्वतंत्रता, व्यक्तिगत गरिमा, अभिव्यक्ति की स्वतंत्रता और लोकतांत्रिक अधिकारों की पूर्ण रक्षा की जाएगी।",
+            "नागरिकों को उनके संवैधानिक कर्तव्यों और सामाजिक जिम्मेदारियों के प्रति जागरूक करने के लिए व्यापक कार्यक्रम चलाए जाएंगे। इसके लिए शिक्षा प्रणाली की सहायता ली जाएगी।",
+            "भारत की प्राचीन सभ्यता, सांस्कृतिक विरासत, भाषाओं, साहित्य, कला और विविध लोक परंपराओं के संरक्षण और सम्मान को बढ़ावा दिया जाएगा।",
+            "सभी धर्मों और समुदायों के बीच संवाद और सम्मान की संस्कृति विकसित करेंगे और सांप्रदायिक सौहार्द और सामाजिक समरसता को बढ़ावा दिया जाएगा।",
+            "शासन के निर्णयों के विरुद्ध नागरिकों और समूहों को आवाज उठाने, असहमति व्यक्त करने और शांतिपूर्ण विरोध करने के अधिकार की रक्षा की जाएगी।",
+            "देश को सही मायने में लोकतांत्रिक और समानता के सिद्धांतों पर कायम रखने के लिए शासन में वंशवाद, परिवारवाद और व्यक्तिवाद को हतोत्साहित करने का प्रयास किया जाएगा।"
         ],
         outcomeTitle: "अपेक्षित परिणाम",
         outcomes: [

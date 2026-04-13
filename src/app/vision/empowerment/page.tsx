@@ -22,7 +22,7 @@ const theme = {
 // Data for Empowerment
 const pageData = {
     en: {
-        title: "Empowerment of Vulnerable Sections",
+        title: "Empowerment of Every Section of Society",
         subtitle: "Equality, Dignity, and Social Justice",
         missionTitle: "Our Perspective",
         description: "Equality is not just a slogan, but a matter of policy and structure. Society cannot progress until the weakest individual is empowered. We demand a systemic change where justice is accessible to all, irrespective of caste, gender, or economic status.",
@@ -30,31 +30,36 @@ const pageData = {
         icon: Users,
         strategyTitle: "Our Strategy",
         points: [
-            "Women's Participation: Ensuring 50% participation for women at every level of governance and decision-making. We will implement policies that mandate gender parity in public offices and corporate boardrooms, empowering women to shape the nation's future.",
-            "Proportional Representation: Representation for Dalits and marginalized communities proportional to their population. This ensures that their voices are heard and their interests are protected in policy formulation, leading to a truly inclusive democracy.",
-            "Basic Income: Providing Minimum Basic Income for the bottom 10% families. This direct financial support will act as a safety net, ensuring that no family sleeps hungry and every citizen has the resources to meet their basic needs.",
-            "Social Mobility: Promoting social mobility through quality education, skill development, and accessible healthcare. By removing barriers to entry, we enable individuals from disadvantaged backgrounds to rise based on their talent and hard work."
+            "Complete elimination of discrimination based on caste, religion, sect, or region, ensuring empowerment at social, economic, and political levels.",
+            "Women's empowerment is our top priority. We need to work constructively to bring women structurally to the center of all local politics, democracy, and governance.",
+            "Instead of focusing on reservations solely for government jobs, Dalits, backward classes, poor, women, and marginalized groups must be empowered economically to become a strong foundational backbone of the economy.",
+            "Local level self-employment opportunities and comprehensive local growth models should be established.",
+            "Complete transformation of policies and resources towards health and basic amenities to make them world-class for every section of society."
         ],
         outcomeTitle: "Expected Outcomes",
         outcomes: [
-            "Life with Dignity: Ensuring a life of dignity for all citizens where they are free from discrimination and exploitation. Social justice will not just be a concept but a lived reality for every Indian.",
-            "Eradication of Poverty: Complete eradication of poverty from society through targeted economic interventions. By uplifting the standard of living for the poorest, we create a robust and resilient economy for everyone.",
-            "Inclusive Leadership: Emergence of leaders from all sections of society who will guide the nation with diverse perspectives and grounded understanding."
+            "Equality is not just a promise, it's a system. Women, Dalits, and vulnerable groups at the center of power.",
+            "Empowering every citizen to lead a dignified life with equal access to opportunities and governance.",
+            "Fostering a society based on justice, inclusivity, and communal harmony."
         ]
     },
     hi: {
-        title: "कमजोर वर्ग का सशक्तिकरण",
-        subtitle: "बराबरी, गरिमा और सामाजिक न्याय",
-        missionTitle: "हमारा दृष्टिकोण",
-        description: "बराबरी केवल नारा नहीं, बल्कि नीति और संरचना का विषय है। जब तक सबसे कमजोर व्यक्ति सशक्त नहीं होगा, समाज प्रगति नहीं कर सकता। हम एक व्यवस्थित बदलाव की मांग करते हैं जहां न्याय जाति, लिंग या आर्थिक स्थिति की परवाह किए बिना सभी के लिए सुलभ हो।",
+        title: "समाज के हर वर्ग का सशक्तिकरण",
+        subtitle: "समानता, न्याय और सम्मान का अधिकार",
+        missionTitle: "हमारा संकल्प",
+        description: "बराबरी सिर्फ वादा नहीं, व्यवस्था होगी। पीपल्स ग्रीन पार्टी मानती है कि जब तक समाज का अंतिम व्यक्ति सशक्त नहीं होता, तब तक लोकतंत्र अधूरा है। हमारा लक्ष्य एक ऐसा भारत बनाना है जहाँ जाति, धर्म और लिंग के आधार पर कोई भेदभाव न हो।",
         image: "/party-images/DSC_0037.JPG",
         icon: Users,
         strategyTitle: "हमारी रणनीति",
         points: [
-            "महिलाओं की भागीदारी: शासन और निर्णय लेने के हर स्तर पर महिलाओं के लिए 50% भागीदारी सुनिश्चित करना। हम ऐसी नीतियां लागू करेंगे जो सार्वजनिक कार्यालयों और कॉरपोरेट बोर्डरूम में लिंग समानता अनिवार्य करें, जिससे महिलाएं राष्ट्र के भविष्य को आकार दे सकें।",
-            "दलित प्रतिनिधित्व: दलित और वंचित वर्गों के लिए उनकी जनसंख्या के अनुपात में प्रतिनिधित्व। यह सुनिश्चित करता है कि नीति निर्माण में उनकी आवाज सुनी जाए और उनके हितों की रक्षा हो, जिससे एक सच्चा समावेशी लोकतंत्र बने।",
-            "न्यूनतम बुनियादी आय: अंतिम पंक्ति के 10% परिवारों को न्यूनतम बुनियादी आय (Minimum Basic Income) प्रदान करना। यह प्रत्यक्ष वित्तीय सहायता एक सुरक्षा कवच की तरह काम करेगी, यह सुनिश्चित करते हुए कि कोई भी परिवार भूखा न सोए और हर नागरिक की बुनियादी जरूरतें पूरी हों।",
-            "सामाजिक गतिशीलता: गुणवत्तापूर्ण शिक्षा, कौशल विकास और सुलभ स्वास्थ्य सेवा के माध्यम से सामाजिक गतिशीलता को बढ़ावा देना। बाधाओं को हटाकर, हम वंचित पृष्ठभूमि के व्यक्तियों को उनकी प्रतिभा और कड़ी मेहनत के आधार पर आगे बढ़ने में सक्षम बनाते हैं।"
+            "भारतीय समाज को जातिविहीन बनाने के स्वप्न पर काम करना होगा।",
+            "शासन किसी भी साम्प्रदायिक धर्म का अनुगामी नहीं हो और राज व्यवस्था को पूर्णतः गैर-सांप्रदायिक और समान नागरिक सिद्धांतों पर आधारित बनाया जाएगा।",
+            "महिलाओं को शासन, प्रशासन, राजनीति और सार्वजनिक जीवन में लगभग 50 प्रतिशत भागीदारी सुनिश्चित करने के लिए आवश्यक नीतियाँ लागू की जाएँगी।",
+            "दलित, आदिवासी और सामाजिक रूप से वंचित वर्गों को आबादी के अनुपात में उचित प्रतिनिधित्व और अवसर सुनिश्चित किए जाएँगे। छोटे वर्गों को आरक्षण का लाभ देने का प्रावधान किया जाएगा।",
+            "समाज के अंतिम 10 प्रतिशत आर्थिक रूप से कमजोर परिवारों को न्यूनतम बुनियादी आय के रूप में प्रति माह ₹5000 के सहायता कूपन दिए जाएँगे, जिनका उपयोग ग्रीन स्वराज से जुड़े नव उद्यमियों के उत्पाद खरीदने में ही किया जा सकेगा।",
+            "प्रत्येक परिवार को सम्मानजनक और किफायती और नीचे के दस प्रतिशत को निशुल्क आवास तथा आवश्यक बुनियादी सुविधाएँ उपलब्ध हो।",
+            "बुजुर्ग, दिव्यांग और बीमार व्यक्तियों के लिए स्पेशल केयर फंड और सपोर्ट सिस्टम की स्थापना होनी चाहिए।",
+            "शासन और समाज में व्याप्त वीआईपी संस्कृति को पूरी तरह से समाप्त करेंगे और प्रत्येक नागरिक के साथ गरिमापूर्ण और समान व्यवहार सुनिश्चित किया जाएगा। किसी को भी वीआईपी ट्रीट नहीं किया जा सकेगा।"
         ],
         outcomeTitle: "अपेक्षित परिणाम",
         outcomes: [

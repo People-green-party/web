@@ -164,7 +164,7 @@ export default function SocialMediaFeed({ language }: { language: string }) {
     const t = titles[language as keyof typeof titles] || titles.en;
 
     return (
-        <section className="bg-white mt-[5px] lg:mt-[10px] w-full py-16 lg:py-24 relative overflow-hidden">
+        <section className="bg-white mt-[5px] lg:mt-[10px] w-full pt-6 lg:pt-10 pb-16 lg:pb-24 relative overflow-hidden">
 
             <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 

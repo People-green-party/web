@@ -22,7 +22,7 @@ const theme = {
 // Data for Nature
 const pageData = {
     en: {
-        title: "Nature Conservation",
+        title: "Nature Conservation and Sustainable Development",
         subtitle: "Sustainable Development, Secure Future",
         missionTitle: "Environmental Responsibility",
         description: "We are merely trustees of this planet for future generations. Our development model must respect the delicate balance of nature. We advocate for policies that prioritize long-term sustainability over short-term gains.",
@@ -30,31 +30,41 @@ const pageData = {
         icon: Leaf,
         strategyTitle: "Our Strategy",
         points: [
-            "Green Infrastructure: Promoting green building practices and renewable energy. We will incentivize the adoption of solar energy, rainwater harvesting, and energy-efficient designs in all new urban and rural constructions.",
-            "Reforestation: Massive reforestation campaigns to restore and expand green cover. Our goal is to protect existing forests and plant millions of additional trees to combat climate change and preserve biodiversity.",
-            "Water Management: Sustainable water management and protection of water bodies. We are committed to rejuvenating dying rivers, lakes, and traditional water structures to ensure long-term water security for all.",
-            "Waste Management: Implementing advanced waste-to-energy and recycling systems. By promoting a circular economy, we will minimize the environmental impact of urban waste and turn it into a valuable resource."
+            "Complete legal protection and restoration work for mountains, rivers, forests, and other sensitive ecological zones.",
+            "A comprehensive policy for water conservation, rainwater harvesting, and water management will be implemented, and a national water grid will be developed.",
+            "Special programs will be run for the conservation of biodiversity, livestock, and wildlife.",
+            "A target of increasing green cover (forests) by a minimum of 1% every year will be set, and carbon credit-based business activities will be promoted.",
+            "Production and storage capacity of renewable energy (solar, wind, hydrogen, etc.) will be increased.",
+            "Dependence on fossil fuels and greenhouse gases will be reduced by one percent every year.",
+            "Recycling, circular economy, and waste management will be prioritized.",
+            "Awareness and policies will be implemented to bring the population growth rate down below the balanced level (approximately 2.1).",
+            "Concrete steps need to be taken to ensure long-term environmental balance and sustainable development, keeping the interests of future generations in mind."
         ],
         outcomeTitle: "Expected Outcomes",
         outcomes: [
-            "Ecological Balance: Re-establishing the balance between human development and the natural environment. We envision a future where progress does not come at the cost of our planet's health.",
-            "Sustainable Cities: Clean, green, and sustainable cities with improved air quality and efficient resource management. Our urban areas will become models of ecological living.",
-            "Preserved Biodiversity: A thriving natural ecosystem where wildlife and native flora are protected, ensuring that future generations can enjoy the beauty and benefits of a healthy planet."
+            "A clean, green, and sustainable future for our children.",
+            "Resilient ecosystems that provide clean air, water, and fertile soil for generations to come.",
+            "Global leadership in sustainable development and climate action."
         ]
     },
     hi: {
         title: "प्रकृति संरक्षण और सतत विकास",
-        subtitle: "प्रकृति बचेगी तभी भविष्य बचेगा",
-        missionTitle: "हमारा संकल्प",
-        description: "प्रकृति और मनुष्य के बीच का संतुलन ही जीवन का आधार है। हम विकास के ऐसे मॉडल के पक्षधर हैं जो आने वाली पीढ़ियों के लिए एक स्वस्थ और सुरक्षित ग्रह सुनिश्चित करे।",
+        subtitle: "हरा-भरा भारत, सुरक्षित भविष्य",
+        missionTitle: "हमारा दर्शन",
+        description: "प्रकृति कोई वस्तु नहीं, जीवन का आधार है। पीपल्स ग्रीन पार्टी मानती है कि विकास तभी सार्थक है जब वह प्रकृति के साथ सामंजस्य में हो। हम आने वाली पीढ़ियों के लिए एक स्वस्थ और स्वच्छ पृथ्वी छोड़ने के लिए प्रतिबद्ध हैं।",
         image: "/party-images/DSC_0091.JPG",
         icon: Leaf,
         strategyTitle: "हमारी रणनीति",
         points: [
-            "विवेकपूर्ण उपयोग: प्राकृतिक संसाधनों का दीर्घकालिक और विवेकपूर्ण उपयोग। हम एक सर्कुलर इकोनॉमी की वकालत करते हैं जहां अपशिष्ट को कम किया जाता है और संसाधनों को पुनर्चक्रित किया जाता है, यह सुनिश्चित करते हुए कि आर्थिक विकास पर्यावरण क्षरण की कीमत पर न आए।",
-            "संसाधन संरक्षण: खनन, जल, वन और भूमि संसाधनों का संरक्षण। हमारी नदियों को प्रदूषण से बचाने, अवैध खनन को रोकने और जलवायु परिवर्तन से निपटने के लिए वन आवरण का विस्तार करने के लिए कड़े कानून बनाए जाएंगे।",
-            "जनसंख्या नियंत्रण: पर्यावरणीय संतुलन बनाए रखने के लिए जनसंख्या नियंत्रण पर जागरूक नीति। हम छोटे परिवारों को प्रोत्साहित करने के लिए शैक्षिक अभियान और प्रोत्साहन-आधारित कार्यक्रम शुरू करेंगे, जिससे हमारे सीमित प्राकृतिक संसाधनों पर दबाव कम होगा।",
-            "हरित ऊर्जा संक्रमण: कार्बन फुटप्रिंट को कम करने और ऊर्जा स्वतंत्रता प्राप्त करने के लिए सौर, पवन और हरित हाइड्रोजन जैसे नवीकरणीय ऊर्जा स्रोतों की ओर आक्रामक रूप से बढ़ना।"
+            "पर्वतों, नदियों, वनों और अन्य संवेदनशील पारिस्थितिक क्षेत्रों को पूर्ण कानूनी संरक्षण और पुनर्स्थापन पर कार्य।",
+            "जल संरक्षण, वर्षा जल संचयन और जल प्रबंधन की व्यापक नीति लागू की जाएगी तथा राष्ट्रीय जल ग्रिड विकसित किया जाएगा।",
+            "जैव विविधता, पशुधन और वन्यजीवों के संरक्षण के लिए विशेष कार्यक्रम चलाए जाएँगे।",
+            "हर वर्ष न्यूनतम 1% हरित क्षेत्र यानी वन बढ़ाने का लक्ष्य रखा जाएगा और कार्बन क्रेडिट आधारित व्यापारिक गतिविधियों को बढ़ावा दिया जाएगा।",
+            "नवीकरणीय ऊर्जा (सोलर, विंड, हाइड्रोजन आदि) उत्पादन और स्टोरेज क्षमता में वृद्धि की जाएगी।",
+            "फॉसिल फ्यूल और ग्रीन हाउस गैस पर निर्भरता को एक प्रतिशत प्रति वर्ष कम किया जाएगा।",
+            "रीसाइक्लिंग, सर्कुलर इकॉनमी और वेस्ट मैनेजमेंट को प्राथमिकता दी जाएगी।",
+            "जनसंख्या वृद्धि दर को संतुलित स्तर (लगभग 2.1) से नीचे लाने के लिए जागरूकता और नीतियाँ लागू की जाएँगी।",
+            "आने वाली पीढ़ियों के हितों को ध्यान में रखते हुए दीर्घकालिक पर्यावरणीय संतुलन और सतत विकास सुनिश्चित हो, इसके लिए ठोस कदम उठाने की जरूरत है।"
         ],
         outcomeTitle: "अपेक्षित परिणाम",
         outcomes: [

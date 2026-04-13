@@ -178,7 +178,7 @@ const translations = {
       title: "Meet Our Ideological Leader",
       sub: "The Face of Change, The Voice of the People.",
       role: "– Dr. Sudhanshu Sharma, President",
-      bio: "Dr. Sudhanshu is an Indian academician, politician, green activist, and climate change scientist. He is the co-founder of Suresh Gyan Vihar University, one of the NAAC 'A+' graded universities in Rajasthan. He also served as the founding First Vice-President of Suresh Gyan Vihar University between 2008–2010. In 2011, he founded the Bharatiya People's Green Party, based in Rajasthan, as its national president. The party is affiliated with the Naya Rajasthan think-tank and promotes the formation of a people's green zone."
+      bio: "Dr. Sudhanshu (born 19 February 1969) is a prominent Indian educationist, political leader, green activist, and climate change scientist based in Rajasthan. He is widely recognized as the co-founder and former vice-chancellor (2008–2011) of Suresh Gyan Vihar University in Jaipur. He comes from a family of noted academics; his grandfather was the scholar Acharya Purushottam Uttam, and his father, Shri Suresh Sharma, was a respected politician and educationist. Academically, Dr Sudhanshu holds a Doctorate in Earth Sciences (1992) from MNIT and a Law degree from the University of Rajasthan. In his early career as a geologist, he was credited with reporting the minerals Staurolite and Ottrelite in the Aravalli region for the first time.\n\nBeyond academia, he is a significant figure in Indian politics, having founded the Indian Peoples Green Party (PGP) in 2011 to advocate for sustainable growth. He is also the author of Indians@rest: The root cause of India's unrest, a satirical look at Indian politics."
     },
     stats: {
       header: "Our Growing Impact Across Rajasthan",
@@ -332,7 +332,7 @@ const translations = {
       sub: "बदलाव का चेहरा, जनता की आवाज़।",
       quote: "“डॉ. सुधांशु के साथ द ग्रीन टॉक्स।”",
       role: "– डॉ. सुधांशु शर्मा, अध्यक्ष",
-      bio: "डॉ. सुधांशु एक भारतीय शिक्षाविद, राजनीतिज्ञ, हरित कार्यकर्ता और जलवायु परिवर्तन वैज्ञानिक हैं। वह सुरेश ज्ञान विहार विश्वविद्यालय के सह-संस्थापक हैं, जो राजस्थान में NAAC 'A+' ग्रेडेड विश्वविद्यालयों में से एक है। उन्होंने 2008-2010 के बीच सुरेश ज्ञान विहार विश्वविद्यालय के संस्थापक प्रथम उपाध्यक्ष के रूप में भी काम किया। 2011 में, उन्होंने राजस्थान में स्थित भारतीय पीपुल्स ग्रीन पार्टी की स्थापना की।"
+      bio: "डॉ. सुधांशु (जन्म: 19 फरवरी 1969) राजस्थान स्थित एक प्रसिद्ध भारतीय शिक्षाविद्, राजनीतिक नेता, पर्यावरण कार्यकर्ता तथा जलवायु परिवर्तन वैज्ञानिक हैं। उन्हें विशेष रूप से सुरेश ज्ञान विहार विश्वविद्यालय, जयपुर के सह-संस्थापक और पूर्व कुलपति (2008–2011) के रूप में जाना जाता है। वे एक प्रतिष्ठित शैक्षणिक परिवार से संबंध रखते हैं। उनके दादा आचार्य पुरुषोत्तम उत्तम एक विद्वान थे, जबकि उनके पिता श्री सुरेश शर्मा एक सम्मानित राजनेता और शिक्षाविद् रहे हैं। शैक्षणिक रूप से, डॉ. सुधांशु ने मालवीय राष्ट्रीय प्रौद्योगिकी संस्थान, जयपुर से वर्ष 1992 में पृथ्वी विज्ञान में डॉक्टरेट की उपाधि प्राप्त की तथा राजस्थान विश्वविद्यालय, जयपुर से विधि की डिग्री हासिल की। अपने प्रारंभिक करियर में एक भूवैज्ञानिक के रूप में, उन्होंने अरावली क्षेत्र में पहली बार स्टॉरोलाइट और ऑट्रेलाइट जैसे खनिजों की खोज/रिपोर्टिंग का श्रेय प्राप्त किया।\n\nशिक्षा के अलावा, वे भारतीय राजनीति में भी एक महत्वपूर्ण व्यक्तित्व हैं। उन्होंने वर्ष 2011 में सतत विकास को बढ़ावा देने के उद्देश्य से इंडियन पीपल्स ग्रीन पार्टी (पीजीपी) की स्थापना की। वे “इंडियंस एट रेस्ट: भारत में अशांति का मूल कारण” नामक पुस्तक के लेखक भी हैं, जो भारतीय राजनीति पर एक व्यंग्यात्मक दृष्टिकोण प्रस्तुत करती है।"
     },
     stats: {
       header: "राजस्थान में हमारा बढ़ता प्रभाव",
@@ -775,7 +775,7 @@ const LandingPageContent = () => {
 
       {/* 2. VISION FOR BETTER TOMORROW (Cards) */}
       {/* 2. VISION FOR BETTER TOMORROW (Replaced with Image Grid) */}
-      <section className="bg-white px-4 mt-[350px] lg:mt-[280px] pb-[60px] lg:pb-[100px]">
+      <section className="bg-white px-4 mt-[220px] lg:mt-[200px] pb-[40px] lg:pb-[60px]">
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
 
           {/* Header */}
@@ -815,15 +815,19 @@ const LandingPageContent = () => {
                   </div>
 
                   {/* Floating Title Box */}
-                  <div className="absolute bottom-[16px] left-[50%] translate-x-[-50%] w-[92%] bg-white rounded-[12px] p-4 lg:p-5 shadow-xl flex flex-col items-center transition-all duration-500 ease-out group-hover:bottom-[24px] group-hover:scale-[1.02] border border-gray-100 z-10">
-                    <h3 className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[1.3] text-center text-[#04330B] whitespace-normal h-auto overflow-visible w-full py-0.5 px-2">
-                      {card.title}
-                    </h3>
-                    <p className="font-['Familjen_Grotesk'] text-[12px] leading-[1.3] text-center text-[#587E67] h-auto overflow-visible mt-0.5 px-1">
-                      {card.desc}
-                    </p>
+                  <div className="absolute bottom-[16px] left-[50%] translate-x-[-50%] w-[92%] bg-white rounded-[12px] p-3 lg:p-4 shadow-xl flex flex-col items-center transition-all duration-500 ease-out group-hover:bottom-[24px] group-hover:scale-[1.02] border border-gray-100 z-10">
+                    <div className="w-full flex items-center justify-center min-h-[42px] mb-1">
+                      <h3 className="font-['Familjen_Grotesk'] font-semibold text-[15px] lg:text-[16px] leading-[1.3] text-center text-[#04330B] line-clamp-2">
+                        {card.title}
+                      </h3>
+                    </div>
+                    <div className="w-full min-h-[32px]">
+                      <p className="font-['Familjen_Grotesk'] text-[11px] lg:text-[12px] leading-[1.3] text-center text-[#587E67] line-clamp-2">
+                        {card.desc}
+                      </p>
+                    </div>
                     {/* Optional: Explore Indicator */}
-                    <div className="h-0 overflow-hidden group-hover:h-[18px] transition-all duration-300 opacity-0 group-hover:opacity-100 flex items-center justify-center mt-0 group-hover:mt-1.5">
+                    <div className="h-0 overflow-hidden group-hover:h-[18px] transition-all duration-300 opacity-0 group-hover:opacity-100 flex items-center justify-center mt-0 group-hover:mt-1 shrink-0">
                       <span className="text-[10px] font-bold text-[#E85C2F] uppercase tracking-wider">Explore</span>
                     </div>
                   </div>
@@ -854,7 +858,7 @@ const LandingPageContent = () => {
 
       {/* 4. MEET OUR IDEOLOGICAL LEADER */}
       <section className="bg-white w-full flex justify-center py-[60px] lg:py-[100px]">
-        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col lg:flex-row items-end justify-between gap-[32px] lg:gap-0">
+        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-[32px] lg:gap-0">
 
           {/* Text First on Mobile via flex-col order (DOM order) */}
           <div className="flex flex-col items-start text-left w-full lg:max-w-[810px] pb-0 lg:pb-[40px]">
@@ -865,25 +869,23 @@ const LandingPageContent = () => {
                 </h2>
               </ScrollReveal>
               <ScrollReveal animation="fade-up" duration={800} delay={200}>
-                <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-                  {t.leader.sub}
-                </p>
+                <div className="flex flex-col gap-[4px] lg:gap-[8px]">
+                  <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                    {t.leader.sub}
+                  </p>
+                  <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#0D5229]">
+                    {t.leader.role}
+                  </p>
+                </div>
               </ScrollReveal>
             </div>
 
-            <div className="flex flex-col gap-[4px] mb-[16px] lg:mb-[24px] order-4 lg:order-none">
-              <h3 className="font-['Familjen_Grotesk'] font-semibold text-[20px] lg:text-[32px] leading-[1.2] tracking-[-0.3px] text-[#0D5229]">
-                {t.leader.quote}
-              </h3>
-              <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-                {t.leader.role}
-              </p>
-            </div>
-
-            <div className="w-full mb-[24px] order-5 lg:order-none">
-              <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[26px] lg:leading-[28px] tracking-[-0.3px] text-[#587E67] text-justify lg:text-left">
-                {t.leader.bio}
-              </p>
+            <div className="w-full mb-[24px] order-5 lg:order-none flex flex-col gap-4">
+              {t.leader.bio.split('\n\n').map((paragraph: string, idx: number) => (
+                <p key={idx} className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[26px] lg:leading-[28px] tracking-[-0.3px] text-[#587E67] text-justify lg:text-left">
+                  {paragraph}
+                </p>
+              ))}
             </div>
 
             <div className="flex gap-[10px] order-3 lg:order-none mb-[24px] lg:mb-0">
@@ -1024,13 +1026,11 @@ const LandingPageContent = () => {
       {/* <PolicyImpactToggle language={language} /> */}
 
       {/* 6. NEWS AND PUBLICATIONS - Responsive Fix */}
-      <section className="bg-white w-full flex justify-center py-[60px] lg:py-[100px]">
-        {/* 6. SOCIAL MEDIA FEED - Replaced News Section */}
-        <SocialMediaFeed language={language} />
-      </section>
+      {/* 6. SOCIAL MEDIA FEED - Replaced News Section */}
+      <SocialMediaFeed language={language} />
 
       {/* 7. GALLERY SECTION - REDESIGNED */}
-      <section className="bg-[#FFFFFF] w-full flex flex-col items-center py-[60px] lg:py-[100px] relative overflow-hidden">
+      <section className="bg-[#FFFFFF] w-full flex flex-col items-center py-[30px] lg:py-[50px] relative overflow-hidden">
 
         {/* Decorative Background Elements (Consistent with other sections) */}
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#FFFFFF] rounded-full blur-3xl opacity-60 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>

@@ -22,7 +22,7 @@ const theme = {
 // Data for Entrepreneurship
 const pageData = {
     en: {
-        title: "Entrepreneurship Revolution",
+        title: "Green Swaraj (Entrepreneurship Mission)",
         subtitle: "Foundation of Middle Class Empowerment & Economic Freedom",
         missionTitle: "Why is it Important?",
         description: "India's biggest challenge is not unemployment, but lack of opportunities. The People's Green Party believes that sustainable employment is not created by the government, but by citizens themselves — provided they get the right skills, capital, and freedom.",
@@ -30,10 +30,15 @@ const pageData = {
         icon: Briefcase,
         strategyTitle: "Our Strategy",
         points: [
-            "Identifying Youth Talent: Identifying at least 100 ambitious youths in every Gram Panchayat and Urban Ward through door-to-door surveys who aspire to start their own ventures based on their aptitude and interest.",
-            "One Person = One Skill Model: Providing specialized training to each selected individual in sectors like Technical (e.g., solar repair), Service (e.g., tourism), Agri-based (e.g., food processing), or Digital (e.g., digital marketing).",
-            "Comprehensive Business Training: Beyond vocational skills, we will instill a 'Business Mindset' and 'Financial Literacy'. They will learn bookkeeping, digital payments, customer management, and profit/loss analysis to turn skills into successful enterprises.",
-            "Complete Ecosystem Support: Facilitating easy access to low-interest loans for starting Micro and Small Startups. This includes ongoing mentorship from industry experts and ensuring market access for their products and services."
+            "Economic Justice: Individual economic justice is the most important right for the empowerment of an individual or family; we will strive hard to ensure economic justice for all.",
+            "Entrepreneurship as a Weapon: To achieve 'Economic Justice for All', entrepreneurship must be the greatest tool. We must work on a cycle to continuously turn 100 youth into entrepreneurs in every Gram Panchayat and urban ward.",
+            "Training & Funding: Youth aspiring to start new ventures/startups should be provided with proper training, guidance, and seed funding up to five lakh rupees. Further, an easy and accessible loan system needs to be developed for the expansion of these startups and small enterprises.",
+            "Small Economic Zones: Small Economic Zones must be established near youth residences to provide free infrastructure, shared production facilities, and buying-selling centers.",
+            "Global Manufacturing: Efforts will be made to establish global manufacturing companies in these economic zones to maximize employment opportunities.",
+            "Personal economic justice is the most important right for the empowerment of an individual or family. We will vigorously fight to ensure economic justice is achieved by all.",
+            "To achieve 'Economic Justice for All', entrepreneurship must be made the biggest weapon. We need to establish a continuous cycle of developing 100 young entrepreneurs in every village panchayat and urban ward of the country.",
+            "We will provide youth with enterprise training, easy access to credit and capital, tax exemptions, and market opportunities to foster entrepreneurship.",
+            "We will transform our youth from job seekers into job creators, enabling them to utilize their capabilities and talents for the development of society and the country."
         ],
         outcomeTitle: "Expected Outcomes",
         outcomes: [
@@ -43,7 +48,7 @@ const pageData = {
         ]
     },
     hi: {
-        title: "आन्त्रेप्रेन्योर क्रांति (Entrepreneurship Revolution)",
+        title: "ग्रीन स्वराज (आन्त्रेप्रेन्योर मिशन)",
         subtitle: "मध्यम वर्ग सशक्तिकरण और आर्थिक स्वतंत्रता का आधार",
         missionTitle: "क्यों ज़रूरी है?",
         description: "पीपल्स ग्रीन पार्टी का पहला और सबसे महत्वपूर्ण सूत्र आन्त्रेप्रेन्योर क्रांति है। इसका उद्देश्य मध्यम आर्थिक वर्ग को सशक्त बनाकर उसकी आर्थिक कठिनाइयों को समाप्त करना है। भारत की सबसे बड़ी चुनौती बेरोज़गारी नहीं, बल्कि अवसरों की कमी है। पीपल्स ग्रीन पार्टी मानती है कि स्थायी रोज़गार सरकार नहीं, बल्कि नागरिक स्वयं पैदा करते हैं — यदि उन्हें सही स्किल, पूंजी और आज़ादी मिले।",
@@ -51,10 +56,15 @@ const pageData = {
         icon: Briefcase,
         strategyTitle: "हमारी रणनीति",
         points: [
-            "युवा प्रतिभा की पहचान: हर ग्राम पंचायत और शहरी वार्ड में घर-घर जाकर सर्वेक्षण के माध्यम से न्यूनतम 100 ऐसे महत्वाकांक्षी युवाओं की पहचान करना जो अपना व्यवसाय शुरू करना चाहते हैं। हम उनकी रुचि और क्षमता के आधार पर उन्हें शॉर्टलिस्ट करेंगे।",
-            "एक व्यक्ति = एक स्किल मॉडल: प्रत्येक चयनित युवा को एक विशिष्ट क्षेत्र में महारत हासिल करने के लिए ट्रेन किया जाएगा। यह 'टेक्निकल', 'सर्विस', 'एग्री-बेस्ड', या 'डिजिटल' क्षेत्र हो सकता है।",
-            "समग्र प्रशिक्षण: केवल हुनर ही नहीं, हम उन्हें 'बिज़नेस माइंडसेट' और 'फाइनेंशियल लिटरेसी' भी सिखाएंगे। उन्हें खाता बही मेंटेन करना, डिजिटल भुगतान और ग्राहक प्रबंधन सिखाया जाएगा ताकि वे अपने काम को एक सफल व्यवसाय में बदल सकें।",
-            "सम्पूर्ण इकोसिस्टम सहयोग: प्रशिक्षण के बाद, हम उन्हें माइक्रो और स्मॉल स्टार्टअप शुरू करने के लिए कम ब्याज पर आसान लोन उपलब्ध कराएंगे। साथ ही, अनुभवी मेंटर्स का मार्गदर्शन और 'मार्केट एक्सेस' सुनिश्चित करेंगे।"
+            "एक व्यक्ति या परिवार के सशक्तिकरण के लिए व्यक्तिगत आर्थिक न्याय सबसे महत्वपूर्ण अधिकार है सभी को आर्थिक न्याय हासिल हो इसके लिए बड़ा संघर्ष करेंगे।",
+            "‘सभी को आर्थिक न्याय’ के लिए उद्यमिता को सबसे बड़ा हथियार बनाना है हमें देश की हर ग्राम पंचायत और हर शहरी वार्ड में निरंतर एक 100 युवाओं को उद्यमी बनाने के एक चक्र पर कार्य करना होगा।",
+            "नए उद्यम/स्टार्टअप शुरू करने के इच्छुक युवाओं को उचित प्रशिक्षण, मार्गदर्शन और पाँच लाख रुपये तक की सीड फंडिंग प्रदान की जानी चाहिए। आगे इन स्टार्टअप और छोटे उद्यमों के विस्तार के लिए आसान और सुलभ ऋण व्यवस्था विकसित करने की आवश्यकता है।",
+            "युवाओं को उनके निवास के करीबी क्षेत्रों में स्मॉल इकोनॉमिक जोन स्थापित कर निशुल्क इंफ्रास्ट्रक्चर, साझा उत्पादन सुविधाएँ और क्रय विक्रय केंद्र उपलब्ध कराने होंगे।",
+            "अधिकाधिक रोजगार के लिए इन इकोनॉमिक जोन में विश्व भर की मैनुफैक्चरिंग कंपनियों को स्थापित करने का प्रयास किया जाएगा।",
+            "स्मॉल इकोनॉमिक जोन में विकसित नए उद्यमों को मार्केटिंग और सेल्स में सहायता के लिए विश्व की पहली अश्योर्ड सेल्स गारंटी योजना लांच करेंगे।",
+            "सर्विस सेक्टर में कार्यरत असंगठित श्रमिकों, गिग वर्करों, हाट कारोबारियों और फ़ेरी वालो के लिये विशेष पैकेज और सपोर्ट सिस्टम खड़ा किया जाएगा।",
+            "गृहणियों के श्रम और समर्पण को सही दिशा और पारितोष प्रदान किया जाएगा।",
+            "उद्यमिता विकास के लिए अनुभवी उद्यमियों और नॉन गवर्नमेंट सेक्टर के विशेषज्ञों का नेटवर्क विकसित करेंगे और इसके माध्यम से इनक्यूबेशन और मेंटरिंग पिरामिड तैयार करेंगे।"
         ],
         outcomeTitle: "अपेक्षित परिणाम",
         outcomes: [

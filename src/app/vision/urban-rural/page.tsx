@@ -3,7 +3,7 @@
 import React from "react";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
-import { ArrowLeft, CheckCircle2, Building2, ChevronRight, Trophy } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Building2, MapPin, ChevronRight, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "../../../components/LanguageContext";
 import ScrollReveal from '../../../components/ScrollReveal';
@@ -30,31 +30,40 @@ const pageData = {
         icon: Building2,
         strategyTitle: "Our Strategy",
         points: [
-            "Planned Urban Hubs: Developing 500 new, planned small cities (Urban Hubs) across the country to reduce the population pressure on existing metros. These hubs will be designed with modern infrastructure, green spaces, and efficient public transport systems.",
-            "Rural Infrastructure: Providing city-like facilities in villages, including high-speed internet, quality roads, 24/7 electricity, and modern healthcare centers. This 'Smart Village' initiative aims to bridge the gap between urban convenience and rural tranquility.",
-            "Local Opportunities: Creating employment opportunities within a 50km radius of every village. By promoting agro-processing units, cottage industries, and remote work hubs, we ensure that people can find dignified work without leaving their families behind.",
-            "Digital Connectivity: Ensuring high-speed internet access in every village to enable remote work, online education, and telemedicine, broadening the horizon of rural opportunities."
+            "Areas with a population of two to two-and-a-half lakh (a cluster of 20-25 village panchayats or a combination of towns and rural areas) will be developed as Urban Growth Hubs. Older towns or entirely new towns will be developed as Small and Smart Towns.",
+            "A high-quality super-specialty hospital will be established for each of these population clusters.",
+            "A world-class education system will be developed within these clusters, including primary schools, high schools, colleges, skill development centers, and sports academies.",
+            "A strong and modern commercial and industrial center will be developed in every cluster, ensuring that 10,000 youths can find dignified employment and work opportunities within a 5-10 kilometer radius of their homes.",
+            "Citizens in this region will be guaranteed 24x7 drinking water, electricity, and world-class sanitation facilities.",
+            "Every urban center will be well connected to all surrounding villages through modern public transport systems.",
+            "World-class recreational and public facilities like cinemas, multiplexes, parks, open theaters, and auditoriums will be developed in every growth hub."
         ],
         outcomeTitle: "Expected Outcomes",
         outcomes: [
-            "Reduced Migration: Significant reduction in forced migration from villages to cities. People will move by choice for specialized opportunities, not out of desperation for survival.",
-            "Balanced Growth: Decentralized development where wealth and opportunities are spread across the country, preventing the formation of economic islands and ensuring inclusive national growth.",
-            "Reduced Disparity: Bridging the economic and social gap between urban and rural areas, ensuring that geography does not dictate an individual's destiny."
+            "Progress where you are born. Decentralization of development, putting a stop to migration.",
+            "Establishing a balanced network of sustainable smart towns across the state.",
+            "Ensuring every citizen has access to modern infrastructure without leaving their community."
         ]
     },
     hi: {
         title: "शहरी–ग्रामीण समग्र विकास",
-        subtitle: "संतुलित विकास, सीमित पलायन",
-        missionTitle: "वर्तमान चुनौती",
-        description: "असंतुलित विकास ने कुछ शहरों पर अत्यधिक बोझ और गांवों के खाली होने जैसी समस्याएं पैदा की हैं। हम शहरी और ग्रामीण दोनों भारत के संतुलित विकास में विश्वास करते हैं, ताकि समृद्धि हर कोने तक पहुंचे।",
+        subtitle: "जहाँ पैदा हुए, वहीं प्रगति हो",
+        missionTitle: "हमारा लक्ष्य",
+        description: "पलायन मजबूरी नहीं, चुनाव होना चाहिए। पीपल्स ग्रीन पार्टी हर क्षेत्र को इतना विकसित करेगी कि शिक्षा, रोजगार और स्वास्थ्य के लिए किसी को अपना घर न छोड़ना पड़े। हम 'अर्बन ग्रोथ हब' के माध्यम से गांवों में शहर जैसी सुविधाएं लाएंगे।",
         image: "/party-images/DSC_0038.JPG",
-        icon: Building2,
+        icon: MapPin,
         strategyTitle: "हमारी रणनीति",
         points: [
-            "नियोजित शहरी केंद्र: मौजूदा महानगरों पर जनसंख्या के दबाव को कम करने के लिए देश भर में 500 नए, नियोजित छोटे शहर (अर्बन हब्स) विकसित करना। इन शहरों को आधुनिक बुनियादी ढांचे, हरित स्थानों और कुशल सार्वजनिक परिवहन प्रणालियों के साथ डिजाइन किया जाएगा।",
-            "ग्रामीण बुनियादी ढांचा: गांवों में शहर जैसी सुविधाएं प्रदान करना, जिसमें हाई-स्पीड इंटरनेट, अच्छी सड़कें, 24/7 बिजली और आधुनिक स्वास्थ्य केंद्र शामिल हैं। इस 'स्मार्ट विलेज' पहल का उद्देश्य शहरी सुविधाओं और ग्रामीण शांति के बीच की खाई को पाटना है।",
-            "स्थानीय अवसर: हर गांव के 50 किमी के दायरे में रोजगार के अवसर पैदा करना। कृषि-प्रसंस्करण इकाइयों, कुटीर उद्योगों और रिमोट वर्क हब को बढ़ावा देकर, हम यह सुनिश्चित करते हैं कि लोगों को अपने परिवारों को छोड़े बिना सम्मानजनक काम मिल सके।",
-            "डिजिटल कनेक्टिविटी: हर गांव में हाई-स्पीड इंटरनेट की पहुंच सुनिश्चित करना ताकि रिमोट वर्क, ऑनलाइन शिक्षा और टेलीमेडिसिन संभव हो सके, जिससे ग्रामीण अवसरों का दायरा बढ़े।"
+            "हर दो ढाई लाख की आबादी वाले क्षेत्र (20-25 ग्राम पंचायतों के समूह या क़स्बा और ग्रामीण क्षेत्रों का समुच्चय) को एक अर्बन ग्रोथ हब के रूप में विकसित किया जाएगा। ऐसे पुराने क़स्बे या पूरी तरह से नए शहर को स्मॉल और स्मार्ट नगर के रूप में विकसित करना होगा।",
+            "प्रत्येक स्मॉल नगर में एक या अधिक स्मॉल इकोनॉमिक ज़ोन भी विकसित किए जाएंगे जहाँ विभिन्न मैनुफैक्चरिंग इकाइयों को विकसित करने पर ज़ोर दिया जाएगा साथ ही कृषि, फूड Processing, छोटे उद्योग और सेवा क्षेत्र के लिए उत्पादन और व्यापार की सुविधाएँ उपलब्ध होंगी।",
+            "प्रत्येक स्मॉल नगर में उच्च गुणवत्ता वाले स्कूल, कॉलेज, कौशल विकास संस्थान और प्रशिक्षण केंद्र स्थापित किए जाएंगे।",
+            "प्रत्येक में आधुनिक स्वास्थ्य केंद्र, अस्पताल और चिकित्सा सुविधाएँ विकसित की जाएँगी।",
+            "इन नए अर्बन ग्रोथ हब को आपस में और बड़े शहरों से सड़क, रेल, मेट्रो या तेज सार्वजनिक परिवहन नेटवर्क के माध्यम से जोड़ा जाएगा।",
+            "हर ग्रोथ हब में हाई-स्पीड इंटरनेट, डिजिटल कनेक्टिविटी और ई-गवर्नेंस सेवाओं की पूर्ण व्यवस्था की जाएगी।",
+            "हर स्मॉल शहर में खेल परिसरों, स्टेडियम और खेल प्रशिक्षण केंद्रों का विकास किया जाएगा।",
+            "इस शहरीकरण से अतिरिक्त दूरस्थ क्षेत्रों, ग्रामों और ग्रामीण इलाक़ों में शहर के स्तर की सुविधाएं उपलब्ध कराई जाएगी।",
+            "हर अर्बन ग्रोथ हब में एंटरटेनमेंट, सांस्कृतिक और सार्वजनिक सुविधाएँ विकसित की जाएँगी।",
+            "ऐसी संतुलित विकास नीति लागू की जाएगी जिससे ग्रामीण पलायन को रोक सके आए और प्रत्येक क्षेत्र में सम्मानजनक जीवन के अवसर उपलब्ध हों।"
         ],
         outcomeTitle: "अपेक्षित परिणाम",
         outcomes: [

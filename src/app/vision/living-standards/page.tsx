@@ -22,7 +22,7 @@ const theme = {
 // Data for Living Standards
 const pageData = {
     en: {
-        title: "World Class Standard of Living",
+        title: "World-Class Living Standards",
         subtitle: "Guarantee of Education, Health & Dignified Life",
         missionTitle: "Human-Centric Governance",
         description: "The real wealth of a nation is its human resources. We are committed to investing in people to build a strong nation. Every citizen deserves a quality of life that allows them to thrive, not just survive.",
@@ -30,31 +30,41 @@ const pageData = {
         icon: Heart,
         strategyTitle: "Our Strategy",
         points: [
-            "Free Education: Free and quality education for all from kindergarten to university. We view education not as a commodity but as a fundamental right and an investment in the nation's future, ensuring every child creates a strong foundation.",
-            "Universal Health: Universal healthcare services accessible to everyone. We will build a robust public health infrastructure where world-class medical treatment is available to the poorest citizen completely free of cost.",
-            "Basic Amenities: Availability of housing, food, and basic amenities for all citizens. We are committed to ensuring that every Indian family has a pucca house, clean drinking water, 24/7 electricity, and food security.",
-            "Transparency: Transparency and accountability in governance to ensure efficient delivery of services. By digitizing welfare systems and eliminating middlemen, we will ensure that every rupee spent reaches its intended beneficiary."
+            "Guarantee of high-quality school education for all and necessary support and opportunities for higher education. Schools should provide quality education beyond the 25% RTE scope.",
+            "There is a need for decentralization of the state education system, ensuring the participation of local bodies, subject experts, and social organizations in its management.",
+            "A comprehensive system with accessible, free, and cashless health services must be developed for all citizens.",
+            "While decentralizing government health services, the participation of local institutions, experts, and social organizations in their management will be ensured.",
+            "Food security and adequate nutrition will be ensured for every citizen.",
+            "The traffic system will be completely modernized and organized.",
+            "Sanitation will be developed to international standards, and strict measures will be taken for pollution control.",
+            "City infrastructure will be genuinely developed to create Smart Cities.",
+            "The entire infrastructure must be restructured with a focus on making tourism a significant commercial sector."
         ],
         outcomeTitle: "Expected Outcomes",
         outcomes: [
-            "HDI Improvement: Rapid improvement in Human Development Index. Our policies aim to propel India into the top tier of nations in terms of health, education, and standard of living indicators.",
-            "Healthy Society: A healthy, educated, and prosperous society. By securing the basics of life, we enable citizens to focus on creativity, innovation, and nation-building.",
-            "Social Security: A comprehensive social security net that protects citizens against unforeseen life events, unemployment, and old age, ensuring peace of mind."
+            "State-of-the-art living for every citizen. Closing the gap between the rich and poor through shared public excellence.",
+            "A healthy, educated, and digitally connected population ready for the challenges of the 21st century.",
+            "Clean, green, and vibrant communities that promote physical and mental well-being."
         ]
     },
     hi: {
         title: "विश्व स्तरीय जीवन स्तर",
-        subtitle: "शिक्षा, स्वास्थ्य और गरिमामय जीवन की गारंटी",
-        missionTitle: "मानव केंद्रित शासन",
-        description: "देश की असली संपत्ति उसका मानव संसाधन है। हम एक मजबूत राष्ट्र के निर्माण के लिए लोगों में निवेश करने के लिए प्रतिबद्ध हैं। हर नागरिक जीवन की एक ऐसी गुणवत्ता का हकदार है जो उसे केवल जीवित रहने ही नहीं, बल्कि फलने-फूलने की अनुमति दे।",
+        subtitle: "समान सुविधाएं, श्रेष्ठ जीवन",
+        missionTitle: "हमारा संकल्प",
+        description: "जीवन स्तर केवल अमीरों के लिए नहीं, सबके लिए होना चाहिए। पीपल्स ग्रीन पार्टी हर नागरिक को वे सुविधाएं देने के लिए प्रतिबद्ध है जो एक विकसित राष्ट्र के नागरिक को मिलनी चाहिए। हम बुनियादी ढांचे को विश्व स्तरीय बनाएंगे।",
         image: "/party-images/DSC_0085.JPG",
         icon: Heart,
         strategyTitle: "हमारी रणनीति",
         points: [
-            "निशुल्क शिक्षा: किंडरगार्टन से लेकर विश्वविद्यालय तक सभी के लिए निशुल्क और गुणवत्तापूर्ण शिक्षा। हम शिक्षा को एक वस्तु के रूप में नहीं बल्कि एक मौलिक अधिकार और राष्ट्र के भविष्य में निवेश के रूप में देखते हैं।",
-            "सार्वभौमिक स्वास्थ्य: सभी के लिए सुलभ सार्वभौमिक स्वास्थ्य सेवाएं। हम एक मजबूत सार्वजनिक स्वास्थ्य बुनियादी ढांचा बनाएंगे जहां सबसे गरीब नागरिक को भी विश्व स्तरीय चिकित्सा उपचार पूरी तरह से मुफ्त उपलब्ध हो।",
-            "मूलभूत सुविधाएँ: सभी नागरिकों के लिए आवास, भोजन और मूलभूत सुविधाओं की उपलब्धता। हम यह सुनिश्चित करने के लिए प्रतिबद्ध हैं कि हर भारतीय परिवार के पास पक्का घर, स्वच्छ पेयजल, 24/7 बिजली और खाद्य सुरक्षा हो।",
-            "पारदर्शिता: सेवाओं के कुशल वितरण को सुनिश्चित करने के लिए शासन में पारदर्शिता और जवाबदेही। कल्याणकारी प्रणालियों को डिजिटल बनाकर और बिचौलियों को खत्म करके, हम यह सुनिश्चित करेंगे कि खर्च किया गया हर रुपया उसके इच्छित लाभार्थी तक पहुंचे।"
+            "सभी के लिए गुणवत्तापूर्ण स्कूली शिक्षा की गारंटी तथा उच्च शिक्षा के लिए आवश्यक सहायता और अवसर। स्कूल आरटीई के 25% दायरे से अधिक विद्यार्थी लेकर गुणवत्ता पूर्ण शिक्षा प्रदान करें।",
+            "राजकीय शिक्षा प्रणाली के विकेन्द्रीकरण की आवश्यकता है और प्रबन्ध के लिए स्थानीय निकायों, विषय विशेषज्ञों और सामाजिक संस्थाओं की भागीदारी सुनिश्चित होनी चाहिए।",
+            "सभी नागरिकों को सुलभ, निःशुल्क और कैशलेस स्वास्थ्य सेवाओं के लिए व्यापक व्यवस्था विकसित की जानी चाहिए।",
+            "सरकारी स्वास्थ्य सेवाओं का विकेन्द्रीकरण करते हुए उनके प्रबंध में स्थानीय संस्थाओं, विशेषज्ञों और सामाजिक संगठनों की भागीदारी सुनिश्चित की जाएगी।",
+            "प्रत्येक नागरिक को खाद्य सुरक्षा और पर्याप्त पोषण सुनिश्चित किया जाएगा।",
+            "ट्रैफिक व्यवस्था का पूर्ण आधुनिकरण और व्यवस्थीकरण किया जाना है।",
+            "स्वच्छता को अंतरराष्ट्रीय स्तर पर विकसित किया जाएगा, प्रदूषण नियंत्रण के लिए सख्त कदम उठाए जाएँगे।",
+            "शहरों के इंफ्रास्ट्रक्चर को सही मायने स्मार्ट सिटी के रूप में विकसित करेंगे।",
+            "पर्यटन को महत्वपूर्ण व्यावसायिक क्षेत्र बनाने की दृष्टि से पूरे इंफ्रास्ट्रक्चर को रीस्ट्रक्चर किया जाना चाहिए।"
         ],
         outcomeTitle: "अपेक्षित परिणाम",
         outcomes: [

@@ -30,10 +30,12 @@ const pageData = {
         icon: Sprout,
         strategyTitle: "Our Strategy",
         points: [
-            "Smart Irrigation: Promoting smart irrigation and drip systems for higher yields with less water. This ensures that even in water-scarce regions, farmers can grow high-value crops and reduce their dependency on monsoons.",
-            "Integrated Farming: Combining agriculture with animal husbandry, dairy, and organic farming creates a cycle where waste from one becomes input for another, reducing costs and ensuring year-round income for the farmer.",
-            "Initial Support: Providing initial assistance to new farmers in developing Integrated Farms and Animal Centers. The party will offer startup capital and technical know-how to modernize their traditional farming setups.",
-            "Branding & Exports: Special emphasis on branding, processing, and exporting farmer products. We will set up local processing units so farmers sell finished goods (like ketchup instead of tomatoes) and earn higher profits."
+            "We will work towards a goal where a maximum of 10 percent of the population is dependent on the agriculture-related economy, which will ensure farmers receive fair prices.",
+            "Farming will be recognized as a business, and farmers as businessmen. A massive awareness campaign will be launched emphasizing that 'Farming is a profitable business'.",
+            "Special incentives will be provided to farmers for producing organic yields without the use of dangerous pesticides and chemicals.",
+            "Instead of depending solely on minimum support prices (MSP), a comprehensive free market system will be developed in agriculture, allowing farmers to independently set prices for their produce.",
+            "Significant expansion and widespread availability of food processing infrastructure are required.",
+            "A comprehensive policy needs to be formulated to improve farmers' access to modern technologies and better farming resources."
         ],
         outcomeTitle: "Expected Outcomes",
         outcomes: [
@@ -43,7 +45,7 @@ const pageData = {
         ]
     },
     hi: {
-        title: "नई खेती – समर्थ किसान कार्यक्रम",
+        title: "नई खेती – समर्थ किसान",
         subtitle: "आधुनिक कृषि, कम पानी, अधिक आय",
         missionTitle: "समस्या की जड़",
         description: "आज का किसान मेहनती है, लेकिन तकनीक, बाज़ार और सुरक्षा से वंचित है। पानी की कमी और बढ़ती लागत ने खेती को घाटे का सौदा बना दिया है। हम इसे आधुनिक तकनीक और निष्पक्ष बाज़ार व्यवस्था के माध्यम से बदलना चाहते हैं।",
@@ -51,10 +53,16 @@ const pageData = {
         icon: Sprout,
         strategyTitle: "हमारी रणनीति",
         points: [
-            "स्मार्ट इरिगेशन: कम पानी में अधिक उत्पादन के लिए स्मार्ट इरिगेशन और ड्रिप सिस्टम को बढ़ावा देना। इससे सूखे क्षेत्रों में भी किसान मूल्यवान फसलें उगा सकेंगे और मानसून पर उनकी निर्भरता कम होगी।",
-            "इंटीग्रेटेड फार्मिंग: खेती के साथ पशुपालन, डेयरी और ऑर्गेनिक खेती को जोड़ना। इससे एक का अपशिष्ट दूसरे के लिए खाद बनता है, जिससे लागत कम होती है और किसान को साल भर आमदनी मिलती रहती है।",
-            "शुरुआती सहायता: नए किसानों को इंटीग्रेटेड फार्म और एनिमल सेंटर विकसित करने में शुरुआती आर्थिक और तकनीकी सहायता प्रदान करना ताकि वे अपनी पारंपरिक खेती को आधुनिक व्यवसाय में बदल सकें।",
-            "ब्रांडिंग और निर्यात: किसान उत्पादों की ब्रांडिंग, प्रोसेसिंग और निर्यात पर विशेष बल। हम स्थानीय स्तर पर प्रोसेसिंग यूनिट्स लगाएंगे ताकि किसान कच्चा माल बेचने के बजाय तैयार उत्पाद (जैसे टमाटर के बजाय सॉस) बेच सकें और अधिक मुनाफा कमाएं।"
+            "कृषि से जुड़ी अर्थव्यवस्था में अधिकतम दस प्रतिशत आबादी ही निर्भर हो, तब किसान को उसका सही मूल्य हासिल होगा, इस लक्ष्य पर कार्य करेंगे।",
+            "प्रशिक्षित युवा कृषि वैज्ञानिकों की सहायता से हर ग्राम पंचायत पर फोकस करेंगे और उन्हें एक स्वावलंबी आर्थिक इकाई बनाया जाएगा।",
+            "किसानों को नकद अनुदान के साथ साथ उच्च गुणवत्ता के संवर्धित बीज और आर्गेनिक उर्वरक निशुल्क उपलब्ध करानी होगी तथा उनके सही उपयोग के लिए प्रशिक्षण दिया जाएगा।",
+            "आधुनिक कृषि तकनीक को विकसित किया जाएगा और कम पानी में अधिक उत्पादन के लिए विभिन्न आधुनिक सिंचाई प्रणाली को व्यापक रूप से लागू किया जाएगा।",
+            "किसानों को इंटीग्रेटेड फार्मिंग मॉडल अपनाने के लिए प्रोत्साहित किया जाएगा, जिसमें खेती, पशुपालन, डेयरी और अन्य सहायक गतिविधियाँ शामिल होंगी।",
+            "पशुपालन और डेयरी को कृषि के समान महत्व देते हुए आधुनिक डेयरी तकनीक को विकसित किया जाएगा।",
+            "हर ग्राम पंचायत में कम से कम एक FPO (Farm Produce Organization) और एक OFPO (Off-Farm Produce Organization) की स्थापना की जाएगी।",
+            "छोटे और सीमांत किसानों के लिए सहकारी उत्पादन और साझा संसाधन मॉडल विकसित किया जाएगा।",
+            "ऑर्गेनिक और प्राकृतिक खेती को प्रोत्साहित कर स्वास्थ्यवर्धक और टिकाऊ कृषि प्रणाली को बढ़ावा दिया जाएगा।",
+            "कृषि और ग्रामीण उत्पादों के लिए स्थानीय स्तर पर मार्केट प्लेस विकसित किए जाएंगे तथा उत्पादों की ब्रांडिंग और निर्यात को प्रोत्साहित किया जाएगा।"
         ],
         outcomeTitle: "अपेक्षित परिणाम",
         outcomes: [
