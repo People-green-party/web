@@ -2,23 +2,23 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import React, { useState, useContext, createContext, useRef, useEffect } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import {
   Play, ChevronLeft, ChevronRight, Trophy, HandHeart, Globe, Leaf,
   MapPin, Phone, Mail, Facebook, Instagram, X, ArrowRight, ArrowLeft, Menu, Youtube,
-  Landmark, Briefcase, HeartHandshake, BookOpen
+  Landmark, Briefcase, HeartHandshake, BookOpen,
+  Plus, ImageIcon, Users, Trees, ArrowUpRight, Info
 } from 'lucide-react';
-import ScrollReveal from '@/components/ScrollReveal';
-
-import { usePathname } from "next/navigation";
-import SocialMediaFeed from '@/components/SocialMediaFeed';
-import VisionCarousel from '@/components/VisionCarousel';
-import { Plus, ImageIcon } from 'lucide-react'; // Make sure to import these
-import { Users, Trees, ArrowUpRight } from 'lucide-react';
 import { RajasthanImpactMap } from '@/components/RajasthanImpactMap';
 import { PolicyImpactToggle } from '@/components/PolicyImpactToggle';
 import { SynergyEngine } from '@/components/SynergyEngine';
 import { visionCards } from '@/data/visionData';
+import { Navbar } from "@/components/Navbar";
+import { useLanguage } from "@/components/LanguageContext";
+import { translations } from "@/components/translations";
+import ScrollReveal from '@/components/ScrollReveal';
+import SocialMediaFeed from '@/components/SocialMediaFeed';
+import VisionCarousel from '@/components/VisionCarousel';
 
 
 
@@ -92,327 +92,14 @@ const heroSlides = [
   }
 ];
 
-// --- 1. Translation Data ---
-
-const translations = {
-  en: {
-    nav: {
-      home: "Home",
-      about: "About",
-      constitution: "Constitution",
-      donate: "Donate",
-      declaration: "Declaration",
-      join: "Join Us",
-      login: "Login",
-      weAreAravali: "We are Aravali",
-      leaders: "Leadership"
-    },
-    heroSlides: heroSlides.map(slide => slide.en),
-    quickLinks: [
-      { title: "Join the New Era\nof Politics", path: "/join" },
-      { title: "Our New Rajasthan Bill Will Change the World", path: "/rajasthan-bill" },
-      { title: "War on Corruption\nHonest Government", path: "/corruption-free" },
-      { title: "Nature Conservation\nProtection of Humanity", path: "/nature-conservation" },
-      { title: "A Small Donation\nBoon for Change", path: "/donation" }
-    ],
-    heroTagline: "Now the people's front will defeat the dishonest",
-    visionSection: {
-      title: "Our Vision for a Better Tomorrow",
-      sub: "Advocating for change, fostering growth, and ensuring a prosperous and just society.",
-      cards: visionCards.map(card => ({
-        title: card.en.title,
-        desc: card.en.desc,
-        image: card.image,
-        link: card.link
-      })),
-      footerText: "Now the people's PGP will defeat the dishonest.",
-      viewMore: "View More",
-      viewLess: "View Less"
-    },
-    overlappingSection: {
-      title: "Jaipur Vision",
-      desc: "Together, we can make Jaipur a model of sustainable development and ecological harmony. Join our green movement today.",
-      cards: [
-        {
-          title: "Urban & Cultural Renaissance",
-          points: [
-            "1. Clean City", "2. Heritage City", "3. Tourism City", "4. Festival City",
-            "5. Handicraft City", "6. Art & Culture City", "7. Theatre City", "8. Film City",
-            "9. Fashion City", "10. Literature City"
-          ]
-        },
-        {
-          title: "Innovation & Economic Growth",
-          points: [
-            "11. Jewellery City", "12. Knowledge City", "13. Innovation City", "14. Startup City",
-            "15. Cyber City", "16. Smart City", "17. Green City", "18. Forest City",
-            "19. Lake City", "20. Water Recharge City"
-          ]
-        },
-        {
-          title: "Social Wellbeing & Rights",
-          points: [
-            "21. Solar City", "22. Healthy City", "23. Sports City", "24. Safe City",
-            "25. Happy City", "26. Metro City", "27. Transparent City", "28. Just City",
-            "29. Housing City", "30. Global City"
-          ]
-        },
-        {
-          title: "Future Infrastructure",
-          points: [
-            "31. Electric City", "32. Drone City", "33. Zero-Waste City", "34. Accessible City",
-            "35. Youth City", "36. Senior City", "37. Child Friendly", "38. Pet Friendly",
-            "39. Yoga City", "40. Spiritual City"
-          ]
-        }
-      ],
-      expandedCards: [
-        { title: "Youth Employment", desc: "Creating job opportunities for the young generation." },
-        { title: "Healthcare Access", desc: "Ensuring affordable medical care for every citizen." },
-        { title: "Cultural Heritage", desc: "Preserving Rajasthan's rich history and traditions." },
-        { title: "Digital Literacy", desc: "Empowering rural areas with digital skills and connectivity." }
-      ],
-      button: "View More"
-    },
-    leader: {
-      title: "Meet Our Ideological Leader",
-      sub: "The Face of Change, The Voice of the People.",
-      role: "– Dr. Sudhanshu Sharma, President",
-      bio: "Dr. Sudhanshu (born 19 February 1969) is a prominent Indian educationist, political leader, green activist, and climate change scientist based in Rajasthan. He is widely recognized as the co-founder and former vice-chancellor (2008–2011) of Suresh Gyan Vihar University in Jaipur. He comes from a family of noted academics; his grandfather was the scholar Acharya Purushottam Uttam, and his father, Shri Suresh Sharma, was a respected politician and educationist. Academically, Dr Sudhanshu holds a Doctorate in Earth Sciences (1992) from MNIT and a Law degree from the University of Rajasthan. In his early career as a geologist, he was credited with reporting the minerals Staurolite and Ottrelite in the Aravalli region for the first time.\n\nBeyond academia, he is a significant figure in Indian politics, having founded the Indian Peoples Green Party (PGP) in 2011 to advocate for sustainable growth. He is also the author of Indians@rest: The root cause of India's unrest, a satirical look at Indian politics."
-    },
-    stats: {
-      header: "Our Growing Impact Across Rajasthan",
-      sub: "Together, we can make Rajasthan a model of sustainable development and ecological harmony. Join our green movement today.",
-      items: [
-        { label: "Working Volunteers", sub: "People dedicated to driving impactful change across all major regions." },
-        { label: "Explored Rajasthan Cities", sub: "Expanding our reach across the state through continuous field efforts." },
-        { label: "Private & Domestic Land", sub: "Promoting sustainable green development within urban residential zones." },
-        { label: "People Engaged", sub: "Communities actively participating in our initiatives commitment." },
-      ]
-    },
-    news: {
-      title: "News and Publications",
-      sub: "Stay updated with the party’s latest statements and announcements."
-    },
-    gallery: {
-      title: "Media Gallery",
-      sub: "Glimpses of our journey and events.",
-      viewMore: "View More",
-      viewLess: "View Less"
-    },
-    committee: {
-      title: "Meet Our Action Committee",
-      sub: "Dedicated leaders working together to guide our vision for a sustainable future.",
-      button: "View More",
-      roles: {
-        president: "President",
-        vicePresident: "Vice President",
-        genSecretary: "Gen. Secretary",
-        secretary: "Secretary",
-        pradeshAdhyaksh: "Pradesh Adhyaksh Rajasthan"
-      }
-    },
-    footer: {
-      follow: "Follow Us",
-      useful: "Useful Links",
-      additional: "Additional Links",
-      contact: "Contact Us",
-      address: "Ham Badlenge Bhawan, 02 Mission Compound, Ajmer Puliya, Jaipur, Rajasthan",
-      audit: "Audit Report and Information About Donation",
-      eci: "ECI Disclosure",
-      criminal: "Declaration about criminal antecedents of candidates set up by the party"
-    },
-    visionJAIPUR2040: {
-      title: "VISION JAIPUR 2040",
-      sub: "50 IDEAS TO TRANSFORM THE PINK CITY",
-      desc: "A blueprint for a sustainable, inclusive, and globally admired Jaipur."
-    },
-    synergy: {
-      tag: "The Synergy Engine",
-      title: "A Future Built on",
-      highlight: "Seamless Connection.",
-      sub: "PGP's policies aren't isolated. They are a self-sustaining ecosystem where one's success powers the next."
-    },
-    map: {
-      tag: "State-Wide Presence",
-      title: "RAJASTHAN",
-      quote: "Our mission reaches the farthest corners of the desert & the heart of the Aravallis."
-    },
-    choice: {
-      title: "The Power of",
-      highlight: "Political Choice",
-      switchPgp: "PGP GREEN MODEL",
-      switchOld: "STATUS QUO",
-      currentSystem: "CURRENT SYSTEM",
-      greenEra: "GREEN ERA"
-    }
-  },
-  // --- HINDI TRANSLATIONS ---
-  hi: {
-    nav: {
-      home: "होम",
-      about: "हमारे बारे में",
-      constitution: "संविधान",
-      donate: "दान करें",
-      declaration: "घोषणा पत्र",
-      join: "जुड़ें",
-      login: "लॉगिन",
-      weAreAravali: "वी आर अरावली",
-      leaders: "नेतृत्व"
-    },
-    heroSlides: heroSlides.map(slide => slide.hi),
-    quickLinks: [
-      { title: "नए युग की राजनीति\nसे जुड़िए", path: "/join" },
-      { title: "हमारा नया राजस्थान बिल बदलेगा दुनिया", path: "/rajasthan-bill" },
-      { title: "करप्शन पर वार\nईमानदार सरकार", path: "/corruption-free" },
-      { title: "प्रकृति का संरक्षण\nमानवता की रक्षा", path: "/nature-conservation" },
-      { title: "थोड़ा सा दान\nबदलाव के लिए वरदान", path: "/donation" }
-    ],
-    heroTagline: "अब जनता का मोर्चा पराजित करेगा बेईमानों को",
-    visionSection: {
-      title: "बेहतर कल के लिए हमारा दृष्टिकोण",
-      sub: "बदलाव की वकालत, विकास को बढ़ावा देना और एक समृद्ध व न्यायपूर्ण समाज सुनिश्चित करना।",
-      cards: visionCards.map(card => ({
-        title: card.hi.title,
-        desc: card.hi.desc,
-        image: card.image,
-        link: card.link
-      })),
-      footerText: "अब जनता की PGP बेईमानों को हराएगी।",
-      viewMore: "और देखें",
-      viewLess: "कम देखें"
-    },
-    overlappingSection: {
-      title: "जयपुर विजन",
-      desc: "साथ मिलकर, हम जयपुर को सतत विकास और पारिस्थितिक संतुलन का एक मॉडल बना सकते हैं। आज ही हमारे हरित आंदोलन में शामिल हों।",
-      cards: [
-        {
-          title: "शहरी और सांस्कृतिक पुनर्जागरण",
-          points: [
-            "1. क्लीन सिटी", "2. हैरिटेज सिटी", "3. टूरिज्म सिटी", "4. फेस्टिवल सिटी",
-            "5. हस्तशिल्प सिटी", "6. कला और संस्कृति सिटी", "7. थियेटर सिटी", "8. फिल्म सिटी",
-            "9. फैशन सिटी", "10. साहित्य सिटी"
-          ]
-        },
-        {
-          title: "नवाचार और आर्थिक विकास",
-          points: [
-            "11. ज्वेलरी सिटी", "12. नॉलेज सिटी", "13. इनोवेशन सिटी", "14. स्टार्टअप सिटी",
-            "15. साइबर सिटी", "16. स्मार्ट सिटी", "17. ग्रीन सिटी", "18. फॉरेस्ट सिटी",
-            "19. लेक सिटी", "20. वाटर रिचार्ज सिटी"
-          ]
-        },
-        {
-          title: "सामाजिक कल्याण और अधिकार",
-          points: [
-            "21. सोलर सिटी", "22. हेल्थी सिटी", "23. स्पोर्ट्स सिटी", "24. सेफ सिटी",
-            "25. हैप्पी सिटी", "26. मेट्रो सिटी", "27. पारदर्शी सिटी", "28. न्याय सिटी",
-            "29. आवास सिटी", "30. ग्लोबल सिटी"
-          ]
-        },
-        {
-          title: "भविष्य का बुनियादी ढांचा",
-          points: [
-            "31. इलेक्ट्रिक सिटी", "32. ड्रोन सिटी", "33. जीरो-वेस्ट सिटी", "34. सुगम्य सिटी",
-            "35. युवा सिटी", "36. वरिष्ठ सिटी", "37. बाल मित्र सिटी", "38. पेट फ्रेंडली सिटी",
-            "39. योग सिटी", "40. आध्यात्मिक सिटी"
-          ]
-        }
-      ],
-      expandedCards: [
-        { title: "युवा रोजगार", desc: "युवा पीढ़ी के लिए नौकरी के अवसर पैदा करना।" },
-        { title: "स्वास्थ्य सेवा तक पहुंच", desc: "हर नागरिक के लिए सस्ती चिकित्सा देखभाल सुनिश्चित करना।" },
-        { title: "सांस्कृतिक विरासत", desc: "राजस्थान के समृद्ध इतिहास और परंपराओं का संरक्षण।" },
-        { title: "डिजिटल साक्षरता", desc: "डिजिटल कौशल और कनेक्टिविटी के साथ ग्रामीण क्षेत्रों को सशक्त बनाना।" }
-      ],
-      button: "और देखें"
-    },
-    leader: {
-      title: "अपने वैचारिक नेता से मिलें",
-      sub: "बदलाव का चेहरा, जनता की आवाज़।",
-      quote: "“डॉ. सुधांशु के साथ द ग्रीन टॉक्स।”",
-      role: "– डॉ. सुधांशु शर्मा, अध्यक्ष",
-      bio: "डॉ. सुधांशु (जन्म: 19 फरवरी 1969) राजस्थान स्थित एक प्रसिद्ध भारतीय शिक्षाविद्, राजनीतिक नेता, पर्यावरण कार्यकर्ता तथा जलवायु परिवर्तन वैज्ञानिक हैं। उन्हें विशेष रूप से सुरेश ज्ञान विहार विश्वविद्यालय, जयपुर के सह-संस्थापक और पूर्व कुलपति (2008–2011) के रूप में जाना जाता है। वे एक प्रतिष्ठित शैक्षणिक परिवार से संबंध रखते हैं। उनके दादा आचार्य पुरुषोत्तम उत्तम एक विद्वान थे, जबकि उनके पिता श्री सुरेश शर्मा एक सम्मानित राजनेता और शिक्षाविद् रहे हैं। शैक्षणिक रूप से, डॉ. सुधांशु ने मालवीय राष्ट्रीय प्रौद्योगिकी संस्थान, जयपुर से वर्ष 1992 में पृथ्वी विज्ञान में डॉक्टरेट की उपाधि प्राप्त की तथा राजस्थान विश्वविद्यालय, जयपुर से विधि की डिग्री हासिल की। अपने प्रारंभिक करियर में एक भूवैज्ञानिक के रूप में, उन्होंने अरावली क्षेत्र में पहली बार स्टॉरोलाइट और ऑट्रेलाइट जैसे खनिजों की खोज/रिपोर्टिंग का श्रेय प्राप्त किया।\n\nशिक्षा के अलावा, वे भारतीय राजनीति में भी एक महत्वपूर्ण व्यक्तित्व हैं। उन्होंने वर्ष 2011 में सतत विकास को बढ़ावा देने के उद्देश्य से इंडियन पीपल्स ग्रीन पार्टी (पीजीपी) की स्थापना की। वे “इंडियंस एट रेस्ट: भारत में अशांति का मूल कारण” नामक पुस्तक के लेखक भी हैं, जो भारतीय राजनीति पर एक व्यंग्यात्मक दृष्टिकोण प्रस्तुत करती है।"
-    },
-    stats: {
-      header: "राजस्थान में हमारा बढ़ता प्रभाव",
-      sub: "साथ मिलकर, हम राजस्थान को सतत विकास और पारिस्थितिक संतुलन का मॉडल बना सकते हैं।",
-      items: [
-        { label: "कार्यरत स्वयंसेवक", sub: "सभी प्रमुख क्षेत्रों में प्रभावशाली परिवर्तन लाने के लिए समर्पित लोग।" },
-        { label: "राजस्थान के शहरों का अन्वेषण", sub: "निरंतर क्षेत्रीय प्रयासों के माध्यम से राज्य भर में अपनी पहुंच का विस्तार।" },
-        { label: "निजी और घरेलू भूमि", sub: "शहरी आवासीय क्षेत्रों में सतत हरित विकास को बढ़ावा देना।" },
-        { label: "जुड़े हुए लोग", sub: "समुदाय सक्रिय रूप से हमारी पहल और प्रतिबद्धता में भाग ले रहे हैं।" },
-      ]
-    },
-    news: {
-      title: "समाचार और प्रकाशन",
-      sub: "पार्टी के नवीनतम बयानों और घोषणाओं से अपडेट रहें।"
-    },
-    gallery: {
-      title: "मीडिया गैलरी",
-      sub: "हमारी यात्रा और कार्यक्रमों की झलकियाँ।",
-      viewMore: "और देखें",
-      viewLess: "कम देखें"
-    },
-    committee: {
-      title: "हमारी समिति के सदस्यों से मिलें",
-      sub: "एक स्थायी भविष्य के लिए हमारे दृष्टिकोण का मार्गदर्शन करने वाले समर्पित नेता।",
-      button: "और देखें",
-      roles: {
-        president: "अध्यक्ष",
-        vicePresident: "उपाध्यक्ष",
-        genSecretary: "महासचिव",
-        secretary: "सचिव",
-        pradeshAdhyaksh: "प्रदेश अध्यक्ष राजस्थान"
-      }
-    },
-    footer: {
-      follow: "हमें फॉलो करें",
-      useful: "उपयोगी लिंक",
-      additional: "अतिरिक्त लिंक",
-      contact: "संपर्क करें",
-      address: "हम बदलेंगे भवन, 02 मिशन कंपाउंड, अजमेर पुलिया, जयपुर, राजस्थान",
-      audit: "ऑडिट रिपोर्ट और दान के बारे में जानकारी",
-      eci: "ECI प्रकटीकरण",
-      criminal: "उम्मीदवारों के आपराधिक पूर्ववृत्त के बारे में घोषणा"
-    },
-    visionJAIPUR2040: {
-      title: "विजन जयपुर 2040",
-      sub: "गुलाबी नगरी को बदलने के लिए 50 विचार",
-      desc: "एक स्थायी, समावेशी और विश्व स्तर पर प्रशंसित जयपुर के लिए एक ब्लूप्रिंट।"
-    },
-    synergy: {
-      tag: "द सिनर्जी इंजन",
-      title: "निर्बाध जुड़ाव पर बना",
-      highlight: "भविष्य",
-      sub: "पी.जी.पी. की नीतियां अलग-थलग नहीं हैं। वे एक स्व-sustaining पारिस्थितिकी तंत्र हैं जहां एक की सफलता दूसरे को शक्ति प्रदान करती है।"
-    },
-    map: {
-      tag: "राजस्थान भर में उपस्थिति",
-      title: "राजस्थान",
-      quote: "हमारा मिशन रेगिस्तान के सुदूर कोनों और अरावली के हृदय तक पहुँचता है।"
-    },
-    choice: {
-      title: "राजनीतिक पसंद की",
-      highlight: "शक्ति",
-      switchPgp: "पी.जी.पी. ग्रीन मॉडल",
-      switchOld: "यथास्थिति",
-      currentSystem: "पुराना सिस्टम",
-      greenEra: "हरित युग"
-    }
-  }
-};
-// --- 2. Context Setup ---
-
-const LanguageContext = createContext<any>(null);
-
-const useLanguage = () => useContext(LanguageContext);
+// Removed local translations and context to use global ones
 
 // --- 3. Dynamic Data Helpers ---
 
 const getVisionCards = (lang: string) => {
-  const t = translations[lang as keyof typeof translations].visionSection.cards;
-  return t.map((card) => ({ ...card }));
+  const t = lang === 'hi' ? translations.hi : translations.en;
+  const cards = t.visionSection.cards;
+  return cards.map((card) => ({ ...card }));
 };
 
 const CountUp = ({ value }: { value: string }) => {
@@ -469,13 +156,15 @@ const CountUp = ({ value }: { value: string }) => {
 };
 
 const getStats = (lang: string) => {
-  const t = translations[lang as keyof typeof translations].stats.items;
+  const tr = lang === 'hi' ? translations.hi : translations.en;
+  const t = tr.stats.items;
   const numbers = ["35K+", "60K+", "32%+", "1.2 Lakhs+"];
   return t.map((item, i) => ({ ...item, number: numbers[i] }));
 };
 
 const getCommitteeMembers = (lang: string) => {
-  const roles = translations[lang as keyof typeof translations].committee.roles;
+  const tr = lang === 'hi' ? translations.hi : translations.en;
+  const roles = tr.committee.roles;
   return [
     { name: "Dr. Sudhanshu", role: roles.president, img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400", showSocials: true },
     { name: "Bhanwar Lal Nayak", role: roles.vicePresident, img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400" },
@@ -488,128 +177,7 @@ const getCommitteeMembers = (lang: string) => {
   ];
 };
 
-// --- 4. Reusable Components ---
-
-const Navbar = () => {
-  const { language, setLanguage, t } = useLanguage();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const pathname = usePathname();
-
-  const links = [
-    { name: t.nav.home, href: '/' },
-    { name: t.nav.leaders, href: '/leaders' },
-    { name: t.nav.constitution, href: '/constitution' },
-    { name: t.nav.weAreAravali, href: 'https://wearearavali.org/', target: '_blank' },
-    // Removed New Dashboard button here as it's now the default dashboard
-  ];
-
-  return (
-    <nav className="bg-white fixed top-0 z-50 w-full">
-      <div className="w-full lg:h-[90px] h-[70px] relative flex items-center justify-between px-4 lg:px-8 bg-white">
-
-        {/* 1. Logo - Left */}
-        <div className="flex items-center shrink-0">
-          <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
-            <img src="/PGPlogo.svg" alt="PGP Logo" className="w-auto h-[60px] lg:h-[86px] object-contain" />
-          </Link>
-        </div>
-
-        {/* 2. Links - Absolute Center */}
-        <div className="hidden xl:flex items-center justify-center gap-[8px] absolute left-1/2 -translate-x-1/2">
-          {links.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <a
-                key={link.href}
-                href={link.href}
-                target={(link as any).target}
-                rel={(link as any).target === '_blank' ? "noopener noreferrer" : undefined}
-                className={`flex items-center justify-center rounded-[6px] px-[20px] h-[42px] transition-colors font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.2px] text-center whitespace-nowrap ${isActive
-                  ? 'bg-[#EAF7EE] text-[#04330B]'
-                  : 'bg-transparent text-[#587E67] hover:bg-gray-50'
-                  }`}
-              >
-                {link.name}
-              </a>
-            );
-          })}
-        </div>
-
-        {/* 3. Right Side Actions - Right */}
-        <div className="flex items-center gap-[10px] lg:gap-[12px] shrink-0">
-
-          {/* Language Toggle - Smallest */}
-          <div
-            className="hidden xl:flex relative w-[60px] h-[30px] rounded-[6px] border border-[#B9D3C4] p-[2px] bg-white cursor-pointer"
-            onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
-          >
-            <div className={`flex-1 rounded-[4px] text-[12px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'hi' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
-              {language === 'hi' ? 'हि' : ''}
-            </div>
-            <div className={`flex-1 rounded-[4px] text-[12px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'en' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
-              {language === 'en' ? 'En' : ''}
-            </div>
-          </div>
-
-          <div
-            className="flex xl:hidden relative w-[50px] h-[36px] rounded-[8px] border border-[#B9D3C4] items-center justify-center font-bold text-[#04330B] cursor-pointer text-sm"
-            onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
-          >
-            {language === 'en' ? 'HI' : 'EN'}
-          </div>
-
-          {/* Buttons: Compact, auto width */}
-          <Link
-            href="/donation"
-            className="hidden xl:flex px-[20px] h-[42px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-green-50 transition-colors whitespace-nowrap"
-          >
-            {t.nav.donate}
-          </Link>
-
-          <Link
-            href="/join"
-            className="hidden xl:flex px-[20px] h-[42px] items-center justify-center bg-[#0D5229] text-white font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-[#0a4220] transition-colors whitespace-nowrap"
-          >
-            {t.nav.join}
-          </Link>
-          <Link
-            href="/login"
-            className="hidden xl:flex px-[20px] h-[42px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-green-50 transition-colors whitespace-nowrap"
-          >
-            {t.nav.login}
-          </Link>
-
-          <button
-            className="xl:hidden p-2 text-gray-700 ml-auto"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu Dropdown */}
-      {isMenuOpen && (
-        <div className="xl:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg h-screen z-50">
-          {links.map((link) => (
-            <a key={link.name} href={link.href} className="text-gray-700 font-medium py-2 border-b border-gray-50 text-lg text-center w-full">{link.name}</a>
-          ))}
-          <div className="flex flex-col gap-4 mt-2">
-            <Link href="/donation" className="w-full py-3 border border-[#0D5229] text-[#0D5229] rounded font-medium text-center block">
-              {t.nav.donate}
-            </Link>
-            <Link href="/join" className="w-full py-3 bg-green-900 text-white text-center rounded font-medium">
-              {t.nav.join}
-            </Link>
-            <Link href="/login" className="w-full py-3 border border-gray-300 text-gray-700 rounded font-medium text-center block">
-              {t.nav.login}
-            </Link>
-          </div>
-        </div>
-      )}
-    </nav>
-  );
-};
+// Using shared Navbar component
 
 // --- 5. Main Page Component ---
 
@@ -869,15 +437,19 @@ const LandingPageContent = () => {
                 </h2>
               </ScrollReveal>
               <ScrollReveal animation="fade-up" duration={800} delay={200}>
-                <div className="flex flex-col gap-[4px] lg:gap-[8px]">
-                  <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
-                    {t.leader.sub}
-                  </p>
-                  <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#0D5229]">
-                    {t.leader.role}
-                  </p>
-                </div>
+                <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                  {t.leader.sub}
+                </p>
               </ScrollReveal>
+            </div>
+
+            <div className="flex flex-col gap-[4px] mb-[16px] lg:mb-[24px] order-4 lg:order-none">
+              <h3 className="font-['Familjen_Grotesk'] font-semibold text-[20px] lg:text-[32px] leading-[1.2] tracking-[-0.3px] text-[#0D5229]">
+                {t.leader.quote}
+              </h3>
+              <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[20px] leading-[24px] tracking-[-0.3px] text-[#587E67]">
+                {t.leader.role}
+              </p>
             </div>
 
             <div className="w-full mb-[24px] order-5 lg:order-none flex flex-col gap-4">
@@ -1295,7 +867,7 @@ const LandingPageContent = () => {
             </h3>
 
             <div className="flex flex-col gap-[24px] lg:gap-[32px] w-full">
-              <div className="flex items-center gap-[12px] w-full">
+              <div className="flex items-start gap-[12px] w-full">
                 <div className="w-[48px] h-[48px] shrink-0 rounded-[8px] border border-[#E4F2EA] bg-white flex items-center justify-center text-[#04330B] p-[12px]">
                   <MapPin size={24} strokeWidth={1.5} />
                 </div>
@@ -1304,12 +876,13 @@ const LandingPageContent = () => {
                 </p>
               </div>
 
-              <div className="flex items-center gap-[16px]">
+              <div className="flex items-start gap-[16px]">
                 <div className="w-[48px] h-[48px] shrink-0 rounded-[8px] border border-[#E4F2EA] bg-white flex items-center justify-center text-[#04330B] p-[12px]">
                   <Phone size={24} strokeWidth={1.5} />
                 </div>
                 <div className="flex flex-col w-[151px]">
                   <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">9521627701</p>
+                  <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">9950008786</p>
                 </div>
               </div>
 
@@ -1331,16 +904,6 @@ const LandingPageContent = () => {
   );
 };
 
-export default function LandingPage() {
-  const [language, setLanguage] = useState("en");
-
-  return (
-    <LanguageContext.Provider value={{
-      language,
-      setLanguage,
-      t: translations[language as keyof typeof translations]
-    }}>
-      <LandingPageContent />
-    </LanguageContext.Provider>
-  );
+export default function Home() {
+  return <LandingPageContent />;
 }

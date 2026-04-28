@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { Navbar } from '../../../components/Navbar';
-import { LanguageProvider, useLanguage } from '../../../components/LanguageContext';
+import { useLanguage } from '../../../components/LanguageContext';
 import { ConfirmVotesModal, VerifyMobileModal, VotingSuccessModal } from './VotingModals';
 import { RequireAuth } from '../../components/RequireAuth';
 import { fetchApi } from '../../../lib/api';
@@ -671,9 +671,7 @@ const ElectionVotingContent = () => {
 export default function ElectionVotingPage() {
     return (
         <RequireAuth>
-            <LanguageProvider>
-                <ElectionVotingContent />
-            </LanguageProvider>
+            <ElectionVotingContent />
         </RequireAuth>
     );
 }

@@ -13,7 +13,9 @@ export const translations = {
             dashboard: "Dashboard",
             election: "Election",
             weAreAravali: "We are Aravali",
-            leaders: "Leadership"
+            leaders: "Leadership",
+            news: "News",
+            press: "Press & Media"
         },
         heroSlides: [
             {
@@ -82,9 +84,8 @@ export const translations = {
         leader: {
             title: "Meet Our Ideological Leader",
             sub: "The Face of Change, The Voice of the People.",
-            quote: "“The Green Talks with Dr. Sudhanshu.”",
             role: "– Dr. Sudhanshu Sharma, President",
-            bio: "Dr. Sudhanshu is an Indian academician, politician, green activist, and climate change scientist. He is the co-founder of Suresh Gyan Vihar University, one of the NAAC 'A+' graded universities in Rajasthan. He also served as the founding First Vice-President of Suresh Gyan Vihar University between 2008–2010. In 2011, he founded the Bharatiya People's Green Party, based in Rajasthan, as its national president. The party is affiliated with the Naya Rajasthan think-tank and promotes the formation of a people's green zone."
+            bio: "Dr. Sudhanshu (born 19 February 1969) is a prominent Indian educationist, political leader, green activist, and climate change scientist based in Rajasthan. He is widely recognized as the co-founder and former vice-chancellor (2008–2011) of Suresh Gyan Vihar University in Jaipur. He comes from a family of noted academics; his grandfather was the scholar Acharya Purushottam Uttam, and his father, Shri Suresh Sharma, was a respected politician and educationist. Academically, Dr Sudhanshu holds a Doctorate in Earth Sciences (1992) from MNIT and a Law degree from the University of Rajasthan. In his early career as a geologist, he was credited with reporting the minerals Staurolite and Ottrelite in the Aravalli region for the first time.\n\nBeyond academia, he is a significant figure in Indian politics, having founded the Indian Peoples Green Party (PGP) in 2011 to advocate for sustainable growth. He is also the author of Indians@rest: The root cause of India's unrest, a satirical look at Indian politics."
         },
         stats: {
             header: "Our Growing Impact Across Rajasthan",
@@ -249,16 +250,30 @@ export const translations = {
             eci: "ECI Disclosure",
             criminal: "Declaration about criminal antecedents of candidates set up by the party"
         },
-        jaipurVisionPage: {
-            title: "Jaipur Vision 2030",
-            subtitle: "Restoring Glory, Building Future",
-            intro: "Our vision for Jaipur balances its rich heritage with the needs of a modern, sustainable metropolis.",
-            points: [
-                { title: "Green Mobility", desc: "100% Electric Public Transport and Dedicated Cycle Tracks." },
-                { title: "Heritage Conservation", desc: "Reviving the Walled City with smart infrastructure and cleanliness." },
-                { title: "Waste Free Jaipur", desc: "Zero-landfill policy with advanced waste-to-energy plants." },
-                { title: "Urban Forests", desc: "Creating micro-forests in every zone to combat heat & pollution." }
-            ]
+        heroTagline: "Now the people's front will defeat the dishonest",
+        visionJAIPUR2040: {
+            title: "VISION JAIPUR 2040",
+            sub: "50 IDEAS TO TRANSFORM THE PINK CITY",
+            desc: "A blueprint for a sustainable, inclusive, and globally admired Jaipur."
+        },
+        synergy: {
+            tag: "The Synergy Engine",
+            title: "A Future Built on",
+            highlight: "Seamless Connection.",
+            sub: "PGP's policies aren't isolated. They are a self-sustaining ecosystem where one's success powers the next."
+        },
+        map: {
+            tag: "State-Wide Presence",
+            title: "RAJASTHAN",
+            quote: "Our mission reaches the farthest corners of the desert & the heart of the Aravallis."
+        },
+        choice: {
+            title: "The Power of",
+            highlight: "Political Choice",
+            switchPgp: "PGP GREEN MODEL",
+            switchOld: "STATUS QUO",
+            currentSystem: "CURRENT SYSTEM",
+            greenEra: "GREEN ERA"
         }
     },
     hi: {
@@ -273,7 +288,9 @@ export const translations = {
             dashboard: "डैशबोर्ड",
             election: "चुनाव",
             weAreAravali: "वी आर अरावली",
-            leaders: "नेतृत्व"
+            leaders: "नेतृत्व",
+            news: "समाचार",
+            press: "प्रेस और मीडिया"
         },
         heroSlides: [
             {
@@ -343,7 +360,7 @@ export const translations = {
             title: "अपने वैचारिक नेता से मिलें",
             sub: "बदलाव का चेहरा, जनता की आवाज़।",
             role: "– डॉ. सुधांशु शर्मा, अध्यक्ष",
-            bio: "डॉ. सुधांशु (जन्म: 19 फरवरी 1969) राजस्थान स्थित एक प्रसिद्ध भारतीय शिक्षाविद्, राजनीतिक नेता, पर्यावरण कार्यकर्ता तथा जलवायु परिवर्तन वैज्ञानिक हैं। उन्हें विशेष रूप से सुरेश ज्ञान विहार विश्वविद्यालय, जयपुर के सह-संस्थापक और पूर्व कुलपति (2008–2011) के रूप में जाना जाता है। वे एक प्रतिष्ठित शैक्षणिक परिवार से संबंध रखते हैं। उनके दादा आचार्य पुरुषोत्तम उत्तम एक विद्वान थे, जबकि उनके पिता श्री सुरेश शर्मा एक सम्मानित राजनेता और शिक्षाविद् रहे हैं। शैक्षणिक रूप से, डॉ. सुधांशु ने मालवीय राष्ट्रीय प्रौद्योगिकी संस्थान, जयपुर से वर्ष 1992 में पृथ्वी विज्ञान में डॉक्टरेट की उपाधि प्राप्त की तथा राजस्थान विश्वविद्यालय, जयपुर से विधि की डिग्री हासिल की। अपने प्रारंभिक करियर में एक भूवैज्ञानिक के रूप में, उन्होंने अरावली क्षेत्र में पहली बार स्टॉरोलाइट और ऑट्रेलाइट जैसे खनिजों की खोज/रिपोर्टिंग का श्रेय प्राप्त किया। शिक्षा के अलावा, वे भारतीय राजनीति में भी एक महत्वपूर्ण व्यक्तित्व हैं। उन्होंने वर्ष 2011 में सतत विकास को बढ़ावा देने के उद्देश्य से इंडियन पीपल्स ग्रीन पार्टी (पीजीपी) की स्थापना की। वे “इंडियंस एट रेस्ट: भारत में अशांति का मूल कारण” नामक पुस्तक के लेखक भी हैं, जो भारतीय राजनीति पर एक व्यंग्यात्मक दृष्टिकोण प्रस्तुत करती है।"
+            bio: "डॉ. सुधांशु (जन्म: 19 फरवरी 1969) राजस्थान स्थित एक प्रसिद्ध भारतीय शिक्षाविद्, राजनीतिक नेता, पर्यावरण कार्यकर्ता तथा जलवायु परिवर्तन वैज्ञानिक हैं। उन्हें विशेष रूप से सुरेश ज्ञान विहार विश्वविद्यालय, जयपुर के सह-संस्थापक और पूर्व कुलपति (2008–2011) के रूप में जाना जाता है। वे एक प्रतिष्ठित शैक्षणिक परिवार से संबंध रखते हैं। उनके दादा आचार्य पुरुषोत्तम उत्तम एक विद्वान थे, जबकि उनके पिता श्री सुरेश शर्मा एक सम्मानित राजनेता और शिक्षाविद् रहे हैं। शैक्षणिक रूप से, डॉ. सुधांशु ने मालवीय राष्ट्रीय प्रौद्योगिकी संस्थान, जयपुर से वर्ष 1992 में पृथ्वी विज्ञान में डॉक्टरेट की उपाधि प्राप्त की तथा राजस्थान विश्वविद्यालय, जयपुर से विधि की डिग्री हासिल की। अपने प्रारंभिक करियर में एक भूवैज्ञानिक के रूप में, उन्होंने अरावली क्षेत्र में पहली बार स्टॉरोलाइट और ऑट्रेलाइट जैसे खनिजों की खोज/रिपोर्टिंग का श्रेय प्राप्त किया।\n\nशिक्षा के अलावा, वे भारतीय राजनीति में भी एक महत्वपूर्ण व्यक्तित्व हैं। उन्होंने वर्ष 2011 में सतत विकास को बढ़ावा देने के उद्देश्य से इंडियन पीपल्स ग्रीन पार्टी (पीजीपी) की स्थापना की। वे “इंडियंस एट रेस्ट: भारत में आधिकारिक तौर पर अशांति का मूल कारण” नामक पुस्तक के लेखक भी हैं, जो भारतीय राजनीति पर एक व्यंग्यात्मक दृष्टिकोण प्रस्तुत करती है।"
         },
         stats: {
             header: "राजस्थान में हमारा बढ़ता प्रभाव",
@@ -505,16 +522,30 @@ export const translations = {
             eci: "ECI प्रकटीकरण",
             criminal: "उम्मीदवारों के आपराधिक पूर्ववृत्त के बारे में घोषणा"
         },
-        jaipurVisionPage: {
-            title: "जयपुर विजन 2030",
-            subtitle: "गौरव की पुनर्स्थापना, भविष्य का निर्माण",
-            intro: "जयपुर के लिए हमारा दृष्टिकोण इसकी समृद्ध विरासत को एक आधुनिक, टिकाऊ महानगर की जरूरतों के साथ संतुलित करता है।",
-            points: [
-                { title: "हरित गतिशीलता", desc: "100% इलेक्ट्रिक सार्वजनिक परिवहन और समर्पित साइकिल ट्रैक।" },
-                { title: "विरासत संरक्षण", desc: "स्मार्ट इंफ्रास्ट्रक्चर और स्वच्छता के साथ परकोटा शहर का पुनरुद्धार।" },
-                { title: "कचरा मुक्त जयपुर", desc: "उन्नत वेस्ट-टू-एनर्जी संयंत्रों के साथ जीरो-लैंडफिल नीति।" },
-                { title: "शहरी वन", desc: "गर्मी और प्रदूषण से लड़ने के लिए हर जोन में सूक्ष्म वन बनाना।" }
-            ]
+        heroTagline: "अब जनता का मोर्चा पराजित करेगा बेईमानों को",
+        visionJAIPUR2040: {
+            title: "विजन जयपुर 2040",
+            sub: "गुलाबी नगरी को बदलने के लिए 50 विचार",
+            desc: "एक स्थायी, समावेशी और विश्व स्तर पर प्रशंसित जयपुर के लिए एक ब्लूप्रिंट।"
+        },
+        synergy: {
+            tag: "द सिनर्जी इंजन",
+            title: "निर्बाध जुड़ाव पर बना",
+            highlight: "भविष्य",
+            sub: "पी.जी.पी. की नीतियां अलग-थलग नहीं हैं। वे एक स्व-sustaining पारिस्थितिकी तंत्र हैं जहां एक की सफलता दूसरे को शक्ति प्रदान करती है।"
+        },
+        map: {
+            tag: "राजस्थान भर में उपस्थिति",
+            title: "राजस्थान",
+            quote: "हमारा मिशन रेगिस्तान के सुदूर कोनों और अरावली के हृदय तक पहुँचता है।"
+        },
+        choice: {
+            title: "राजनीतिक पसंद की",
+            highlight: "शक्ति",
+            switchPgp: "पी.जी.पी. ग्रीन मॉडल",
+            switchOld: "यथास्थिति",
+            currentSystem: "पुराना सिस्टम",
+            greenEra: "हरित युग"
         }
     }
 };

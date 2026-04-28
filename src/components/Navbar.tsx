@@ -42,6 +42,8 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
     const defaultLinks = [
         { name: t.nav.home, href: '/' },
         { name: t.nav.leaders, href: '/leaders' },
+        { name: t.nav.news, href: '/news' },
+        { name: t.nav.press, href: '/press' },
         { name: t.nav.constitution, href: '/constitution' },
         { name: t.nav.weAreAravali, href: 'https://wearearavali.org/', target: '_blank' },
     ];
@@ -94,7 +96,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
     return (
         <nav className={`bg-white fixed top-0 z-50 w-full ${isDashboard ? 'border-b border-[#04330B]/5' : ''}`}>
-            <div className={`w-full relative mx-auto ${isDashboard ? 'max-w-[1440px] lg:h-[92px]' : 'max-w-[1440px] lg:h-[90px]'} h-[70px] flex items-center justify-between px-4 lg:px-8 bg-white`}>
+            <div className={`w-full relative ${isDashboard ? 'lg:h-[92px]' : 'lg:h-[90px]'} h-[70px] flex items-center justify-between px-4 lg:px-8 xl:px-12 bg-white`}>
 
                 {/* Left Side: Logo */}
                 {/* For Dashboard, we want Dashboard/Election buttons centered. 
@@ -117,7 +119,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                             </Link>
                         </div>
 
-                        <div className="hidden xl:flex items-center justify-center gap-[8px] absolute left-1/2 -translate-x-1/2">
+                        <div className="hidden xl:flex flex-1 items-center justify-center gap-[8px] px-4">
                             {links.map((link) => {
                                 const isActive = pathname === link.href;
                                 return (
@@ -150,7 +152,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                             </Link>
                         </div>
 
-                        <div className="hidden xl:flex items-center justify-center gap-[8px] absolute left-1/2 -translate-x-1/2">
+                        <div className="hidden xl:flex flex-1 items-center justify-center gap-[8px] px-4">
                             {links.map((link) => {
                                 const isActive = pathname === link.href;
                                 return (
