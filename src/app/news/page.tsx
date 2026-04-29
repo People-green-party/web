@@ -180,7 +180,7 @@ export default function NewsPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-[#04330B] via-[#04330B]/90 to-transparent z-0"></div>
 
                 <div className="max-w-[1320px] mx-auto w-full relative z-10 flex flex-col items-start text-left">
-                    <ScrollReveal animation="fade-right">
+                    <ScrollReveal animation="slide-right">
                         <div className="flex items-center gap-4 mb-6">
                             <div className="w-12 h-1 bg-[#A2E6B4]"></div>
                             <span className="text-[#A2E6B4] font-bold tracking-widest uppercase text-sm">
