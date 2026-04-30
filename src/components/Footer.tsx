@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
     MapPin, Phone, Mail, Youtube, Facebook, Instagram, X
@@ -16,6 +16,7 @@ const SocialIcon = ({ Icon, href }: { Icon: any, href: string }) => (
 
 export const Footer = () => {
     const { t } = useLanguage();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
         <footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]">
@@ -34,7 +35,7 @@ export const Footer = () => {
                         <div className="w-full h-[48px] flex gap-[12px]">
                             {[
                                 { Icon: Youtube, href: "https://www.youtube.com/channel/UCI6LEG8xFb2EvwvyG4qnwGg" },
-                                { Icon: Facebook, href: "https://www.facebook.com/sudhanshu.pgp1" },
+                                { Icon: Facebook, href: "https://www.facebook.com/peoplesgreen" },
                                 { Icon: Instagram, href: "https://www.instagram.com/drsudhanshu_green/?__pwa=1#" },
                                 { Icon: X, href: "https://x.com/drsudhanshupgp" }
                             ].map((social, i) => (
@@ -76,7 +77,11 @@ export const Footer = () => {
                                 t.footer.eci,
                                 t.footer.criminal
                             ].map((text, i) => (
-                                <a key={i} href="#" className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] hover:text-[#04330B] block">
+                                <a
+                                    key={i}
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] hover:text-[#04330B] block cursor-pointer"
+                                >
                                     {text}
                                 </a>
                             ))}
@@ -121,6 +126,38 @@ export const Footer = () => {
                 </ScrollReveal>
 
             </div>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}>
+                    <div className="bg-white rounded-[16px] p-6 lg:p-8 w-full max-w-[500px] shadow-2xl relative" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            className="absolute top-4 right-4 text-gray-500 hover:text-black transition-colors"
+                        >
+                            <X size={24} />
+                        </button>
+
+                        <h3 className="font-['Familjen_Grotesk'] font-semibold text-[24px] text-[#04330B] mb-6 text-center">
+                            Select Document Year
+                        </h3>
+
+                        <div className="grid grid-cols-3 gap-4">
+                            {['2016', '2017', '2018', '2020', '2021', '2022', '2023', '2024', '2025'].map((year) => (
+                                <a
+                                    key={year}
+                                    href={`/${year}.pdf`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-center py-3 rounded-[8px] bg-[#E4F2EA] text-[#04330B] font-semibold text-[16px] hover:bg-[#04330B] hover:text-white transition-colors"
+                                    onClick={() => setIsModalOpen(false)}
+                                >
+                                    {year}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
         </footer>
     );
 };
