@@ -627,27 +627,7 @@ export default function Page() {
     };
 
     const getCityImage = (id: number) => {
-        const images = [
-            "/herosection-opt/1.jpg", "/herosection-opt/4.jpg", "/herosection-opt/7.jpg", "/herosection-opt/8.jpg",
-            "/herosection-opt/9.jpg", "/herosection-opt/10.jpg", "/herosection-opt/team.jpg", "/news1.svg",
-            "/news2.svg", "/news3.svg", "/news4.svg", "/news5.svg",
-            // More varied party images for points 13-50
-            "/party-images/DSC_0006.JPG", "/party-images/DSC_0009.JPG", "/party-images/DSC_0014.JPG",
-            "/party-images/DSC_0019.JPG", "/party-images/DSC_0023.JPG", "/party-images/DSC_0030.JPG",
-            "/party-images/DSC_0035.JPG", "/party-images/DSC_0037.JPG", "/party-images/DSC_0038.JPG",
-            "/party-images/DSC_0040.JPG", "/party-images/DSC_0042.JPG", "/party-images/DSC_0044.JPG",
-            "/party-images/DSC_0046.JPG", "/party-images/DSC_0048.JPG", "/party-images/DSC_0056.JPG",
-            "/party-images/DSC_0059.JPG", "/party-images/DSC_0061.JPG", "/party-images/DSC_0063.JPG",
-            "/party-images/DSC_0067.JPG", "/party-images/DSC_0072.JPG", "/party-images/DSC_0074.JPG",
-            "/party-images/DSC_0076.JPG", "/party-images/DSC_0078.JPG", "/party-images/DSC_0081.JPG",
-            "/party-images/DSC_0085.JPG", "/party-images/DSC_0087.JPG", "/party-images/DSC_0091.JPG",
-            "/party-images/DSC_0095.JPG", "/party-images/DSC_0097.JPG", "/party-images/DSC_0102.JPG",
-            "/party-images/DSC_0103.JPG", "/party-images/DSC_0104.JPG", "/party-images/DSC_0105.JPG",
-            "/party-images/DSC_0106.JPG", "/party-images/DSC_0107.JPG", "/party-images/DSC_0110.JPG",
-            "/party-images/hero_effigy.jpg", "/party-images/hero_press.jpg",
-            "/party-images/hero_stage_1.jpg", "/party-images/hero_stage_2.jpg"
-        ];
-        return images[(id - 1) % images.length];
+        return `/vision/${((id - 1) % 20) + 1}.png`;
     };
 
     return (

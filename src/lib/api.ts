@@ -10,14 +10,7 @@ function normalizeApiBaseUrl(baseUrl: string) {
 }
 
 export function getApiBaseUrl() {
-    let baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
-
-    if (!baseUrl && typeof window !== 'undefined') {
-        const host = window.location.hostname;
-        if (host === 'peoplesgreen.org' || host === 'www.peoplesgreen.org') {
-            return 'https://api-production-da5f.up.railway.app/v1';
-        }
-    }
+    let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
     return normalizeApiBaseUrl(baseUrl);
 }
 

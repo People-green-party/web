@@ -145,26 +145,31 @@ export default function JaipurVision2040() {
                                 className="h-full"
                             >
                                 <div
-                                    className="bg-white rounded-2xl p-6 h-full border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col"
+                                    className="bg-white rounded-2xl h-full border border-gray-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col overflow-hidden"
                                     onClick={() => setSelectedPoint(index)}
                                 >
-                                    <div className="w-14 h-14 rounded-full bg-pink-50 flex items-center justify-center mb-6 text-[#BE1E2D] group-hover:bg-[#BE1E2D] group-hover:text-white transition-colors duration-300">
-                                        <Icon size={28} />
+                                    <div className="w-full h-48 relative overflow-hidden">
+                                        <img src={`/vision/${index + 1}.png`} alt={point.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <div className="absolute top-4 left-4 w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#BE1E2D] shadow-sm">
+                                            <Icon size={24} />
+                                        </div>
                                     </div>
+                                    
+                                    <div className="p-6 flex flex-col flex-grow">
+                                        <h3 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-900 mb-3 group-hover:text-[#BE1E2D] transition-colors line-clamp-2">
+                                            {point.title}
+                                        </h3>
+                                        
+                                        <p className="font-sans text-gray-600 text-sm line-clamp-3 mb-4 flex-grow">
+                                            {point.desc}
+                                        </p>
 
-                                    <h3 className="font-['Familjen_Grotesk'] font-bold text-lg text-gray-900 mb-3 group-hover:text-[#BE1E2D] transition-colors line-clamp-2">
-                                        {point.title}
-                                    </h3>
-
-                                    <p className="font-sans text-gray-600 text-sm line-clamp-3 mb-4 flex-grow">
-                                        {point.desc}
-                                    </p>
-
-                                    <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between text-[#BE1E2D] font-bold text-sm uppercase tracking-wide">
-                                        <span>Read Brief</span>
-                                        <span className="bg-pink-50 p-1.5 rounded-full group-hover:bg-[#BE1E2D] group-hover:text-white transition-colors">
-                                            <BookOpen size={16} />
-                                        </span>
+                                        <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between text-[#BE1E2D] font-bold text-sm uppercase tracking-wide">
+                                            <span>Read Brief</span>
+                                            <span className="bg-pink-50 p-1.5 rounded-full group-hover:bg-[#BE1E2D] group-hover:text-white transition-colors">
+                                                <BookOpen size={16} />
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </ScrollReveal>
@@ -180,19 +185,22 @@ export default function JaipurVision2040() {
                         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                         onClick={() => setSelectedPoint(null)}
                     />
-                    <div className="relative bg-white rounded-3xl max-w-2xl w-full p-8 md:p-12 shadow-2xl animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
+                    <div className="relative bg-white rounded-3xl max-w-2xl w-full p-0 shadow-2xl animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
                         <button
                             onClick={() => setSelectedPoint(null)}
-                            className="absolute top-6 right-6 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                            className="absolute top-4 right-4 p-2 rounded-full bg-black/40 text-white hover:bg-black/60 transition-colors z-10 backdrop-blur-sm"
                         >
                             <X size={24} />
                         </button>
 
-                        <div className="flex flex-col gap-6">
-                            <div className="w-16 h-16 rounded-2xl bg-pink-100 flex items-center justify-center text-[#BE1E2D]">
-                                {React.createElement(VISION_POINTS[selectedPoint].icon, { size: 32 })}
+                        <div className="w-full h-64 md:h-80 relative rounded-t-3xl overflow-hidden">
+                            <img src={`/vision/${selectedPoint + 1}.png`} alt={VISION_POINTS[selectedPoint].title} className="w-full h-full object-cover" />
+                            <div className="absolute -bottom-8 left-8 w-20 h-20 rounded-2xl bg-white flex items-center justify-center text-[#BE1E2D] shadow-lg border-4 border-white z-10">
+                                {React.createElement(VISION_POINTS[selectedPoint].icon, { size: 36 })}
                             </div>
+                        </div>
 
+                        <div className="flex flex-col gap-6 p-8 md:p-12 pt-12 md:pt-16">
                             <div>
                                 <h3 className="font-['Familjen_Grotesk'] font-bold text-2xl md:text-4xl text-gray-900 mb-6">
                                     {VISION_POINTS[selectedPoint].title}
@@ -204,7 +212,7 @@ export default function JaipurVision2040() {
                                 </p>
                             </div>
 
-                            <button className="w-full mt-8 bg-[#04330B] hover:bg-[#0D5229] text-white py-4 rounded-xl font-bold text-lg transition-colors shadow-lg shadow-green-900/20">
+                            <button className="w-full mt-4 bg-[#04330B] hover:bg-[#0D5229] text-white py-4 rounded-xl font-bold text-lg transition-colors shadow-lg shadow-green-900/20">
                                 Explore Full Vision
                             </button>
                         </div>

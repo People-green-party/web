@@ -13,7 +13,7 @@ function normalizeApiBaseUrl(baseUrl: string) {
 }
 
 const API = normalizeApiBaseUrl(
-  process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002"
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002"
 );
 const ROLES = ["Admin", "Member", "CWCMember", "CWCPresident", "APC", "PPC", "SSP", "ALCPresident", "SLCPresident"] as const;
 

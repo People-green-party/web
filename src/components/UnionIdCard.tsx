@@ -41,17 +41,7 @@ export function UnionIdCard({ user }: UnionIdCardProps) {
     if (!url) return null;
     if (url.startsWith('http')) return url;
     
-    // Use the same environment detection as getApiBaseUrl
-    let baseUrl = process.env.NEXT_PUBLIC_API_URL || '';
-    
-    if (!baseUrl && typeof window !== 'undefined') {
-        const host = window.location.hostname;
-        if (host === 'peoplesgreen.org' || host === 'www.peoplesgreen.org') {
-            baseUrl = 'https://api-production-da5f.up.railway.app';
-        } else {
-            baseUrl = 'http://localhost:3002';
-        }
-    }
+    let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3002';
     
     // Remove /v1 suffix if present
     baseUrl = baseUrl.replace(/\/v1\/?$/, '');
