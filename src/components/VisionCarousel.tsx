@@ -623,7 +623,7 @@ const VisionCarousel = ({ language }: { language: string }) => {
     ];
 
     const getCityImage = (id: number) => {
-        return `/vision/${((id - 1) % 20) + 1}.png`;
+        return `/vision/${((id - 1) % 35) + 1}.png`;
     };
 
     // Card component
