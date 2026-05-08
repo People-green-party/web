@@ -466,7 +466,8 @@ const UnionJoinPageContent = () => {
                         value={formData.mobile}
                         onChange={(e) => {
                           const digits = e.target.value.replace(/\D/g, '');
-                          const normalized = digits.startsWith('91') ? digits.slice(2) : (digits.startsWith('0') ? digits.slice(1) : digits);
+                          // Only strip 91 if length > 10 (country code + number), not for 10-digit numbers starting with 91
+                          const normalized = (digits.length > 10 && digits.startsWith('91')) ? digits.slice(2) : (digits.startsWith('0') ? digits.slice(1) : digits);
                           setFormData({ ...formData, mobile: normalized.slice(0, 10) });
                         }}
                         inputMode="numeric"
