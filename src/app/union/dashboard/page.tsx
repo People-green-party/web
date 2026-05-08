@@ -7,7 +7,7 @@ import { Navbar } from '../../../components/Navbar';
 import { Footer } from '../../../components/Footer';
 import { fetchApi, getApiBaseUrl } from '../../../lib/api';
 import { RequireAuth } from '../../components/RequireAuth';
-import { User, Phone, MapPin, Car, FileText, AlertCircle, Camera, Trash2 } from 'lucide-react';
+import { User, Phone, MapPin, Car, FileText, AlertCircle, Camera, Trash2, Edit2, Check, X } from 'lucide-react';
 import { UnionIdCard } from '../../../components/UnionIdCard';
 import { getAuthHeader } from '../../../lib/supabaseClient';
 
@@ -32,6 +32,15 @@ export default function UnionDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editData, setEditData] = useState({
+    name: '',
+    address: '',
+    vehicleNumber: '',
+    governmentId: '',
+  });
+  const [editError, setEditError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadSummary = async (retryCount = 0) => {
@@ -106,6 +115,50 @@ export default function UnionDashboardPage() {
         alert('Failed to remove photo');
     } finally {
         setUploading(false);
+    }
+  };
+
+  const startEditing = () => {
+    if (!summary?.user) return;
+    setEditData({
+      name: summary.user.name || '',
+      address: summary.user.address || '',
+      vehicleNumber: summary.user.vehicleNumber || '',
+      governmentId: summary.user.governmentId || '',
+    });
+    setEditError(null);
+    setEditing(true);
+  };
+
+  const cancelEditing = () => {
+    setEditing(false);
+    setEditError(null);
+  };
+
+  const saveProfile = async () => {
+    if (!editData.name.trim()) {
+      setEditError('नाम आवश्यक है (Name is required)');
+      return;
+    }
+    setSaving(true);
+    setEditError(null);
+    try {
+      await fetchApi('users/me', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          name: editData.name.trim(),
+          address: editData.address.trim() || undefined,
+          vehicleNumber: editData.vehicleNumber.trim().toUpperCase() || undefined,
+          governmentId: editData.governmentId.trim().toUpperCase() || undefined,
+        }),
+      });
+      await loadSummary();
+      setEditing(false);
+      alert('प्रोफाइल सफलतापूर्वक अपडेट हो गई! (Profile updated successfully!)');
+    } catch (err: any) {
+      setEditError(err.message || 'अपडेट करने में त्रुटि हुई (Error updating profile)');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -196,67 +249,161 @@ export default function UnionDashboardPage() {
 
             {/* Right Col: Details Grid */}
             <div className="bg-white rounded-[24px] shadow-sm p-8 border border-[#BBF7D0] h-fit">
-              <h3 className="text-xl font-bold text-[#04330B] mb-6 border-b pb-4">सदस्य का विवरण (Profile Details)</h3>
-              
-              <div className="grid gap-5 sm:grid-cols-2">
-                <div className="flex items-center gap-4 p-4 bg-[#F0FDF4] rounded-2xl border border-[#DCFCE7]">
-                  <div className="w-10 h-10 rounded-full bg-[#22C55E]/20 flex items-center justify-center shrink-0">
-                    <Phone className="w-5 h-5 text-[#0B5A2A]" />
+              <div className="flex items-center justify-between mb-6 border-b pb-4">
+                <h3 className="text-xl font-bold text-[#04330B]">सदस्य का विवरण (Profile Details)</h3>
+                {!editing && (
+                  <button
+                    onClick={startEditing}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#F0FDF4] text-[#04330B] rounded-xl font-semibold hover:bg-[#DCFCE7] transition-all"
+                  >
+                    <Edit2 size={16} />
+                    <span>संपादन करें (Edit)</span>
+                  </button>
+                )}
+              </div>
+
+              {editing ? (
+                <div className="space-y-4">
+                  {/* Name Input */}
+                  <div>
+                    <label className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider mb-1 block">पूरा नाम (Full Name) *</label>
+                    <input
+                      type="text"
+                      value={editData.name}
+                      onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                      className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none"
+                      placeholder="अपना पूरा नाम दर्ज करें"
+                    />
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">मोबाइल नंबर</p>
-                    <p className="font-bold text-[#04330B] text-lg truncate">{user.phone}</p>
+
+                  {/* Address Input */}
+                  <div>
+                    <label className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider mb-1 block">पता (Address)</label>
+                    <textarea
+                      value={editData.address}
+                      onChange={(e) => setEditData({ ...editData, address: e.target.value })}
+                      className="w-full h-[80px] rounded-[10px] border border-[#BBF7D0] p-3 font-semibold text-[#04330B] outline-none resize-none"
+                      placeholder="अपना पूरा पता दर्ज करें"
+                    />
+                  </div>
+
+                  {/* Vehicle Number Input */}
+                  <div>
+                    <label className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider mb-1 block">वाहन नंबर (Vehicle Number)</label>
+                    <input
+                      type="text"
+                      value={editData.vehicleNumber}
+                      onChange={(e) => setEditData({ ...editData, vehicleNumber: e.target.value.toUpperCase() })}
+                      className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none uppercase"
+                      placeholder="जैसे: RJ14AB1234"
+                    />
+                  </div>
+
+                  {/* Government ID Input */}
+                  <div>
+                    <label className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider mb-1 block">सरकारी ID (Government ID)</label>
+                    <input
+                      type="text"
+                      value={editData.governmentId}
+                      onChange={(e) => setEditData({ ...editData, governmentId: e.target.value.toUpperCase() })}
+                      className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none uppercase"
+                      placeholder="आधार/पैन/वोटर ID"
+                    />
+                  </div>
+
+                  {editError && (
+                    <div className="text-red-500 text-sm font-semibold bg-red-50 p-3 rounded-xl">{editError}</div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      onClick={saveProfile}
+                      disabled={saving}
+                      className="flex-1 h-[46px] rounded-[10px] bg-[#04330B] text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
+                    >
+                      {saving ? 'सेव हो रहा है...' : <><Check size={18} /> सेव करें (Save)</>}
+                    </button>
+                    <button
+                      onClick={cancelEditing}
+                      disabled={saving}
+                      className="px-6 h-[46px] rounded-[10px] border border-gray-300 text-gray-600 font-semibold flex items-center gap-2 hover:bg-gray-50"
+                    >
+                      <X size={18} /> रद्द (Cancel)
+                    </button>
                   </div>
                 </div>
+              ) : (
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <div className="flex items-center gap-4 p-4 bg-[#F0FDF4] rounded-2xl border border-[#DCFCE7]">
+                    <div className="w-10 h-10 rounded-full bg-[#22C55E]/20 flex items-center justify-center shrink-0">
+                      <Phone className="w-5 h-5 text-[#0B5A2A]" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">मोबाइल नंबर</p>
+                      <p className="font-bold text-[#04330B] text-lg truncate">{user.phone}</p>
+                    </div>
+                  </div>
 
-                {user.unionName && (
+                  {user.unionName && (
+                    <div className="flex items-center gap-4 p-4 bg-[#F0FDF4] rounded-2xl border border-[#DCFCE7]">
+                      <div className="w-10 h-10 rounded-full bg-[#22C55E]/20 flex items-center justify-center shrink-0">
+                        <User className="w-5 h-5 text-[#0B5A2A]" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">यूनियन का नाम</p>
+                        <p className="font-bold text-[#04330B] text-lg truncate">{user.unionName}</p>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex items-center gap-4 p-4 bg-[#F0FDF4] rounded-2xl border border-[#DCFCE7]">
                     <div className="w-10 h-10 rounded-full bg-[#22C55E]/20 flex items-center justify-center shrink-0">
                       <User className="w-5 h-5 text-[#0B5A2A]" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">यूनियन का नाम</p>
-                      <p className="font-bold text-[#04330B] text-lg truncate">{user.unionName}</p>
+                      <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">पूरा नाम</p>
+                      <p className="font-bold text-[#04330B] text-lg truncate">{user.name}</p>
                     </div>
                   </div>
-                )}
 
-                {user.vehicleNumber && (
-                  <div className="flex items-center gap-4 p-4 bg-[#F0FDF4] rounded-2xl border border-[#DCFCE7]">
-                    <div className="w-10 h-10 rounded-full bg-[#22C55E]/20 flex items-center justify-center shrink-0">
-                      <Car className="w-5 h-5 text-[#0B5A2A]" />
+                  {(user.vehicleNumber || editing) && (
+                    <div className="flex items-center gap-4 p-4 bg-[#F0FDF4] rounded-2xl border border-[#DCFCE7]">
+                      <div className="w-10 h-10 rounded-full bg-[#22C55E]/20 flex items-center justify-center shrink-0">
+                        <Car className="w-5 h-5 text-[#0B5A2A]" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">वाहन नंबर</p>
+                        <p className="font-bold text-[#04330B] text-lg uppercase tracking-wider truncate">{user.vehicleNumber || '-'}</p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">वाहन नंबर</p>
-                      <p className="font-bold text-[#04330B] text-lg uppercase tracking-wider truncate">{user.vehicleNumber}</p>
-                    </div>
-                  </div>
-                )}
+                  )}
 
-                {user.governmentId && (
-                  <div className="flex items-center gap-4 p-4 bg-[#F0FDF4] rounded-2xl border border-[#DCFCE7]">
-                    <div className="w-10 h-10 rounded-full bg-[#22C55E]/20 flex items-center justify-center shrink-0">
-                      <FileText className="w-5 h-5 text-[#0B5A2A]" />
+                  {(user.governmentId || editing) && (
+                    <div className="flex items-center gap-4 p-4 bg-[#F0FDF4] rounded-2xl border border-[#DCFCE7]">
+                      <div className="w-10 h-10 rounded-full bg-[#22C55E]/20 flex items-center justify-center shrink-0">
+                        <FileText className="w-5 h-5 text-[#0B5A2A]" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">सरकारी ID</p>
+                        <p className="font-bold text-[#04330B] text-lg uppercase truncate">{user.governmentId || '-'}</p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">सरकारी ID</p>
-                      <p className="font-bold text-[#04330B] text-lg uppercase truncate">{user.governmentId}</p>
-                    </div>
-                  </div>
-                )}
+                  )}
 
-                {user.address && (
-                  <div className="flex items-start gap-4 p-4 bg-[#F0FDF4] rounded-2xl border border-[#DCFCE7] sm:col-span-2">
-                    <div className="w-10 h-10 rounded-full bg-[#22C55E]/20 flex items-center justify-center shrink-0 mt-1">
-                      <MapPin className="w-5 h-5 text-[#0B5A2A]" />
+                  {user.address && (
+                    <div className="flex items-start gap-4 p-4 bg-[#F0FDF4] rounded-2xl border border-[#DCFCE7] sm:col-span-2">
+                      <div className="w-10 h-10 rounded-full bg-[#22C55E]/20 flex items-center justify-center shrink-0 mt-1">
+                        <MapPin className="w-5 h-5 text-[#0B5A2A]" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">पता (Address)</p>
+                        <p className="font-bold text-[#04330B] text-base leading-relaxed whitespace-pre-wrap">{user.address}</p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <p className="text-xs text-[#0B5A2A]/60 font-bold uppercase tracking-wider">पता (Address)</p>
-                      <p className="font-bold text-[#04330B] text-base leading-relaxed whitespace-pre-wrap">{user.address}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
             </div>
 
           </div>
