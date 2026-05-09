@@ -295,7 +295,7 @@ const UnionJoinPageContent = () => {
       });
 
       if (check?.exists) {
-        setOtpError('यह मोबाइल नंबर पहले से पंजीकृत है। कृपया लॉगिन करें। (Already registered. Please log in.)');
+        setOtpError('ALREADY_REGISTERED');
         setLoading(false);
         return;
       }
@@ -520,7 +520,22 @@ const UnionJoinPageContent = () => {
                         >
                           {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
                         </button>
-                        {otpError && <div className="text-center text-[12px] text-red-500 font-semibold">{otpError}</div>}
+                        {otpError && otpError !== 'ALREADY_REGISTERED' && <div className="text-center text-[12px] text-red-500 font-semibold">{otpError}</div>}
+                        {otpError === 'ALREADY_REGISTERED' && (
+                          <div className="text-center bg-amber-50 border border-amber-200 rounded-xl p-3">
+                            <p className="text-amber-700 text-sm font-semibold mb-2">
+                              यह मोबाइल नंबर पहले से पंजीकृत है।<br/>
+                              <span className="text-xs">(Already registered)</span>
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => router.push('/union/login')}
+                              className="w-full h-[36px] rounded-[8px] bg-[#04330B] text-white text-sm font-semibold"
+                            >
+                              लॉगिन करें → (Login)
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -609,7 +624,21 @@ const UnionJoinPageContent = () => {
                     {loading ? 'Submitting...' : 'Submit Registration'}
                   </button>
 
-                  {otpError && <div className="text-center text-[12px] text-red-500 font-semibold">{otpError}</div>}
+                  {/* Login Link for existing users */}
+                  <div className="text-center pt-4 border-t border-gray-100">
+                    <p className="text-gray-600 text-sm mb-2">
+                      पहले से पंजीकृत हैं? / Already registered?
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => router.push('/union/login')}
+                      className="text-[#04330B] font-bold hover:underline"
+                    >
+                      यहां लॉगिन करें / Login here →
+                    </button>
+                  </div>
+
+                  {otpError && otpError !== 'ALREADY_REGISTERED' && <div className="text-center text-[12px] text-red-500 font-semibold">{otpError}</div>}
                 </form>
               </div>
             )}
