@@ -6,6 +6,7 @@ import { Footer } from "../../components/Footer";
 import { useLanguage } from "../../components/LanguageContext";
 import ScrollReveal from '../../components/ScrollReveal';
 import { Newspaper, Calendar, ArrowRight, X, Clock, MapPin, Share2 } from "lucide-react";
+import { ShareDialog } from "../../components/ShareDialog";
 
 interface NewsItem {
     id: number;
@@ -154,6 +155,35 @@ export default function NewsPage() {
     const content = newsData[currentLang];
 
     const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+    const [isShareOpen, setIsShareOpen] = useState(false);
+
+    // Handle URL parameters for deep linking
+    React.useEffect(() => {
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search);
+            const idParam = params.get("id");
+            if (idParam) {
+                const id = parseInt(idParam, 10);
+                const foundItem = newsData.en.items.find(item => item.id === id) || 
+                                  newsData.hi.items.find(item => item.id === id);
+                if (foundItem) {
+                    setSelectedNews(foundItem as NewsItem);
+                }
+            }
+        }
+    }, []);
+
+    // Update URL when selected item changes
+    React.useEffect(() => {
+        if (typeof window !== "undefined") {
+            if (selectedNews) {
+                const newUrl = `${window.location.pathname}?id=${selectedNews.id}`;
+                window.history.pushState(null, "", newUrl);
+            } else {
+                window.history.pushState(null, "", window.location.pathname);
+            }
+        }
+    }, [selectedNews]);
 
     // Prevent body scroll when modal is open
     React.useEffect(() => {
@@ -297,7 +327,10 @@ export default function NewsPage() {
                                         <span className="font-medium">Rajasthan, India</span>
                                     </div>
                                     <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-                                    <button className="flex items-center gap-2 hover:text-[#0D5229] transition-colors ml-auto font-medium">
+                                    <button 
+                                        className="flex items-center gap-2 hover:text-[#0D5229] transition-colors ml-auto font-medium"
+                                        onClick={() => setIsShareOpen(true)}
+                                    >
                                         <Share2 size={18} />
                                         Share
                                     </button>
@@ -318,6 +351,19 @@ export default function NewsPage() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {selectedNews && (
+                <ShareDialog
+                    isOpen={isShareOpen}
+                    onClose={() => setIsShareOpen(false)}
+                    url={typeof window !== 'undefined' ? `${window.location.origin}/news?id=${selectedNews.id}` : ''}
+                    title={selectedNews.title}
+                    image={selectedNews.image}
+                    description={selectedNews.desc}
+                    type="news"
+                    language={currentLang}
+                />
             )}
 
             <Footer />

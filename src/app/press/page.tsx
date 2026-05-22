@@ -6,6 +6,7 @@ import { Footer } from "../../components/Footer";
 import { useLanguage } from "../../components/LanguageContext";
 import ScrollReveal from '../../components/ScrollReveal';
 import { Mic, Play, Calendar, X, Clock, Share2, Info } from "lucide-react";
+import { ShareDialog } from "../../components/ShareDialog";
 
 interface PressItem {
     id: number;
@@ -150,6 +151,35 @@ export default function PressPage() {
     const content = pressData[currentLang];
 
     const [selectedVideo, setSelectedVideo] = useState<PressItem | null>(null);
+    const [isShareOpen, setIsShareOpen] = useState(false);
+
+    // Handle URL parameters for deep linking
+    React.useEffect(() => {
+        if (typeof window !== "undefined") {
+            const params = new URLSearchParams(window.location.search);
+            const idParam = params.get("id");
+            if (idParam) {
+                const id = parseInt(idParam, 10);
+                const foundItem = pressData.en.items.find(item => item.id === id) || 
+                                  pressData.hi.items.find(item => item.id === id);
+                if (foundItem) {
+                    setSelectedVideo(foundItem as PressItem);
+                }
+            }
+        }
+    }, []);
+
+    // Update URL when selected video changes
+    React.useEffect(() => {
+        if (typeof window !== "undefined") {
+            if (selectedVideo) {
+                const newUrl = `${window.location.pathname}?id=${selectedVideo.id}`;
+                window.history.pushState(null, "", newUrl);
+            } else {
+                window.history.pushState(null, "", window.location.pathname);
+            }
+        }
+    }, [selectedVideo]);
 
     // Prevent body scroll when modal is open
     React.useEffect(() => {
@@ -323,7 +353,10 @@ export default function PressPage() {
                                                 <Play size={18} fill="currentColor" />
                                                 Play Full Video
                                             </button>
-                                            <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium transition-colors bg-white hover:bg-gray-50 px-6 py-3 rounded-xl border border-gray-200 shadow-sm">
+                                            <button 
+                                                className="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium transition-colors bg-white hover:bg-gray-50 px-6 py-3 rounded-xl border border-gray-200 shadow-sm"
+                                                onClick={() => setIsShareOpen(true)}
+                                            >
                                                 <Share2 size={18} />
                                                 Share
                                             </button>
@@ -334,6 +367,19 @@ export default function PressPage() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {selectedVideo && (
+                <ShareDialog
+                    isOpen={isShareOpen}
+                    onClose={() => setIsShareOpen(false)}
+                    url={typeof window !== 'undefined' ? `${window.location.origin}/press?id=${selectedVideo.id}` : ''}
+                    title={selectedVideo.title}
+                    image={selectedVideo.image}
+                    description={selectedVideo.desc}
+                    type="video"
+                    language={currentLang}
+                />
             )}
 
             <Footer />
