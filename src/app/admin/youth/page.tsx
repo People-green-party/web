@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { Navbar } from "../../../components/Navbar";
-import { AlertTriangle, Building2, ClipboardCheck, Flag, KeyRound, School, Users, CheckCircle2, XCircle, TrendingUp, Award, MessageSquare } from "lucide-react";
+import Link from "next/link";
+import { AlertTriangle, Building2, ClipboardCheck, Flag, KeyRound, School, Users, CheckCircle2, XCircle, TrendingUp, Award, MessageSquare, Target } from "lucide-react";
 
 function normalizeApiBaseUrl(baseUrl: string) {
   const cleaned = String(baseUrl || "").replace(/\/$/, "");
@@ -221,6 +222,27 @@ export default function AdminYouthPage() {
                 <MessageSquare size={16} className="inline mr-2" />
                 Action Queue
               </button>
+              <Link
+                href="/admin/youth/missions"
+                className="px-4 py-2 font-bold rounded-lg text-[#587E67] hover:bg-[#DCFCE7] flex items-center gap-2"
+              >
+                <Target size={16} />
+                Mission Approvals
+              </Link>
+              <Link
+                href="/admin/youth/squads"
+                className="px-4 py-2 font-bold rounded-lg text-[#587E67] hover:bg-[#DCFCE7] flex items-center gap-2"
+              >
+                <Users size={16} />
+                Squads
+              </Link>
+              <Link
+                href="/admin/youth/squad-missions"
+                className="px-4 py-2 font-bold rounded-lg text-[#587E67] hover:bg-[#DCFCE7] flex items-center gap-2"
+              >
+                <Target size={16} />
+                Squad Missions
+              </Link>
             </div>
 
             {activeTab === "dashboard" && data && (
