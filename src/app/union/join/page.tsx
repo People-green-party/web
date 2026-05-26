@@ -41,8 +41,17 @@ const translations = {
         selectUnion: "अपना यूनियन चुनें",
         vehicleNumber: "वाहन नंबर",
         vehicleNumberPlaceholder: "अपना वाहन नंबर दर्ज करें (जैसे: RJ14AB1234)",
+        governmentIdPlaceholder: "सरकारी ID नंबर (आधार/पैन/वोटर ID)",
+        uploadPhotoLabel: "फोटो अपलोड करें",
+        chooseFile: "फ़ाइल चुनें",
+        photoSelected: "फोटो चुनी गई",
+        noFileChosen: "कोई फ़ाइल नहीं चुनी गई",
         address: "पूरा घर का पता",
         addressPlaceholder: "अपना पूरा पता दर्ज करें",
+        submitting: "दर्ज किया जा रहा है...",
+        submitRegistration: "पंजीकरण जमा करें",
+        alreadyRegistered: "पहले से पंजीकृत हैं?",
+        loginHere: "यहां लॉगिन करें →",
         submit: "जुड़ें"
       }
     },
@@ -84,8 +93,17 @@ const translations = {
         selectUnion: "Select Your Union",
         vehicleNumber: "Vehicle Number",
         vehicleNumberPlaceholder: "Enter your vehicle number (e.g., RJ14AB1234)",
+        governmentIdPlaceholder: "Government ID Number (Aadhaar/PAN/Voter ID)",
+        uploadPhotoLabel: "Upload Photo",
+        chooseFile: "Choose File",
+        photoSelected: "Photo selected",
+        noFileChosen: "No file chosen",
         address: "Full Home Address",
         addressPlaceholder: "Enter your complete address",
+        submitting: "Submitting...",
+        submitRegistration: "Submit Registration",
+        alreadyRegistered: "Already registered?",
+        loginHere: "Login here →",
         submit: "Join Us"
       }
     },
@@ -570,13 +588,13 @@ const UnionJoinPageContent = () => {
                     value={formData.governmentId}
                     onChange={(e) => setFormData({ ...formData, governmentId: e.target.value.toUpperCase() })}
                     className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none uppercase"
-                    placeholder="सरकारी ID नंबर (आधार/पैन/वोटर ID)"
+                    placeholder={t.joinPage.form.governmentIdPlaceholder}
                     autoComplete="off"
                   />
 
                   {/* Photo Upload */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-[#04330B] font-semibold text-sm">फोटो अपलोड करें</label>
+                    <label className="text-[#04330B] font-semibold text-sm">{t.joinPage.form.uploadPhotoLabel}</label>
                     <div className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] bg-white flex items-center px-4">
                       <input
                         type="file"
@@ -596,10 +614,10 @@ const UnionJoinPageContent = () => {
                         htmlFor="photo-upload"
                         className="py-2 px-4 rounded-full bg-[#DCFCE7] text-[#04330B] font-semibold cursor-pointer hover:bg-[#BBF7D0] transition-colors"
                       >
-                        Choose File
+                        {t.joinPage.form.chooseFile}
                       </label>
                       <span className="ml-3 text-[#04330B]/60 text-sm truncate">
-                        {selectedPhoto ? 'Photo selected' : 'No file chosen'}
+                        {selectedPhoto ? t.joinPage.form.photoSelected : t.joinPage.form.noFileChosen}
                       </span>
                     </div>
                     {formData.photoUrl && (
@@ -621,20 +639,20 @@ const UnionJoinPageContent = () => {
                     disabled={loading || !isRegistrationReady}
                     className="w-full h-[50px] rounded-[12px] bg-gradient-to-r from-[#04330B] to-[#0B5A2A] text-white font-semibold disabled:opacity-60"
                   >
-                    {loading ? 'Submitting...' : 'Submit Registration'}
+                    {loading ? t.joinPage.form.submitting : t.joinPage.form.submitRegistration}
                   </button>
 
                   {/* Login Link for existing users */}
                   <div className="text-center pt-4 border-t border-gray-100">
                     <p className="text-gray-600 text-sm mb-2">
-                      पहले से पंजीकृत हैं? / Already registered?
+                      {t.joinPage.form.alreadyRegistered}
                     </p>
                     <button
                       type="button"
                       onClick={() => router.push('/union/login')}
                       className="text-[#04330B] font-bold hover:underline"
                     >
-                      यहां लॉगिन करें / Login here →
+                      {t.joinPage.form.loginHere}
                     </button>
                   </div>
 

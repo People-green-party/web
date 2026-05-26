@@ -15,7 +15,9 @@ export const translations = {
             weAreAravali: "We are Aravali",
             leaders: "Leadership",
             news: "News",
-            press: "Press & Media"
+            press: "Press & Media",
+            union: "Union",
+            youth: "Youth Front"
         },
         heroSlides: [
             {
@@ -290,7 +292,9 @@ export const translations = {
             weAreAravali: "वी आर अरावली",
             leaders: "नेतृत्व",
             news: "समाचार",
-            press: "प्रेस और मीडिया"
+            press: "प्रेस और मीडिया",
+            union: "यूनियन",
+            youth: "यूथ फ्रंट"
         },
         heroSlides: [
             {

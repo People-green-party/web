@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "../../../components/Navbar";
 import { fetchApi } from "../../../lib/api";
@@ -41,7 +41,7 @@ type Squad = {
   squadRank: string; memberCount: number; captainName: string | null;
 };
 
-export default function SquadsPage() {
+function SquadsContent() {
   const router     = useRouter();
   const params     = useSearchParams();
   const [squads, setSquads]       = useState<Squad[]>([]);
@@ -260,5 +260,13 @@ export default function SquadsPage() {
         )}
       </main>
     </div>
+  );
+}
+
+export default function SquadsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F5FBF7] text-[#04330B] font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px] flex items-center justify-center">Loading...</div>}>
+      <SquadsContent />
+    </Suspense>
   );
 }
