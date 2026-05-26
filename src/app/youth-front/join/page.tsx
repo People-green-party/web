@@ -152,6 +152,12 @@ export default function YouthJoinPage() {
       setLoading(false);
       return;
     }
+    // District is required for non-student/coaching types for proper JINDA ID generation
+    if (formData.memberType !== 'student' && formData.memberType !== 'coaching' && !formData.district.trim()) {
+      setError('Please enter your district for JINDA ID generation.');
+      setLoading(false);
+      return;
+    }
     if (!formData.codeOfConductAccepted) {
       setError('Please accept the code of conduct to continue.');
       setLoading(false);
@@ -209,6 +215,23 @@ export default function YouthJoinPage() {
     }));
   };
 
+  const getCampusLabel = () => {
+    switch (formData.memberType) {
+      case 'student':
+        return 'College / University name';
+      case 'coaching':
+        return 'Coaching institute name';
+      case 'professional':
+        return 'Profession / Workplace';
+      case 'ward':
+        return 'Ward / Locality';
+      case 'village':
+        return 'Village / Panchayat';
+      default:
+        return 'School / College / University / Profession';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#F5FBF7] text-[#04330B] font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px]">
       <Navbar />
@@ -217,9 +240,9 @@ export default function YouthJoinPage() {
           {/* Step 1: Mobile & OTP */}
           {step === 1 && (
             <>
-              <h1 className="text-3xl lg:text-4xl font-black tracking-[-0.05em]">Join PGP Youth Front</h1>
+              <h1 className="text-3xl lg:text-4xl font-black tracking-[-0.05em]">Create Your JINDA Profile</h1>
               <p className="mt-3 text-[#587E67] font-semibold">
-                Become a verified youth member of People's Green Party
+                Get your JINDA ID, unlock missions, earn XP and join a Squad.
               </p>
 
               {error && (
@@ -351,9 +374,9 @@ export default function YouthJoinPage() {
           {/* Step 3: Youth Details */}
           {step === 3 && (
             <>
-              <h1 className="text-3xl lg:text-4xl font-black tracking-[-0.05em]">Complete Your Profile</h1>
+              <h1 className="text-3xl lg:text-4xl font-black tracking-[-0.05em]">Create Your JINDA Profile</h1>
               <p className="mt-3 text-[#587E67] font-semibold">
-                Tell us more about yourself
+                Tell us who you are and how you want to contribute.
               </p>
 
               {error && (
@@ -386,7 +409,7 @@ export default function YouthJoinPage() {
                       onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                       className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#587E67] bg-white outline-none focus:border-[#16A34A]"
                     >
-                      <option value="">Select gender</option>
+                      <option value="">Select gender, optional</option>
                       <option value="female">Female</option>
                       <option value="male">Male</option>
                       <option value="other">Other</option>
@@ -440,7 +463,7 @@ export default function YouthJoinPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-[#04330B] mb-2">School / College / University / Profession *</label>
+                  <label className="block text-sm font-bold text-[#04330B] mb-2">{getCampusLabel()} *</label>
                   <input
                     type="text"
                     required
@@ -452,9 +475,10 @@ export default function YouthJoinPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-[#04330B] mb-2">Course / Class (Optional)</label>
+                  <label className="block text-sm font-bold text-[#04330B] mb-2">Course / Class / Current Role (Optional)</label>
                   <input
                     type="text"
+                    autoComplete="off"
                     value={formData.courseOrClass}
                     onChange={(e) => setFormData({ ...formData, courseOrClass: e.target.value })}
                     className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
@@ -487,38 +511,41 @@ export default function YouthJoinPage() {
                   <p className="mt-1 text-xs text-[#587E67]">Use this PIN to login to your account</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-bold text-[#04330B] mb-2">District</label>
-                    <input
-                      type="text"
-                      value={formData.district}
-                      onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                      className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
-                      placeholder="District"
-                    />
+                {/* District/Ward/Village - only show for non-student/coaching types */}
+                {formData.memberType !== 'student' && formData.memberType !== 'coaching' && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-bold text-[#04330B] mb-2">District</label>
+                      <input
+                        type="text"
+                        value={formData.district}
+                        onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
+                        placeholder="District"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-[#04330B] mb-2">Ward</label>
+                      <input
+                        type="text"
+                        value={formData.ward}
+                        onChange={(e) => setFormData({ ...formData, ward: e.target.value })}
+                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
+                        placeholder="Ward (if applicable)"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-[#04330B] mb-2">Village</label>
+                      <input
+                        type="text"
+                        value={formData.village}
+                        onChange={(e) => setFormData({ ...formData, village: e.target.value })}
+                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
+                        placeholder="Village (if applicable)"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-bold text-[#04330B] mb-2">Ward</label>
-                    <input
-                      type="text"
-                      value={formData.ward}
-                      onChange={(e) => setFormData({ ...formData, ward: e.target.value })}
-                      className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
-                      placeholder="Ward (if applicable)"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-[#04330B] mb-2">Village</label>
-                    <input
-                      type="text"
-                      value={formData.village}
-                      onChange={(e) => setFormData({ ...formData, village: e.target.value })}
-                      className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
-                      placeholder="Village (if applicable)"
-                    />
-                  </div>
-                </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -595,7 +622,7 @@ export default function YouthJoinPage() {
                   disabled={loading}
                   className="w-full h-[52px] rounded-[12px] bg-[#04330B] px-7 font-black text-white hover:bg-[#16A34A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? 'Registering...' : 'Complete Registration'}
+                  {loading ? 'Registering...' : 'Create My JINDA ID'}
                 </button>
 
                 <button

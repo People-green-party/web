@@ -147,7 +147,7 @@ export default function MyDashboardPage() {
                 </div>
                 <div className="bg-white/10 rounded-xl p-3">
                   <div className="text-xs text-[#86EFAC] font-semibold">Streak</div>
-                  <div className="text-lg font-black mt-0.5">{streak > 0 ? `🔥 ${streak}d` : '— days'}</div>
+                  <div className="text-lg font-black mt-0.5">{streak > 0 ? `🔥 ${streak}d` : '0 days'}</div>
                   {bestStreak > 0 && <div className="text-[10px] text-[#86EFAC]/70 mt-0.5">Best: {bestStreak}d</div>}
                 </div>
                 <div className="bg-white/10 rounded-xl p-3">
