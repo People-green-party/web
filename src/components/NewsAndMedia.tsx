@@ -26,6 +26,7 @@ interface PressItem {
     image: string;
     type: string;
     desc: string;
+    youtubeId?: string;
 }
 
 import rawNewsItems from "../data/news_items.json";
@@ -60,7 +61,7 @@ const newsData = {
     },
     hi: {
         title: "समाचार और प्रकाशन",
-        subtitle: "हमारे नवीनतम मील के पत्थर, प्रेस कवरेज और आधिकारिक बयानों से अपडेट रहें।",
+        subtitle: "हमारे नवीनतम मील के पत्थर, प्रेस कवरेज और आधिकारिक बयान।",
         readMore: "पूरा लेख पढ़ें",
         close: "बंद करें",
         items: newsItemsHi
@@ -76,57 +77,83 @@ const pressData = {
         items: [
             {
                 id: 1,
-                title: "Live Address: The Jaipur Vision 2040 Blueprint Unveiled",
-                date: "March 20, 2026",
-                duration: "45:00",
-                image: "/herosection/hero-1.jpg",
-                type: "Press Conference",
-                desc: "In this comprehensive press conference, the leadership outlines the long-term vision for Jaipur 2040. The discussion covers urban development, green mobility, and heritage conservation. The interactive session also addresses key questions from leading journalists."
+                title: "Kindly Vote and Support Peoples Green Party (#pgp #green)",
+                date: "April 18, 2026",
+                duration: "0:45",
+                image: "https://img.youtube.com/vi/KqP0OFKey1w/hqdefault.jpg",
+                type: "Shorts",
+                youtubeId: "KqP0OFKey1w",
+                desc: "Official campaign appeal for the Peoples Green Party in Rajasthan. Support and vote for the Handi (pot) symbol to bring honest, transparent, and green governance to the state."
             },
             {
                 id: 2,
-                title: "Exclusive Interview with National News Network",
-                date: "March 12, 2026",
-                duration: "28:15",
-                image: "/herosection/hero-2.jpg",
-                type: "TV Interview",
-                desc: "A one-on-one exclusive interview detailing the core ideology of the Peoples Green Party. The leader discusses economic strategies, rural empowerment, and answers tough questions on political challenges ahead."
+                title: "Peoples Green Party Raises Serious Allegations of Mismanagement",
+                date: "March 15, 2026",
+                duration: "3:12",
+                image: "https://img.youtube.com/vi/CHOhnvTJgTw/hqdefault.jpg",
+                type: "Press Conference",
+                youtubeId: "CHOhnvTJgTw",
+                desc: "During a press briefing, representatives of the Peoples Green Party raised concerns over current administration policies and highlighted allegations of corruption."
             },
             {
                 id: 3,
-                title: "Panel Discussion on Green Energy Policies",
-                date: "February 25, 2026",
-                duration: "1:15:00",
-                image: "/herosection/hero-3.jpg",
-                type: "Panel Discussion",
-                desc: "Environmental experts and party representatives engage in a robust debate regarding the feasibility of transitioning to 100% renewable energy in the state within the next decade."
+                title: "Dr. Sudhanshu’s Monologue: Addressing PGP Volunteers & Workers",
+                date: "March 01, 2026",
+                duration: "10:34",
+                image: "https://img.youtube.com/vi/uXHM70zcksk/hqdefault.jpg",
+                type: "Address",
+                youtubeId: "uXHM70zcksk",
+                desc: "National President Dr. Sudhanshu Sharma delivers a comprehensive address to PGP workers, discussing grassroots strategy and organizational expansion plans."
             },
             {
                 id: 4,
-                title: "Media Briefing: Electoral Promises & Youth Employment",
-                date: "February 10, 2026",
-                duration: "30:00",
-                image: "/herosection/hero-4.jpg",
-                type: "Media Briefing",
-                desc: "An official media briefing focusing strictly on the party's roadmap for generating 1 million new jobs for the youth and fostering an ecosystem of entrepreneurship."
+                title: "Social and Economic Status of Nomadic Tribes in Modern India",
+                date: "February 22, 2026",
+                duration: "12:15",
+                image: "https://img.youtube.com/vi/B_gimhjRWxY/hqdefault.jpg",
+                type: "Documentary",
+                youtubeId: "B_gimhjRWxY",
+                desc: "An in-depth analysis of the issues faced by nomadic communities in India and the Peoples Green Party's proposed welfare policies for their integration and upliftment."
             },
             {
                 id: 5,
-                title: "Discussion on Civil Liberties and Rights",
-                date: "January 28, 2026",
-                duration: "40:20",
-                image: "/herosection/hero-5.jpg",
-                type: "Press Interview",
-                desc: "A deep dive into the party's stance on fundamental rights, judicial independence, and safeguarding democratic values against modern challenges."
+                title: "PGP Preamble: Why You Should Join the Green Movement",
+                date: "February 12, 2026",
+                duration: "2:50",
+                image: "https://img.youtube.com/vi/850TTnmrmD4/hqdefault.jpg",
+                type: "Introduction",
+                youtubeId: "850TTnmrmD4",
+                desc: "A brief introductory video outlining the core values, ethics, and democratic goals of the Peoples Green Party. Discover why citizens are joining PGP."
             },
             {
                 id: 6,
-                title: "Townhall Meeting with Farmers",
-                date: "January 15, 2026",
-                duration: "1:45:00",
-                image: "/herosection/10.jpg",
-                type: "Townhall",
-                desc: "A direct interaction with agricultural communities discussing the new farming bills, water conservation strategies, and market accessibility for farmers."
+                title: "PGP's Vision for a Great and Prosperous Rajasthan",
+                date: "January 28, 2026",
+                duration: "5:40",
+                image: "https://img.youtube.com/vi/9Bieb6xW2QM/hqdefault.jpg",
+                type: "Campaign Video",
+                youtubeId: "9Bieb6xW2QM",
+                desc: "An educational campaign briefing outlining PGP's first-phase development targets in Rajasthan to establish quality schools, clean water, and local jobs."
+            },
+            {
+                id: 7,
+                title: "Ground Report: Investigative Summary of the Tonk Sarpanch Case",
+                date: "January 14, 2026",
+                duration: "8:20",
+                image: "https://img.youtube.com/vi/Oof5Z2wayfc/hqdefault.jpg",
+                type: "Special Report",
+                youtubeId: "Oof5Z2wayfc",
+                desc: "A public query and report highlighting the suspicion around the Tonk Sarpanch Mahendra Meena death case, demanding transparency and accountability."
+            },
+            {
+                id: 8,
+                title: "Jaipur Lockdown Report: Ramganj Ground Realities Check",
+                date: "December 20, 2025",
+                duration: "6:15",
+                image: "https://img.youtube.com/vi/kWulUyLGW1c/hqdefault.jpg",
+                type: "Ground Report",
+                youtubeId: "kWulUyLGW1c",
+                desc: "A grassroots report capturing interviews and local testimonies of residents from the Ramganj area in Jaipur detailing their experience during lockdown restrictions."
             }
         ]
     },
@@ -138,57 +165,83 @@ const pressData = {
         items: [
             {
                 id: 1,
-                title: "लाइव संबोधन: जयपुर विजन 2040 ब्लूप्रिंट का अनावरण",
-                date: "20 मार्च, 2026",
-                duration: "45:00",
-                image: "/herosection/hero-1.jpg",
-                type: "प्रेस कॉन्फ्रेंस",
-                desc: "इस व्यापक प्रेस कॉन्फ्रेंस में, नेतृत्व ने जयपुर 2040 के लिए दीर्घकालिक दृष्टिकोण की रूपरेखा तैयार की है। चर्चा में शहरी विकास, हरित गतिशीलता और विरासत संरक्षण शामिल हैं।"
+                title: "कृपया पीपल्स ग्रीन पार्टी को वोट दें और समर्थन करें (चुनाव चिह्न: हांडी)",
+                date: "April 18, 2026",
+                duration: "0:45",
+                image: "https://img.youtube.com/vi/KqP0OFKey1w/hqdefault.jpg",
+                type: "लघु वीडियो",
+                youtubeId: "KqP0OFKey1w",
+                desc: "राजस्थान में पीपल्स ग्रीन पार्टी के लिए आधिकारिक चुनाव प्रचार संदेश। स्वच्छ, पारदर्शी और जन-हितैषी शासन के लिए हांडी (घड़ा) चुनाव चिह्न का समर्थन करें।"
             },
             {
                 id: 2,
-                title: "नेशनल न्यूज़ नेटवर्क के साथ विशेष साक्षात्कार",
-                date: "12 मार्च, 2026",
-                duration: "28:15",
-                image: "/herosection/hero-2.jpg",
-                type: "टीवी साक्षात्कार",
-                desc: "पीपल्स ग्रीन पार्टी की मूल विचारधारा का विवरण देने वाला एक-पर-एक विशेष साक्षात्कार। नेता आर्थिक रणनीतियों, ग्रामीण सशक्तिकरण पर चर्चा करते हैं और राजनीतिक चुनौतियों पर कड़े सवालों के जवाब देते हैं।"
+                title: "पीपल्स ग्रीन पार्टी ने शासन व्यवस्था और अधिकारियों पर लगाए गंभीर आरोप",
+                date: "March 15, 2026",
+                duration: "3:12",
+                image: "https://img.youtube.com/vi/CHOhnvTJgTw/hqdefault.jpg",
+                type: "प्रेस वार्ता",
+                youtubeId: "CHOhnvTJgTw",
+                desc: "प्रेस कॉन्फ्रेंस के दौरान पीपल्स ग्रीन पार्टी के प्रवक्ताओं ने वर्तमान नीतियों पर सवाल उठाए और प्रशासनिक भ्रष्टाचार के आरोपों पर अपनी बात रखी।"
             },
             {
                 id: 3,
-                title: "हरित ऊर्जा नीतियों पर पैनल चर्चा",
-                date: "25 फरवरी, 2026",
-                duration: "1:15:00",
-                image: "/herosection/hero-3.jpg",
-                type: "पैनल चर्चा",
-                desc: "पर्यावरण विशेषज्ञ और पार्टी प्रतिनिधि अगले एक दशक के भीतर राज्य में 100% नवीकरणीय ऊर्जा में परिवर्तित होने की व्यवहार्यता के संबंध में एक मजबूत बहस में शामिल होते हैं।"
+                title: "डॉ. सुधांशु का विशेष उद्बोधन: पीपल्स ग्रीन पार्टी कार्यकर्ताओं के नाम संदेश",
+                date: "March 01, 2026",
+                duration: "10:34",
+                image: "https://img.youtube.com/vi/uXHM70zcksk/hqdefault.jpg",
+                type: "संबोधन",
+                youtubeId: "uXHM70zcksk",
+                desc: "राष्ट्रीय अध्यक्ष डॉ. सुधांशु शर्मा का पार्टी कार्यकर्ताओं के लिए विस्तृत संदेश, जिसमें ब्लॉक-स्तरीय रणनीतियों और संगठन विस्तार की चर्चा की गई।"
             },
             {
                 id: 4,
-                title: "मीडिया ब्रीफिंग: चुनावी वादे और युवा रोजगार",
-                date: "10 फरवरी, 2026",
-                duration: "30:00",
-                image: "/herosection/hero-4.jpg",
-                type: "मीडिया ब्रीफिंग",
-                desc: "युवाओं के लिए 10 लाख नए रोजगार पैदा करने और उद्यमिता के पारिस्थितिकी तंत्र को बढ़ावा देने के लिए पार्टी के रोडमैप पर कड़ाई से ध्यान केंद्रित करने वाली एक आधिकारिक मीडिया ब्रीफिंग।"
+                title: "कैसी है घुमंतू जनजातियों की स्थिति? जानिए भारत में खानाबदोश समाज का सच",
+                date: "February 22, 2026",
+                duration: "12:15",
+                image: "https://img.youtube.com/vi/B_gimhjRWxY/hqdefault.jpg",
+                type: "दस्तावेजी वीडियो",
+                youtubeId: "B_gimhjRWxY",
+                desc: "भारत में घुमंतू और खानाबदोश समुदायों के सामने आने वाली बुनियादी समस्याओं का सामाजिक-आर्थिक विश्लेषण और पीजीपी की कल्याणकारी नीतियां।"
             },
             {
                 id: 5,
-                title: "नागरिक स्वतंत्रता और अधिकारों पर चर्चा",
-                date: "28 जनवरी, 2026",
-                duration: "40:20",
-                image: "/herosection/hero-5.jpg",
-                type: "प्रेस साक्षात्कार",
-                desc: "मौलिक अधिकारों, न्यायिक स्वतंत्रता और आधुनिक चुनौतियों के खिलाफ लोकतांत्रिक मूल्यों की रक्षा पर पार्टी के रुख पर गहराई से विचार।"
+                title: "पार्टी प्रस्तावना: जानिए क्यों आपको पीपल्स ग्रीन पार्टी से जुड़ना चाहिए!",
+                date: "February 12, 2026",
+                duration: "2:50",
+                image: "https://img.youtube.com/vi/850TTnmrmD4/hqdefault.jpg",
+                type: "प्रस्तावना",
+                youtubeId: "850TTnmrmD4",
+                desc: "पीपल्स ग्रीन पार्टी के सिद्धांतों, ईमानदारी और नैतिक राजनीति के सिद्धांतों को दर्शाने वाला एक संक्षिप्त परिचय।"
             },
             {
                 id: 6,
-                title: "किसानों के साथ टाउनहॉल मीटिंग",
-                date: "15 जनवरी, 2026",
-                duration: "1:45:00",
-                image: "/herosection/10.jpg",
-                type: "टाउनहॉल",
-                desc: "नए कृषि बिलों, जल संरक्षण रणनीतियों और किसानों के लिए बाजार पहुंच पर चर्चा करने वाले कृषि समुदायों के साथ सीधा संवाद।"
+                title: "पीपल्स ग्रीन पार्टी पहले राजस्थान को श्रेष्ठ बनाएगी - Join Now",
+                date: "January 28, 2026",
+                duration: "5:40",
+                image: "https://img.youtube.com/vi/9Bieb6xW2QM/hqdefault.jpg",
+                type: "चुनावी अभियान",
+                youtubeId: "9Bieb6xW2QM",
+                desc: "राजस्थान के चहुंमुखी विकास के लिए पीजीपी के संकल्प पत्र और पहले चरण की प्राथमिकताओं की विस्तृत व्याख्या।"
+            },
+            {
+                id: 7,
+                title: "सरपंच महेंद्र मीणा हत्याकांड: टोंक पुलिस की भूमिका पर उठे गंभीर सवाल",
+                date: "January 14, 2026",
+                duration: "8:20",
+                image: "https://img.youtube.com/vi/Oof5Z2wayfc/hqdefault.jpg",
+                type: "विशेष रिपोर्ट",
+                youtubeId: "Oof5Z2wayfc",
+                desc: "टोंक जिले में सरपंच महेंद्र मीणा की संदिग्ध मृत्यु पर सवाल उठाते हुए मामले की निष्पक्ष उच्च-स्तरीय जांच कराने की मांग।"
+            },
+            {
+                id: 8,
+                title: "लॉकडाउन पर रामगंज जयपुर की ग्राउंड रिपोर्ट: स्थानीय युवाओं की जुबानी",
+                date: "December 20, 2025",
+                duration: "6:15",
+                image: "https://img.youtube.com/vi/kWulUyLGW1c/hqdefault.jpg",
+                type: "विशेष कवरेज",
+                youtubeId: "kWulUyLGW1c",
+                desc: "महामारी के दौरान लॉकडाउन के बीच जयपुर के रामगंज क्षेत्र की वास्तविक स्थिति और स्थानीय लोगों की दैनिक समस्याओं पर ग्राउंड रिपोर्ट।"
             }
         ]
     }
@@ -205,6 +258,12 @@ export default function NewsAndMedia({ defaultTab = "news" }: NewsAndMediaProps)
     const [activeTab, setActiveTab] = useState<"news" | "press">(defaultTab);
     const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
     const [selectedVideo, setSelectedVideo] = useState<PressItem | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    useEffect(() => {
+        setIsPlaying(false);
+    }, [selectedVideo]);
+
     const [isShareOpen, setIsShareOpen] = useState(false);
     const [shareType, setShareType] = useState<"news" | "video">("news");
 
@@ -581,18 +640,34 @@ export default function NewsAndMedia({ defaultTab = "news" }: NewsAndMediaProps)
                         </button>
 
                         <div className="overflow-y-auto w-full custom-scrollbar">
-                            <div className="relative w-full aspect-video bg-black flex items-center justify-center shrink-0 border-b border-gray-200 group cursor-pointer">
-                                <img src={selectedVideo.image} alt={selectedVideo.title} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-70 transition-opacity" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30"></div>
-
-                                <div className="relative z-10 w-24 h-24 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 group-hover:scale-110 group-hover:bg-[#A2E6B4] transition-all duration-300 shadow-xl">
-                                    <Play fill="currentColor" size={40} className="text-white group-hover:text-[#04330B] ml-2" />
+                            {isPlaying && selectedVideo.youtubeId ? (
+                                <div className="relative w-full aspect-video bg-black shrink-0 border-b border-gray-200">
+                                    <iframe
+                                        className="absolute inset-0 w-full h-full"
+                                        src={`https://www.youtube.com/embed/${selectedVideo.youtubeId}?autoplay=1`}
+                                        title={selectedVideo.title}
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                    ></iframe>
                                 </div>
+                            ) : (
+                                <div 
+                                    className="relative w-full aspect-video bg-black flex items-center justify-center shrink-0 border-b border-gray-200 group cursor-pointer"
+                                    onClick={() => setIsPlaying(true)}
+                                >
+                                    <img src={selectedVideo.image} alt={selectedVideo.title} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-70 transition-opacity" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30"></div>
 
-                                <div className="absolute bottom-0 left-0 w-full h-1 bg-white/30">
-                                    <div className="h-full bg-[#A2E6B4] w-0 group-hover:w-1/3 transition-all duration-1000"></div>
+                                    <div className="relative z-10 w-24 h-24 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 group-hover:scale-110 group-hover:bg-[#A2E6B4] transition-all duration-300 shadow-xl">
+                                        <Play fill="currentColor" size={40} className="text-white group-hover:text-[#04330B] ml-2" />
+                                    </div>
+
+                                    <div className="absolute bottom-0 left-0 w-full h-1 bg-white/30">
+                                        <div className="h-full bg-[#A2E6B4] w-0 group-hover:w-1/3 transition-all duration-1000"></div>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             <div className="p-8 lg:p-12 bg-white">
                                 <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -622,7 +697,10 @@ export default function NewsAndMedia({ defaultTab = "news" }: NewsAndMediaProps)
                                             {selectedVideo.desc}
                                         </p>
                                         <div className="mt-8 flex gap-4">
-                                            <button className="flex items-center gap-2 text-white hover:text-white font-medium transition-colors bg-[#0D5229] hover:bg-[#04330B] px-6 py-3 rounded-xl shadow-md">
+                                            <button 
+                                                className="flex items-center gap-2 text-white hover:text-white font-medium transition-colors bg-[#0D5229] hover:bg-[#04330B] px-6 py-3 rounded-xl shadow-md"
+                                                onClick={() => setIsPlaying(true)}
+                                            >
                                                 <Play size={18} fill="currentColor" />
                                                 Play Full Video
                                             </button>
