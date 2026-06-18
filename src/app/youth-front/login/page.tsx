@@ -51,7 +51,12 @@ export default function YouthLoginPage() {
         }
         
         // Check if user is youth member
-        if (data.user?.programTag === 'PGP Youth Front') {
+        const isYouthAccount = !data.user || 
+          data.user.programTag === 'PGP Youth Front' || 
+          data.user.programTag === undefined || 
+          data.user.programTag === null;
+
+        if (isYouthAccount) {
           router.push('/youth-front/my-dashboard');
         } else {
           setError('This is not a Youth Front account. Please use the main login page.');

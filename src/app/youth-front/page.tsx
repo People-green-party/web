@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, Megaphone, ShieldCheck, Trophy, Users, MessageCircle, AlertTriangle, Leaf, Mic, FileText, MapPin, Zap, X } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Megaphone, ShieldCheck, Trophy, Users, MessageCircle, AlertTriangle, Leaf, Mic, FileText, MapPin, Zap, X, LogIn } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { useLanguage } from '@/components/LanguageContext';
 
@@ -18,6 +18,7 @@ const translations = {
       firstMissionTitle: "आपका पहला मिशन:",
       firstMissionDesc: "जुड़ें। सत्यापित करें। अपना ट्रैक चुनें। 3 युवाओं को आमंत्रित करें। एक वास्तविक मुद्दे की रिपोर्ट करें। अपनी स्थानीय टीम बनाएं।",
       btnJoin: "PGP यूथ फ्रंट से जुड़ें",
+      btnLogin: "लॉगिन करें",
       btnReport: "मुद्दा रिपोर्ट करें",
       ageHint: "18+ सक्रिय युवा सदस्यों के रूप में शामिल हो सकते हैं। 16-17 केवल सुरक्षित नागरिक, जागरूकता और पर्यावरण गतिविधियों के लिए नागरिक सहयोगियों के रूप में शामिल हो सकते हैं।"
     },
@@ -149,6 +150,7 @@ const translations = {
       firstMissionTitle: "Your first mission:",
       firstMissionDesc: "Join. Verify. Choose your track. Invite 3 youth. Report one real issue. Build your local team.",
       btnJoin: "Join PGP Youth Front",
+      btnLogin: "Login",
       btnReport: "Report an Issue",
       ageHint: "18+ can join as active youth members. 16–17 can join only as civic associates for safe civic, awareness and environment activities."
     },
@@ -310,6 +312,9 @@ export default function YouthFrontPage() {
             <div className="mt-9 flex flex-col sm:flex-row gap-4">
               <Link href={joinHref} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#22C55E] px-7 py-4 font-black text-[#04330B] shadow-xl shadow-black/20">
                 {t.hero.btnJoin} <ArrowRight size={20} />
+              </Link>
+              <Link href="/youth-front/login" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-7 py-4 font-black text-[#04330B] shadow-xl shadow-black/10">
+                {t.hero.btnLogin} <LogIn size={20} />
               </Link>
               <Link href="/youth-front/report-issue" className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/10 px-7 py-4 font-black text-white">
                 {t.hero.btnReport} <AlertTriangle size={20} />
@@ -518,6 +523,9 @@ export default function YouthFrontPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href={joinHref} className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#22C55E] px-8 py-4 font-black text-[#04330B] shadow-xl shadow-black/20">
                 {t.hero.btnJoin} <ArrowRight size={20} />
+              </Link>
+              <Link href="/youth-front/login" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-8 py-4 font-black text-[#04330B] shadow-xl shadow-black/10">
+                {t.hero.btnLogin} <LogIn size={20} />
               </Link>
               <Link href="/youth-front/report-issue" className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/25 bg-white/10 px-8 py-4 font-black text-white">
                 {t.hero.btnReport} <AlertTriangle size={20} />
