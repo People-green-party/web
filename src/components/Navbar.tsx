@@ -23,6 +23,18 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
     const pathname = usePathname();
     const router = useRouter();
 
+    const handleLogoClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (pathname === '/') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            if (typeof window !== 'undefined') {
+                window.sessionStorage.setItem('scroll-to-top', 'true');
+            }
+            router.push('/');
+        }
+    };
+
     const handleLogout = async () => {
         // Removed direct supabase call to avoid needing Anon Key on frontend for public pages
         if (typeof window !== 'undefined') {
@@ -46,7 +58,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
         { name: t.nav.news, href: '/news' },
         { name: t.nav.constitution, href: '/constitution' },
         { name: t.nav.union || 'Union', href: '/union' },
-        { name: t.nav.youth || 'Youth', href: '/youth-front' },
+        { name: t.nav.youth || 'Jinda Youth', href: '/jinda-youth' },
         { name: t.nav.weAreAravali, href: 'https://wearearavali.org/', target: '_blank' },
     ];
 
@@ -116,8 +128,8 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     // This block handles non-dashboard "default" layout.
                     <>
                         <div className="flex items-center shrink-0">
-                            <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
-                                <img src="/PGPlogo.svg" alt="PGP Logo" className="w-auto h-[60px] lg:h-[86px] object-contain" />
+                            <Link href="/" onClick={handleLogoClick} className="flex flex-col items-center leading-none cursor-pointer shrink-0">
+                                <img src="/PGPlogo.svg" alt="PGP Logo" className="w-auto h-[48px] sm:h-[54px] lg:h-[86px] object-contain" />
                             </Link>
                         </div>
 
@@ -149,8 +161,8 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     // So I should replace the CONTENTS of the else block (lines 105-129)
                     <>
                         <div className="flex items-center shrink-0">
-                            <Link href="/" className="flex flex-col items-center leading-none cursor-pointer shrink-0">
-                                <img src="/PGPlogo.svg" alt="PGP Logo" className="w-auto h-[60px] lg:h-[86px] object-contain" />
+                            <Link href="/" onClick={handleLogoClick} className="flex flex-col items-center leading-none cursor-pointer shrink-0">
+                                <img src="/PGPlogo.svg" alt="PGP Logo" className="w-auto h-[48px] sm:h-[54px] lg:h-[86px] object-contain" />
                             </Link>
                         </div>
 
@@ -268,7 +280,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
             {/* Mobile Menu Dropdown */}
             {isMenuOpen && (
-                <div className="xl:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg h-screen z-50">
+                <div className="xl:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg h-[calc(100vh-70px)] overflow-y-auto z-50">
                     {isAdmin && (
                         <Link href="/admin/elections" className="text-gray-800 font-semibold py-2 border-b border-gray-100 text-lg text-center w-full">
                             Admin Panel

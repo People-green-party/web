@@ -51,15 +51,19 @@ export default function YouthLoginPage() {
         }
         
         // Check if user is youth member
+<<<<<<< HEAD
         const isYouthAccount = !data.user || 
           data.user.programTag === 'PGP Youth Front' || 
           data.user.programTag === undefined || 
           data.user.programTag === null;
 
         if (isYouthAccount) {
+=======
+        if (data.user?.programTag === 'PGP Youth Front' || data.user?.programTag === 'Jinda Youth') {
+>>>>>>> bc3e893 (Jinda youth page and Union page ui changes)
           router.push('/youth-front/my-dashboard');
         } else {
-          setError('This is not a Youth Front account. Please use the main login page.');
+          setError('This is not a Jinda Youth account. Please use the main login page.');
         }
       } else {
         throw new Error('Login failed');
@@ -86,7 +90,7 @@ export default function YouthLoginPage() {
 
           <h1 className="text-3xl lg:text-4xl font-black tracking-[-0.05em]">Youth Login</h1>
           <p className="mt-3 text-[#587E67] font-semibold">
-            Login to your PGP Youth Front account
+            Login to your Jinda Youth account
           </p>
 
           {error && (
@@ -156,7 +160,7 @@ export default function YouthLoginPage() {
                 onClick={() => router.push('/youth-front/join')}
                 className="text-[#0D5229] text-sm font-semibold hover:underline"
               >
-                Not a member? Join PGP Youth Front
+                Not a member? Join Jinda Youth
               </button>
             </div>
           </form>

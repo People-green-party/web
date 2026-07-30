@@ -57,7 +57,7 @@ export default function AdminLoginPage() {
             <ShieldCheck className="text-white" size={28} />
           </div>
           <h1 className="text-2xl font-black text-[#04330B]">Admin Access</h1>
-          <p className="text-sm text-[#587E67] mt-1">PGP Youth Front · JINDA System</p>
+          <p className="text-sm text-[#587E67] mt-1">Jinda Youth System</p>
         </div>
 
         <form onSubmit={login} className="bg-white rounded-2xl border border-[#DDEEE4] p-6 shadow-sm space-y-4">

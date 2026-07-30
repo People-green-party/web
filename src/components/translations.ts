@@ -17,7 +17,7 @@ export const translations = {
             news: "News & Press",
             press: "Press & Media",
             union: "Union",
-            youth: "Youth Front"
+            youth: "Jinda Youth"
         },
         heroSlides: [
             {
@@ -294,7 +294,7 @@ export const translations = {
             news: "समाचार और प्रेस",
             press: "प्रेस और मीडिया",
             union: "यूनियन",
-            youth: "यूथ फ्रंट"
+            youth: "जिंदा यूथ"
         },
         heroSlides: [
             {

@@ -1,5 +1,6 @@
-"use client";
+import { redirect } from 'next/navigation';
 
+<<<<<<< HEAD
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Megaphone, ShieldCheck, Trophy, Users, MessageCircle, AlertTriangle, Leaf, Mic, FileText, MapPin, Zap, X, LogIn } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
@@ -545,4 +546,8 @@ export default function YouthFrontPage() {
       </main>
     </div>
   );
+=======
+export default function YouthFrontRedirect() {
+  redirect('/jinda-youth');
+>>>>>>> bc3e893 (Jinda youth page and Union page ui changes)
 }

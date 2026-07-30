@@ -55,6 +55,7 @@ function SquadsContent() {
   const [joinSuccess, setJoinSuccess] = useState("");
   const [joinError, setJoinError] = useState("");
   const [tab, setTab]             = useState<"browse" | "code">("browse");
+  const [existingSquad, setExistingSquad] = useState<any | null>(null);
 
   const loadSquads = useCallback(async () => {
     setLoading(true);
@@ -68,7 +69,21 @@ function SquadsContent() {
     }
   }, [district]);
 
-  useEffect(() => { loadSquads(); }, [loadSquads]);
+  const checkExistingSquad = useCallback(async () => {
+    try {
+      const data = await fetchApi("youth/my-squad");
+      if (data) {
+        setExistingSquad(data);
+      }
+    } catch (e) {
+      console.error("Failed to check existing squad", e);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadSquads();
+    checkExistingSquad();
+  }, [loadSquads, checkExistingSquad]);
 
   const handleJoin = async () => {
     setJoinError("");
@@ -144,7 +159,20 @@ function SquadsContent() {
               rows={2}
             />
 
-            {joinError && <p className="text-red-600 text-sm mb-3 font-semibold">{joinError}</p>}
+            {joinError && (
+              <div className="mb-4">
+                <p className="text-red-600 text-sm font-semibold mb-2">{joinError}</p>
+                {(joinError.toLowerCase().includes("already in an active or pending squad") || 
+                  joinError.toLowerCase().includes("already a member")) && (
+                  <button
+                    onClick={() => router.push("/youth-front/my-dashboard")}
+                    className="w-full bg-[#16A34A] text-white font-black py-2.5 rounded-xl text-sm hover:bg-[#04330B] transition-colors"
+                  >
+                    Go to My Squad Dashboard
+                  </button>
+                )}
+              </div>
+            )}
 
             <div className="flex gap-3">
               <button
@@ -166,6 +194,23 @@ function SquadsContent() {
       )}
 
       <main className="mx-auto max-w-4xl px-5 py-8">
+        {existingSquad && (
+          <div className="mb-6 bg-emerald-50 border border-emerald-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="font-black text-[#04330B] text-base">You are already in a Squad</h3>
+              <p className="text-sm text-[#587E67] mt-1">
+                You are a member of <strong className="text-[#04330B]">{existingSquad.name}</strong>. You cannot join or start another Squad.
+              </p>
+            </div>
+            <button
+              onClick={() => router.push("/youth-front/my-dashboard")}
+              className="bg-[#04330B] text-white font-black px-5 py-2.5 rounded-xl text-sm shrink-0 hover:bg-[#16A34A] transition-colors"
+            >
+              Go to My Squad Dashboard
+            </button>
+          </div>
+        )}
+
         <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
           <div>
             <h1 className="text-3xl font-black text-[#04330B]">Squads ⚔️</h1>

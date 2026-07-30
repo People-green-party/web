@@ -12,7 +12,7 @@ export default function YouthFrontThankYouPage() {
             <CheckCircle2 className="text-[#16A34A]" size={44} />
           </div>
           <h1 className="mt-7 text-4xl lg:text-6xl font-black tracking-[-0.05em]">Welcome to JINDA</h1>
-          <p className="mt-4 text-lg font-semibold text-[#587E67]">You are now part of PGP Youth Front's youth action network.</p>
+          <p className="mt-4 text-lg font-semibold text-[#587E67]">You are now part of Jinda Youth's youth action network.</p>
           <p className="mt-2 text-base font-semibold text-[#04330B]">Your JINDA journey starts now.</p>
 
           <div className="mt-8 rounded-2xl bg-[#DCFCE7] p-6 text-left">
@@ -21,7 +21,7 @@ export default function YouthFrontThankYouPage() {
               {[
                 'Complete your JINDA profile.',
                 'Join your district feed.',
-                'Invite 3 verified friends.',
+                'Invite 5 teammates.',
                 'Report one real issue.',
                 'Join or start a Squad.',
               ].map((item, index) => (

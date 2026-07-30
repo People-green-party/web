@@ -47,6 +47,7 @@ export default function StartSquadPage() {
   const [error, setError]     = useState("");
   const [result, setResult]   = useState<any>(null);
   const [copied, setCopied]   = useState(false);
+  const [existingSquad, setExistingSquad] = useState<any | null>(null);
 
   const [form, setForm] = useState({
     name:          "",
@@ -60,6 +61,20 @@ export default function StartSquadPage() {
   });
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  React.useEffect(() => {
+    const checkSquad = async () => {
+      try {
+        const data = await fetchApi("youth/my-squad");
+        if (data) {
+          setExistingSquad(data);
+        }
+      } catch (e) {
+        console.error("Failed to check existing squad", e);
+      }
+    };
+    checkSquad();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,117 +182,144 @@ export default function StartSquadPage() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-3 mb-4 text-red-700 text-sm font-semibold">
-            {error}
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4 text-red-700 text-sm font-semibold">
+            <p>{error}</p>
+            {(error.toLowerCase().includes("already in an active or pending squad") || 
+              error.toLowerCase().includes("already a member")) && (
+              <button
+                type="button"
+                onClick={() => router.push("/youth-front/my-dashboard")}
+                className="mt-3 w-full bg-[#16A34A] text-white font-black py-2.5 rounded-xl text-sm hover:bg-[#04330B] transition-colors"
+              >
+                Go to My Squad Dashboard
+              </button>
+            )}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Squad name */}
-          <div>
-            <label className="text-sm font-bold text-[#04330B] block mb-1.5">Squad Name *</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => set("name", e.target.value)}
-              placeholder="e.g. Jaipur Ward 24 Squad"
-              className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#04330B]"
-              required
-            />
-          </div>
-
-          {/* Squad type */}
-          <div>
-            <label className="text-sm font-bold text-[#04330B] block mb-1.5">Squad Type *</label>
-            <div className="grid grid-cols-2 gap-2">
-              {SQUAD_TYPES.map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => set("squadType", t)}
-                  className={`text-left rounded-xl px-4 py-3 text-sm font-semibold border transition-all ${
-                    form.squadType === t
-                      ? "bg-[#04330B] text-white border-[#04330B]"
-                      : "border-[#BBF7D0] bg-white text-[#04330B] hover:border-[#04330B]"
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-            {form.squadType && (
-              <p className="text-xs text-[#587E67] mt-2 pl-1">{SQUAD_TYPE_DESC[form.squadType]}</p>
-            )}
-          </div>
-
-          {/* Location */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-sm font-bold text-[#04330B] block mb-1.5">District</label>
-              <input
-                type="text"
-                value={form.district}
-                onChange={(e) => set("district", e.target.value)}
-                placeholder="e.g. Jaipur"
-                className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#04330B]"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-bold text-[#04330B] block mb-1.5">Ward / Village</label>
-              <input
-                type="text"
-                value={form.ward}
-                onChange={(e) => set("ward", e.target.value)}
-                placeholder="e.g. Ward 24"
-                className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#04330B]"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="text-sm font-bold text-[#04330B] block mb-1.5">Campus / Locality</label>
-            <input
-              type="text"
-              value={form.locality}
-              onChange={(e) => set("locality", e.target.value)}
-              placeholder="e.g. Rajasthan University, Sindhi Camp"
-              className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#04330B]"
-            />
-          </div>
-
-          {/* Purpose */}
-          <div>
-            <label className="text-sm font-bold text-[#04330B] block mb-1.5">Squad Purpose</label>
-            <textarea
-              value={form.purpose}
-              onChange={(e) => set("purpose", e.target.value)}
-              placeholder="What will your Squad work on? e.g. Report water issues in Ward 24, organise campus clean drives..."
-              className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:border-[#04330B]"
-              rows={3}
-            />
-          </div>
-
-          {/* My preferred role */}
-          <div>
-            <label className="text-sm font-bold text-[#04330B] block mb-1.5">Your Preferred Role</label>
-            <select
-              value={form.preferredRole}
-              onChange={(e) => set("preferredRole", e.target.value)}
-              className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#04330B] bg-white"
+        {existingSquad ? (
+          <div className="bg-white rounded-3xl p-8 border border-emerald-200 shadow-xl shadow-emerald-500/5 text-center">
+            <div className="text-5xl mb-4">⚔️</div>
+            <h2 className="text-xl font-black text-[#04330B] mb-2">You already belong to a Squad</h2>
+            <p className="text-sm text-[#587E67] leading-relaxed mb-6">
+              You are currently in the Squad <strong className="text-[#04330B]">{existingSquad.name}</strong>. You cannot create or join multiple Squads at the same time.
+            </p>
+            <button
+              onClick={() => router.push("/youth-front/my-dashboard")}
+              className="w-full bg-[#04330B] text-white font-black py-4 rounded-2xl hover:bg-[#16A34A] transition-colors"
             >
-              <option value="">Select a role (optional)</option>
-              {SQUAD_ROLES.map((r) => <option key={r}>{r}</option>)}
-            </select>
+              Go to My Squad Dashboard
+            </button>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Squad name */}
+            <div>
+              <label className="text-sm font-bold text-[#04330B] block mb-1.5">Squad Name *</label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => set("name", e.target.value)}
+                placeholder="e.g. Jaipur Ward 24 Squad"
+                className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#04330B]"
+                required
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#04330B] text-white font-black py-4 rounded-2xl hover:bg-[#16A34A] transition-colors disabled:opacity-60 mt-2"
-          >
-            {loading ? "Creating Squad..." : "Create Squad ⚔️"}
-          </button>
-        </form>
+            {/* Squad type */}
+            <div>
+              <label className="text-sm font-bold text-[#04330B] block mb-1.5">Squad Type *</label>
+              <div className="grid grid-cols-2 gap-2">
+                {SQUAD_TYPES.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => set("squadType", t)}
+                    className={`text-left rounded-xl px-4 py-3 text-sm font-semibold border transition-all ${
+                      form.squadType === t
+                        ? "bg-[#04330B] text-white border-[#04330B]"
+                        : "border-[#BBF7D0] bg-white text-[#04330B] hover:border-[#04330B]"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+              {form.squadType && (
+                <p className="text-xs text-[#587E67] mt-2 pl-1">{SQUAD_TYPE_DESC[form.squadType]}</p>
+              )}
+            </div>
+
+            {/* Location */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-bold text-[#04330B] block mb-1.5">District</label>
+                <input
+                  type="text"
+                  value={form.district}
+                  onChange={(e) => set("district", e.target.value)}
+                  placeholder="e.g. Jaipur"
+                  className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#04330B]"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-bold text-[#04330B] block mb-1.5">Ward / Village</label>
+                <input
+                  type="text"
+                  value={form.ward}
+                  onChange={(e) => set("ward", e.target.value)}
+                  placeholder="e.g. Ward 24"
+                  className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#04330B]"
+                />
+              </div>
+            </div>
+
+            {/* Locality */}
+            <div>
+              <label className="text-sm font-bold text-[#04330B] block mb-1.5">Campus / Locality</label>
+              <input
+                type="text"
+                value={form.locality}
+                onChange={(e) => set("locality", e.target.value)}
+                placeholder="e.g. Rajasthan University, Sindhi Camp"
+                className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#04330B]"
+              />
+            </div>
+
+            {/* Purpose */}
+            <div>
+              <label className="text-sm font-bold text-[#04330B] block mb-1.5">Squad Purpose</label>
+              <textarea
+                value={form.purpose}
+                onChange={(e) => set("purpose", e.target.value)}
+                placeholder="What will your Squad work on? e.g. Report water issues in Ward 24, organise campus clean drives..."
+                className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:border-[#04330B]"
+                rows={3}
+              />
+            </div>
+
+            {/* My preferred role */}
+            <div>
+              <label className="text-sm font-bold text-[#04330B] block mb-1.5">Your Preferred Role</label>
+              <select
+                value={form.preferredRole}
+                onChange={(e) => set("preferredRole", e.target.value)}
+                className="w-full border border-[#BBF7D0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#04330B] bg-white"
+              >
+                <option value="">Select a role (optional)</option>
+                {SQUAD_ROLES.map((r) => <option key={r}>{r}</option>)}
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#04330B] text-white font-black py-4 rounded-2xl hover:bg-[#16A34A] transition-colors disabled:opacity-60 mt-2"
+            >
+              {loading ? "Creating Squad..." : "Create Squad ⚔️"}
+            </button>
+          </form>
+        )}
       </main>
     </div>
   );

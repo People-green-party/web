@@ -85,7 +85,7 @@ export default function AdminPage() {
       {/* Header */}
       <div className="bg-[#04330B] text-white px-6 py-5 flex items-center justify-between">
         <div>
-          <p className="text-xs font-bold tracking-widest text-[#86EFAC] uppercase">PGP Youth Front</p>
+          <p className="text-xs font-bold tracking-widest text-[#86EFAC] uppercase">Jinda Youth</p>
           <h1 className="text-xl font-black mt-0.5">Admin Panel</h1>
         </div>
         <button

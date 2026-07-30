@@ -668,7 +668,7 @@ const VisionCarousel = ({ language }: { language: string }) => {
                     </p>
 
                     {/* Button */}
-                    <div className={`mt-auto transition-all duration-300 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                    <div className={`mt-auto transition-all duration-300 ${isActive ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
                         <Link
                             href="/vision/jaipur-2040"
                             className="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[#0D5229] hover:bg-[#04330B] text-white font-['Familjen_Grotesk'] font-semibold text-sm transition-colors shadow-lg shadow-green-900/20"
@@ -684,31 +684,77 @@ const VisionCarousel = ({ language }: { language: string }) => {
     const [activeIndex, setActiveIndex] = useState(visionPoints.length * 100);
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
     const [isMobile, setIsMobile] = useState(false);
+    const autoplayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 1024);
         handleResize();
         window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            if (autoplayTimeoutRef.current) {
+                clearTimeout(autoplayTimeoutRef.current);
+            }
+        };
     }, []);
 
     const handleNext = () => setActiveIndex(prev => prev + 1);
     const handlePrev = () => setActiveIndex(prev => prev - 1);
 
+    const triggerAutoplayPause = () => {
+        setIsAutoPlaying(false);
+        if (autoplayTimeoutRef.current) {
+            clearTimeout(autoplayTimeoutRef.current);
+        }
+        autoplayTimeoutRef.current = setTimeout(() => {
+            setIsAutoPlaying(true);
+        }, 5000);
+    };
+
+    const handleUserNext = () => {
+        handleNext();
+        triggerAutoplayPause();
+    };
+
+    const handleUserPrev = () => {
+        handlePrev();
+        triggerAutoplayPause();
+    };
+
     const [touchStart, setTouchStart] = useState<number | null>(null);
     const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
     const onTouchStart = (e: React.TouchEvent) => {
+        if (autoplayTimeoutRef.current) {
+            clearTimeout(autoplayTimeoutRef.current);
+            autoplayTimeoutRef.current = null;
+        }
         setTouchStart(e.targetTouches[0].clientX);
         setIsAutoPlaying(false);
     };
     const onTouchMove = (e: React.TouchEvent) => setTouchEnd(e.targetTouches[0].clientX);
     const onTouchEnd = () => {
-        if (!touchStart || !touchEnd) return;
-        const dist = touchStart - touchEnd;
-        if (dist > 50) handleNext();
-        else if (dist < -50) handlePrev();
-        setTimeout(() => setIsAutoPlaying(true), 5000);
+        if (touchStart && touchEnd) {
+            const dist = touchStart - touchEnd;
+            if (dist > 50) handleNext();
+            else if (dist < -50) handlePrev();
+        }
+        
+        setTouchStart(null);
+        setTouchEnd(null);
+        triggerAutoplayPause();
+    };
+
+    const onMouseEnter = () => {
+        setIsAutoPlaying(false);
+        if (autoplayTimeoutRef.current) {
+            clearTimeout(autoplayTimeoutRef.current);
+            autoplayTimeoutRef.current = null;
+        }
+    };
+
+    const onMouseLeave = () => {
+        setIsAutoPlaying(true);
     };
 
     useEffect(() => {
@@ -732,16 +778,20 @@ const VisionCarousel = ({ language }: { language: string }) => {
                 </ScrollReveal>
             </div>
 
-            <div className="relative w-full max-w-[1700px] flex items-center justify-center h-[550px]">
+            <div 
+                className="relative w-full max-w-[1700px] flex items-center justify-center h-[550px]"
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+            >
                 {/* Navigation Buttons (Desktop) */}
                 <button
-                    onClick={handlePrev}
+                    onClick={handleUserPrev}
                     className="hidden lg:flex absolute left-8 z-40 w-12 h-12 bg-white/80 border border-gray-200 rounded-full items-center justify-center text-[#0D5229] hover:bg-[#0D5229] hover:text-white transition-all shadow-lg hover:scale-110"
                 >
                     <ChevronLeft size={24} />
                 </button>
                 <button
-                    onClick={handleNext}
+                    onClick={handleUserNext}
                     className="hidden lg:flex absolute right-8 z-40 w-12 h-12 bg-white/80 border border-gray-200 rounded-full items-center justify-center text-[#0D5229] hover:bg-[#0D5229] hover:text-white transition-all shadow-lg hover:scale-110"
                 >
                     <ChevronRight size={24} />
@@ -753,6 +803,7 @@ const VisionCarousel = ({ language }: { language: string }) => {
                     onTouchStart={onTouchStart}
                     onTouchMove={onTouchMove}
                     onTouchEnd={onTouchEnd}
+                    onTouchCancel={onTouchEnd}
                 >
                     {[-4, -3, -2, -1, 0, 1, 2, 3, 4].map((offset) => {
                         const index = ((activeIndex + offset) % visionPoints.length + visionPoints.length) % visionPoints.length;
@@ -793,14 +844,20 @@ const VisionCarousel = ({ language }: { language: string }) => {
                         return (
                             <div
                                 key={`${point.id}-${activeIndex + offset}`}
-                                className="absolute"
+                                className="absolute cursor-pointer"
                                 style={{
                                     transition: 'transform 800ms cubic-bezier(0.25, 1, 0.5, 1), opacity 800ms cubic-bezier(0.25, 1, 0.5, 1)',
                                     transform: `translate3d(${isMobile ? offset * 110 + '%' : translateX}, 0, 0) scale(${scale})`,
                                     willChange: 'transform',
                                     zIndex: zIndex,
                                     opacity: opacity,
-                                    pointerEvents: isActive ? 'auto' : 'none'
+                                    pointerEvents: 'auto'
+                                }}
+                                onClick={() => {
+                                    if (!isActive) {
+                                        setActiveIndex(activeIndex + offset);
+                                        triggerAutoplayPause();
+                                    }
                                 }}
                             >
                                 <VisionCard point={point} isActive={isActive} isSide={offset !== 0} />

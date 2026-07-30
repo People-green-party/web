@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" fill="none">
+  <defs>
+    <linearGradient id="bgGrad3" x1="0" y1="0" x2="400" y2="240" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#032115"/>
+      <stop offset="50%" stop-color="#053b24"/>
+      <stop offset="100%" stop-color="#02170e"/>
+    </linearGradient>
+    <linearGradient id="accentGrad3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <filter id="glow3" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="400" height="240" rx="16" fill="url(#bgGrad3)"/>
+  <path d="M0 40H400M0 80H400M0 120H400M0 160H400M0 200H400M80 0V240M160 0V240M240 0V240M320 0V240" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1"/>
+
+  <circle cx="200" cy="105" r="65" fill="#22c55e" opacity="0.15" filter="url(#glow3)"/>
+
+  <!-- Institute Building Architecture (Pillars & Dome) -->
+  <g transform="translate(120, 50)">
+    <!-- Roof Triangle Pediment -->
+    <path d="M80 10L155 45H5L80 10Z" fill="url(#accentGrad3)" stroke="#ffffff" stroke-width="2"/>
+    <rect x="25" y="45" width="110" height="12" fill="#ffffff" fill-opacity="0.2"/>
+    
+    <!-- 4 Classic Pillars -->
+    <rect x="30" y="57" width="14" height="65" rx="3" fill="#ffffff" stroke="url(#accentGrad3)" stroke-width="2"/>
+    <rect x="58" y="57" width="14" height="65" rx="3" fill="#ffffff" stroke="url(#accentGrad3)" stroke-width="2"/>
+    <rect x="88" y="57" width="14" height="65" rx="3" fill="#ffffff" stroke="url(#accentGrad3)" stroke-width="2"/>
+    <rect x="116" y="57" width="14" height="65" rx="3" fill="#ffffff" stroke="url(#accentGrad3)" stroke-width="2"/>
+    
+    <!-- Base Platform -->
+    <rect x="15" y="122" width="130" height="14" rx="4" fill="url(#accentGrad3)"/>
+  </g>
+
+  <!-- Flag Emblem on Top -->
+  <g transform="translate(195, 30)">
+    <line x1="5" y1="0" x2="5" y2="30" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <path d="M5 2L25 10L5 18Z" fill="#22c55e"/>
+  </g>
+
+  <!-- Label Badge -->
+  
+  
+</svg>

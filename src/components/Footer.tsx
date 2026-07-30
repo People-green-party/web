@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
     MapPin, Phone, Mail, Youtube, Facebook, Instagram, X
 } from 'lucide-react';
@@ -17,13 +18,27 @@ const SocialIcon = ({ Icon, href }: { Icon: any, href: string }) => (
 export const Footer = () => {
     const { t } = useLanguage();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const pathname = usePathname();
+    const router = useRouter();
+
+    const handleLogoClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (pathname === '/') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            if (typeof window !== 'undefined') {
+                window.sessionStorage.setItem('scroll-to-top', 'true');
+            }
+            router.push('/');
+        }
+    };
 
     return (
         <footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]">
             <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row items-start lg:justify-between">
 
                 <ScrollReveal animation="fade-up" duration={800} className="flex flex-col w-full lg:w-[20%]">
-                    <Link href="/">
+                    <Link href="/" onClick={handleLogoClick}>
                         <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[150px] lg:w-[255px] h-auto lg:h-[136px] object-contain mb-[24px] cursor-pointer" />
                     </Link>
 

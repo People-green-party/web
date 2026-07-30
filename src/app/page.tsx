@@ -218,6 +218,19 @@ const LandingPageContent = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const shouldScroll = window.sessionStorage.getItem('scroll-to-top');
+      if (shouldScroll === 'true') {
+        window.sessionStorage.removeItem('scroll-to-top');
+        // Small delay to ensure page rendering has completed
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
+      }
+    }
+  }, []);
+
   // Sync cards when language changes
   React.useEffect(() => {
     setRotatedCards(getVisionCards(language));
@@ -344,18 +357,18 @@ const LandingPageContent = () => {
 
       {/* 2. VISION FOR BETTER TOMORROW (Cards) */}
       {/* 2. VISION FOR BETTER TOMORROW (Replaced with Image Grid) */}
-      <section className="bg-white px-4 mt-[220px] lg:mt-[200px] pb-[40px] lg:pb-[60px]">
+      <section className="bg-white px-4 mt-[340px] md:mt-[220px] lg:mt-[200px] pb-[40px] lg:pb-[60px]">
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
 
           {/* Header */}
           <div className="flex flex-col gap-[16px] w-full items-center text-center mb-[40px] lg:mb-[60px]">
-            <ScrollReveal animation="fade-up" duration={800}>
-              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] tracking-[-0.3px] text-[#04330B]">
+            <ScrollReveal animation="fade-up" duration={800} className="w-full">
+              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] tracking-[-0.3px] text-[#04330B] text-center px-4 max-w-4xl mx-auto">
                 {t.visionSection.title}
               </h2>
             </ScrollReveal>
-            <ScrollReveal animation="fade-up" duration={800} delay={200}>
-              <p className="font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[20px] text-[#587E67] max-w-[800px]">
+            <ScrollReveal animation="fade-up" duration={800} delay={200} className="w-full">
+              <p className="font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[20px] text-[#587E67] max-w-[800px] mx-auto text-center px-4">
                 {t.visionSection.sub}
               </p>
             </ScrollReveal>
