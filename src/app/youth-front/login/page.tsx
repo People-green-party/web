@@ -51,16 +51,7 @@ export default function YouthLoginPage() {
         }
         
         // Check if user is youth member
-<<<<<<< HEAD
-        const isYouthAccount = !data.user || 
-          data.user.programTag === 'PGP Youth Front' || 
-          data.user.programTag === undefined || 
-          data.user.programTag === null;
-
-        if (isYouthAccount) {
-=======
         if (data.user?.programTag === 'PGP Youth Front' || data.user?.programTag === 'Jinda Youth') {
->>>>>>> bc3e893 (Jinda youth page and Union page ui changes)
           router.push('/youth-front/my-dashboard');
         } else {
           setError('This is not a Jinda Youth account. Please use the main login page.');
