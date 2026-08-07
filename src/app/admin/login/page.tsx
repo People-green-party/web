@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { KeyRound, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 function normalizeApiBaseUrl(base: string) {
@@ -13,8 +13,15 @@ function normalizeApiBaseUrl(base: string) {
 
 const API = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3002');
 
-export default function AdminLoginPage() {
+function safeAdminNext(raw: string | null): string {
+  if (!raw || !raw.startsWith('/admin')) return '/admin';
+  if (raw.startsWith('/admin/login')) return '/admin';
+  return raw;
+}
+
+function AdminLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [password, setPassword] = useState('');
   const [show, setShow]         = useState(false);
   const [loading, setLoading]   = useState(false);
@@ -35,12 +42,11 @@ export default function AdminLoginPage() {
         throw new Error(body.message || 'Invalid password');
       }
       const auth = await res.json();
-      // Store in both places so all admin pages can find it
       localStorage.setItem('adminToken', auth.token);
       sessionStorage.setItem('admin_access_token', auth.token);
       sessionStorage.setItem('admin_access_scope', auth.scope || 'edit');
       sessionStorage.setItem('admin_youth_access_granted', '1');
-      router.push('/admin');
+      router.push(safeAdminNext(searchParams.get('next')));
     } catch (e: any) {
       setError(e.message || 'Login failed');
     } finally {
@@ -51,7 +57,6 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-[#F0FBF4] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
-        {/* Logo / branding */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-[#04330B] mb-4">
             <ShieldCheck className="text-white" size={28} />
@@ -105,5 +110,19 @@ export default function AdminLoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F0FBF4] flex items-center justify-center text-[#04330B] font-semibold">
+          Loading…
+        </div>
+      }
+    >
+      <AdminLoginForm />
+    </Suspense>
   );
 }
