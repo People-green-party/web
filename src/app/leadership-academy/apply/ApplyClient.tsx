@@ -218,7 +218,7 @@ export default function LeadershipAcademyApplyPage() {
                     onChange={onChange}
                     className={fieldClass}
                     inputMode={field.name === "phone" ? "numeric" : undefined}
-                    pattern={field.name === "phone" ? "[0-9+\\s-]{10,15}" : undefined}
+                    autoComplete={field.name === "phone" ? "tel" : undefined}
                   />
                   {"hint" in field && field.hint ? (
                     <span className="mt-1 block font-['Familjen_Grotesk'] text-[12px] text-[#587E67]">
@@ -228,26 +228,45 @@ export default function LeadershipAcademyApplyPage() {
                 </label>
               ))}
 
-              <label className="block">
-                <span className="font-['Familjen_Grotesk'] text-[14px] font-bold text-[#04330B]">
+              <fieldset>
+                <legend className="font-['Familjen_Grotesk'] text-[14px] font-bold text-[#04330B]">
                   {a.fields.department} *
-                </span>
-                <select
-                  name="department"
-                  required
-                  disabled={submitting}
-                  value={form.department}
-                  onChange={onChange}
-                  className={fieldClass}
-                >
-                  <option value="">{a.fields.selectDepartment}</option>
-                  {DEPARTMENTS.map((d) => (
-                    <option key={d.slug} value={d.slug}>
-                      {d.number}. {t.deptNames[d.slug].name}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                </legend>
+                {/* Custom picker — native <select> breaks on mobile (dark overlay / wrong position) */}
+                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {DEPARTMENTS.map((d) => {
+                    const selected = form.department === d.slug;
+                    return (
+                      <label
+                        key={d.slug}
+                        className={`rounded-[8px] border px-4 py-3 cursor-pointer font-['Familjen_Grotesk'] text-[14px] font-semibold leading-snug transition-colors ${
+                          selected
+                            ? "border-[#04330B] bg-[#EAF7EE] text-[#04330B]"
+                            : "border-[#E4F2EA] bg-[#F8FBF9] text-[#587E67] hover:border-[#B9D3C4]"
+                        } ${submitting ? "opacity-60 pointer-events-none" : ""}`}
+                      >
+                        <input
+                          type="radio"
+                          name="department"
+                          value={d.slug}
+                          required
+                          checked={selected}
+                          onChange={onChange}
+                          disabled={submitting}
+                          className="sr-only"
+                        />
+                        <span className="text-[#0D5229] font-bold">{d.number}.</span>{" "}
+                        {t.deptNames[d.slug].name}
+                      </label>
+                    );
+                  })}
+                </div>
+                {!form.department ? (
+                  <p className="mt-2 font-['Familjen_Grotesk'] text-[12px] text-[#587E67]">
+                    {a.fields.selectDepartment}
+                  </p>
+                ) : null}
+              </fieldset>
 
               <fieldset>
                 <legend className="font-['Familjen_Grotesk'] text-[14px] font-bold text-[#04330B]">
