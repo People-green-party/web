@@ -182,12 +182,13 @@ export const VerifyMobileModal = ({ onVerify, onCancel }: VerifyMobileModalProps
             alert('OTP sent successfully!');
             return true;
         } catch (err: any) {
-            console.error('OTP Send Failed, switching to simulation mode.', err.message || err);
-            const isConfigError = err.message === 'Failed to fetch' || err.message?.includes('apikey');
-            const msg = isConfigError
-                ? 'Backend missing or unreachable. \n\n✅ Simulating OTP sent.\n👉 Use OTP: 123456'
-                : `Error: ${err.message}. \n\n✅ Simulating success.\n👉 Use OTP: 123456`;
-            alert(msg);
+            console.error('OTP Send Failed.', err.message || err);
+            const { isAuthDevMode } = await import('../../../lib/authDevMode');
+            if (isAuthDevMode()) {
+                alert('Dev mode: Simulating OTP sent. Use OTP: 123456');
+                return false;
+            }
+            alert(err.message || 'Failed to send OTP. Please try again later.');
             return false;
         }
     };
@@ -228,10 +229,10 @@ export const VerifyMobileModal = ({ onVerify, onCancel }: VerifyMobileModalProps
             });
 
             if (error) {
-                if (token === '123456') {
-                    console.log('Simulation: OTP verified successfully with 123456');
+                const { isAuthDevMode } = await import('../../../lib/authDevMode');
+                if (isAuthDevMode() && token === '123456') {
                     setIsError(false);
-                    onVerify(); // Success Trigger
+                    onVerify();
                 } else {
                     console.error('Verification Error:', error.message);
                     setIsError(true);
@@ -239,10 +240,11 @@ export const VerifyMobileModal = ({ onVerify, onCancel }: VerifyMobileModalProps
             } else {
                 console.log('Phone verified successfully:', data);
                 setIsError(false);
-                onVerify(); // Success Trigger
+                onVerify();
             }
         } catch (err) {
-            if (token === '123456') {
+            const { isAuthDevMode } = await import('../../../lib/authDevMode');
+            if (isAuthDevMode() && token === '123456') {
                 setIsError(false);
                 onVerify();
             } else {

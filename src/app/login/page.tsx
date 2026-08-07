@@ -139,17 +139,22 @@ export default function LoginScreen() {
       if (error) throw error;
 
       setMode('otp_verify');
-      setResendTimer(60); // Start 60 second countdown
+      setResendTimer(60);
     } catch (err: any) {
-      if (err.message && (
+      const { isAuthDevMode } = await import('../../lib/authDevMode');
+      if (isAuthDevMode() && err.message && (
         err.message.includes('Unsupported phone provider') ||
         err.message.includes('Signups not allowed')
       )) {
-        // Simulation Mode
-        console.warn('Simulation: OTP sent (123456) due to config error:', err.message);
-        alert('Development Mode: Your OTP is 123456'); // Helpful alert for user
+        console.warn('Dev simulation: OTP sent (123456):', err.message);
+        alert('Development Mode: Your OTP is 123456');
         setMode('otp_verify');
-        setResendTimer(60); // Start 60 second countdown
+        setResendTimer(60);
+      } else if (err.message && (
+        err.message.includes('Unsupported phone provider') ||
+        err.message.includes('Signups not allowed')
+      )) {
+        setError('SMS login is temporarily unavailable. Please try again later.');
       } else {
         setError(cleanError(err.message || 'Failed to send OTP. Please try again.'));
       }
@@ -184,10 +189,9 @@ export default function LoginScreen() {
       });
 
       if (error) {
-        // Dev Simulation
-        if (otp === '123456') {
-          console.log('Simulation: OTP Verified');
-          // Proceed as success
+        const { isAuthDevMode } = await import('../../lib/authDevMode');
+        if (isAuthDevMode() && otp === '123456') {
+          console.log('Dev simulation: OTP verified');
         } else {
           throw error;
         }
@@ -232,12 +236,12 @@ export default function LoginScreen() {
       // Use dedicated endpoint that verifies token and links user by phone
       let headers = {};
 
-      // If we are in simulation mode (OTP 123456), we probably don't have a Supabase session.
-      // We need to send a Dev Bypass Token if AUTH_DEV_MODE is enabled on backend.
+      // Local auth-dev only: PIN reset without Supabase session
       if (typeof window !== 'undefined') {
+        const { isAuthDevMode } = await import('../../lib/authDevMode');
         const { supabase } = await import('../../lib/supabaseClient');
         const { data } = await supabase.auth.getSession();
-        if (!data.session && window.location.hostname === 'localhost') {
+        if (!data.session && isAuthDevMode()) {
           const phoneNumber = `+91${sanitizePhoneInput(phone)}`;
           headers = { 'Authorization': `Bearer dev-token:${phoneNumber}` };
         }

@@ -2,10 +2,20 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAuthHeader } from "../../../lib/supabaseClient";
-import { RequireAuth } from "../../components/RequireAuth";
 
-const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
+function normalizeApiBaseUrl(base: string) {
+  const c = String(base || "").replace(/\/$/, "");
+  if (!c) return "http://localhost:3002/v1";
+  if (c.endsWith("/v1")) return c;
+  return `${c}/v1`;
+}
+
+const API = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002");
+
+function getAdminToken() {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("adminToken") || sessionStorage.getItem("admin_access_token");
+}
 
 export default function AuditLogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
@@ -18,12 +28,18 @@ export default function AuditLogsPage() {
     setLoading(true);
     setError(null);
     try {
-      const auth = await getAuthHeader();
-      if (!auth?.Authorization) {
-        router.push(`/join?returnTo=/admin/audit-logs`);
+      const token = getAdminToken();
+      if (!token) {
+        router.replace("/admin/login?next=/admin/audit-logs");
         return;
       }
-      const res = await fetch(`${API}/audit/logs?limit=${encodeURIComponent(limit)}`, { headers: { ...auth } });
+      const res = await fetch(`${API}/audit/logs?limit=${encodeURIComponent(limit)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.message || `HTTP ${res.status}`);
+      }
       const data = await res.json();
       setLogs(data?.logs || []);
     } catch (e: any) {
@@ -39,49 +55,60 @@ export default function AuditLogsPage() {
   }, []);
 
   return (
-    <RequireAuth>
-      <div className="max-w-6xl mx-auto p-6">
-        <h1 className="text-2xl font-semibold mb-4">Admin: Audit Logs</h1>
-        <div className="mb-3 flex items-center gap-2">
-          <label className="text-sm text-gray-700">
-            Limit
-            <input
-              value={limit}
-              onChange={(e) => setLimit(e.target.value)}
-              className="ml-2 border rounded px-3 py-2 w-28"
-            />
-          </label>
-          <button onClick={load} className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded">Refresh</button>
-        </div>
-        {loading && <p>Loading...</p>}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ minWidth: 720, width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th align="left">ID</th>
-                <th align="left">When</th>
-                <th align="left">Actor</th>
-                <th align="left">Action</th>
-                <th align="left">Entity</th>
-                <th align="left">Reason</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logs.map((l) => (
-                <tr key={l.id}>
-                  <td>{l.id}</td>
-                  <td>{l.createdAt ? new Date(l.createdAt).toLocaleString() : ""}</td>
-                  <td>{l.actor ? `${l.actor.name} (${l.actor.phone})` : "-"}</td>
-                  <td>{l.action}</td>
-                  <td>{l.entityType} #{l.entityId}</td>
-                  <td>{l.reason}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+    <div className="max-w-6xl mx-auto p-6">
+      <h1 className="text-2xl font-semibold mb-4">Admin: Audit Logs</h1>
+      <div className="mb-3 flex items-center gap-2">
+        <label className="text-sm text-gray-700">
+          Limit
+          <input
+            value={limit}
+            onChange={(e) => setLimit(e.target.value)}
+            className="ml-2 border rounded px-2 py-1 w-24"
+          />
+        </label>
+        <button onClick={load} className="rounded bg-green-700 text-white px-3 py-1.5 text-sm">
+          Refresh
+        </button>
       </div>
-    </RequireAuth>
+      {loading && <div className="rounded border p-3">Loading…</div>}
+      {error && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3">{error}</div>}
+      <div className="rounded border overflow-hidden">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-left">
+            <tr>
+              <th className="p-2">ID</th>
+              <th className="p-2">Action</th>
+              <th className="p-2">Entity</th>
+              <th className="p-2">Actor</th>
+              <th className="p-2">Reason</th>
+              <th className="p-2">When</th>
+            </tr>
+          </thead>
+          <tbody>
+            {logs.map((l) => (
+              <tr key={l.id} className="border-t">
+                <td className="p-2">{l.id}</td>
+                <td className="p-2">{l.action}</td>
+                <td className="p-2">
+                  {l.entityType}:{l.entityId}
+                </td>
+                <td className="p-2">
+                  {l.actor?.name || "-"} {l.actor?.phone ? `(${l.actor.phone})` : ""}
+                </td>
+                <td className="p-2">{l.reason || "-"}</td>
+                <td className="p-2">{l.createdAt ? new Date(l.createdAt).toLocaleString() : "-"}</td>
+              </tr>
+            ))}
+            {!loading && logs.length === 0 && (
+              <tr>
+                <td className="p-3 text-gray-500" colSpan={6}>
+                  No logs
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }

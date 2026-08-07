@@ -1,15 +1,15 @@
-// Dev mode auth helper for local development
+import { isAuthDevMode } from './authDevMode';
+
+// Dev mode auth helper for local development only
 export function getAuthHeaders(): Record<string, string> {
-  // Check if we're in dev mode and have a dev user ID
   const devUserId = localStorage.getItem('devUserId');
-  
-  if (devUserId && process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true') {
+
+  if (devUserId && isAuthDevMode()) {
     return {
       'x-dev-user-id': devUserId,
     };
   }
-  
-  // Otherwise, return empty - let Supabase auth handle it
+
   return {};
 }
 

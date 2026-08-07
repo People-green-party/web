@@ -4,12 +4,11 @@ import React, { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { supabase } from "../../lib/supabaseClient";
+import { isAuthDevMode } from "../../lib/authDevMode";
 
 type RequireAuthProps = {
   children: React.ReactNode;
 };
-
-const DEV_MODE = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === "true";
 
 function isJwtUsable(token: string): boolean {
   try {
@@ -35,7 +34,7 @@ export function RequireAuth({ children }: RequireAuthProps) {
       if (cancelled) return;
       try {
         window.localStorage.removeItem("access_token");
-        if (!DEV_MODE) window.localStorage.removeItem("devUserId");
+        if (!isAuthDevMode()) window.localStorage.removeItem("devUserId");
       } catch {
         // ignore
       }
@@ -54,8 +53,8 @@ export function RequireAuth({ children }: RequireAuthProps) {
     const check = async () => {
       try {
         if (typeof window !== "undefined") {
-          // Dev bypass only when explicitly enabled
-          if (DEV_MODE) {
+          // Dev bypass only when explicitly enabled (never in production builds)
+          if (isAuthDevMode()) {
             const devUserId = window.localStorage.getItem("devUserId");
             if (devUserId && String(devUserId).trim()) {
               allow();

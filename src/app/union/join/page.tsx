@@ -239,14 +239,12 @@ const UnionJoinPageContent = () => {
 
       console.log('Union registration successful:', userData);
 
-      // 👇 ADD THIS DEV MODE BLOCK 👇
-      // This forces the dashboard to log you in locally when using the 123456 fake OTP
-      if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true') {
-        if (userData?.id) {
+      if (typeof window !== 'undefined') {
+        const { isAuthDevMode } = await import('../../../lib/authDevMode');
+        if (isAuthDevMode() && userData?.id) {
           window.localStorage.setItem('devUserId', String(userData.id));
         }
       }
-      // 👆 END DEV MODE BLOCK 👆
 
       // Upload photo separately after registration
       if (selectedPhoto) {
@@ -291,8 +289,8 @@ const UnionJoinPageContent = () => {
       return;
     }
 
-    const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
-    if (devAuthMode) {
+    const { isAuthDevMode } = await import('../../../lib/authDevMode');
+    if (isAuthDevMode()) {
       setShowOtpField(true);
       setOtpSimulated(true);
       setOtpError('Dev mode: Use OTP: 123456');
@@ -353,12 +351,14 @@ const UnionJoinPageContent = () => {
         error.message?.includes('apikey') ||
         error.message?.includes('Signups not allowed');
 
-      if (isConfigError) {
-        console.warn('SMS provider not configured (falling back to simulation).', error.message);
+      if (isConfigError && isAuthDevMode()) {
+        console.warn('SMS provider not configured (dev simulation).', error.message);
         setShowOtpField(true);
         setOtpSimulated(true);
         setOtpError('SMS provider not configured. Use OTP: 123456');
-        setResendTimer(60); // Start countdown for simulation mode too
+        setResendTimer(60);
+      } else if (isConfigError) {
+        setOtpError('SMS is temporarily unavailable. Please try again later.');
       } else {
         setOtpError(error.message || 'Failed to send OTP. Please try again.');
       }
@@ -375,18 +375,17 @@ const UnionJoinPageContent = () => {
       const { supabase } = await import('../../../lib/supabaseClient');
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
 
-      if (otpSimulated || process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true') {
-        // Dev mode - accept 123456
+      const { isAuthDevMode } = await import('../../../lib/authDevMode');
+      if (isAuthDevMode()) {
         if (otp === '123456') {
           setPhoneVerified(true);
           setShowOtpField(false);
           setOtpError('');
           return;
-        } else {
-          setOtpError('Invalid OTP. Use: 123456');
-          setLoading(false);
-          return;
         }
+        setOtpError('Invalid OTP. Use: 123456');
+        setLoading(false);
+        return;
       }
 
       const { error } = await supabase.auth.verifyOtp({

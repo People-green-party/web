@@ -687,8 +687,8 @@ const JoinPageContent = () => {
       });
 
       if (typeof window !== 'undefined') {
-        // Fix: Removed extra .user property check
-        if (userData?.id) {
+        const { isAuthDevMode } = await import('../../lib/authDevMode');
+        if (isAuthDevMode() && userData?.id) {
           window.localStorage.setItem('devUserId', String(userData.id));
         }
         if (loginRes?.access_token) {
@@ -768,10 +768,10 @@ const JoinPageContent = () => {
   async function handleVerifyOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
     event.preventDefault();
 
-    const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
-    if ((devAuthMode || otpSimulated) && otp === '123456') {
+    const { isAuthDevMode } = await import('../../lib/authDevMode');
+    if (isAuthDevMode() && otp === '123456') {
       setStep(2);
-      await handleSubmit(); // <-- ADDED AWAIT
+      await handleSubmit();
       return;
     }
 
@@ -794,10 +794,10 @@ const JoinPageContent = () => {
       });
 
       if (error) {
-        if (otp === '123456' && otpError?.includes('Simulating OTP sent')) {
+        if (isAuthDevMode() && otp === '123456' && otpSimulated) {
           console.log('Simulated OTP verification successful');
           setStep(2);
-          await handleSubmit(); // <-- ADDED AWAIT
+          await handleSubmit();
           return;
         }
         throw error;
@@ -824,8 +824,8 @@ const JoinPageContent = () => {
   async function handleSendOtp(event: React.MouseEvent<HTMLButtonElement>): Promise<void> {
     event.preventDefault();
 
-    const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
-    if (devAuthMode) {
+    const { isAuthDevMode } = await import('../../lib/authDevMode');
+    if (isAuthDevMode()) {
       if (registrationValidationError) {
         setOtpError(registrationValidationError);
         return;
@@ -834,7 +834,7 @@ const JoinPageContent = () => {
       setShowOtpField(true);
       setOtpSimulated(true);
       setOtpError('Dev mode: Simulating OTP sent. Use OTP: 123456');
-      setResendTimer(60); // Start 60 second countdown
+      setResendTimer(60);
       setStep(2);
       return;
     }
@@ -886,14 +886,16 @@ const JoinPageContent = () => {
         error.message?.includes('apikey') ||
         error.message?.includes('Signups not allowed');
 
-      if (isConfigError) {
-        console.warn('SMS provider not configured (falling back to simulation).', error.message);
+      if (isConfigError && isAuthDevMode()) {
+        console.warn('SMS provider not configured (dev simulation).', error.message);
         setOtpSent(true);
         setShowOtpField(true);
         setOtpSimulated(true);
         setOtpError('SMS provider not configured. Simulating OTP sent. Use OTP: 123456');
-        setResendTimer(60); // Start countdown for simulation mode too
+        setResendTimer(60);
         setStep(2);
+      } else if (isConfigError) {
+        setOtpError('SMS is temporarily unavailable. Please try again later.');
       } else {
         setOtpError(error.message || 'Failed to send OTP. Please try again.');
       }

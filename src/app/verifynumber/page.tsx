@@ -56,13 +56,14 @@ function VerifyOtpContent() {
             alert('OTP sent successfully!');
             return true;
         } catch (err: any) {
-            console.error('OTP Send Failed, switching to simulation mode.', err.message || err);
-            const isConfigError = err.message === 'Failed to fetch' || err.message?.includes('apikey');
-            const msg = isConfigError
-                ? 'Backend missing or unreachable. \n\n✅ Simulating OTP sent.\n👉 Use OTP: 123456'
-                : `Error: ${err.message}. \n\n✅ Simulating success.\n👉 Use OTP: 123456`;
-            alert(msg);
-            return false; // Return false to indicate fallback (but UI proceeds)
+            console.error('OTP Send Failed.', err.message || err);
+            const { isAuthDevMode } = await import('../../lib/authDevMode');
+            if (isAuthDevMode()) {
+                alert('Dev mode: Simulating OTP sent. Use OTP: 123456');
+                return false;
+            }
+            alert(err.message || 'Failed to send OTP. Please try again later.');
+            return false;
         }
     };
 
@@ -106,9 +107,8 @@ function VerifyOtpContent() {
             });
 
             if (error) {
-                // If real verification fails, check for simulation code
-                if (token === '123456') {
-                    console.log('Simulation: OTP verified successfully with 123456');
+                const { isAuthDevMode } = await import('../../lib/authDevMode');
+                if (isAuthDevMode() && token === '123456') {
                     setIsError(false);
                     setIsSuccess(true);
                 } else {
@@ -121,8 +121,8 @@ function VerifyOtpContent() {
                 setIsSuccess(true);
             }
         } catch (err) {
-            // Fallback for network errors
-            if (token === '123456') {
+            const { isAuthDevMode } = await import('../../lib/authDevMode');
+            if (isAuthDevMode() && token === '123456') {
                 setIsError(false);
                 setIsSuccess(true);
             } else {

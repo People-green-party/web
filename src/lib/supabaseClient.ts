@@ -1,10 +1,10 @@
 "use client";
 import { createClient } from "@supabase/supabase-js";
+import { isAuthDevMode } from "./authDevMode";
 
 // ✅ STRICTLY USE ENVIRONMENT VARIABLES
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
-const DEV_MODE = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === "true";
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
@@ -30,7 +30,7 @@ export async function getAuthHeader(): Promise<Record<string, string>> {
       }
     }
 
-    if (DEV_MODE) {
+    if (isAuthDevMode()) {
       const devUserId = window.localStorage.getItem("devUserId");
       if (devUserId) {
         return { Authorization: `Dev ${devUserId}` };
