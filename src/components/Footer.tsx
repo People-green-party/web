@@ -70,6 +70,7 @@ export const Footer = () => {
                                 { label: t.nav.home, href: "/" },
                                 { label: t.nav.about, href: "/about" },
                                 { label: t.nav.constitution, href: "/constitution" },
+                                { label: t.nav.academy || "Academy", href: "/leadership-academy" },
                                 { label: t.nav.join, href: "/join" }
                             ].map((link, i) => (
                                 <a key={i} href={link.href} className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] hover:text-[#04330B] whitespace-nowrap transition-colors">

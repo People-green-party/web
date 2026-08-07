@@ -258,9 +258,8 @@ export default function YouthJoinPage() {
     setLoading(true);
     setError(null);
 
-    const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
-    
-    if (devAuthMode) {
+    const { isAuthDevMode } = await import('../../../lib/authDevMode');
+    if (isAuthDevMode()) {
       setStep(2);
       setError(t.errors.devOtpHint);
       setLoading(false);
@@ -305,9 +304,8 @@ export default function YouthJoinPage() {
     setLoading(true);
     setError(null);
 
-    const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
-    
-    if (devAuthMode) {
+    const { isAuthDevMode } = await import('../../../lib/authDevMode');
+    if (isAuthDevMode()) {
       if (formData.otp !== '123456') {
         setError(t.errors.invalidOtp);
         setLoading(false);

@@ -67,8 +67,7 @@ export default function UnionDashboardPage() {
 
     } catch (e: any) {
       console.error(`Dashboard Load Error:`, e);
-      setError(e.message || "Authentication failed or session expired.");
-      setLoading(false); // Stop loading on final failure
+      window.location.replace(`/login?next=${encodeURIComponent("/union/dashboard")}`);
     }
   };
 

@@ -113,8 +113,9 @@ const UnionLoginPageContent = () => {
         return;
       }
 
-      const devAuthMode = process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true';
-      
+      const { isAuthDevMode } = await import('../../../lib/authDevMode');
+      const devAuthMode = isAuthDevMode();
+
       if (devAuthMode) {
         setStep('otp');
         setOtpSimulated(true);
@@ -136,14 +137,17 @@ const UnionLoginPageContent = () => {
       setResendTimer(60);
     } catch (err: any) {
       console.error('Send OTP error:', err);
-      const isConfigError = err.message?.includes('Unsupported phone provider') || 
+      const isConfigError = err.message?.includes('Unsupported phone provider') ||
                            err.message?.includes('Failed to fetch') ||
                            err.message?.includes('Signups not allowed');
-      
-      if (isConfigError) {
+
+      const { isAuthDevMode } = await import('../../../lib/authDevMode');
+      if (isConfigError && isAuthDevMode()) {
         setStep('otp');
         setOtpSimulated(true);
         setResendTimer(60);
+      } else if (isConfigError) {
+        setError('SMS login is temporarily unavailable. Please try again later.');
       } else {
         setError(err.message || 'Failed to send OTP');
       }
@@ -164,33 +168,20 @@ const UnionLoginPageContent = () => {
     try {
       const phoneNumber = `+91${sanitizePhoneInput(phone)}`;
 
-      // Dev mode - accept 123456
-      if (otpSimulated || process.env.NEXT_PUBLIC_AUTH_DEV_MODE === 'true') {
+      const { isAuthDevMode } = await import('../../../lib/authDevMode');
+      // Dev-only OTP simulation
+      if ((otpSimulated || isAuthDevMode()) && isAuthDevMode()) {
         if (otp === '123456') {
-          // Create session for dev mode
-          const { data: { session }, error: sessionError } = await supabase.auth.signInAnonymously();
+          const { error: sessionError } = await supabase.auth.signInAnonymously();
           if (sessionError) throw sessionError;
-          
-          // Get user info from backend
-          const userData = await fetchApi('users/check-phone', {
-            method: 'POST',
-            body: JSON.stringify({ phone: phoneNumber }),
-          });
-
-          if (userData?.user?.id) {
-            localStorage.setItem('devUserId', String(userData.user.id));
-          }
-          
           router.push('/union/dashboard');
           return;
-        } else {
-          setError(t.loginPage.invalidOtp);
-          setLoading(false);
-          return;
         }
+        setError(t.loginPage.invalidOtp);
+        setLoading(false);
+        return;
       }
 
-      // Real OTP verification
       const { error: verifyError } = await supabase.auth.verifyOtp({
         phone: phoneNumber,
         token: otp,
@@ -199,16 +190,6 @@ const UnionLoginPageContent = () => {
 
       if (verifyError) {
         throw verifyError;
-      }
-
-      // Get user info
-      const userData = await fetchApi('users/check-phone', {
-        method: 'POST',
-        body: JSON.stringify({ phone: phoneNumber }),
-      });
-
-      if (userData?.user?.id) {
-        localStorage.setItem('devUserId', String(userData.user.id));
       }
 
       router.push('/union/dashboard');

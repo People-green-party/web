@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 import withPWAInit from "next-pwa";
 
 const withPWA = withPWAInit({
@@ -9,9 +10,24 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  turbopack: {},
+  // Required: next-pwa injects webpack config; Next 16 needs an explicit
+  // turbopack key. Also pin root to this app — a stray ~/package-lock.json
+  // otherwise makes Turbopack treat /Users/apple as the workspace root.
+  turbopack: {
+    root: path.resolve(process.cwd()),
+  },
   images: {
     qualities: [75, 90],
+  },
+  async redirects() {
+    return [
+      // Dev mock with hardcoded fake member data — never expose publicly
+      {
+        source: "/preview-idcard",
+        destination: "/login",
+        permanent: false,
+      },
+    ];
   },
   async rewrites() {
     // Only use public URL if it's an absolute URL (starts with http), otherwise default to localhost for the proxy

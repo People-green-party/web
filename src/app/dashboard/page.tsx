@@ -399,38 +399,48 @@ export default function DemoDashboard() {
     const currentDesignation = useMemo(() => getDesignation(summary?.user?.role || null, summary?.user?.cwcName || null, t), [summary?.user?.role, summary?.user?.cwcName, t]);
 
     useEffect(() => {
+        let cancelled = false;
+
         const load = async (retryCount = 0) => {
             try {
                 // 1. Wait for token to load BEFORE hitting the backend
                 const auth = await getAuthHeader();
-                
+
                 if (!auth.Authorization) {
-                    // If no token yet, wait 600ms and try again (up to 3 times)
                     if (retryCount < 3) {
-                        console.log("Waiting for auth session to settle...");
-                        setTimeout(() => load(retryCount + 1), 600);
-                        return; // Exit and wait
+                        setTimeout(() => {
+                            if (!cancelled) load(retryCount + 1);
+                        }, 600);
+                        return; // keep loading=true while retrying
                     }
-                    throw new Error("No active session found.");
+                    window.location.replace(`/login?next=${encodeURIComponent("/dashboard")}`);
+                    return;
                 }
 
                 // 2. Token is ready! Safe to make the 3 API calls.
                 const [sum, prog, rec] = await Promise.all([
-                    fetchApi('users/me/summary'),
-                    fetchApi('users/me/recruitment-progress'),
-                    fetchApi('users/me/recruits')
+                    fetchApi("users/me/summary"),
+                    fetchApi("users/me/recruitment-progress"),
+                    fetchApi("users/me/recruits"),
                 ]);
-                
+
+                if (cancelled) return;
                 setSummary(sum as DashboardUserSummary);
                 setProgress(prog as DashboardRecruitProgress);
                 setRecruits(rec?.recruits || []);
+                setLoading(false);
             } catch (e) {
                 console.error(e);
-            } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    window.location.replace(`/login?next=${encodeURIComponent("/dashboard")}`);
+                }
             }
         };
         load();
+
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     const refreshSummary = async () => {

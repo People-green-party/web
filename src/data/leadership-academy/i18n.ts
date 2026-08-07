@@ -1,0 +1,675 @@
+export const academyI18n = {
+  en: {
+    hero: {
+      tag: "PGP Leadership Academy",
+      titlePre: "Learn.",
+      titleHighlight: "Lead.",
+      titlePost: "Build.",
+      subtitle: "Build leadership through real projects.",
+      description:
+        "A two-week leadership programme where you work on real projects, gain practical skills, build your portfolio and earn a professional certificate.",
+      checks: ["Real Projects", "Mentor Guided", "Certificate", "Portfolio"],
+      apply: "Apply Now",
+      knowMore: "Know More",
+    },
+    stats: [
+      { val: "6", label: "Departments" },
+      { val: "2", label: "Weeks" },
+      { val: "✓", label: "Mentor Guided" },
+      { val: "✓", label: "Certificate" },
+    ],
+    whyJoin: {
+      title: "Why Join PGP Leadership Academy?",
+      items: [
+        {
+          title: "Practical Experience",
+          description: "Work on live PGP projects — not classroom-only theory.",
+        },
+        {
+          title: "Leadership Development",
+          description: "Lead tasks, coordinate teammates and own milestones.",
+        },
+        {
+          title: "Mentor Guidance",
+          description: "Get structured feedback from experienced mentors.",
+        },
+        {
+          title: "Professional Portfolio",
+          description: "Leave with proof of work you can show employers.",
+        },
+        {
+          title: "Certificate & Recognition",
+          description: "Earn a LinkedIn-ready academy certificate on completion.",
+        },
+        {
+          title: "Career Opportunities",
+          description: "Build skills that transfer to campus, civic and career paths.",
+        },
+      ],
+    },
+    journey: {
+      title: "Your Journey in the Academy",
+      subtitle: "Nine steps. Two weeks. Click through the path from registration to certificate.",
+      week1: "Week 1",
+      week2: "Week 2",
+      stepOf: "Step {current} of {total}",
+      previous: "Previous",
+      next: "Next step",
+      steps: [
+        {
+          title: "Register & Onboard",
+          blurb: "Submit your application, confirm your seat, and get your academy welcome kit and schedule.",
+        },
+        {
+          title: "Orientation Session",
+          blurb: "Meet mentors, understand the rules of the road, and learn how the two-week programme works.",
+        },
+        {
+          title: "Department Allocation",
+          blurb: "Share your preferences and get placed into the department that fits your strengths.",
+        },
+        {
+          title: "Project Based Training",
+          blurb: "Jump into tools, workflows and live briefs — training that connects straight to real work.",
+        },
+        {
+          title: "Execute Milestones",
+          blurb: "Ship your first deliverables against clear milestones with your team on the clock.",
+        },
+        {
+          title: "Mentor Review & Feedback",
+          blurb: "Present progress, get sharp feedback, and refine your work before the final stretch.",
+        },
+        {
+          title: "Portfolio Preparation",
+          blurb: "Curate your best artefacts into a clean portfolio you can show on LinkedIn and resumes.",
+        },
+        {
+          title: "Final Presentation",
+          blurb: "Pitch your project story to mentors — what you built, what you learned, what comes next.",
+        },
+        {
+          title: "Certificate & Completion",
+          blurb: "Close the programme with recognition, your certificate, and a clear path to keep contributing.",
+        },
+      ],
+    },
+    departments: {
+      title: "Choose Your Department",
+      subtitle:
+        "Six specialised tracks. One leadership journey. Pick the department that matches your strengths.",
+      viewDetails: "View Details",
+      departmentLabel: "Department {n}",
+    },
+    portfolio: {
+      title: "What You Will Build (Portfolio Highlights)",
+      items: [
+        { title: "Graphics & Posters", description: "Campaign creatives & assets" },
+        { title: "Reels & Videos", description: "Short videos & explainers" },
+        { title: "Campaign Plans", description: "Clear goal-based plans" },
+        { title: "Research Reports", description: "Evidence-backed briefs" },
+        { title: "Outreach Drives", description: "Field drives & reports" },
+        { title: "Presentations", description: "Final mentor review decks" },
+      ],
+    },
+    modes: {
+      title: "Offline vs Hybrid Programme",
+      offline: {
+        title: "Offline Programme",
+        points: [
+          "All core sessions happen offline on campus / venue",
+          "Direct mentor interaction every working day",
+          "Team projects executed face-to-face",
+          "Ideal if you can commit full in-person attendance",
+        ],
+      },
+      hybrid: {
+        title: "Hybrid Programme",
+        points: [
+          "Common sessions and presentations stay offline",
+          "Online collaboration for selected milestones",
+          "Flexible remote work windows with mentor check-ins",
+          "Ideal if you balance academy with college or work",
+        ],
+      },
+    },
+    skills: {
+      title: "Skills You Will Gain",
+      items: [
+        "Leadership",
+        "Communication",
+        "Teamwork",
+        "Time Management",
+        "Creative Thinking",
+        "Problem Solving",
+        "Project Management",
+        "Presentation",
+      ],
+    },
+    certificate: {
+      title: "Certificates & Recognition",
+      description:
+        "Complete milestones, present your work and earn a professional certificate you can showcase on LinkedIn and your resume.",
+      points: ["Official Certificate", "Portfolio Ready", "LinkedIn", "Resume Value"],
+    },
+    cta: {
+      title: "Ready to Start Your Leadership Journey?",
+      subtitle: "Apply to PGP Leadership Academy and build real skills through real projects.",
+      apply: "Apply Now",
+      knowMore: "Know More",
+    },
+    applyPage: {
+      tag: "PGP Leadership Academy",
+      title: "Apply Now",
+      intro:
+        "Register for the next two-week intake. Your application is saved securely — final department allocation happens after orientation.",
+      formTitle: "Application Form",
+      formSubtitle: "Fill in your details below. Applications are stored for the upcoming academy intake.",
+      infoTitle: "Before you apply",
+      eligibilityTitle: "Eligibility",
+      eligibility: [
+        "Age typically 18–30 (students or young professionals)",
+        "Can commit to the full two-week schedule",
+        "Willing to complete milestones and final presentation",
+        "Agree to academy code of conduct and attendance rules",
+      ],
+      feeTitle: "Fee",
+      feeBody: "Free for the current intake. No programme fee for selected volunteers.",
+      intakeTitle: "Intake",
+      intakeBody: "Next two-week batch — offline or hybrid. Exact dates shared after shortlisting.",
+      phoneHint: "10-digit Indian mobile number",
+      errorGeneric: "Could not submit application. Please try again.",
+      errorDuplicate: "An active application already exists with this email or phone.",
+      errorPhone: "Enter a valid 10-digit Indian mobile number.",
+      fields: {
+        fullName: "Full Name",
+        email: "Email",
+        phone: "Phone",
+        city: "City",
+        college: "College / Organisation",
+        department: "Preferred Department",
+        selectDepartment: "Select a department",
+        mode: "Programme Mode",
+        offline: "Offline",
+        hybrid: "Hybrid",
+        motivation: "Why do you want to join?",
+      },
+      submit: "Submit Application",
+      saving: "Saving...",
+      agreement: "By applying you agree to follow the academy code of conduct and attendance rules.",
+      readFaq: "Read FAQ",
+      successTitle: "Application received",
+      successBody:
+        "Thank you, {name}. Your application has been saved{idPart}. Our team will contact you with next steps for the upcoming intake.",
+      successEmailNote: "A confirmation email has been sent to your inbox.",
+      idPart: " (ID #{id})",
+      back: "Back to Academy",
+      applicantFallback: "applicant",
+    },
+    faqPage: {
+      tag: "PGP Leadership Academy",
+      title: "Frequently Asked Questions",
+      intro: "Everything about duration, modes, certificates, eligibility, attendance and departments.",
+      sectionTitle: "Academy FAQ",
+      deptTitle: "Department-specific questions",
+      deptSubtitle: "Each department page also includes FAQs for that track.",
+      viewDetails: "View details",
+      ctaTitle: "Still have questions?",
+      ctaSubtitle: "Apply now and our team will guide you through the next intake.",
+      apply: "Apply Now",
+      back: "Back to Academy",
+    },
+    faqs: [
+      {
+        q: "What is PGP Leadership Academy?",
+        a: "A two-week leadership programme where you work on real PGP projects, gain practical skills, build a portfolio and earn a professional certificate across six departments.",
+      },
+      {
+        q: "How long is the programme?",
+        a: "The core programme runs for two weeks. Exact daily schedules are shared after department allocation and depend on Offline or Hybrid mode.",
+      },
+      {
+        q: "What is the difference between Offline and Hybrid?",
+        a: "Offline means all core sessions and project work happen in person. Hybrid keeps key sessions and presentations offline while allowing online collaboration and some remote milestones.",
+      },
+      {
+        q: "Who is eligible to apply?",
+        a: "Students and young professionals (typically 18–30) who can commit to the two-week schedule, complete milestones, and follow the academy code of conduct. Prior political experience is not required.",
+      },
+      {
+        q: "How are departments allocated?",
+        a: "You share preferences during registration. Final allocation balances your preference, available seats and programme needs after orientation.",
+      },
+      {
+        q: "Will I get a certificate?",
+        a: "Yes. Volunteers who complete attendance, milestones and the final presentation receive a PGP Leadership Academy certificate and recognition suitable for LinkedIn and resumes.",
+      },
+      {
+        q: "Is attendance mandatory?",
+        a: "Yes. Each mode has a minimum attendance requirement. Missing critical sessions without approval can affect certification.",
+      },
+      {
+        q: "What will be in my portfolio?",
+        a: "Department-specific deliverables such as posters, reels, research briefs, outreach reports, proposals or event run-of-show documents — curated into a portfolio folder.",
+      },
+      {
+        q: "Is there a programme fee?",
+        a: "No. The current PGP Leadership Academy intake is free for selected volunteers. You only need to commit attendance and milestone completion.",
+      },
+      {
+        q: "Can I switch departments after joining?",
+        a: "Switches are limited and only considered in the first allocation window, subject to seat availability and mentor approval.",
+      },
+    ],
+    deptPage: {
+      breadcrumb: "Leadership Academy",
+      department: "Department {n}",
+      apply: "Apply Now",
+      allDepartments: "All Departments",
+      whatYoullDo: "What you'll do here",
+      aboutSupport:
+        "Over two weeks you move from orientation to real deliverables — with mentor checkpoints built into every milestone.",
+      objectives: "Objectives",
+      skillsTitle: "Skills you'll build",
+      skillsSubtitle: "Professional, technical and workplace skills from live project work.",
+      professional: "Professional",
+      technical: "Technical",
+      workplace: "Workplace",
+      programmeStructure: "Programme structure",
+      milestonesTitle: "Milestones & deliverables",
+      milestonesSubtitle: "Same outcomes. Different rhythm depending on your mode.",
+      offline: "offline",
+      hybrid: "hybrid",
+      milestone: "Milestone {n}",
+      activities: "Activities",
+      youDeliver: "You deliver",
+      learningOutcomes: "Learning outcomes",
+      successMetrics: "Success metrics",
+      successIntro: "What mentors look for before certification.",
+      portfolioTitle: "Portfolio you'll leave with",
+      portfolioSubtitle: "Real artefacts from this department track.",
+      faqTitle: "Questions about this department",
+      allFaqs: "See all academy FAQs →",
+      ctaTitle: "Ready for {name}?",
+      ctaSubtitle: "Apply for the next intake and get placed into this department after orientation.",
+      back: "Back to Academy",
+    },
+    deptNames: {
+      "digital-growth-media": {
+        name: "Digital Growth & Media",
+        shortName: "Digital Growth",
+        description:
+          "Create posters, reels, explainers and grow the digital presence of PGP across platforms.",
+      },
+      "research-policy": {
+        name: "Research & Policy",
+        shortName: "Research",
+        description:
+          "Analyse data, draft briefs and support evidence-based policy conversations for PGP.",
+      },
+      "community-outreach": {
+        name: "Community Outreach",
+        shortName: "Community Outreach",
+        description:
+          "Run awareness drives, talk to citizens and convert conversations into organised action.",
+      },
+      "membership-campus-outreach": {
+        name: "Membership & Campus Outreach",
+        shortName: "Membership",
+        description:
+          "Grow membership on campuses — registration desks, student conversations and onboarding.",
+      },
+      "fundraising-partnerships": {
+        name: "Fundraising & Partnerships",
+        shortName: "Fundraising",
+        description:
+          "Prepare proposals, support partnership meetings and learn ethical fundraising basics.",
+      },
+      "events-operations": {
+        name: "Events & Operations",
+        shortName: "Events",
+        description:
+          "Plan events, manage registrations, coordinate volunteers and keep operations on track.",
+      },
+    },
+  },
+  hi: {
+    hero: {
+      tag: "पीजीपी लीडरशिप एकेडमी",
+      titlePre: "सीखो।",
+      titleHighlight: "लीड।",
+      titlePost: "बनाओ।",
+      subtitle: "वास्तविक परियोजनाओं के माध्यम से नेतृत्व बनाएँ।",
+      description:
+        "एक दो-सप्ताह का नेतृत्व कार्यक्रम जहाँ आप वास्तविक परियोजनाओं पर काम करते हैं, व्यावहारिक कौशल सीखते हैं, अपना पोर्टफोलियो बनाते हैं और पेशेवर प्रमाणपत्र प्राप्त करते हैं।",
+      checks: ["वास्तविक परियोजनाएँ", "मेंटर मार्गदर्शन", "प्रमाणपत्र", "पोर्टफोलियो"],
+      apply: "अभी आवेदन करें",
+      knowMore: "और जानें",
+    },
+    stats: [
+      { val: "6", label: "विभाग" },
+      { val: "2", label: "सप्ताह" },
+      { val: "✓", label: "मेंटर गाइडेड" },
+      { val: "✓", label: "प्रमाणपत्र" },
+    ],
+    whyJoin: {
+      title: "एकेडमी क्यों जॉइन करें?",
+      items: [
+        {
+          title: "व्यावहारिक अनुभव",
+          description: "केवल कक्षा नहीं — लाइव पीजीपी परियोजनाओं पर काम करें।",
+        },
+        {
+          title: "नेतृत्व विकास",
+          description: "कार्य का नेतृत्व करें, टीम संभालें और माइलस्टोन पूरे करें।",
+        },
+        {
+          title: "मेंटर मार्गदर्शन",
+          description: "अनुभवी मेंटर्स से संरचित फीडबैक पाएँ।",
+        },
+        {
+          title: "पेशेवर पोर्टफोलियो",
+          description: "नियोक्ताओं को दिखाने योग्य वास्तविक कार्य का प्रमाण लेकर जाएँ।",
+        },
+        {
+          title: "प्रमाणपत्र और मान्यता",
+          description: "पूर्णता पर लिंक्डइन-रेडी एकेडमी प्रमाणपत्र प्राप्त करें।",
+        },
+        {
+          title: "करियर अवसर",
+          description: "कैंपस, नागरिक और करियर मार्गों में उपयोगी कौशल बनाएँ।",
+        },
+      ],
+    },
+    journey: {
+      title: "एकेडमी में आपकी यात्रा",
+      subtitle: "नौ चरण। दो सप्ताह। पंजीकरण से प्रमाणपत्र तक।",
+      week1: "सप्ताह 1",
+      week2: "सप्ताह 2",
+      stepOf: "चरण {current} / {total}",
+      previous: "पिछला",
+      next: "अगला चरण",
+      steps: [
+        {
+          title: "पंजीकरण और ऑनबोर्ड",
+          blurb: "आवेदन जमा करें, अपनी सीट की पुष्टि करें, और एकेडमी वेलकम किट व शेड्यूल पाएँ।",
+        },
+        {
+          title: "ओरिएंटेशन सत्र",
+          blurb: "मेंटर्स से मिलें, नियम समझें, और दो-सप्ताह का कार्यक्रम कैसे चलता है जानें।",
+        },
+        {
+          title: "विभाग आवंटन",
+          blurb: "अपनी प्राथमिकताएँ बताएँ और अपनी क्षमता के अनुसार विभाग में जगह पाएँ।",
+        },
+        {
+          title: "प्रोजेक्ट आधारित प्रशिक्षण",
+          blurb: "टूल्स, वर्कफ़्लो और लाइव ब्रिफ़्स में उतरें — प्रशिक्षण सीधे वास्तविक काम से जुड़ा।",
+        },
+        {
+          title: "माइलस्टोन पूरा करें",
+          blurb: "टीम के साथ स्पष्ट माइलस्टोन पर अपने पहले डिलिवरेबल जमा करें।",
+        },
+        {
+          title: "मेंटर समीक्षा और फीडबैक",
+          blurb: "प्रगति प्रस्तुत करें, तेज़ फीडबैक लें, और अंतिम चरण से पहले काम सुधारें।",
+        },
+        {
+          title: "पोर्टफोलियो तैयारी",
+          blurb: "अपने सर्वश्रेष्ठ कार्यों को लिंक्डइन और रिज़्यूमे के लिए साफ पोर्टफोलियो में सजाएँ।",
+        },
+        {
+          title: "अंतिम प्रस्तुति",
+          blurb: "मेंटर्स के सामने अपनी परियोजना की कहानी पेश करें — क्या बनाया, क्या सीखा, आगे क्या।",
+        },
+        {
+          title: "प्रमाणपत्र और समापन",
+          blurb: "मान्यता, प्रमाणपत्र और आगे योगदान का स्पष्ट रास्ता लेकर कार्यक्रम पूरा करें।",
+        },
+      ],
+    },
+    departments: {
+      title: "अपना विभाग चुनें",
+      subtitle: "छह विशेष ट्रैक। एक नेतृत्व यात्रा। अपनी ताकत वाला विभाग चुनें।",
+      viewDetails: "विवरण देखें",
+      departmentLabel: "विभाग {n}",
+    },
+    portfolio: {
+      title: "आप क्या बनाएंगे",
+      items: [
+        { title: "ग्राफिक्स व पोस्टर", description: "अभियान क्रिएटिव व एसेट्स" },
+        { title: "रील्स व वीडियो", description: "शॉर्ट वीडियो व एक्सप्लेनर" },
+        { title: "अभियान योजनाएँ", description: "स्पष्ट लक्ष्य वाली योजनाएँ" },
+        { title: "रिसर्च रिपोर्ट्स", description: "साक्ष्य आधारित ब्रिफ़्स" },
+        { title: "आउटरीच ड्राइव", description: "फील्ड ड्राइव व रिपोर्ट्स" },
+        { title: "प्रस्तुतियाँ", description: "अंतिम मेंटर रिव्यू डेक" },
+      ],
+    },
+    modes: {
+      title: "ऑफलाइन और हाइब्रिड में फ़र्क",
+      offline: {
+        title: "ऑफलाइन कार्यक्रम",
+        points: [
+          "सभी मुख्य सत्र कैंपस / स्थल पर ऑफलाइन होते हैं",
+          "हर कार्य दिवस में सीधा मेंटर संपर्क",
+          "टीम परियोजनाएँ आमने-सामने पूरी होती हैं",
+          "पूर्ण व्यक्तिगत उपस्थिति के लिए आदर्श",
+        ],
+      },
+      hybrid: {
+        title: "हाइब्रिड कार्यक्रम",
+        points: [
+          "सामान्य सत्र और प्रस्तुतियाँ ऑफलाइन रहती हैं",
+          "चयनित माइलस्टोन के लिए ऑनलाइन सहयोग",
+          "मेंटर चेक-इन के साथ लचीली रिमोट विंडो",
+          "कॉलेज या काम के साथ संतुलन के लिए आदर्श",
+        ],
+      },
+    },
+    skills: {
+      title: "आप जो कौशल हासिल करेंगे",
+      items: [
+        "नेतृत्व",
+        "संवाद",
+        "टीमवर्क",
+        "समय प्रबंधन",
+        "रचनात्मक सोच",
+        "समस्या समाधान",
+        "प्रोजेक्ट प्रबंधन",
+        "प्रस्तुति",
+      ],
+    },
+    certificate: {
+      title: "प्रमाणपत्र और मान्यता",
+      description:
+        "माइलस्टोन पूरे करें, अपना काम प्रस्तुत करें और लिंक्डइन व रिज़्यूमे पर दिखाने योग्य पेशेवर प्रमाणपत्र पाएँ।",
+      points: ["आधिकारिक प्रमाणपत्र", "पोर्टफोलियो रेडी", "लिंक्डइन", "रिज़्यूमे मूल्य"],
+    },
+    cta: {
+      title: "नेतृत्व यात्रा शुरू करने को तैयार?",
+      subtitle: "पीजीपी लीडरशिप एकेडमी में आवेदन करें और वास्तविक परियोजनाओं से वास्तविक कौशल बनाएँ।",
+      apply: "अभी आवेदन करें",
+      knowMore: "और जानें",
+    },
+    applyPage: {
+      tag: "पीजीपी लीडरशिप एकेडमी",
+      title: "अभी आवेदन करें",
+      intro:
+        "अगले दो-सप्ताह के बैच के लिए पंजीकरण करें। आपका आवेदन सुरक्षित रूप से सहेजा जाता है — अंतिम विभाग आवंटन ओरिएंटेशन के बाद होता है।",
+      formTitle: "आवेदन फॉर्म",
+      formSubtitle: "नीचे अपना विवरण भरें। आवेदन आगामी एकेडमी बैच के लिए संग्रहीत किए जाते हैं।",
+      infoTitle: "आवेदन से पहले",
+      eligibilityTitle: "पात्रता",
+      eligibility: [
+        "आमतौर पर आयु 18–30 (छात्र या युवा पेशेवर)",
+        "पूरे दो-सप्ताह के शेड्यूल के लिए प्रतिबद्ध",
+        "माइलस्टोन और अंतिम प्रस्तुति पूरी करने को तैयार",
+        "एकेडमी आचार संहिता और उपस्थिति नियमों से सहमत",
+      ],
+      feeTitle: "शुल्क",
+      feeBody: "वर्तमान बैच निःशुल्क है। चयनित स्वयंसेवकों के लिए कोई कार्यक्रम शुल्क नहीं।",
+      intakeTitle: "बैच",
+      intakeBody: "अगला दो-सप्ताह बैच — ऑफलाइन या हाइब्रिड। सटीक तिथियाँ शॉर्टलिस्ट के बाद साझा होंगी।",
+      phoneHint: "10 अंकों का भारतीय मोबाइल नंबर",
+      errorGeneric: "आवेदन जमा नहीं हो सका। कृपया दोबारा कोशिश करें।",
+      errorDuplicate: "इस ईमेल या फ़ोन से एक सक्रिय आवेदन पहले से मौजूद है।",
+      errorPhone: "कृपया सही 10 अंकों का भारतीय मोबाइल नंबर डालें।",
+      fields: {
+        fullName: "पूरा नाम",
+        email: "ईमेल",
+        phone: "फ़ोन",
+        city: "शहर",
+        college: "कॉलेज / संगठन",
+        department: "पसंदीदा विभाग",
+        selectDepartment: "विभाग चुनें",
+        mode: "कार्यक्रम मोड",
+        offline: "ऑफलाइन",
+        hybrid: "हाइब्रिड",
+        motivation: "आप क्यों जुड़ना चाहते हैं?",
+      },
+      submit: "आवेदन जमा करें",
+      saving: "सहेजा जा रहा है...",
+      agreement: "आवेदन करके आप एकेडमी आचार संहिता और उपस्थिति नियमों का पालन करने के लिए सहमत होते हैं।",
+      readFaq: "FAQ पढ़ें",
+      successTitle: "आवेदन प्राप्त हुआ",
+      successBody:
+        "धन्यवाद, {name}। आपका आवेदन सहेज लिया गया है{idPart}। हमारी टीम आगामी बैच के अगले चरणों के लिए आपसे संपर्क करेगी।",
+      idPart: " (आईडी #{id})",
+      successEmailNote: "आपके इनबॉक्स में कन्फ़र्मेशन ईमेल भेज दिया गया है।",
+      back: "एकेडमी पर वापस जाएँ",
+      applicantFallback: "आवेदक",
+    },
+    faqPage: {
+      tag: "पीजीपी लीडरशिप एकेडमी",
+      title: "अक्सर पूछे जाने वाले प्रश्न",
+      intro: "अवधि, मोड, प्रमाणपत्र, पात्रता, उपस्थिति और विभागों के बारे में सब कुछ।",
+      sectionTitle: "एकेडमी FAQ",
+      deptTitle: "विभाग-विशेष प्रश्न",
+      deptSubtitle: "हर विभाग पृष्ठ पर उस ट्रैक के FAQ भी शामिल हैं।",
+      viewDetails: "विवरण देखें",
+      ctaTitle: "अभी भी प्रश्न हैं?",
+      ctaSubtitle: "अभी आवेदन करें और हमारी टीम आपको अगले बैच के लिए मार्गदर्शन करेगी।",
+      apply: "अभी आवेदन करें",
+      back: "एकेडमी पर वापस जाएँ",
+    },
+    faqs: [
+      {
+        q: "पीजीपी लीडरशिप एकेडमी क्या है?",
+        a: "एक दो-सप्ताह का नेतृत्व कार्यक्रम जहाँ आप वास्तविक पीजीपी परियोजनाओं पर काम करते हैं, व्यावहारिक कौशल सीखते हैं, पोर्टफोलियो बनाते हैं और छह विभागों में पेशेवर प्रमाणपत्र पाते हैं।",
+      },
+      {
+        q: "कार्यक्रम कितने समय का है?",
+        a: "मुख्य कार्यक्रम दो सप्ताह का है। दैनिक शेड्यूल विभाग आवंटन के बाद साझा किया जाता है और ऑफलाइन या हाइब्रिड मोड पर निर्भर करता है।",
+      },
+      {
+        q: "ऑफलाइन और हाइब्रिड में क्या अंतर है?",
+        a: "ऑफलाइन में सभी मुख्य सत्र और परियोजना कार्य व्यक्तिगत रूप से होते हैं। हाइब्रिड में मुख्य सत्र और प्रस्तुतियाँ ऑफलाइन रहती हैं, जबकि कुछ माइलस्टोन ऑनलाइन सहयोग से पूरे होते हैं।",
+      },
+      {
+        q: "आवेदन के लिए कौन पात्र है?",
+        a: "वे छात्र और युवा पेशेवर (आमतौर पर 18–30 वर्ष) जो दो-सप्ताह के शेड्यूल के लिए प्रतिबद्ध हो सकें, माइलस्टोन पूरे करें और एकेडमी आचार संहिता का पालन करें। पूर्व राजनीतिक अनुभव आवश्यक नहीं है।",
+      },
+      {
+        q: "विभाग कैसे आवंटित होते हैं?",
+        a: "पंजीकरण के दौरान आप अपनी प्राथमिकताएँ बताते हैं। अंतिम आवंटन आपकी पसंद, उपलब्ध सीटें और कार्यक्रम की जरूरत के आधार पर ओरिएंटेशन के बाद होता है।",
+      },
+      {
+        q: "क्या मुझे प्रमाणपत्र मिलेगा?",
+        a: "हाँ। जो स्वयंसेवक उपस्थिति, माइलस्टोन और अंतिम प्रस्तुति पूरी करते हैं, उन्हें पीजीपी लीडरशिप एकेडमी प्रमाणपत्र और लिंक्डइन/रिज़्यूमे के लिए मान्यता मिलती है।",
+      },
+      {
+        q: "क्या उपस्थिति अनिवार्य है?",
+        a: "हाँ। हर मोड की न्यूनतम उपस्थिति आवश्यकता होती है। बिना अनुमति महत्वपूर्ण सत्र छोड़ने पर प्रमाणन प्रभावित हो सकता है।",
+      },
+      {
+        q: "मेरे पोर्टफोलियो में क्या होगा?",
+        a: "विभाग-विशेष डिलिवरेबल जैसे पोस्टर, रील्स, रिसर्च ब्रिफ़, आउटरीच रिपोर्ट, प्रस्ताव या इवेंट रन-ऑफ-शो — एक पोर्टफोलियो फोल्डर में व्यवस्थित।",
+      },
+      {
+        q: "क्या कोई कार्यक्रम शुल्क है?",
+        a: "नहीं। वर्तमान पीजीपी लीडरशिप एकेडमी बैच चयनित स्वयंसेवकों के लिए निःशुल्क है। आपको केवल उपस्थिति और माइलस्टोन पूरे करने की प्रतिबद्धता चाहिए।",
+      },
+      {
+        q: "क्या जॉइन करने के बाद विभाग बदला जा सकता है?",
+        a: "परिवर्तन सीमित हैं और केवल पहले आवंटन विंडो में, सीट उपलब्धता और मेंटर स्वीकृति पर विचार किए जाते हैं।",
+      },
+    ],
+    deptPage: {
+      breadcrumb: "लीडरशिप एकेडमी",
+      department: "विभाग {n}",
+      apply: "अभी आवेदन करें",
+      allDepartments: "सभी विभाग",
+      whatYoullDo: "यहाँ आप क्या करेंगे",
+      aboutSupport:
+        "दो सप्ताह में आप ओरिएंटेशन से वास्तविक डिलिवरेबल तक पहुँचते हैं — हर माइलस्टोन में मेंटर चेकपॉइंट के साथ।",
+      objectives: "उद्देश्य",
+      skillsTitle: "आप जो कौशल बनाएंगे",
+      skillsSubtitle: "लाइव प्रोजेक्ट से पेशेवर, तकनीकी और कार्यस्थल कौशल।",
+      professional: "पेशेवर",
+      technical: "तकनीकी",
+      workplace: "कार्यस्थल",
+      programmeStructure: "कार्यक्रम संरचना",
+      milestonesTitle: "माइलस्टोन और डिलिवरेबल",
+      milestonesSubtitle: "एक जैसे परिणाम। मोड के अनुसार अलग लय।",
+      offline: "ऑफलाइन",
+      hybrid: "हाइब्रिड",
+      milestone: "माइलस्टोन {n}",
+      activities: "गतिविधियाँ",
+      youDeliver: "आप जमा करेंगे",
+      learningOutcomes: "सीखने के परिणाम",
+      successMetrics: "सफलता मानदंड",
+      successIntro: "प्रमाणन से पहले मेंटर क्या देखते हैं।",
+      portfolioTitle: "आपका पोर्टफोलियो",
+      portfolioSubtitle: "इस विभाग ट्रैक के वास्तविक कार्य।",
+      faqTitle: "इस विभाग के प्रश्न",
+      allFaqs: "सभी एकेडमी FAQ देखें →",
+      ctaTitle: "{name} के लिए तैयार हैं?",
+      ctaSubtitle: "अगले बैच के लिए आवेदन करें और ओरिएंटेशन के बाद इस विभाग में जगह पाएँ।",
+      back: "एकेडमी पर वापस जाएँ",
+    },
+    deptNames: {
+      "digital-growth-media": {
+        name: "डिजिटल ग्रोथ और मीडिया",
+        shortName: "डिजिटल ग्रोथ",
+        description:
+          "पोस्टर, रील्स और एक्सप्लेनर बनाएँ, सोशल मीडिया कंटेंट प्लान करें, और अलग-अलग प्लेटफ़ॉर्म पर पीजीपी की डिजिटल पहुँच व उपस्थिति को तेज़ी से बढ़ाएँ।",
+      },
+      "research-policy": {
+        name: "रिसर्च और नीति",
+        shortName: "रिसर्च",
+        description:
+          "डेटा और सर्वे का विश्लेषण करें, साफ़ नीति/रिसर्च ब्रिफ़ तैयार करें, और पीजीपी के नागरिक व नीति कार्यों के लिए साक्ष्य-आधारित सुझाव पेश करें।",
+      },
+      "community-outreach": {
+        name: "सामुदायिक आउटरीच",
+        shortName: "सामुदायिक आउटरीच",
+        description:
+          "जागरूकता अभियान चलाएँ, नागरिकों से सम्मानपूर्वक बात करें, बातचीत को दर्ज करें, और उन्हें संगठित भागीदारी व कार्रवाई में बदलें।",
+      },
+      "membership-campus-outreach": {
+        name: "सदस्यता और कैंपस आउटरीच",
+        shortName: "सदस्यता",
+        description:
+          "कैंपस रजिस्ट्रेशन डेस्क चलाएँ, छात्रों को पीजीपी मार्ग स्पष्ट समझाएँ, लीड्स को व्यवस्थित करें, और नए सदस्यों की ऑनबोर्डिंग में मदद करें।",
+      },
+      "fundraising-partnerships": {
+        name: "फंडरेज़िंग और पार्टनरशिप",
+        shortName: "फंडरेज़िंग",
+        description:
+          "नैतिक फंडरेज़िंग सीखें, पार्टनर रिसर्च करें, साफ़ प्रस्ताव/वन-पेजर बनाएँ, और मीटिंग नोट्स व फॉलो-अप के साथ सहयोग तैयार करें।",
+      },
+      "events-operations": {
+        name: "इवेंट्स और ऑपरेशंस",
+        shortName: "इवेंट्स",
+        description:
+          "इवेंट का रन-ऑफ-शो बनाएँ, रजिस्ट्रेशन और क्राउड फ्लो संभालें, स्वयंसेवकों का समन्वय करें, और पूरे संचालन को समय पर ट्रैक पर रखें।",
+      },
+    },
+  },
+} as const;
+
+export type AcademyLang = keyof typeof academyI18n;
+
+export function getAcademyI18n(lang: string) {
+  return academyI18n[lang as AcademyLang] || academyI18n.en;
+}
