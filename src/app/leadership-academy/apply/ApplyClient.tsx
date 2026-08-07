@@ -228,45 +228,44 @@ export default function LeadershipAcademyApplyPage() {
                 </label>
               ))}
 
-              <fieldset>
-                <legend className="font-['Familjen_Grotesk'] text-[14px] font-bold text-[#04330B]">
+              <label className="block relative z-10">
+                <span className="font-['Familjen_Grotesk'] text-[14px] font-bold text-[#04330B]">
                   {a.fields.department} *
-                </legend>
-                {/* Custom picker — native <select> breaks on mobile (dark overlay / wrong position) */}
-                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {DEPARTMENTS.map((d) => {
-                    const selected = form.department === d.slug;
-                    return (
-                      <label
-                        key={d.slug}
-                        className={`rounded-[8px] border px-4 py-3 cursor-pointer font-['Familjen_Grotesk'] text-[14px] font-semibold leading-snug transition-colors ${
-                          selected
-                            ? "border-[#04330B] bg-[#EAF7EE] text-[#04330B]"
-                            : "border-[#E4F2EA] bg-[#F8FBF9] text-[#587E67] hover:border-[#B9D3C4]"
-                        } ${submitting ? "opacity-60 pointer-events-none" : ""}`}
-                      >
-                        <input
-                          type="radio"
-                          name="department"
-                          value={d.slug}
-                          required
-                          checked={selected}
-                          onChange={onChange}
-                          disabled={submitting}
-                          className="sr-only"
-                        />
-                        <span className="text-[#0D5229] font-bold">{d.number}.</span>{" "}
-                        {t.deptNames[d.slug].name}
-                      </label>
-                    );
-                  })}
+                </span>
+                <div className="relative mt-2">
+                  <select
+                    name="department"
+                    required
+                    disabled={submitting}
+                    value={form.department}
+                    onChange={onChange}
+                    className={`${fieldClass} mt-0 appearance-none pr-10 bg-[#F8FBF9] text-[#04330B] [color-scheme:light]`}
+                    style={{
+                      // Force light native picker chrome (fixes dark/misplaced mobile dropdown)
+                      colorScheme: "light",
+                      WebkitAppearance: "none",
+                      MozAppearance: "none",
+                    }}
+                  >
+                    <option value="" disabled>
+                      {a.fields.selectDepartment}
+                    </option>
+                    {DEPARTMENTS.map((d) => (
+                      <option key={d.slug} value={d.slug} className="bg-white text-[#04330B]">
+                        {d.number}. {t.deptNames[d.slug].name}
+                      </option>
+                    ))}
+                  </select>
+                  <span
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#04330B]"
+                    aria-hidden
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </span>
                 </div>
-                {!form.department ? (
-                  <p className="mt-2 font-['Familjen_Grotesk'] text-[12px] text-[#587E67]">
-                    {a.fields.selectDepartment}
-                  </p>
-                ) : null}
-              </fieldset>
+              </label>
 
               <fieldset>
                 <legend className="font-['Familjen_Grotesk'] text-[14px] font-bold text-[#04330B]">
