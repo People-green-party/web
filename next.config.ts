@@ -19,6 +19,16 @@ const nextConfig: NextConfig = {
   images: {
     qualities: [75, 90],
   },
+  async redirects() {
+    return [
+      // Dev mock with hardcoded fake member data — never expose publicly
+      {
+        source: "/preview-idcard",
+        destination: "/login",
+        permanent: false,
+      },
+    ];
+  },
   async rewrites() {
     // Only use public URL if it's an absolute URL (starts with http), otherwise default to localhost for the proxy
     const backendUrl = process.env.BACKEND_URL ||
