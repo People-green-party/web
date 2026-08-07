@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   Users, Target, Swords, ClipboardList, ShieldCheck,
-  BarChart3, LogOut, ChevronRight, AlertTriangle, Flag,
+  BarChart3, LogOut, ChevronRight, AlertTriangle, Flag, GraduationCap,
 } from 'lucide-react';
 
 function normalizeApiBaseUrl(base: string) {
@@ -39,6 +39,7 @@ const NAV_SECTIONS = [
     color: 'from-[#1E3A5F] to-[#2563EB]',
     items: [
       { href: '/admin/users',       icon: Users,        label: 'Members',       desc: 'Search and manage all members' },
+      { href: '/admin/leadership-academy', icon: GraduationCap, label: 'Leadership Academy', desc: 'Review academy applications & status' },
       { href: '/admin/audit-logs',  icon: ClipboardList,label: 'Audit Logs',    desc: 'Full system audit trail' },
       { href: '/admin/elections',   icon: ShieldCheck,  label: 'Elections',     desc: 'Manage election candidates and results' },
       { href: '/admin/committees',  icon: Flag,         label: 'Committees',    desc: 'Manage committees and wings' },

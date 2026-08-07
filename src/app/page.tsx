@@ -5,7 +5,7 @@ import Image from "next/image";
 import React, { useState, useContext, useRef, useEffect } from "react";
 import {
   Play, ChevronLeft, ChevronRight, Trophy, HandHeart, Globe, Leaf,
-  MapPin, Phone, Mail, Facebook, Instagram, X, ArrowRight, ArrowLeft, Menu, Youtube,
+  MapPin, Phone, Mail, Facebook, Instagram, X, Menu, Youtube,
   Landmark, Briefcase, HeartHandshake, BookOpen,
   Plus, ImageIcon, Users, Trees, ArrowUpRight, Info
 } from 'lucide-react';
@@ -432,11 +432,6 @@ const LandingPageContent = () => {
 
       {/* 3. OUR VISION - New Carousel Section */}
       <VisionCarousel language={language} />
-
-      {/* SYNERGY ENGINE - Explaining how policies connect */}
-      {/* <SynergyEngine language={language} /> */}
-
-
 
       {/* 4. MEET OUR IDEOLOGICAL LEADER */}
       <section className="bg-white w-full flex justify-center py-[60px] lg:py-[100px]">
