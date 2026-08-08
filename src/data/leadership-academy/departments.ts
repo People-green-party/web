@@ -527,7 +527,7 @@ export const DEPARTMENTS: Department[] = [
       },
       {
         q: "How are leads handled?",
-        a: "You will use the academy’s approved lead sheet / form process. Personal contact lists are not used.",
+        a: "You will use the internship’s approved lead sheet / form process. Personal contact lists are not used.",
       },
     ],
   },

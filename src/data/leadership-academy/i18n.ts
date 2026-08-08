@@ -1,13 +1,13 @@
 export const academyI18n = {
   en: {
     hero: {
-      tag: "PGP Leadership Academy",
+      tag: "PGP Internship",
       titlePre: "Learn.",
       titleHighlight: "Lead.",
       titlePost: "Build.",
-      subtitle: "Build leadership through real projects.",
+      subtitle: "Build skills through a real internship.",
       description:
-        "A two-week leadership programme where you work on real projects, gain practical skills, build your portfolio and earn a professional certificate.",
+        "A two-week internship programme where you work on real projects, gain practical skills, build your portfolio and earn a professional certificate.",
       checks: ["Real Projects", "Mentor Guided", "Certificate", "Portfolio"],
       apply: "Apply Now",
       knowMore: "Know More",
@@ -19,7 +19,7 @@ export const academyI18n = {
       { val: "✓", label: "Certificate" },
     ],
     whyJoin: {
-      title: "Why Join PGP Leadership Academy?",
+      title: "Why Join the PGP Internship?",
       items: [
         {
           title: "Practical Experience",
@@ -39,7 +39,7 @@ export const academyI18n = {
         },
         {
           title: "Certificate & Recognition",
-          description: "Earn a LinkedIn-ready academy certificate on completion.",
+          description: "Earn a LinkedIn-ready internship certificate on completion.",
         },
         {
           title: "Career Opportunities",
@@ -48,7 +48,7 @@ export const academyI18n = {
       ],
     },
     journey: {
-      title: "Your Journey in the Academy",
+      title: "Your Journey in the Internship",
       subtitle: "Nine steps. Two weeks. Click through the path from registration to certificate.",
       week1: "Week 1",
       week2: "Week 2",
@@ -58,7 +58,7 @@ export const academyI18n = {
       steps: [
         {
           title: "Register & Onboard",
-          blurb: "Submit your application, confirm your seat, and get your academy welcome kit and schedule.",
+          blurb: "Submit your application, confirm your seat, and get your internship welcome kit and schedule.",
         },
         {
           title: "Orientation Session",
@@ -129,7 +129,7 @@ export const academyI18n = {
           "Common sessions and presentations stay offline",
           "Online collaboration for selected milestones",
           "Flexible remote work windows with mentor check-ins",
-          "Ideal if you balance academy with college or work",
+          "Ideal if you balance internship with college or work",
         ],
       },
     },
@@ -154,14 +154,14 @@ export const academyI18n = {
     },
     cta: {
       title: "Ready to Start Your Leadership Journey?",
-      subtitle: "Apply to PGP Leadership Academy and build real skills through real projects.",
+      subtitle: "Apply to PGP Internship and build real skills through real projects.",
       apply: "Apply Now",
       knowMore: "Know More",
     },
     applyPage: {
-      tag: "PGP Leadership Academy",
-      title: "Apply to PGP Leadership Academy",
-      heroTitle: "Lead Through Real Projects\nJoin PGP Leadership Academy!",
+      tag: "PGP Internship",
+      title: "Apply to PGP Internship",
+      heroTitle: "Lead Through Real Projects\nJoin PGP Internship!",
       newApplication: "New Application",
       intro:
         "Start your two-week leadership journey through real projects, practical learning and mentor guidance.",
@@ -175,7 +175,7 @@ export const academyI18n = {
       journeySteps: [
         { num: "01", title: "Application", desc: "Submit your details." },
         { num: "02", title: "Shortlisting", desc: "Applications are reviewed." },
-        { num: "03", title: "Orientation", desc: "Get introduced to the academy." },
+        { num: "03", title: "Orientation", desc: "Get introduced to the internship." },
         {
           num: "04",
           title: "Department Allocation",
@@ -191,7 +191,7 @@ export const academyI18n = {
       ],
       formTitle: "Application Form",
       formSubtitle:
-        "Fill in your details below to apply for the upcoming PGP Leadership Academy intake.",
+        "Fill in your details below to apply for the upcoming PGP Internship intake.",
       infoTitle: "Before You Apply",
       infoSubtitle: "Everything you need to know before starting your application.",
       eligibilityTitle: "Eligibility",
@@ -199,7 +199,7 @@ export const academyI18n = {
         "Age typically 18–30 (students or young professionals)",
         "Can commit to the full two-week schedule",
         "Willing to complete milestones and final presentation",
-        "Agree to academy code of conduct and attendance rules",
+        "Agree to internship code of conduct and attendance rules",
       ],
       feeTitle: "Programme Fee",
       feeFree: "FREE",
@@ -250,7 +250,7 @@ export const academyI18n = {
         },
         {
           q: "Is there a programme fee?",
-          a: "No. The current PGP Leadership Academy intake is free for selected volunteers. You only need to commit attendance and milestone completion.",
+          a: "No. The current PGP Internship intake is free for selected volunteers. You only need to commit attendance and milestone completion.",
         },
         {
           q: "When will my department be assigned?",
@@ -258,7 +258,7 @@ export const academyI18n = {
         },
         {
           q: "Will I receive a certificate?",
-          a: "Yes. Volunteers who complete attendance, milestones and the final presentation receive a PGP Leadership Academy certificate and recognition suitable for LinkedIn and resumes.",
+          a: "Yes. Volunteers who complete attendance, milestones and the final presentation receive a PGP Internship certificate and recognition suitable for LinkedIn and resumes.",
         },
         {
           q: "What happens after I submit my application?",
@@ -288,32 +288,32 @@ export const academyI18n = {
       },
       submit: "Submit Application",
       saving: "Saving...",
-      agreement: "By applying you agree to follow the academy code of conduct and attendance rules.",
+      agreement: "By applying you agree to follow the internship code of conduct and attendance rules.",
       readFaq: "Read FAQ",
       successTitle: "Application received",
       successBody:
         "Thank you, {name}. Your application has been saved{idPart}. Our team will contact you with next steps for the upcoming intake.",
       successEmailNote: "A confirmation email has been sent to your inbox.",
       idPart: " (ID #{id})",
-      back: "Back to Academy",
+      back: "Back to Internships",
       applicantFallback: "applicant",
     },
     faqPage: {
-      tag: "PGP Leadership Academy",
+      tag: "PGP Internship",
       title: "Frequently Asked Questions",
       intro: "Everything about duration, modes, certificates, eligibility, attendance and departments.",
-      sectionTitle: "Academy FAQ",
+      sectionTitle: "Internship FAQ",
       deptTitle: "Department-specific questions",
       deptSubtitle: "Each department page also includes FAQs for that track.",
       viewDetails: "View details",
       ctaTitle: "Still have questions?",
       ctaSubtitle: "Apply now and our team will guide you through the next intake.",
       apply: "Apply Now",
-      back: "Back to Academy",
+      back: "Back to Internships",
     },
     faqs: [
       {
-        q: "What is PGP Leadership Academy?",
+        q: "What is PGP Internship?",
         a: "A two-week leadership programme where you work on real PGP projects, gain practical skills, build a portfolio and earn a professional certificate across six departments.",
       },
       {
@@ -326,7 +326,7 @@ export const academyI18n = {
       },
       {
         q: "Who is eligible to apply?",
-        a: "Students and young professionals (typically 18–30) who can commit to the two-week schedule, complete milestones, and follow the academy code of conduct. Prior political experience is not required.",
+        a: "Students and young professionals (typically 18–30) who can commit to the two-week schedule, complete milestones, and follow the internship code of conduct. Prior political experience is not required.",
       },
       {
         q: "How are departments allocated?",
@@ -334,7 +334,7 @@ export const academyI18n = {
       },
       {
         q: "Will I get a certificate?",
-        a: "Yes. Volunteers who complete attendance, milestones and the final presentation receive a PGP Leadership Academy certificate and recognition suitable for LinkedIn and resumes.",
+        a: "Yes. Volunteers who complete attendance, milestones and the final presentation receive a PGP Internship certificate and recognition suitable for LinkedIn and resumes.",
       },
       {
         q: "Is attendance mandatory?",
@@ -346,7 +346,7 @@ export const academyI18n = {
       },
       {
         q: "Is there a programme fee?",
-        a: "No. The current PGP Leadership Academy intake is free for selected volunteers. You only need to commit attendance and milestone completion.",
+        a: "No. The current PGP Internship intake is free for selected volunteers. You only need to commit attendance and milestone completion.",
       },
       {
         q: "Can I switch departments after joining?",
@@ -354,7 +354,7 @@ export const academyI18n = {
       },
     ],
     deptPage: {
-      breadcrumb: "Leadership Academy",
+      breadcrumb: "Internship",
       department: "Department {n}",
       apply: "Apply Now",
       allDepartments: "All Departments",
@@ -381,10 +381,10 @@ export const academyI18n = {
       portfolioTitle: "Portfolio you'll leave with",
       portfolioSubtitle: "Real artefacts from this department track.",
       faqTitle: "Questions about this department",
-      allFaqs: "See all academy FAQs →",
+      allFaqs: "See all internship FAQs →",
       ctaTitle: "Ready for {name}?",
       ctaSubtitle: "Apply for the next intake and get placed into this department after orientation.",
-      back: "Back to Academy",
+      back: "Back to Internships",
     },
     deptNames: {
       "digital-growth-media": {
@@ -427,13 +427,13 @@ export const academyI18n = {
   },
   hi: {
     hero: {
-      tag: "पीजीपी लीडरशिप एकेडमी",
+      tag: "पीजीपी इंटर्नशिप",
       titlePre: "सीखो।",
       titleHighlight: "लीड।",
       titlePost: "बनाओ।",
-      subtitle: "वास्तविक परियोजनाओं के माध्यम से नेतृत्व बनाएँ।",
+      subtitle: "असली इंटर्नशिप से कौशल बनाएँ।",
       description:
-        "एक दो-सप्ताह का नेतृत्व कार्यक्रम जहाँ आप वास्तविक परियोजनाओं पर काम करते हैं, व्यावहारिक कौशल सीखते हैं, अपना पोर्टफोलियो बनाते हैं और पेशेवर प्रमाणपत्र प्राप्त करते हैं।",
+        "एक दो-सप्ताह का इंटर्नशिप कार्यक्रम जहाँ आप वास्तविक परियोजनाओं पर काम करते हैं, व्यावहारिक कौशल सीखते हैं, अपना पोर्टफोलियो बनाते हैं और पेशेवर प्रमाणपत्र प्राप्त करते हैं।",
       checks: ["वास्तविक परियोजनाएँ", "मेंटर मार्गदर्शन", "प्रमाणपत्र", "पोर्टफोलियो"],
       apply: "अभी आवेदन करें",
       knowMore: "और जानें",
@@ -445,7 +445,7 @@ export const academyI18n = {
       { val: "✓", label: "प्रमाणपत्र" },
     ],
     whyJoin: {
-      title: "एकेडमी क्यों जॉइन करें?",
+      title: "पीजीपी इंटर्नशिप क्यों जॉइन करें?",
       items: [
         {
           title: "व्यावहारिक अनुभव",
@@ -465,7 +465,7 @@ export const academyI18n = {
         },
         {
           title: "प्रमाणपत्र और मान्यता",
-          description: "पूर्णता पर लिंक्डइन-रेडी एकेडमी प्रमाणपत्र प्राप्त करें।",
+          description: "पूर्णता पर लिंक्डइन-रेडी इंटर्नशिप प्रमाणपत्र प्राप्त करें।",
         },
         {
           title: "करियर अवसर",
@@ -474,7 +474,7 @@ export const academyI18n = {
       ],
     },
     journey: {
-      title: "एकेडमी में आपकी यात्रा",
+      title: "इंटर्नशिप में आपकी यात्रा",
       subtitle: "नौ चरण। दो सप्ताह। पंजीकरण से प्रमाणपत्र तक।",
       week1: "सप्ताह 1",
       week2: "सप्ताह 2",
@@ -484,7 +484,7 @@ export const academyI18n = {
       steps: [
         {
           title: "पंजीकरण और ऑनबोर्ड",
-          blurb: "आवेदन जमा करें, अपनी सीट की पुष्टि करें, और एकेडमी वेलकम किट व शेड्यूल पाएँ।",
+          blurb: "आवेदन जमा करें, अपनी सीट की पुष्टि करें, और इंटर्नशिप वेलकम किट व शेड्यूल पाएँ।",
         },
         {
           title: "ओरिएंटेशन सत्र",
@@ -579,14 +579,14 @@ export const academyI18n = {
     },
     cta: {
       title: "नेतृत्व यात्रा शुरू करने को तैयार?",
-      subtitle: "पीजीपी लीडरशिप एकेडमी में आवेदन करें और वास्तविक परियोजनाओं से वास्तविक कौशल बनाएँ।",
+      subtitle: "पीजीपी इंटर्नशिप में आवेदन करें और वास्तविक परियोजनाओं से वास्तविक कौशल बनाएँ।",
       apply: "अभी आवेदन करें",
       knowMore: "और जानें",
     },
     applyPage: {
-      tag: "पीजीपी लीडरशिप एकेडमी",
-      title: "पीजीपी लीडरशिप एकेडमी में आवेदन करें",
-      heroTitle: "वास्तविक परियोजनाओं से नेतृत्व सीखें\nपीजीपी लीडरशिप एकेडमी से जुड़ें!",
+      tag: "पीजीपी इंटर्नशिप",
+      title: "पीजीपी इंटर्नशिप में आवेदन करें",
+      heroTitle: "वास्तविक परियोजनाओं से नेतृत्व सीखें\nपीजीपी इंटर्नशिप से जुड़ें!",
       newApplication: "नया आवेदन",
       intro:
         "वास्तविक परियोजनाओं, व्यावहारिक सीख और मेंटर मार्गदर्शन के साथ अपना दो-सप्ताह का नेतृत्व सफर शुरू करें।",
@@ -600,7 +600,7 @@ export const academyI18n = {
       journeySteps: [
         { num: "01", title: "आवेदन", desc: "अपना विवरण जमा करें।" },
         { num: "02", title: "शॉर्टलिस्टिंग", desc: "आवेदनों की समीक्षा होती है।" },
-        { num: "03", title: "ओरिएंटेशन", desc: "एकेडमी से परिचय।" },
+        { num: "03", title: "ओरिएंटेशन", desc: "इंटर्नशिप से परिचय।" },
         {
           num: "04",
           title: "विभाग आवंटन",
@@ -616,7 +616,7 @@ export const academyI18n = {
       ],
       formTitle: "आवेदन फॉर्म",
       formSubtitle:
-        "आगामी पीजीपी लीडरशिप एकेडमी बैच के लिए नीचे अपना विवरण भरें।",
+        "आगामी पीजीपी इंटर्नशिप बैच के लिए नीचे अपना विवरण भरें।",
       infoTitle: "आवेदन से पहले",
       infoSubtitle: "आवेदन शुरू करने से पहले आपको जो जानना ज़रूरी है।",
       eligibilityTitle: "पात्रता",
@@ -624,7 +624,7 @@ export const academyI18n = {
         "आमतौर पर आयु 18–30 (छात्र या युवा पेशेवर)",
         "पूरे दो-सप्ताह के शेड्यूल के लिए प्रतिबद्ध",
         "माइलस्टोन और अंतिम प्रस्तुति पूरी करने को तैयार",
-        "एकेडमी आचार संहिता और उपस्थिति नियमों से सहमत",
+        "इंटर्नशिप आचार संहिता और उपस्थिति नियमों से सहमत",
       ],
       feeTitle: "कार्यक्रम शुल्क",
       feeFree: "निःशुल्क",
@@ -675,7 +675,7 @@ export const academyI18n = {
         },
         {
           q: "क्या कोई कार्यक्रम शुल्क है?",
-          a: "नहीं। वर्तमान पीजीपी लीडरशिप एकेडमी बैच चयनित स्वयंसेवकों के लिए निःशुल्क है। आपको केवल उपस्थिति और माइलस्टोन पूरे करने की प्रतिबद्धता चाहिए।",
+          a: "नहीं। वर्तमान पीजीपी इंटर्नशिप बैच चयनित स्वयंसेवकों के लिए निःशुल्क है। आपको केवल उपस्थिति और माइलस्टोन पूरे करने की प्रतिबद्धता चाहिए।",
         },
         {
           q: "मेरा विभाग कब निर्धारित होगा?",
@@ -683,7 +683,7 @@ export const academyI18n = {
         },
         {
           q: "क्या मुझे प्रमाणपत्र मिलेगा?",
-          a: "हाँ। जो स्वयंसेवक उपस्थिति, माइलस्टोन और अंतिम प्रस्तुति पूरी करते हैं, उन्हें पीजीपी लीडरशिप एकेडमी प्रमाणपत्र मिलता है।",
+          a: "हाँ। जो स्वयंसेवक उपस्थिति, माइलस्टोन और अंतिम प्रस्तुति पूरी करते हैं, उन्हें पीजीपी इंटर्नशिप प्रमाणपत्र मिलता है।",
         },
         {
           q: "आवेदन जमा करने के बाद क्या होता है?",
@@ -713,32 +713,32 @@ export const academyI18n = {
       },
       submit: "आवेदन जमा करें",
       saving: "सहेजा जा रहा है...",
-      agreement: "आवेदन करके आप एकेडमी आचार संहिता और उपस्थिति नियमों का पालन करने के लिए सहमत होते हैं।",
+      agreement: "आवेदन करके आप इंटर्नशिप आचार संहिता और उपस्थिति नियमों का पालन करने के लिए सहमत होते हैं।",
       readFaq: "FAQ पढ़ें",
       successTitle: "आवेदन प्राप्त हुआ",
       successBody:
         "धन्यवाद, {name}। आपका आवेदन सहेज लिया गया है{idPart}। हमारी टीम आगामी बैच के अगले चरणों के लिए आपसे संपर्क करेगी।",
       idPart: " (आईडी #{id})",
       successEmailNote: "आपके इनबॉक्स में कन्फ़र्मेशन ईमेल भेज दिया गया है।",
-      back: "एकेडमी पर वापस जाएँ",
+      back: "इंटर्नशिप पर वापस जाएँ",
       applicantFallback: "आवेदक",
     },
     faqPage: {
-      tag: "पीजीपी लीडरशिप एकेडमी",
+      tag: "पीजीपी इंटर्नशिप",
       title: "अक्सर पूछे जाने वाले प्रश्न",
       intro: "अवधि, मोड, प्रमाणपत्र, पात्रता, उपस्थिति और विभागों के बारे में सब कुछ।",
-      sectionTitle: "एकेडमी FAQ",
+      sectionTitle: "इंटर्नशिप FAQ",
       deptTitle: "विभाग-विशेष प्रश्न",
       deptSubtitle: "हर विभाग पृष्ठ पर उस ट्रैक के FAQ भी शामिल हैं।",
       viewDetails: "विवरण देखें",
       ctaTitle: "अभी भी प्रश्न हैं?",
       ctaSubtitle: "अभी आवेदन करें और हमारी टीम आपको अगले बैच के लिए मार्गदर्शन करेगी।",
       apply: "अभी आवेदन करें",
-      back: "एकेडमी पर वापस जाएँ",
+      back: "इंटर्नशिप पर वापस जाएँ",
     },
     faqs: [
       {
-        q: "पीजीपी लीडरशिप एकेडमी क्या है?",
+        q: "पीजीपी इंटर्नशिप क्या है?",
         a: "एक दो-सप्ताह का नेतृत्व कार्यक्रम जहाँ आप वास्तविक पीजीपी परियोजनाओं पर काम करते हैं, व्यावहारिक कौशल सीखते हैं, पोर्टफोलियो बनाते हैं और छह विभागों में पेशेवर प्रमाणपत्र पाते हैं।",
       },
       {
@@ -751,7 +751,7 @@ export const academyI18n = {
       },
       {
         q: "आवेदन के लिए कौन पात्र है?",
-        a: "वे छात्र और युवा पेशेवर (आमतौर पर 18–30 वर्ष) जो दो-सप्ताह के शेड्यूल के लिए प्रतिबद्ध हो सकें, माइलस्टोन पूरे करें और एकेडमी आचार संहिता का पालन करें। पूर्व राजनीतिक अनुभव आवश्यक नहीं है।",
+        a: "वे छात्र और युवा पेशेवर (आमतौर पर 18–30 वर्ष) जो दो-सप्ताह के शेड्यूल के लिए प्रतिबद्ध हो सकें, माइलस्टोन पूरे करें और इंटर्नशिप आचार संहिता का पालन करें। पूर्व राजनीतिक अनुभव आवश्यक नहीं है।",
       },
       {
         q: "विभाग कैसे आवंटित होते हैं?",
@@ -759,7 +759,7 @@ export const academyI18n = {
       },
       {
         q: "क्या मुझे प्रमाणपत्र मिलेगा?",
-        a: "हाँ। जो स्वयंसेवक उपस्थिति, माइलस्टोन और अंतिम प्रस्तुति पूरी करते हैं, उन्हें पीजीपी लीडरशिप एकेडमी प्रमाणपत्र और लिंक्डइन/रिज़्यूमे के लिए मान्यता मिलती है।",
+        a: "हाँ। जो स्वयंसेवक उपस्थिति, माइलस्टोन और अंतिम प्रस्तुति पूरी करते हैं, उन्हें पीजीपी इंटर्नशिप प्रमाणपत्र और लिंक्डइन/रिज़्यूमे के लिए मान्यता मिलती है।",
       },
       {
         q: "क्या उपस्थिति अनिवार्य है?",
@@ -771,7 +771,7 @@ export const academyI18n = {
       },
       {
         q: "क्या कोई कार्यक्रम शुल्क है?",
-        a: "नहीं। वर्तमान पीजीपी लीडरशिप एकेडमी बैच चयनित स्वयंसेवकों के लिए निःशुल्क है। आपको केवल उपस्थिति और माइलस्टोन पूरे करने की प्रतिबद्धता चाहिए।",
+        a: "नहीं। वर्तमान पीजीपी इंटर्नशिप बैच चयनित स्वयंसेवकों के लिए निःशुल्क है। आपको केवल उपस्थिति और माइलस्टोन पूरे करने की प्रतिबद्धता चाहिए।",
       },
       {
         q: "क्या जॉइन करने के बाद विभाग बदला जा सकता है?",
@@ -779,7 +779,7 @@ export const academyI18n = {
       },
     ],
     deptPage: {
-      breadcrumb: "लीडरशिप एकेडमी",
+      breadcrumb: "इंटर्नशिप",
       department: "विभाग {n}",
       apply: "अभी आवेदन करें",
       allDepartments: "सभी विभाग",
@@ -806,10 +806,10 @@ export const academyI18n = {
       portfolioTitle: "आपका पोर्टफोलियो",
       portfolioSubtitle: "इस विभाग ट्रैक के वास्तविक कार्य।",
       faqTitle: "इस विभाग के प्रश्न",
-      allFaqs: "सभी एकेडमी FAQ देखें →",
+      allFaqs: "सभी इंटर्नशिप FAQ देखें →",
       ctaTitle: "{name} के लिए तैयार हैं?",
       ctaSubtitle: "अगले बैच के लिए आवेदन करें और ओरिएंटेशन के बाद इस विभाग में जगह पाएँ।",
-      back: "एकेडमी पर वापस जाएँ",
+      back: "इंटर्नशिप पर वापस जाएँ",
     },
     deptNames: {
       "digital-growth-media": {

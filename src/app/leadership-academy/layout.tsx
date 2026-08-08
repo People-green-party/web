@@ -2,15 +2,15 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "PGP Leadership Academy",
-    template: "%s | PGP Leadership Academy",
+    default: "PGP Internship",
+    template: "%s | PGP Internship",
   },
   description:
-    "A two-week leadership programme where you work on real PGP projects, gain practical skills, build a portfolio and earn a professional certificate.",
+    "A two-week internship programme where you work on real PGP projects, gain practical skills, build a portfolio and earn a professional certificate.",
   openGraph: {
-    title: "PGP Leadership Academy",
+    title: "PGP Internship",
     description:
-      "Learn. Lead. Build. Real projects, mentor guidance, portfolio and certificate across six departments.",
+      "Learn. Lead. Build. Real internship projects, mentor guidance, portfolio and certificate across six departments.",
     type: "website",
   },
 };

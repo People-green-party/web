@@ -70,7 +70,7 @@ export const Footer = () => {
                                 { label: t.nav.home, href: "/" },
                                 { label: t.nav.about, href: "/about" },
                                 { label: t.nav.constitution, href: "/constitution" },
-                                { label: t.nav.academy || "Academy", href: "/leadership-academy" },
+                                { label: t.nav.academy || "Internships", href: "/leadership-academy" },
                                 { label: t.nav.join, href: "/join" }
                             ].map((link, i) => (
                                 <a

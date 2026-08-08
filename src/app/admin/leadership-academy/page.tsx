@@ -121,7 +121,7 @@ export default function AdminLeadershipAcademyPage() {
           <div>
             <p className="text-xs font-bold tracking-widest text-[#86EFAC] uppercase">Admin</p>
             <h1 className="text-xl font-black mt-0.5 flex items-center gap-2">
-              <GraduationCap size={20} /> Leadership Academy
+              <GraduationCap size={20} /> Internship
             </h1>
           </div>
         </div>

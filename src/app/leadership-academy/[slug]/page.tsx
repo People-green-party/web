@@ -19,13 +19,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await resolveParams(params);
   const dept = getDepartment(slug);
   if (!dept) {
-    return { title: "Department | PGP Leadership Academy" };
+    return { title: "Department | PGP Internship" };
   }
   return {
-    title: `${dept.name} | PGP Leadership Academy`,
+    title: `${dept.name} | PGP Internship`,
     description: dept.description,
     openGraph: {
-      title: `${dept.name} | PGP Leadership Academy`,
+      title: `${dept.name} | PGP Internship`,
       description: dept.description,
       images: [dept.image],
     },

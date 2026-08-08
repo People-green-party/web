@@ -14,7 +14,7 @@ type Props = {
 };
 
 /**
- * Academy assets from /public — plain <img> so Next image optimizer /
+ * Internship assets from /public — plain <img> so Next image optimizer /
  * Turbopack workspace-root quirks can't blank them. Files are already
  * JPEG-compressed on disk. Parent must be `relative` with size / aspect.
  */
