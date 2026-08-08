@@ -160,12 +160,40 @@ export const academyI18n = {
     },
     applyPage: {
       tag: "PGP Leadership Academy",
-      title: "Apply Now",
+      title: "Apply to PGP Leadership Academy",
+      heroTitle: "Lead Through Real Projects\nJoin PGP Leadership Academy!",
+      newApplication: "New Application",
       intro:
-        "Register for the next two-week intake. Your application is saved securely — final department allocation happens after orientation.",
+        "Start your two-week leadership journey through real projects, practical learning and mentor guidance.",
+      heroHighlights: [
+        { value: "2 Weeks", label: "Duration" },
+        { value: "20 Hours", label: "Commitment" },
+        { value: "6 Departments", label: "Tracks" },
+        { value: "Offline / Hybrid", label: "Modes" },
+      ],
+      journeyTitle: "Your journey starts here.",
+      journeySteps: [
+        { num: "01", title: "Application", desc: "Submit your details." },
+        { num: "02", title: "Shortlisting", desc: "Applications are reviewed." },
+        { num: "03", title: "Orientation", desc: "Get introduced to the academy." },
+        {
+          num: "04",
+          title: "Department Allocation",
+          desc: "Your department is assigned after orientation.",
+        },
+        { num: "05", title: "Programme Begins", desc: "Start working on real projects." },
+      ],
+      journeyHighlights: [
+        "Real Projects",
+        "Mentor Guidance",
+        "Professional Portfolio",
+        "Certificate",
+      ],
       formTitle: "Application Form",
-      formSubtitle: "Fill in your details below. Applications are stored for the upcoming academy intake.",
-      infoTitle: "Before you apply",
+      formSubtitle:
+        "Fill in your details below to apply for the upcoming PGP Leadership Academy intake.",
+      infoTitle: "Before You Apply",
+      infoSubtitle: "Everything you need to know before starting your application.",
       eligibilityTitle: "Eligibility",
       eligibility: [
         "Age typically 18–30 (students or young professionals)",
@@ -173,10 +201,74 @@ export const academyI18n = {
         "Willing to complete milestones and final presentation",
         "Agree to academy code of conduct and attendance rules",
       ],
-      feeTitle: "Fee",
+      feeTitle: "Programme Fee",
+      feeFree: "FREE",
       feeBody: "Free for the current intake. No programme fee for selected volunteers.",
-      intakeTitle: "Intake",
-      intakeBody: "Next two-week batch — offline or hybrid. Exact dates shared after shortlisting.",
+      intakeTitle: "Upcoming Intake",
+      intakeHeadline: "Next Two-Week Batch",
+      intakeModes: "Offline or Hybrid",
+      intakeBody: "Exact dates shared after shortlisting.",
+      nextTitle: "What Happens Next?",
+      nextNote: "Final department allocation happens after orientation.",
+      nextSteps: [
+        "Application Submitted",
+        "Application Review",
+        "Shortlisting",
+        "Orientation",
+        "Department Allocation",
+        "Programme Begins",
+      ],
+      experienceTitle: "What You'll Experience",
+      experience: [
+        {
+          title: "Real Projects",
+          description: "Work on practical department projects.",
+        },
+        {
+          title: "Mentor Guidance",
+          description: "Receive feedback during the programme.",
+        },
+        {
+          title: "Professional Portfolio",
+          description: "Build tangible work you can showcase.",
+        },
+        {
+          title: "Certificate",
+          description:
+            "Receive a Programme Completion Certificate after successfully completing the programme requirements.",
+        },
+      ],
+      faqTitle: "Frequently Asked Questions",
+      applyFaqs: [
+        {
+          q: "How long is the programme?",
+          a: "The core programme runs for two weeks. Exact daily schedules are shared after department allocation and depend on Offline or Hybrid mode.",
+        },
+        {
+          q: "Is the programme offline or hybrid?",
+          a: "You can choose Offline or Hybrid. Offline means all core sessions and project work happen in person. Hybrid keeps key sessions and presentations offline while allowing online collaboration and some remote milestones.",
+        },
+        {
+          q: "Is there a programme fee?",
+          a: "No. The current PGP Leadership Academy intake is free for selected volunteers. You only need to commit attendance and milestone completion.",
+        },
+        {
+          q: "When will my department be assigned?",
+          a: "You share preferences during registration. Final allocation balances your preference, available seats and programme needs after orientation.",
+        },
+        {
+          q: "Will I receive a certificate?",
+          a: "Yes. Volunteers who complete attendance, milestones and the final presentation receive a PGP Leadership Academy certificate and recognition suitable for LinkedIn and resumes.",
+        },
+        {
+          q: "What happens after I submit my application?",
+          a: "Your application is saved securely. Our team reviews submissions, shortlists candidates, and contacts you with next steps for orientation and the upcoming intake.",
+        },
+      ],
+      ctaTitle: "Ready to Start Your Leadership Journey?",
+      ctaSubtitle:
+        "Take the first step toward building your skills, portfolio and leadership experience.",
+      ctaButton: "Apply Now",
       phoneHint: "10-digit Indian mobile number",
       errorGeneric: "Could not submit application. Please try again.",
       errorDuplicate: "An active application already exists with this email or phone.",
@@ -493,12 +585,40 @@ export const academyI18n = {
     },
     applyPage: {
       tag: "पीजीपी लीडरशिप एकेडमी",
-      title: "अभी आवेदन करें",
+      title: "पीजीपी लीडरशिप एकेडमी में आवेदन करें",
+      heroTitle: "वास्तविक परियोजनाओं से नेतृत्व सीखें\nपीजीपी लीडरशिप एकेडमी से जुड़ें!",
+      newApplication: "नया आवेदन",
       intro:
-        "अगले दो-सप्ताह के बैच के लिए पंजीकरण करें। आपका आवेदन सुरक्षित रूप से सहेजा जाता है — अंतिम विभाग आवंटन ओरिएंटेशन के बाद होता है।",
+        "वास्तविक परियोजनाओं, व्यावहारिक सीख और मेंटर मार्गदर्शन के साथ अपना दो-सप्ताह का नेतृत्व सफर शुरू करें।",
+      heroHighlights: [
+        { value: "2 सप्ताह", label: "अवधि" },
+        { value: "20 घंटे", label: "प्रतिबद्धता" },
+        { value: "6 विभाग", label: "ट्रैक" },
+        { value: "ऑफलाइन / हाइब्रिड", label: "मोड" },
+      ],
+      journeyTitle: "आपकी यात्रा यहीं से शुरू होती है।",
+      journeySteps: [
+        { num: "01", title: "आवेदन", desc: "अपना विवरण जमा करें।" },
+        { num: "02", title: "शॉर्टलिस्टिंग", desc: "आवेदनों की समीक्षा होती है।" },
+        { num: "03", title: "ओरिएंटेशन", desc: "एकेडमी से परिचय।" },
+        {
+          num: "04",
+          title: "विभाग आवंटन",
+          desc: "ओरिएंटेशन के बाद आपका विभाग निर्धारित होता है।",
+        },
+        { num: "05", title: "कार्यक्रम शुरू", desc: "वास्तविक परियोजनाओं पर काम शुरू करें।" },
+      ],
+      journeyHighlights: [
+        "वास्तविक परियोजनाएँ",
+        "मेंटर मार्गदर्शन",
+        "पेशेवर पोर्टफोलियो",
+        "प्रमाणपत्र",
+      ],
       formTitle: "आवेदन फॉर्म",
-      formSubtitle: "नीचे अपना विवरण भरें। आवेदन आगामी एकेडमी बैच के लिए संग्रहीत किए जाते हैं।",
+      formSubtitle:
+        "आगामी पीजीपी लीडरशिप एकेडमी बैच के लिए नीचे अपना विवरण भरें।",
       infoTitle: "आवेदन से पहले",
+      infoSubtitle: "आवेदन शुरू करने से पहले आपको जो जानना ज़रूरी है।",
       eligibilityTitle: "पात्रता",
       eligibility: [
         "आमतौर पर आयु 18–30 (छात्र या युवा पेशेवर)",
@@ -506,10 +626,74 @@ export const academyI18n = {
         "माइलस्टोन और अंतिम प्रस्तुति पूरी करने को तैयार",
         "एकेडमी आचार संहिता और उपस्थिति नियमों से सहमत",
       ],
-      feeTitle: "शुल्क",
+      feeTitle: "कार्यक्रम शुल्क",
+      feeFree: "निःशुल्क",
       feeBody: "वर्तमान बैच निःशुल्क है। चयनित स्वयंसेवकों के लिए कोई कार्यक्रम शुल्क नहीं।",
-      intakeTitle: "बैच",
-      intakeBody: "अगला दो-सप्ताह बैच — ऑफलाइन या हाइब्रिड। सटीक तिथियाँ शॉर्टलिस्ट के बाद साझा होंगी।",
+      intakeTitle: "आगामी बैच",
+      intakeHeadline: "अगला दो-सप्ताह बैच",
+      intakeModes: "ऑफलाइन या हाइब्रिड",
+      intakeBody: "सटीक तिथियाँ शॉर्टलिस्ट के बाद साझा होंगी।",
+      nextTitle: "आगे क्या होता है?",
+      nextNote: "अंतिम विभाग आवंटन ओरिएंटेशन के बाद होता है।",
+      nextSteps: [
+        "आवेदन जमा",
+        "आवेदन समीक्षा",
+        "शॉर्टलिस्टिंग",
+        "ओरिएंटेशन",
+        "विभाग आवंटन",
+        "कार्यक्रम शुरू",
+      ],
+      experienceTitle: "आप क्या अनुभव करेंगे",
+      experience: [
+        {
+          title: "वास्तविक परियोजनाएँ",
+          description: "व्यावहारिक विभाग परियोजनाओं पर काम करें।",
+        },
+        {
+          title: "मेंटर मार्गदर्शन",
+          description: "कार्यक्रम के दौरान फीडबैक पाएँ।",
+        },
+        {
+          title: "पेशेवर पोर्टफोलियो",
+          description: "ऐसा ठोस काम बनाएँ जिसे आप दिखा सकें।",
+        },
+        {
+          title: "प्रमाणपत्र",
+          description:
+            "कार्यक्रम की आवश्यकताएँ सफलतापूर्वक पूरी करने पर पूरा होने का प्रमाणपत्र पाएँ।",
+        },
+      ],
+      faqTitle: "अक्सर पूछे जाने वाले प्रश्न",
+      applyFaqs: [
+        {
+          q: "कार्यक्रम कितने समय का है?",
+          a: "मुख्य कार्यक्रम दो सप्ताह का है। दैनिक शेड्यूल विभाग आवंटन के बाद साझा किया जाता है और ऑफलाइन या हाइब्रिड मोड पर निर्भर करता है।",
+        },
+        {
+          q: "क्या कार्यक्रम ऑफलाइन है या हाइब्रिड?",
+          a: "आप ऑफलाइन या हाइब्रिड चुन सकते हैं। ऑफलाइन में सभी मुख्य सत्र व्यक्तिगत होते हैं। हाइब्रिड में मुख्य सत्र ऑफलाइन रहते हैं, जबकि कुछ माइलस्टोन ऑनलाइन सहयोग से पूरे होते हैं।",
+        },
+        {
+          q: "क्या कोई कार्यक्रम शुल्क है?",
+          a: "नहीं। वर्तमान पीजीपी लीडरशिप एकेडमी बैच चयनित स्वयंसेवकों के लिए निःशुल्क है। आपको केवल उपस्थिति और माइलस्टोन पूरे करने की प्रतिबद्धता चाहिए।",
+        },
+        {
+          q: "मेरा विभाग कब निर्धारित होगा?",
+          a: "पंजीकरण के दौरान आप अपनी प्राथमिकताएँ बताते हैं। अंतिम आवंटन ओरिएंटेशन के बाद आपकी पसंद, उपलब्ध सीटें और कार्यक्रम की जरूरत के आधार पर होता है।",
+        },
+        {
+          q: "क्या मुझे प्रमाणपत्र मिलेगा?",
+          a: "हाँ। जो स्वयंसेवक उपस्थिति, माइलस्टोन और अंतिम प्रस्तुति पूरी करते हैं, उन्हें पीजीपी लीडरशिप एकेडमी प्रमाणपत्र मिलता है।",
+        },
+        {
+          q: "आवेदन जमा करने के बाद क्या होता है?",
+          a: "आपका आवेदन सुरक्षित रूप से सहेजा जाता है। टीम समीक्षा करती है, शॉर्टलिस्ट करती है, और ओरिएंटेशन तथा आगामी बैच के अगले चरणों के लिए आपसे संपर्क करती है।",
+        },
+      ],
+      ctaTitle: "अपना नेतृत्व सफर शुरू करने के लिए तैयार हैं?",
+      ctaSubtitle:
+        "कौशल, पोर्टफोलियो और नेतृत्व अनुभव बनाने की दिशा में पहला कदम उठाएँ।",
+      ctaButton: "अभी आवेदन करें",
       phoneHint: "10 अंकों का भारतीय मोबाइल नंबर",
       errorGeneric: "आवेदन जमा नहीं हो सका। कृपया दोबारा कोशिश करें।",
       errorDuplicate: "इस ईमेल या फ़ोन से एक सक्रिय आवेदन पहले से मौजूद है।",

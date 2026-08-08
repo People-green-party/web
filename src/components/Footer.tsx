@@ -34,20 +34,20 @@ export const Footer = () => {
     };
 
     return (
-        <footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px]">
-            <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-8 flex flex-col lg:flex-row items-start lg:justify-between">
+        <footer className="bg-white pt-[60px] lg:pt-[120px] pb-[40px] overflow-x-hidden">
+            <div className="w-full max-w-[1320px] mx-auto px-4 lg:px-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 xl:gap-12 items-start">
 
-                <ScrollReveal animation="fade-up" duration={800} className="flex flex-col w-full lg:w-[20%]">
+                <ScrollReveal animation="fade-up" duration={800} className="flex flex-col w-full min-w-0">
                     <Link href="/" onClick={handleLogoClick}>
-                        <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[150px] lg:w-[255px] h-auto lg:h-[136px] object-contain mb-[24px] cursor-pointer" />
+                        <img src="/PGPlogo.svg" alt="PGP Logo" className="w-[150px] lg:w-[220px] h-auto object-contain mb-[24px] cursor-pointer" />
                     </Link>
 
-                    <div className="flex flex-col gap-[20px] w-full lg:w-[228px]">
-                        <h3 className="w-full h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
+                    <div className="flex flex-col gap-[20px] w-full max-w-[280px]">
+                        <h3 className="font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                             {t.footer.follow}
                         </h3>
 
-                        <div className="w-full h-[48px] flex gap-[12px]">
+                        <div className="flex flex-wrap gap-[12px]">
                             {[
                                 { Icon: Youtube, href: "https://www.youtube.com/channel/UCI6LEG8xFb2EvwvyG4qnwGg" },
                                 { Icon: Facebook, href: "https://www.facebook.com/peoplesgreen" },
@@ -60,12 +60,12 @@ export const Footer = () => {
                     </div>
                 </ScrollReveal>
 
-                <ScrollReveal animation="fade-up" duration={800} delay={200} className="flex flex-col w-full lg:w-[35%] shrink-0 mt-10 lg:mt-0">
-                    <div className="flex flex-col gap-[20px] w-full lg:w-[330px]">
-                        <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
+                <ScrollReveal animation="fade-up" duration={800} delay={200} className="flex flex-col w-full min-w-0">
+                    <div className="flex flex-col gap-[20px] w-full">
+                        <h3 className="font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                             {t.footer.useful}
                         </h3>
-                        <div className="w-full flex flex-col lg:flex-row gap-[16px] lg:gap-[40px] items-start lg:items-center">
+                        <div className="w-full flex flex-wrap gap-x-5 gap-y-3 items-center">
                             {[
                                 { label: t.nav.home, href: "/" },
                                 { label: t.nav.about, href: "/about" },
@@ -73,7 +73,11 @@ export const Footer = () => {
                                 { label: t.nav.academy || "Academy", href: "/leadership-academy" },
                                 { label: t.nav.join, href: "/join" }
                             ].map((link, i) => (
-                                <a key={i} href={link.href} className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] hover:text-[#04330B] whitespace-nowrap transition-colors">
+                                <a
+                                    key={i}
+                                    href={link.href}
+                                    className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] hover:text-[#04330B] transition-colors"
+                                >
                                     {link.label}
                                 </a>
                             ))}
@@ -82,12 +86,12 @@ export const Footer = () => {
 
                     <div className="h-[32px] lg:h-[48px]"></div>
 
-                    <div className="flex flex-col gap-[20px] w-full lg:w-[312px]">
-                        <h3 className="w-[200px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] whitespace-nowrap">
+                    <div className="flex flex-col gap-[20px] w-full">
+                        <h3 className="font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                             {t.footer.additional}
                         </h3>
 
-                        <div className="w-full lg:w-[312px] flex flex-col gap-2 lg:gap-1">
+                        <div className="w-full flex flex-col gap-2">
                             {[
                                 t.footer.audit,
                                 t.footer.eci,
@@ -105,8 +109,8 @@ export const Footer = () => {
                     </div>
                 </ScrollReveal>
 
-                <ScrollReveal animation="fade-up" duration={800} delay={400} className="flex flex-col w-full lg:w-[35%] shrink-0 mt-10 lg:mt-0">
-                    <h3 className="w-[134px] h-[30px] font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] mb-[20px]">
+                <ScrollReveal animation="fade-up" duration={800} delay={400} className="flex flex-col w-full min-w-0 md:col-span-2 xl:col-span-1">
+                    <h3 className="font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B] mb-[20px]">
                         {t.footer.contact}
                     </h3>
 
@@ -115,7 +119,7 @@ export const Footer = () => {
                             <div className="w-[48px] h-[48px] shrink-0 rounded-[8px] border border-[#E4F2EA] bg-white flex items-center justify-center text-[#04330B] p-[12px]">
                                 <MapPin size={24} strokeWidth={1.5} />
                             </div>
-                            <p className="w-full lg:w-[321px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70">
+                            <p className="min-w-0 flex-1 font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#04330B] opacity-70 break-words">
                                 {t.footer.address || "Ham Badlenge Bhawan, 02 Mission Compound, Ajmer Puliya, Jaipur, Rajasthan"}
                             </p>
                         </div>
