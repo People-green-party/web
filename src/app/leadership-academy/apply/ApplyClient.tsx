@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { AcademyShell } from "@/components/leadership-academy/AcademyShell";
-import { SectionHeading } from "@/components/leadership-academy/SectionHeading";
 import { DEPARTMENTS } from "@/data/leadership-academy/departments";
 import { getAcademyI18n } from "@/data/leadership-academy/i18n";
 import { useLanguage } from "@/components/LanguageContext";
@@ -100,8 +99,10 @@ export default function LeadershipAcademyApplyPage() {
     }
   };
 
-  const fieldClass =
-    "mt-2 w-full rounded-[8px] border border-[#E4F2EA] bg-[#F8FBF9] px-4 py-3 font-['Familjen_Grotesk'] text-[15px] font-medium text-[#04330B] outline-none focus:border-[#0D5229] focus:ring-2 focus:ring-[#0D5229]/15 disabled:opacity-60";
+  const inputClass =
+    "w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none bg-white disabled:opacity-60";
+  const selectClass =
+    "w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#587E67] bg-white outline-none disabled:opacity-60 appearance-none";
 
   const successBody = a.successBody
     .replace("{name}", form.fullName || a.applicantFallback)
@@ -110,243 +111,242 @@ export default function LeadershipAcademyApplyPage() {
       applicationId ? a.idPart.replace("{id}", String(applicationId)) : ""
     );
 
+  const sidebarSteps = [
+    { n: 1, label: a.journeySteps[0]?.title || "Application", active: !submitted },
+    { n: 2, label: a.journeySteps[1]?.title || "Shortlisting", active: false },
+    { n: 3, label: a.journeySteps[4]?.title || "Programme Begins", active: submitted },
+  ];
+
   return (
     <AcademyShell>
-      <section className="bg-white w-full flex justify-center pt-[40px] lg:pt-[70px] pb-[20px]">
-        <div className="w-full max-w-[1320px] px-4 lg:px-8">
-          <p className="font-['Familjen_Grotesk'] text-[12px] lg:text-[14px] font-bold uppercase tracking-wider text-[#E85C2F]">
-            {a.tag}
-          </p>
-          <h1 className="mt-3 font-['Familjen_Grotesk'] font-semibold text-[36px] md:text-[48px] lg:text-[56px] leading-[1.1] tracking-[-0.3px] text-[#04330B]">
-            {a.title}
+      <div className="w-full bg-[#F7FCF9] text-gray-800 flex flex-col items-center font-['Familjen_Grotesk']">
+        <main className="w-full max-w-[1200px] px-4 lg:px-8 mt-[28px] mb-12 lg:mb-24 flex flex-col items-center">
+          <h1 className="text-center font-semibold text-[28px] lg:text-[44px] leading-tight tracking-[-0.3px] text-[#04330B] max-w-[880px] flex flex-col gap-3 lg:gap-2">
+            {a.heroTitle.split("\n").map((line: string, index: number) => (
+              <span key={index}>{line}</span>
+            ))}
           </h1>
-          <p className="mt-4 max-w-2xl font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[18px] text-[#587E67]">
-            {a.intro}
-          </p>
-        </div>
-      </section>
 
-      <section className="bg-white w-full flex justify-center py-[30px] lg:py-[40px]">
-        <div className="w-full max-w-[720px] px-4 lg:px-8">
-          <div className="rounded-[16px] border border-[#B9D3C4] bg-white p-5 sm:p-6">
-            <h2 className="font-['Familjen_Grotesk'] font-semibold text-[18px] text-[#04330B] mb-4">
-              {a.infoTitle}
-            </h2>
-            <div className="grid sm:grid-cols-2 gap-5">
-              <div>
-                <p className="font-['Familjen_Grotesk'] text-[12px] font-bold uppercase tracking-wider text-[#0D5229]">
-                  {a.eligibilityTitle}
-                </p>
-                <ul className="mt-2 space-y-1.5">
-                  {a.eligibility.map((item) => (
-                    <li key={item} className="flex gap-2 font-['Familjen_Grotesk'] text-[13px] text-[#587E67]">
-                      <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-[#0D5229]" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <p className="font-['Familjen_Grotesk'] text-[12px] font-bold uppercase tracking-wider text-[#0D5229]">
-                    {a.feeTitle}
-                  </p>
-                  <p className="mt-2 font-['Familjen_Grotesk'] text-[13px] text-[#587E67]">{a.feeBody}</p>
-                </div>
-                <div>
-                  <p className="font-['Familjen_Grotesk'] text-[12px] font-bold uppercase tracking-wider text-[#0D5229]">
-                    {a.intakeTitle}
-                  </p>
-                  <p className="mt-2 font-['Familjen_Grotesk'] text-[13px] text-[#587E67]">{a.intakeBody}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white w-full flex justify-center py-[40px] lg:py-[70px]">
-        <div className="w-full max-w-[720px] px-4 lg:px-8">
-          <SectionHeading title={a.formTitle} subtitle={a.formSubtitle} className="mb-[40px]" />
-
-          {submitted ? (
-            <div className="rounded-[20px] border border-[#B9D3C4] bg-white p-8 text-center">
-              <div className="mx-auto w-14 h-14 rounded-[12px] bg-[#EAF7EE] border border-[#E4F2EA] text-[#0D5229] flex items-center justify-center mb-4">
-                <CheckCircle2 size={28} />
-              </div>
-              <h3 className="font-['Familjen_Grotesk'] font-semibold text-[28px] text-[#04330B]">
-                {a.successTitle}
-              </h3>
-              <p className="mt-3 font-['Familjen_Grotesk'] font-medium text-[16px] text-[#587E67]">
-                {successBody}
-              </p>
-              {emailSent ? (
-                <p className="mt-2 font-['Familjen_Grotesk'] text-[14px] font-semibold text-[#0D5229]">
-                  {a.successEmailNote}
-                </p>
-              ) : null}
-              <Link
-                href="/leadership-academy"
-                className="mt-6 inline-flex items-center gap-2 px-[32px] py-[12px] bg-[#04330B] hover:bg-[#0D5229] text-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors"
-              >
-                {a.back} <ArrowRight size={18} />
-              </Link>
-            </div>
-          ) : (
-            <form
-              onSubmit={onSubmit}
-              className="space-y-5 rounded-[20px] border border-[#B9D3C4] bg-white p-6 sm:p-8 shadow-sm"
-            >
-              {[
-                { name: "fullName", label: a.fields.fullName, type: "text", required: true },
-                { name: "email", label: a.fields.email, type: "email", required: true },
-                { name: "phone", label: a.fields.phone, type: "tel", required: true, hint: a.phoneHint },
-                { name: "city", label: a.fields.city, type: "text", required: true },
-                { name: "college", label: a.fields.college, type: "text", required: false },
-              ].map((field) => (
-                <label key={field.name} className="block">
-                  <span className="font-['Familjen_Grotesk'] text-[14px] font-bold text-[#04330B]">
-                    {field.label}
-                    {field.required ? " *" : ""}
-                  </span>
-                  <input
-                    name={field.name}
-                    type={field.type}
-                    required={field.required}
-                    disabled={submitting}
-                    value={form[field.name as keyof typeof form]}
-                    onChange={onChange}
-                    className={fieldClass}
-                    inputMode={field.name === "phone" ? "numeric" : undefined}
-                    autoComplete={field.name === "phone" ? "tel" : undefined}
-                  />
-                  {"hint" in field && field.hint ? (
-                    <span className="mt-1 block font-['Familjen_Grotesk'] text-[12px] text-[#587E67]">
-                      {field.hint}
-                    </span>
-                  ) : null}
-                </label>
-              ))}
-
-              <label className="block relative z-10">
-                <span className="font-['Familjen_Grotesk'] text-[14px] font-bold text-[#04330B]">
-                  {a.fields.department} *
-                </span>
-                <div className="relative mt-2">
-                  <select
-                    name="department"
-                    required
-                    disabled={submitting}
-                    value={form.department}
-                    onChange={onChange}
-                    className={`${fieldClass} mt-0 appearance-none pr-10 bg-[#F8FBF9] text-[#04330B] [color-scheme:light]`}
-                    style={{
-                      // Force light native picker chrome (fixes dark/misplaced mobile dropdown)
-                      colorScheme: "light",
-                      WebkitAppearance: "none",
-                      MozAppearance: "none",
-                    }}
-                  >
-                    <option value="" disabled>
-                      {a.fields.selectDepartment}
-                    </option>
-                    {DEPARTMENTS.map((d) => (
-                      <option key={d.slug} value={d.slug} className="bg-white text-[#04330B]">
-                        {d.number}. {t.deptNames[d.slug].name}
-                      </option>
-                    ))}
-                  </select>
-                  <span
-                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#04330B]"
-                    aria-hidden
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
-                  </span>
-                </div>
-              </label>
-
-              <fieldset>
-                <legend className="font-['Familjen_Grotesk'] text-[14px] font-bold text-[#04330B]">
-                  {a.fields.mode} *
-                </legend>
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  {[
-                    { value: "offline", label: a.fields.offline },
-                    { value: "hybrid", label: a.fields.hybrid },
-                  ].map((mode) => (
-                    <label
-                      key={mode.value}
-                      className={`rounded-[8px] border px-4 py-3 cursor-pointer font-['Familjen_Grotesk'] text-[14px] font-bold ${
-                        form.mode === mode.value
-                          ? "border-[#04330B] bg-[#EAF7EE] text-[#04330B]"
-                          : "border-[#E4F2EA] bg-[#F8FBF9] text-[#587E67]"
-                      }`}
+          <section className="w-full mt-10 bg-white rounded-[28px] border border-[#E4F2EA] shadow-[0px_20px_60px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col lg:flex-row">
+            <div className="lg:w-[360px] w-full bg-[#04330B] text-white p-10 flex flex-col justify-between">
+              <div className="space-y-6">
+                {sidebarSteps.map((s) => (
+                  <div key={s.n} className="flex items-center gap-3">
+                    <div
+                      className={
+                        s.active
+                          ? "w-7 h-7 rounded-full bg-[#10B981] text-[#04330B] flex items-center justify-center font-bold"
+                          : "w-7 h-7 rounded-full bg-white/20 flex items-center justify-center font-bold"
+                      }
                     >
-                      <input
-                        type="radio"
-                        name="mode"
-                        value={mode.value}
-                        checked={form.mode === mode.value}
-                        onChange={onChange}
-                        disabled={submitting}
-                        className="sr-only"
-                      />
-                      {mode.label}
-                    </label>
-                  ))}
+                      {s.n}
+                    </div>
+                    <div className={s.active ? "font-semibold" : "font-semibold opacity-60"}>
+                      {s.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-10">
+                <img src="/PGPlogo.svg" alt="PGP" className="w-[120px] opacity-90" />
+                <div className="mt-4 text-[12px] text-white/70 italic">
+                  &ldquo;Together we represent the power of choice and the future of Rajasthan.&rdquo;
                 </div>
-              </fieldset>
+              </div>
+            </div>
 
-              <label className="block">
-                <span className="font-['Familjen_Grotesk'] text-[14px] font-bold text-[#04330B]">
-                  {a.fields.motivation} *
-                </span>
-                <textarea
-                  name="motivation"
-                  required
-                  rows={4}
-                  minLength={10}
-                  disabled={submitting}
-                  value={form.motivation}
-                  onChange={onChange}
-                  className={`${fieldClass} resize-y`}
-                />
-              </label>
+            <div className="flex-1 p-8 lg:p-12">
+              {submitted ? (
+                <div className="mt-4 max-w-[520px] mx-auto text-center">
+                  <div className="mx-auto w-16 h-16 rounded-full bg-[#EAF7EE] flex items-center justify-center text-[#10B981]">
+                    <CheckCircle2 size={28} />
+                  </div>
+                  <div className="mt-6 text-[22px] font-bold text-[#04330B]">{a.successTitle}</div>
+                  <p className="mt-2 text-[#587E67] font-semibold">{successBody}</p>
+                  {emailSent ? (
+                    <p className="mt-2 text-[14px] font-semibold text-[#0D5229]">{a.successEmailNote}</p>
+                  ) : null}
+                  <Link
+                    href="/leadership-academy"
+                    className="mt-8 inline-flex items-center justify-center gap-2 w-full max-w-[280px] h-[50px] rounded-[12px] bg-[#04330B] text-white font-semibold"
+                  >
+                    {a.back} <ArrowRight size={18} />
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  <div className="text-center">
+                    <div className="text-[18px] font-bold text-[#04330B]">{a.newApplication}</div>
+                  </div>
 
-              {error ? (
-                <p className="rounded-[8px] border border-red-200 bg-red-50 px-4 py-3 font-['Familjen_Grotesk'] text-[14px] font-medium text-red-700">
-                  {error}
-                </p>
-              ) : null}
+                  <div className="mt-8 mb-5 max-w-[520px] mx-auto">
+                    <form className="space-y-6" onSubmit={onSubmit}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          name="fullName"
+                          required
+                          disabled={submitting}
+                          value={form.fullName}
+                          onChange={onChange}
+                          className={inputClass}
+                          placeholder={a.fields.fullName}
+                          autoComplete="name"
+                        />
+                        <input
+                          type="email"
+                          name="email"
+                          required
+                          disabled={submitting}
+                          value={form.email}
+                          onChange={onChange}
+                          className={inputClass}
+                          placeholder={a.fields.email}
+                          autoComplete="email"
+                        />
+                      </div>
 
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full inline-flex items-center justify-center gap-2 px-[32px] py-[14px] bg-[#04330B] hover:bg-[#0D5229] disabled:opacity-60 disabled:pointer-events-none text-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors shadow-xl"
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" /> {a.saving}
-                  </>
-                ) : (
-                  <>
-                    {a.submit} <ArrowRight size={18} />
-                  </>
-                )}
-              </button>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-[70px_1fr] gap-3 min-w-0">
+                          <div className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-3 flex items-center justify-center font-semibold text-[#587E67] bg-white">
+                            +91
+                          </div>
+                          <input
+                            type="tel"
+                            name="phone"
+                            required
+                            disabled={submitting}
+                            value={form.phone}
+                            onChange={(e) => {
+                              const digits = e.target.value.replace(/\D/g, "");
+                              const normalized = digits.startsWith("91")
+                                ? digits.slice(2)
+                                : digits.startsWith("0")
+                                  ? digits.slice(1)
+                                  : digits;
+                              setForm((prev) => ({ ...prev, phone: normalized.slice(0, 10) }));
+                              if (error) setError("");
+                            }}
+                            inputMode="numeric"
+                            className={`${inputClass} min-w-0`}
+                            placeholder={a.fields.phone}
+                            autoComplete="tel"
+                          />
+                        </div>
+                        <input
+                          type="text"
+                          name="city"
+                          required
+                          disabled={submitting}
+                          value={form.city}
+                          onChange={onChange}
+                          className={inputClass}
+                          placeholder={a.fields.city}
+                          autoComplete="address-level2"
+                        />
+                      </div>
 
-              <p className="text-center font-['Familjen_Grotesk'] text-[12px] font-medium text-[#587E67]">
-                {a.agreement}{" "}
-                <Link href="/leadership-academy/faq" className="text-[#04330B] font-bold">
-                  {a.readFaq}
-                </Link>
-              </p>
-            </form>
-          )}
-        </div>
-      </section>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input
+                          type="text"
+                          name="college"
+                          disabled={submitting}
+                          value={form.college}
+                          onChange={onChange}
+                          className={inputClass}
+                          placeholder={a.fields.college}
+                        />
+                        <div className="relative">
+                          <select
+                            name="department"
+                            required
+                            disabled={submitting}
+                            value={form.department}
+                            onChange={onChange}
+                            className={`${selectClass} pr-10`}
+                          >
+                            <option value="" disabled>
+                              {a.fields.selectDepartment}
+                            </option>
+                            {DEPARTMENTS.map((d) => (
+                              <option key={d.slug} value={d.slug}>
+                                {d.number}. {t.deptNames[d.slug].name}
+                              </option>
+                            ))}
+                          </select>
+                          <span
+                            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#587E67]"
+                            aria-hidden
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                              <path d="M6 9l6 6 6-6" />
+                            </svg>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="relative">
+                        <select
+                          name="mode"
+                          required
+                          disabled={submitting}
+                          value={form.mode}
+                          onChange={onChange}
+                          className={`${selectClass} pr-10`}
+                        >
+                          <option value="offline">{a.fields.offline}</option>
+                          <option value="hybrid">{a.fields.hybrid}</option>
+                        </select>
+                        <span
+                          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#587E67]"
+                          aria-hidden
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M6 9l6 6 6-6" />
+                          </svg>
+                        </span>
+                      </div>
+
+                      <textarea
+                        name="motivation"
+                        required
+                        rows={4}
+                        minLength={10}
+                        disabled={submitting}
+                        value={form.motivation}
+                        onChange={onChange}
+                        className="w-full rounded-[10px] border border-[#DDEEE4] px-4 py-3 font-semibold text-[#04330B] outline-none bg-white resize-y disabled:opacity-60"
+                        placeholder={a.fields.motivation}
+                      />
+
+                      <button
+                        type="submit"
+                        disabled={submitting}
+                        className="w-full h-[50px] rounded-[12px] bg-[#04330B] text-white font-semibold disabled:opacity-60 inline-flex items-center justify-center gap-2"
+                      >
+                        {submitting ? (
+                          <>
+                            <Loader2 size={18} className="animate-spin" /> {a.saving}
+                          </>
+                        ) : (
+                          <>
+                            {a.submit} →
+                          </>
+                        )}
+                      </button>
+
+                      {error ? (
+                        <div className="text-center text-[12px] text-red-500 font-semibold">{error}</div>
+                      ) : null}
+                    </form>
+                  </div>
+                </>
+              )}
+            </div>
+          </section>
+        </main>
+      </div>
     </AcademyShell>
   );
 }
