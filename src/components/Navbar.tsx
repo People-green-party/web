@@ -1,12 +1,11 @@
 "use client";
 
 // Cache invalidation comment to clear Next.js server-side component pre-render caches
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { X, Menu, User, LogOut } from 'lucide-react'; // Added User icon
 import { useLanguage } from "./LanguageContext";
-import { getApiBaseUrl } from "../lib/api";
 
 interface NavbarProps {
     links?: { name: string; href: string; target?: string }[];
@@ -19,7 +18,6 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
     const { language, setLanguage, t } = useLanguage();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
 
@@ -69,50 +67,6 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
         if (href === '/') return pathname === '/';
         return pathname === href || pathname.startsWith(`${href}/`);
     };
-
-    useEffect(() => {
-        let cancelled = false;
-
-        const loadRole = async () => {
-            if (typeof window === 'undefined') return;
-            const token = window.localStorage.getItem('access_token');
-            if (!token) {
-                if (!cancelled) setIsAdmin(false);
-                return;
-            }
-            try {
-                const response = await fetch(`${getApiBaseUrl()}/users/me/summary`, {
-                    cache: 'no-store',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!response.ok) {
-                    if (response.status === 400 || response.status === 401) {
-                        window.localStorage.removeItem('access_token');
-                        window.localStorage.removeItem('user_info');
-                    }
-                    if (!cancelled) setIsAdmin(false);
-                    return;
-                }
-
-                const res: any = await response.json();
-                const role = res?.user?.role;
-                if (!cancelled) {
-                    setIsAdmin(role === 'Admin');
-                }
-            } catch {
-                if (!cancelled) setIsAdmin(false);
-            }
-        };
-
-        loadRole();
-
-        return () => {
-            cancelled = true;
-        };
-    }, []);
 
     return (
         <nav className={`bg-white fixed top-0 z-50 w-full ${isDashboard ? 'border-b border-[#04330B]/5' : ''}`}>
@@ -212,16 +166,6 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                         {language === 'en' ? 'HI' : 'EN'}
                     </div>
 
-                    {/* Admin Panel (desktop) */}
-                    {isAdmin && (
-                        <Link
-                            href="/admin/elections"
-                            className="hidden xl:flex items-center justify-center px-4 h-[38px] rounded-[8px] border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] leading-[20px] tracking-[-0.2px] hover:bg-green-50 transition-colors whitespace-nowrap"
-                        >
-                            Admin Panel
-                        </Link>
-                    )}
-
                     {/* Profile Button with Dropdown */}
                     {showProfileButton && (
                         <div className="relative">
@@ -282,12 +226,6 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
             {/* Mobile Menu Dropdown */}
             {isMenuOpen && (
                 <div className="xl:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg h-[calc(100vh-70px)] overflow-y-auto z-50">
-                    {isAdmin && (
-                        <Link href="/admin/elections" className="text-gray-800 font-semibold py-2 border-b border-gray-100 text-lg text-center w-full">
-                            Admin Panel
-                        </Link>
-                    )}
-
                     {links.map((link) => {
                         const isActive = isLinkActive(link.href);
                         return (

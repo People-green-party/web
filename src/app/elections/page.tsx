@@ -49,13 +49,8 @@ export default function ElectionsListPage() {
         <div className="rounded border border-gray-200 bg-white p-6 text-center">
           <p className="text-gray-700">No elections found.</p>
           <p className="text-sm text-gray-500 mt-1">
-            If you are an Admin, you can create a new election in the Admin Panel.
+            Check back later when an election is announced.
           </p>
-          <div className="mt-4">
-            <Link href="/admin/elections" className="inline-block bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded">
-              Go to Admin Elections
-            </Link>
-          </div>
         </div>
       )}
 
