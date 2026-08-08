@@ -4,7 +4,7 @@ import { FaqJsonLd } from "./FaqJsonLd";
 export const metadata: Metadata = {
   title: "FAQ",
   description:
-    "Frequently asked questions about PGP Leadership Academy — duration, fee, eligibility, modes, certificates and departments.",
+    "Frequently asked questions about PGP Internship — duration, fee, eligibility, modes, certificates and departments.",
 };
 
 export default function FaqLayout({ children }: { children: React.ReactNode }) {

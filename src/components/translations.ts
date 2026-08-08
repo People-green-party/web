@@ -16,9 +16,9 @@ export const translations = {
             leaders: "Leadership",
             news: "News & Press",
             press: "Press & Media",
-            union: "Union",
+            union: "Unions",
             youth: "Jinda Youth",
-            academy: "Academy"
+            academy: "Internships"
         },
         heroSlides: [
             {
@@ -294,9 +294,9 @@ export const translations = {
             leaders: "नेतृत्व",
             news: "समाचार और प्रेस",
             press: "प्रेस और मीडिया",
-            union: "यूनियन",
+            union: "यूनियन्स",
             youth: "जिंदा यूथ",
-            academy: "एकेडमी"
+            academy: "इंटर्नशिप"
         },
         heroSlides: [
             {

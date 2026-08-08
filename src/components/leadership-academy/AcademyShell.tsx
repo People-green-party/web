@@ -9,7 +9,7 @@ export function AcademyShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Always land at the top when opening Academy routes from the navbar
+    // Always land at the top when opening Internship routes from the navbar
     // (unless URL has an intentional hash like #departments)
     if (typeof window === "undefined") return;
     if (window.location.hash) return;

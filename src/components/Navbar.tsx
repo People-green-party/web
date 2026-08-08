@@ -57,9 +57,9 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
         { name: t.nav.leaders, href: '/leaders' },
         { name: t.nav.news, href: '/news' },
         { name: t.nav.constitution, href: '/constitution' },
-        { name: t.nav.union || 'Union', href: '/union' },
+        { name: t.nav.union || 'Unions', href: '/union' },
         { name: t.nav.youth || 'Jinda Youth', href: '/jinda-youth' },
-        { name: t.nav.academy || 'Academy', href: '/leadership-academy' },
+        { name: t.nav.academy || 'Internships', href: '/leadership-academy' },
         { name: t.nav.weAreAravali, href: 'https://wearearavali.org/', target: '_blank' },
     ];
 

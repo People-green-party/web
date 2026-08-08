@@ -36,7 +36,7 @@ export function JourneyTimeline({ steps, labels }: Props) {
   const nextLabel = labels?.next || "Next step";
 
   useEffect(() => {
-    // Don't scroll the page on first mount (navbar → Academy was jumping to this section)
+    // Don't scroll the page on first mount (navbar → Internships was jumping to this section)
     if (skipScrollRef.current) {
       skipScrollRef.current = false;
       return;
