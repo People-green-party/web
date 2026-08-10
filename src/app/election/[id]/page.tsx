@@ -342,6 +342,14 @@ const ElectionVotingContent = () => {
     const [candidates, setCandidates] = useState<Candidate[]>([]);
     const [votingState, setVotingState] = useState<'selection' | 'confirm' | 'verify' | 'success'>('selection');
     const [isLoading, setIsLoading] = useState(true);
+    const [electionMeta, setElectionMeta] = useState<{
+        title: string;
+        dateLabel: string;
+        timeRemaining: string;
+        status?: string;
+    } | null>(null);
+    const [memberPhone, setMemberPhone] = useState('');
+    const [voteError, setVoteError] = useState('');
 
     // Filters State
     const [searchQuery, setSearchQuery] = useState('');
@@ -366,9 +374,10 @@ const ElectionVotingContent = () => {
                 setIsLoading(true);
                 const res: any = await fetchApi(`elections/${electionId}`);
                 const apiCandidates = Array.isArray(res?.candidates) ? res.candidates : [];
+                const election = res?.election || res;
 
                 const mapped: Candidate[] = apiCandidates.map((c: any) => ({
-                    id: String(c.user?.id ?? c.id),
+                    id: String(c.user?.id ?? c.userId ?? c.id),
                     name: { en: c.user?.name ?? '', hi: c.user?.name ?? '' },
                     role: { en: '', hi: '' },
                     image: null,
@@ -395,6 +404,26 @@ const ElectionVotingContent = () => {
                 ];
 
                 if (!cancelled) {
+                    const title = [election?.councilLevel, election?.position].filter(Boolean).join(' · ') || t.election;
+                    const opened = election?.openedAt || election?.createdAt;
+                    const closed = election?.closedAt;
+                    const dateLabel = opened
+                        ? `${new Date(opened).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}${
+                            closed
+                              ? ` – ${new Date(closed).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                              : ' – ongoing'
+                          }`
+                        : t.date;
+                    let timeRemaining = t.timeRemaining;
+                    if (election?.status === 'Closed' || election?.status === 'closed') {
+                        timeRemaining = 'Closed';
+                    } else if (closed) {
+                        const days = Math.max(0, Math.ceil((+new Date(closed) - Date.now()) / 86400000));
+                        timeRemaining = days === 0 ? 'Closing soon' : `${days} day(s) remaining`;
+                    } else if (opened) {
+                        timeRemaining = 'Open for voting';
+                    }
+                    setElectionMeta({ title, dateLabel, timeRemaining, status: election?.status });
                     setCandidates(withNota);
                     setIsLoading(false);
                 }
@@ -413,6 +442,46 @@ const ElectionVotingContent = () => {
             cancelled = true;
         };
     }, [electionId]);
+
+    React.useEffect(() => {
+        try {
+            const raw = typeof window !== 'undefined' ? localStorage.getItem('user_info') : null;
+            if (raw) {
+                const u = JSON.parse(raw);
+                const phone = String(u?.phone || '').replace(/\D/g, '');
+                if (phone) setMemberPhone(phone.slice(-10));
+            }
+        } catch {
+            // ignore
+        }
+        // Prefer live profile when available
+        fetchApi('users/me')
+            .then((me: any) => {
+                const phone = String(me?.phone || '').replace(/\D/g, '');
+                if (phone) setMemberPhone(phone.slice(-10));
+            })
+            .catch(() => {});
+    }, []);
+
+    const submitVoteToApi = async () => {
+        setVoteError('');
+        const selected = candidates.filter((c) => c.selected && !c.isNota);
+        const notaOnly = candidates.some((c) => c.selected && c.isNota) && selected.length === 0;
+        if (notaOnly) {
+            throw new Error('NOTA is not available for online submission yet. Please select at least one candidate.');
+        }
+        const candidateUserIds = selected
+            .map((c) => parseInt(c.id, 10))
+            .filter((id) => Number.isFinite(id) && id > 0);
+        if (!candidateUserIds.length) {
+            throw new Error('Please select at least one candidate before submitting.');
+        }
+        if (!electionId) throw new Error('Invalid election');
+        await fetchApi(`elections/${electionId}/vote`, {
+            method: 'POST',
+            body: JSON.stringify({ candidateUserIds }),
+        });
+    };
 
     // --- Logic ---
 
@@ -530,19 +599,19 @@ const ElectionVotingContent = () => {
 
                 {/* Header Section */}
                 <div className="w-full max-w-[1320px] flex flex-col gap-[16px] px-0 lg:px-0">
-                    <h1 className="w-full h-auto lg:w-[575px] lg:h-[72px] font-['Familjen_Grotesk'] font-semibold text-[32px] lg:text-[64px] leading-tight lg:leading-[72px] tracking-[-0.3px] text-[#04330B] whitespace-normal lg:whitespace-nowrap">
-                        {t.election}
+                    <h1 className="w-full max-w-full font-['Familjen_Grotesk'] font-semibold text-[28px] sm:text-[36px] lg:text-[48px] leading-tight tracking-[-0.3px] text-[#04330B]">
+                        {electionMeta?.title || t.election}
                     </h1>
 
                     <div className="flex flex-wrap items-center gap-[16px] h-auto lg:h-[24px]">
                         <div className="flex items-center gap-[8px] text-[#587E67] font-['Familjen_Grotesk'] font-semibold text-[14px] lg:text-[16px]">
                             <Clock size={18} />
-                            <span>{t.date}</span>
+                            <span>{electionMeta?.dateLabel || t.date}</span>
                         </div>
                         <div className="w-[6px] h-[6px] rounded-full bg-[#587E67] hidden md:block" />
                         <div className="flex items-center gap-[8px] text-[#587E67] font-['Familjen_Grotesk'] font-semibold text-[14px] lg:text-[16px]">
                             <Calendar size={18} />
-                            <span>{t.timeRemaining}</span>
+                            <span>{electionMeta?.timeRemaining || t.timeRemaining}</span>
                         </div>
                         <div className="w-[6px] h-[6px] rounded-full bg-[#587E67] hidden md:block" />
                         <div className="flex items-center gap-[8px] text-[#587E67] font-['Familjen_Grotesk'] font-semibold text-[14px] lg:text-[16px]">
@@ -657,13 +726,27 @@ const ElectionVotingContent = () => {
             )}
             {votingState === 'verify' && (
                 <VerifyMobileModal
+                    initialPhone={memberPhone}
                     onCancel={() => setVotingState('confirm')}
-                    onVerify={() => setVotingState('success')}
+                    onVerify={async () => {
+                        try {
+                            await submitVoteToApi();
+                            setVotingState('success');
+                        } catch (e: any) {
+                            setVoteError(e?.message || 'Failed to submit vote');
+                            throw e;
+                        }
+                    }}
                 />
             )}
             {votingState === 'success' && (
                 <VotingSuccessModal />
             )}
+            {voteError && votingState !== 'success' ? (
+                <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[60] max-w-md w-[90%] rounded-xl bg-red-600 text-white px-4 py-3 text-sm font-semibold shadow-lg">
+                    {voteError}
+                </div>
+            ) : null}
         </div>
     );
 };

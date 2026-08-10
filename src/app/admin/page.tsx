@@ -1,151 +1,480 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import {
-  Users, Target, Swords, ClipboardList, ShieldCheck,
-  BarChart3, LogOut, ChevronRight, AlertTriangle, Flag, GraduationCap,
-} from 'lucide-react';
+  Users,
+  GraduationCap,
+  AlertTriangle,
+  Flag,
+  ShieldCheck,
+  ClipboardList,
+  Loader2,
+  Swords,
+  Target,
+  RefreshCw,
+} from "lucide-react";
+import { ADMIN_API, adminFetch, getAdminToken } from "@/lib/adminApi";
 
-function normalizeApiBaseUrl(base: string) {
-  const c = String(base || '').replace(/\/$/, '');
-  if (!c) return 'http://localhost:3002/v1';
-  if (c.endsWith('/v1')) return c;
-  return `${c}/v1`;
-}
-const API = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3002');
-
-type Stats = {
+type YouthStats = {
   totalYouth?: number;
   pendingIssues?: number;
   flaggedMembers?: number;
+  escalatedIssues?: number;
 };
 
-const NAV_SECTIONS = [
-  {
-    title: 'Youth Front · JINDA',
-    color: 'from-[#04330B] to-[#16A34A]',
-    items: [
-      { href: '/admin/youth',               icon: BarChart3,    label: 'Dashboard',           desc: 'XP stats, issues, action queue' },
-      { href: '/admin/youth/squads',        icon: Users,        label: 'Squads',              desc: 'Approve, reject, freeze squads' },
-      { href: '/admin/youth/squad-missions',icon: Swords,       label: 'Squad Missions',      desc: 'Approve squad mission submissions' },
-      { href: '/admin/youth/missions',      icon: Target,       label: 'Mission Approvals',   desc: 'Approve individual mission proofs' },
-      { href: '/admin/youth/action-queue',  icon: AlertTriangle,label: 'Action Queue',        desc: 'P0/P1 issues needing attention' },
-    ],
-  },
-  {
-    title: 'General',
-    color: 'from-[#1E3A5F] to-[#2563EB]',
-    items: [
-      { href: '/admin/users',       icon: Users,        label: 'Members',       desc: 'Search and manage all members' },
-      { href: '/admin/leadership-academy', icon: GraduationCap, label: 'Internships', desc: 'Review internship applications & status' },
-      { href: '/admin/audit-logs',  icon: ClipboardList,label: 'Audit Logs',    desc: 'Full system audit trail' },
-      { href: '/admin/elections',   icon: ShieldCheck,  label: 'Elections',     desc: 'Manage election candidates and results' },
-      { href: '/admin/committees',  icon: Flag,         label: 'Committees',    desc: 'Manage committees and wings' },
-    ],
-  },
-];
+type InternshipApp = {
+  id: number;
+  fullName: string;
+  department: string;
+  status: string;
+  mode: string;
+  createdAt: string;
+  city?: string;
+};
+
+type Election = { id: number; status?: string; councilLevel?: string; position?: string };
+type AuditLog = { id: number; action?: string; entityType?: string; createdAt?: string };
+type Countish = { total?: number; items?: any[]; data?: any[] } | any[];
+
+const STATUS_STYLE: Record<string, string> = {
+  pending: "bg-sky-50 text-sky-700",
+  reviewed: "bg-amber-50 text-amber-700",
+  accepted: "bg-emerald-50 text-emerald-700",
+  rejected: "bg-red-50 text-red-700",
+  waitlisted: "bg-purple-50 text-purple-700",
+};
+
+function asList(data: Countish): any[] {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray((data as any)?.items)) return (data as any).items;
+  if (Array.isArray((data as any)?.data)) return (data as any).data;
+  return [];
+}
+
+function asTotal(data: Countish): number {
+  if (Array.isArray(data)) return data.length;
+  if (typeof (data as any)?.total === "number") return (data as any).total;
+  return asList(data).length;
+}
+
+function actionQueueTotal(data: any): number {
+  if (!data || typeof data !== "object") return 0;
+  if (Array.isArray(data)) return data.length;
+  const keys = [
+    "p0Issues",
+    "p1Issues",
+    "highDuplicateIssues",
+    "sensitiveIssues",
+    "followUpOverdue",
+  ];
+  return keys.reduce((sum, key) => sum + (Array.isArray(data[key]) ? data[key].length : 0), 0);
+}
 
 export default function AdminPage() {
-  const router  = useRouter();
-  const [stats, setStats]     = useState<Stats>({});
-  const [authed, setAuthed]   = useState(false);
-  const [checking, setChecking] = useState(true);
+  const [youth, setYouth] = useState<YouthStats>({});
+  const [apps, setApps] = useState<InternshipApp[]>([]);
+  const [elections, setElections] = useState<Election[]>([]);
+  const [audit, setAudit] = useState<AuditLog[]>([]);
+  const [pendingSquads, setPendingSquads] = useState(0);
+  const [pendingMissions, setPendingMissions] = useState(0);
+  const [pendingSquadMissions, setPendingSquadMissions] = useState(0);
+  const [actionQueueCount, setActionQueueCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken') || sessionStorage.getItem('admin_access_token');
-    if (!token) {
-      router.replace('/admin/login');
-      return;
+  const load = async () => {
+    const token = getAdminToken();
+    if (!token) return;
+    setError("");
+    try {
+      const [
+        youthDash,
+        applications,
+        electionList,
+        auditLogs,
+        squads,
+        missions,
+        squadMissions,
+        actionQueue,
+      ] = await Promise.all([
+        adminFetch<YouthStats>("admin/youth/dashboard").catch(() => ({})),
+        adminFetch<InternshipApp[]>("leadership-academy/applications").catch(() => []),
+        fetch(`${ADMIN_API}/elections`, { cache: "no-store" })
+          .then((r) => (r.ok ? r.json() : []))
+          .catch(() => []),
+        adminFetch<{ logs?: AuditLog[] } | AuditLog[]>("audit/logs?limit=12").catch(() => ({ logs: [] })),
+        adminFetch<Countish>("admin/youth/squads?status=PendingVerification&limit=1").catch(() => ({ total: 0 })),
+        adminFetch<Countish>("admin/youth/mission-submissions?status=submitted&limit=1").catch(() => ({
+          total: 0,
+        })),
+        adminFetch<Countish>("admin/youth/squad-missions?status=submitted&limit=1").catch(() => ({
+          total: 0,
+        })),
+        adminFetch<Countish>("admin/youth/action-queue").catch(() => []),
+      ]);
+
+      setYouth(youthDash || {});
+      setApps(Array.isArray(applications) ? applications : []);
+      setElections(Array.isArray(electionList) ? electionList : []);
+      setAudit(
+        Array.isArray(auditLogs)
+          ? auditLogs
+          : Array.isArray((auditLogs as any)?.logs)
+            ? (auditLogs as any).logs
+            : asList(auditLogs)
+      );
+      setPendingSquads(asTotal(squads));
+      setPendingMissions(asTotal(missions));
+      setPendingSquadMissions(asTotal(squadMissions));
+      setActionQueueCount(actionQueueTotal(actionQueue));
+    } catch (e: any) {
+      setError(e?.message || "Could not load dashboard data");
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
-    setAuthed(true);
-    setChecking(false);
-
-    // Load quick stats
-    fetch(`${API}/admin/youth/dashboard`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then((d) => setStats(d))
-      .catch(() => {});
-  }, [router]);
-
-  const logout = () => {
-    localStorage.removeItem('adminToken');
-    sessionStorage.clear();
-    router.push('/admin/login');
   };
 
-  if (checking) {
-    return <div className="min-h-screen bg-[#F0FBF4] flex items-center justify-center text-[#587E67] font-semibold">Checking access...</div>;
+  useEffect(() => {
+    load();
+  }, []);
+
+  const internshipStats = useMemo(() => {
+    const total = apps.length;
+    const pending = apps.filter((a) => a.status === "pending").length;
+    const accepted = apps.filter((a) => a.status === "accepted").length;
+    const rejected = apps.filter((a) => a.status === "rejected").length;
+    const reviewed = apps.filter((a) => a.status === "reviewed").length;
+    const waitlisted = apps.filter((a) => a.status === "waitlisted").length;
+    return { total, pending, accepted, rejected, reviewed, waitlisted };
+  }, [apps]);
+
+  const openElections = useMemo(
+    () =>
+      elections.filter((e) => {
+        const s = String(e.status || "").toLowerCase();
+        return !s || s === "open" || s === "active" || s === "published";
+      }).length,
+    [elections]
+  );
+
+  const recent = useMemo(
+    () =>
+      [...apps]
+        .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))
+        .slice(0, 6),
+    [apps]
+  );
+
+  const deptBars = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const a of apps) {
+      const key = a.department || "Unknown";
+      map.set(key, (map.get(key) || 0) + 1);
+    }
+    const rows = [...map.entries()]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 6);
+    const max = Math.max(1, ...rows.map((r) => r.count));
+    return { rows, max };
+  }, [apps]);
+
+  const donut = useMemo(() => {
+    const parts = [
+      { key: "pending", label: "New", value: internshipStats.pending, color: "#38BDF8" },
+      { key: "reviewed", label: "Under Review", value: internshipStats.reviewed, color: "#F59E0B" },
+      { key: "accepted", label: "Accepted", value: internshipStats.accepted, color: "#16A34A" },
+      { key: "waitlisted", label: "Waitlisted", value: internshipStats.waitlisted, color: "#8B5CF6" },
+      { key: "rejected", label: "Rejected", value: internshipStats.rejected, color: "#EF4444" },
+    ];
+    const sum = parts.reduce((s, p) => s + p.value, 0) || 1;
+    let start = 0;
+    const segments = parts.map((p) => {
+      const pct = (p.value / sum) * 100;
+      const seg = { ...p, start, end: start + pct };
+      start += pct;
+      return seg;
+    });
+    return { segments, sum: parts.reduce((s, p) => s + p.value, 0) };
+  }, [internshipStats]);
+
+  const cards = [
+    {
+      label: "Internship Applications",
+      value: internshipStats.total,
+      icon: GraduationCap,
+      hint: `${internshipStats.pending} pending review`,
+      href: "/admin/leadership-academy",
+    },
+    {
+      label: "Youth Members",
+      value: youth.totalYouth ?? "—",
+      icon: Users,
+      hint: "Youth Front network",
+      href: "/admin/youth",
+    },
+    {
+      label: "Open Elections",
+      value: openElections,
+      icon: ShieldCheck,
+      hint: `${elections.length} total elections`,
+      href: "/admin/elections",
+    },
+    {
+      label: "Action Queue",
+      value: actionQueueCount,
+      icon: AlertTriangle,
+      hint: "Issues needing attention",
+      href: "/admin/youth/action-queue",
+    },
+    {
+      label: "Squad Approvals",
+      value: pendingSquads,
+      icon: Swords,
+      hint: "Pending squads",
+      href: "/admin/youth/squads",
+    },
+    {
+      label: "Mission Reviews",
+      value: pendingMissions + pendingSquadMissions,
+      icon: Target,
+      hint: `${pendingMissions} individual · ${pendingSquadMissions} squad`,
+      href: "/admin/youth/missions",
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24 text-[#587E67] gap-2 font-semibold">
+        <Loader2 className="animate-spin" size={18} /> Loading live party data…
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-[#F0FBF4]">
-      {/* Header */}
-      <div className="bg-[#04330B] text-white px-6 py-5 flex items-center justify-between">
-        <div>
-          <p className="text-xs font-bold tracking-widest text-[#86EFAC] uppercase">Jinda Youth</p>
-          <h1 className="text-xl font-black mt-0.5">Admin Panel</h1>
+    <div className="w-full max-w-full min-w-0 space-y-5 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-xl sm:text-2xl font-black text-[#04330B]">Party Dashboard</h2>
+          <p className="text-sm text-[#587E67] font-medium">
+            Live data — Internships, Youth Front, Elections and ops.
+          </p>
         </div>
         <button
-          onClick={logout}
-          className="flex items-center gap-2 text-sm text-[#86EFAC] hover:text-white transition-colors"
+          type="button"
+          onClick={() => {
+            setRefreshing(true);
+            load();
+          }}
+          className="inline-flex items-center gap-2 rounded-xl border border-[#DDEEE4] bg-white px-4 py-2.5 text-sm font-bold text-[#04330B] shrink-0"
         >
-          <LogOut size={15} />
-          Logout
+          <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} /> Refresh
         </button>
       </div>
 
-      {/* Quick stats */}
-      {(stats.totalYouth !== undefined) && (
-        <div className="bg-white border-b border-[#DDEEE4] px-6 py-4 grid grid-cols-3 gap-4 max-w-2xl mx-auto">
-          <div className="text-center">
-            <div className="text-2xl font-black text-[#04330B]">{stats.totalYouth ?? '—'}</div>
-            <div className="text-xs text-[#587E67] font-semibold mt-0.5">Total Youth</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-black text-yellow-600">{stats.pendingIssues ?? '—'}</div>
-            <div className="text-xs text-[#587E67] font-semibold mt-0.5">Pending Issues</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-black text-red-600">{stats.flaggedMembers ?? '—'}</div>
-            <div className="text-xs text-[#587E67] font-semibold mt-0.5">Flagged</div>
-          </div>
-        </div>
-      )}
+      {error ? (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+          {error}
+        </p>
+      ) : null}
 
-      <main className="max-w-2xl mx-auto px-5 py-8 space-y-8">
-        {NAV_SECTIONS.map((section) => (
-          <div key={section.title}>
-            <div className={`inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r ${section.color} text-white text-xs font-black tracking-widest uppercase mb-3`}>
-              {section.title}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
+        {cards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <Link
+              key={card.label}
+              href={card.href}
+              className="rounded-2xl border border-[#E4F2EA] bg-white p-4 sm:p-5 shadow-sm hover:border-[#16A34A] transition-colors min-w-0"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wide text-[#587E67]">
+                    {card.label}
+                  </p>
+                  <p className="mt-2 text-3xl font-black text-[#04330B]">{card.value}</p>
+                  <p className="mt-1 text-xs font-semibold text-[#94A3B8]">{card.hint}</p>
+                </div>
+                <div className="h-11 w-11 rounded-xl bg-[#EAF7EE] text-[#16A34A] flex items-center justify-center">
+                  <Icon size={20} />
+                </div>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <section className="rounded-2xl border border-[#E4F2EA] bg-white p-5 shadow-sm">
+          <h3 className="font-black text-[#04330B]">Internship Overview</h3>
+          <p className="text-xs text-[#587E67] font-medium mt-1">Real application status mix</p>
+          <div className="mt-6 flex flex-col items-center">
+            <div
+              className="h-40 w-40 rounded-full relative"
+              style={{
+                background: `conic-gradient(${donut.segments
+                  .map((s) => `${s.color} ${s.start}% ${s.end}%`)
+                  .join(", ")})`,
+              }}
+            >
+              <div className="absolute inset-4 rounded-full bg-white flex flex-col items-center justify-center">
+                <span className="text-2xl font-black text-[#04330B]">{donut.sum}</span>
+                <span className="text-[10px] font-bold uppercase text-[#94A3B8]">Total</span>
+              </div>
             </div>
-            <div className="space-y-2">
-              {section.items.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="flex items-center gap-4 bg-white rounded-2xl border border-[#DDEEE4] px-5 py-4 hover:border-[#16A34A] hover:shadow-sm transition-all group"
-                  >
-                    <div className="h-10 w-10 rounded-xl bg-[#DCFCE7] flex items-center justify-center shrink-0 group-hover:bg-[#BBF7D0] transition-colors">
-                      <Icon className="text-[#16A34A]" size={20} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-black text-[#04330B] text-sm">{item.label}</div>
-                      <div className="text-xs text-[#587E67] mt-0.5">{item.desc}</div>
-                    </div>
-                    <ChevronRight className="text-[#9CA3AF] group-hover:text-[#16A34A] shrink-0" size={18} />
-                  </Link>
-                );
-              })}
+            <div className="mt-5 w-full space-y-2">
+              {donut.segments.map((s) => (
+                <div key={s.key} className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-2 font-semibold text-[#04330B]">
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: s.color }} />
+                    {s.label}
+                  </span>
+                  <span className="font-bold text-[#587E67]">{s.value}</span>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
-      </main>
+        </section>
+
+        <section className="xl:col-span-2 rounded-2xl border border-[#E4F2EA] bg-white p-5 shadow-sm">
+          <div className="mb-4">
+            <h3 className="font-black text-[#04330B]">Recent Internship Applications</h3>
+            <p className="text-xs text-[#587E67] font-medium">Latest live submissions</p>
+          </div>
+
+          {recent.length === 0 ? (
+            <p className="py-12 text-center text-sm font-semibold text-[#94A3B8]">
+              No internship applications yet.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {recent.map((app) => (
+                <div
+                  key={app.id}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-[#F0F5F2] px-3 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="font-bold text-[#04330B] truncate">
+                      #{app.id} · {app.fullName}
+                    </p>
+                    <p className="text-xs text-[#587E67] font-medium truncate">
+                      {app.department} · {app.mode}
+                      {app.city ? ` · ${app.city}` : ""}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span
+                      className={`inline-flex text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                        STATUS_STYLE[app.status] || "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {app.status}
+                    </span>
+                    <p className="mt-1 text-[11px] text-[#94A3B8] font-medium">
+                      {new Date(app.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <section className="rounded-2xl border border-[#E4F2EA] bg-white p-5 shadow-sm">
+          <h3 className="font-black text-[#04330B]">Department-wise Applications</h3>
+          <p className="text-xs text-[#587E67] font-medium mt-1">From live internship data</p>
+          {deptBars.rows.length === 0 ? (
+            <p className="py-10 text-center text-sm font-semibold text-[#94A3B8]">No data yet.</p>
+          ) : (
+            <div className="mt-5 space-y-3">
+              {deptBars.rows.map((row) => (
+                <div key={row.name}>
+                  <div className="flex items-center justify-between text-sm mb-1">
+                    <span className="font-semibold text-[#04330B] truncate pr-3">{row.name}</span>
+                    <span className="font-bold text-[#587E67]">{row.count}</span>
+                  </div>
+                  <div className="h-2.5 rounded-full bg-[#F0F5F2] overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-[#16A34A]"
+                      style={{ width: `${(row.count / deptBars.max) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="rounded-2xl border border-[#E4F2EA] bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-black text-[#04330B]">Recent Audit Activity</h3>
+              <p className="text-xs text-[#587E67] font-medium">Live system trail</p>
+            </div>
+            <Link href="/admin/audit-logs" className="text-sm font-bold text-[#16A34A] hover:underline">
+              All logs
+            </Link>
+          </div>
+          {audit.length === 0 ? (
+            <p className="py-10 text-center text-sm font-semibold text-[#94A3B8]">No recent audit logs.</p>
+          ) : (
+            <div className="space-y-2">
+              {audit.slice(0, 8).map((log, idx) => (
+                <div
+                  key={log.id ?? idx}
+                  className="rounded-xl border border-[#F0F5F2] px-3 py-2.5 flex items-center justify-between gap-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-[#04330B] truncate">
+                      {log.action || "ACTION"}
+                    </p>
+                    <p className="text-xs text-[#587E67] font-medium truncate">
+                      {log.entityType || "Entity"}
+                    </p>
+                  </div>
+                  <p className="text-[11px] text-[#94A3B8] font-medium whitespace-nowrap">
+                    {log.createdAt ? new Date(log.createdAt).toLocaleString() : "—"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+
+      <section className="rounded-2xl border border-[#E4F2EA] bg-white p-5 shadow-sm">
+        <h3 className="font-black text-[#04330B] mb-1">Youth Front pulse</h3>
+        <p className="text-xs text-[#587E67] font-medium mb-4">Live ops counters</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { label: "Pending issues", value: youth.pendingIssues ?? "—", href: "/admin/youth/action-queue", icon: AlertTriangle },
+            { label: "Flagged members", value: youth.flaggedMembers ?? "—", href: "/admin/youth", icon: Flag },
+            { label: "Escalated", value: youth.escalatedIssues ?? "—", href: "/admin/youth/action-queue", icon: ClipboardList },
+          ].map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="rounded-xl border border-[#E4F2EA] bg-[#F8FBF9] px-4 py-3 hover:border-[#16A34A]"
+              >
+                <div className="flex items-center gap-2 text-[#16A34A]">
+                  <Icon size={16} />
+                  <span className="text-xs font-bold uppercase tracking-wide text-[#587E67]">
+                    {item.label}
+                  </span>
+                </div>
+                <p className="mt-2 text-2xl font-black text-[#04330B]">{item.value}</p>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
     </div>
   );
 }

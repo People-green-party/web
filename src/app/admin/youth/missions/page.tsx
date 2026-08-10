@@ -1,37 +1,11 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { Navbar } from "../../../../components/Navbar";
 import {
   CheckCircle2, XCircle, Clock, Filter, RefreshCw, ExternalLink,
   ChevronLeft, ChevronRight, Shield, Zap, AlertTriangle, Image as ImageIcon,
 } from "lucide-react";
-
-function normalizeApiBaseUrl(baseUrl: string) {
-  const cleaned = String(baseUrl || "").replace(/\/$/, "");
-  if (!cleaned) return "http://localhost:3002/v1";
-  if (cleaned.endsWith("/v1")) return cleaned;
-  return `${cleaned}/v1`;
-}
-
-const API = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002");
-
-async function adminFetch(path: string, opts: RequestInit = {}) {
-  const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
-  const res = await fetch(`${API}/${path}`, {
-    ...opts,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(opts.headers || {}),
-    },
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `HTTP ${res.status}`);
-  }
-  return res.json();
-}
+import { adminFetch } from "@/lib/adminApi";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ReactNode }> = {
   assigned:   { label: "Not started", color: "text-gray-500",  bg: "bg-gray-100",   icon: <Clock size={12} /> },
@@ -144,8 +118,7 @@ export default function AdminMissionsPage() {
   const pendingCount = submissions.filter((s) => s.status === "submitted").length;
 
   return (
-    <div className="min-h-screen bg-[#F5FBF7] font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px]">
-      <Navbar />
+    <div className="w-full max-w-full min-w-0 font-['Familjen_Grotesk']">
 
       {/* Toast */}
       {toast && (

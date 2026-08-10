@@ -779,7 +779,7 @@ const VisionCarousel = ({ language }: { language: string }) => {
             </div>
 
             <div 
-                className="relative w-full max-w-[1700px] flex items-center justify-center h-[550px]"
+                className="relative w-full max-w-[1700px] flex items-center justify-center h-[320px] sm:h-[420px] lg:h-[550px]"
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
             >

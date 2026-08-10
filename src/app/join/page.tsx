@@ -71,12 +71,12 @@ const translations = {
         subtitle: "Unite for Progress, Stand for a Better Tomorrow"
       },
       wizard: {
-        heroTitle: 'Become a Leader of Your Area\nJoin Our Leadership Program!',
+        heroTitle: 'Become a Leader of Your Area\nBuild Your Local Team!',
         newRegistration: 'New Registration',
         step1: 'Register Yourself',
         step2: 'OTP Verification',
         step3: 'Get Your ID Card',
-        step4: 'Leadership Program',
+        step4: 'Area Leadership',
         sendOtp: 'Send OTP →',
         sending: 'Sending...',
         back: '← Back',
@@ -88,7 +88,7 @@ const translations = {
         idReady: 'Your Digital ID Card is ready',
         downloadId: 'Download ID Card',
         proceedProgram: 'Proceed to Program →',
-        leadershipJoined: 'You have joined the Leadership Program!',
+        leadershipJoined: 'You have started your Area Leadership journey!',
         inviteTitle: 'Invite your 5 team members',
         inviteSubtitle: 'Share your link on WhatsApp to quickly recruit members from your Local Unit.',
         inviteShareText: 'Join Peoples Green Party using my invite link:',
@@ -105,7 +105,7 @@ const translations = {
         appointmentLocked: 'Recruit 5 members in your Local Unit to unlock your appointment letter.',
         appointmentParty: 'Peoples Green Party',
         appointmentDear: 'Dear',
-        appointmentBody: 'We are pleased to inform you that you have successfully completed the Leadership Program by recruiting 5 members in your Local Unit. You are hereby appointed as the CWC President for your area.',
+        appointmentBody: 'We are pleased to inform you that you have successfully completed the Area Leadership track by recruiting 5 members in your Local Unit. You are hereby appointed as the CWC President for your area.',
         appointmentDesignation: 'Designation',
         appointmentCwcPresident: 'CWC President',
         appointmentDate: 'Date',
@@ -185,12 +185,12 @@ const translations = {
         subtitle: "प्रगति के लिए एकजुट हों, बेहतर कल के लिए खड़े हों"
       },
       wizard: {
-        heroTitle: 'अपने क्षेत्र के लीडर बनें\nहमारे लीडरशिप प्रोग्राम से जुड़ें!',
+        heroTitle: 'अपने क्षेत्र के लीडर बनें\nअपनी लोकल टीम बनाएँ!',
         newRegistration: 'नया पंजीकरण',
         step1: 'पंजीकरण करें',
         step2: 'OTP सत्यापन',
         step3: 'अपना ID कार्ड प्राप्त करें',
-        step4: 'लीडरशिप प्रोग्राम',
+        step4: 'एरिया लीडरशिप',
         sendOtp: 'OTP भेजें →',
         sending: 'भेज रहे हैं...',
         back: '← वापस',
@@ -202,7 +202,7 @@ const translations = {
         idReady: 'आपका डिजिटल ID कार्ड तैयार है',
         downloadId: 'ID कार्ड डाउनलोड करें',
         proceedProgram: 'प्रोग्राम पर जाएँ →',
-        leadershipJoined: 'आप लीडरशिप प्रोग्राम में शामिल हो गए हैं!',
+        leadershipJoined: 'आपने एरिया लीडरशिप यात्रा शुरू कर दी है!',
         inviteTitle: 'अपने 5 टीम सदस्यों को आमंत्रित करें',
         inviteSubtitle: 'अपने लोकल यूनिट से सदस्यों को जल्दी जोड़ने के लिए WhatsApp पर अपना लिंक साझा करें।',
         inviteShareText: 'मेरे इनवाइट लिंक से Peoples Green Party से जुड़ें:',
@@ -219,7 +219,7 @@ const translations = {
         appointmentLocked: 'अपने लोकल यूनिट में 5 सदस्य जोड़कर नियुक्ति पत्र अनलॉक करें।',
         appointmentParty: 'पीपल्स ग्रीन पार्टी',
         appointmentDear: 'प्रिय',
-        appointmentBody: 'हमें यह बताते हुए खुशी हो रही है कि आपने अपने लोकल यूनिट में 5 सदस्यों को जोड़कर लीडरशिप प्रोग्राम सफलतापूर्वक पूरा कर लिया है। आपको आपके क्षेत्र के लिए CWC अध्यक्ष नियुक्त किया जाता है।',
+        appointmentBody: 'हमें यह बताते हुए खुशी हो रही है कि आपने अपने लोकल यूनिट में 5 सदस्यों को जोड़कर एरिया लीडरशिप ट्रैक सफलतापूर्वक पूरा कर लिया है। आपको आपके क्षेत्र के लिए CWC अध्यक्ष नियुक्त किया जाता है।',
         appointmentDesignation: 'पद',
         appointmentCwcPresident: 'CWC अध्यक्ष',
         appointmentDate: 'तारीख',
@@ -1194,7 +1194,7 @@ const JoinPageContent = () => {
                 <div className="text-[#587E67] font-semibold mt-1">{t.joinPage.wizard.idReady}</div>
 
                 <div className="mt-8" ref={idCardRef} id="pgp-capture-root">
-                  <div className="w-[360px] h-[210px] rounded-[18px] bg-gradient-to-br from-[#04330B] to-[#0B5A2A] p-5 text-white shadow-[0px_18px_40px_rgba(0,0,0,0.25)] relative overflow-hidden">
+                  <div className="w-full max-w-[360px] h-[210px] rounded-[18px] bg-gradient-to-br from-[#04330B] to-[#0B5A2A] p-5 text-white shadow-[0px_18px_40px_rgba(0,0,0,0.25)] relative overflow-hidden">
                     <div className="absolute -right-10 -top-10 w-[180px] h-[180px] rounded-full bg-white/10" />
                     <div className="absolute -left-10 -bottom-10 w-[140px] h-[140px] rounded-full bg-white/10" />
 
@@ -1225,14 +1225,14 @@ const JoinPageContent = () => {
                 <button
                   type="button"
                   onClick={() => downloadAsPng(idCardRef, `PGP-ID-${(meSummary?.user?.name || 'Member').replace(/\s+/g, '-')}.png`)}
-                  className="mt-6 w-[360px] h-[44px] rounded-[10px] border border-[#B9D3C4] text-[#04330B] font-semibold bg-[#F1FBF6]"
+                  className="mt-6 w-full max-w-[360px] h-[44px] rounded-[10px] border border-[#B9D3C4] text-[#04330B] font-semibold bg-[#F1FBF6]"
                 >
                   {t.joinPage.wizard.downloadId}
                 </button>
                 <button
                   type="button"
                   onClick={() => setStep(4)}
-                  className="mt-3 w-[360px] h-[50px] rounded-[12px] bg-[#04330B] text-white font-semibold"
+                  className="mt-3 w-full max-w-[360px] h-[50px] rounded-[12px] bg-[#04330B] text-white font-semibold"
                 >
                   {t.joinPage.wizard.proceedProgram}
                 </button>

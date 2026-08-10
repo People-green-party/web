@@ -24,14 +24,14 @@ const translations = {
       title: "Eight Principles of the Green Vision",
       subtitle: "Our Commitment to Balance, Progress, and Nature.",
       items: [
-        "The biggest priority of the Peoples Green Party is to give maximum representation to women, youth, and the working class. The party believes...",
-        "The Peoples Green Party has introduced a new working style that emphasizes honesty, transparency, and accountability in administration...",
-        "Through the Green Movement, efforts are being made to make people aware of environmental protection and to establish a balance between...",
-        "he Peoples Green Party believes that the development of rural and tribal areas is the real development of the country. The party has given...",
-        "against corruption, nepotism, and black money, the party has launched a strong movement. The party believes that corruption has hollowed the...",
-        "On the completion of 75 years of independence, the party has taken a pledge to establish a new governance system — one that will ensure true...",
-        "To strengthen national unity and brotherhood, the party has started a social harmony campaign. The party believes that religious and caste-base...",
-        "The Peoples Green Party is committed to removing unemployment and poverty by promoting cottage industries and self-employe..."
+        "The biggest priority of the Peoples Green Party is to give maximum representation to women, youth, and the working class. The party believes inclusive leadership is the foundation of true democracy.",
+        "The Peoples Green Party has introduced a new working style that emphasizes honesty, transparency, and accountability in administration at every level of governance.",
+        "Through the Green Movement, efforts are being made to make people aware of environmental protection and to establish a balance between development and nature.",
+        "The Peoples Green Party believes that the development of rural and tribal areas is the real development of the country. The party has given these regions special focus in its agenda.",
+        "Against corruption, nepotism, and black money, the party has launched a strong movement. The party believes that corruption has hollowed democratic institutions and must be uprooted.",
+        "On the completion of 75 years of independence, the party has taken a pledge to establish a new governance system — one that will ensure true equality, dignity, and opportunity for every citizen.",
+        "To strengthen national unity and brotherhood, the party has started a social harmony campaign. The party believes that religious and caste-based division weakens the nation.",
+        "The Peoples Green Party is committed to removing unemployment and poverty by promoting cottage industries and self-employment opportunities across the country."
       ]
     },
     vision: {
@@ -70,14 +70,14 @@ const translations = {
       title: "ग्रीन विजन के आठ सिद्धांत",
       subtitle: "संतुलन, प्रगति और प्रकृति के प्रति हमारी प्रतिबद्धता।",
       items: [
-        "पीपल्स ग्रीन पार्टी की सबसे बड़ी प्राथमिकता महिलाओं, युवाओं और श्रमिक वर्ग को अधिकतम प्रतिनिधित्व देना है। पार्टी का मानना है की...",
-        "पीपल्स ग्रीन पार्टी ने एक नई कार्यशैली पेश की है जो प्रशासन में ईमानदारी, पारदर्शिता और जवाबदेही पर जोर देती है...",
-        "ग्रीन मूवमेंट के माध्यम से, लोगों को पर्यावरण संरक्षण के प्रति जागरूक करने और संतुलन स्थापित करने के प्रयास किए जा रहे हैं...",
-        "पीपल्स ग्रीन पार्टी का मानना है कि ग्रामीण और आदिवासी क्षेत्रों का विकास ही देश का वास्तविक विकास है। पार्टी ने दिया है...",
-        "भ्रष्टाचार, भाई-भतीजावाद और काले धन के खिलाफ पार्टी ने एक मजबूत आंदोलन शुरू किया है। पार्टी का मानना है कि भ्रष्टाचार ने खोखला कर दिया है...",
-        "आजादी के 75 साल पूरे होने पर, पार्टी ने एक नई शासन प्रणाली स्थापित करने का संकल्प लिया है — जो सुनिश्चित करेगी सच्ची...",
-        "राष्ट्रीय एकता और भाईचारे को मजबूत करने के लिए, पार्टी ने सामाजिक सद्भाव अभियान शुरू किया है। पार्टी का मानना है कि धार्मिक और जाति-आधारित...",
-        "पीपल्स ग्रीन पार्टी कुटीर उद्योगों और स्वरोजगार को बढ़ावा देकर बेरोजगारी और गरीबी को दूर करने के लिए प्रतिबद्ध है..."
+        "पीपल्स ग्रीन पार्टी की सबसे बड़ी प्राथमिकता महिलाओं, युवाओं और श्रमिक वर्ग को अधिकतम प्रतिनिधित्व देना है। पार्टी का मानना है कि समावेशी नेतृत्व ही सच्ची लोकतंत्र की नींव है।",
+        "पीपल्स ग्रीन पार्टी ने एक नई कार्यशैली पेश की है जो प्रशासन के हर स्तर पर ईमानदारी, पारदर्शिता और जवाबदेही पर जोर देती है।",
+        "ग्रीन मूवमेंट के माध्यम से लोगों को पर्यावरण संरक्षण के प्रति जागरूक करने और विकास व प्रकृति के बीच संतुलन स्थापित करने के प्रयास किए जा रहे हैं।",
+        "पीपल्स ग्रीन पार्टी का मानना है कि ग्रामीण और आदिवासी क्षेत्रों का विकास ही देश का वास्तविक विकास है। पार्टी ने इन क्षेत्रों को अपने एजेंडे में विशेष प्राथमिकता दी है।",
+        "भ्रष्टाचार, भाई-भतीजावाद और काले धन के खिलाफ पार्टी ने एक मजबूत आंदोलन शुरू किया है। पार्टी का मानना है कि भ्रष्टाचार ने लोकतांत्रिक संस्थाओं को खोखला कर दिया है और इसे जड़ से उखाड़ना होगा।",
+        "आजादी के 75 साल पूरे होने पर, पार्टी ने एक नई शासन प्रणाली स्थापित करने का संकल्प लिया है — जो हर नागरिक के लिए सच्ची समानता, गरिमा और अवसर सुनिश्चित करे।",
+        "राष्ट्रीय एकता और भाईचारे को मजबूत करने के लिए, पार्टी ने सामाजिक सद्भाव अभियान शुरू किया है। पार्टी का मानना है कि धार्मिक और जाति-आधारित विभाजन राष्ट्र को कमजोर करता है।",
+        "पीपल्स ग्रीन पार्टी कुटीर उद्योगों और स्वरोजगार को बढ़ावा देकर देशभर में बेरोजगारी और गरीबी को दूर करने के लिए प्रतिबद्ध है।"
       ]
     },
     vision: {

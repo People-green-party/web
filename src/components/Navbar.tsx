@@ -93,7 +93,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                             </Link>
                         </div>
 
-                        <div className="hidden xl:flex flex-1 items-center justify-center gap-[4px] 2xl:gap-[8px] px-2 min-w-0">
+                        <div className="hidden lg:flex flex-1 items-center justify-center gap-[4px] xl:gap-[8px] px-2 min-w-0">
                             {links.map((link) => {
                                 const isActive = isLinkActive(link.href);
                                 return (
@@ -102,7 +102,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                                         href={link.href}
                                         target={(link as any).target}
                                         rel={(link as any).target === '_blank' ? "noopener noreferrer" : undefined}
-                                        className={`flex items-center justify-center rounded-[6px] px-[10px] 2xl:px-[16px] h-[42px] transition-colors font-['Familjen_Grotesk'] font-semibold text-[14px] 2xl:text-[16px] leading-[22px] tracking-[-0.2px] text-center whitespace-nowrap ${isActive
+                                        className={`flex items-center justify-center rounded-[6px] px-[8px] xl:px-[12px] 2xl:px-[16px] h-[42px] transition-colors font-['Familjen_Grotesk'] font-semibold text-[13px] xl:text-[14px] 2xl:text-[16px] leading-[22px] tracking-[-0.2px] text-center whitespace-nowrap ${isActive
                                             ? 'bg-[#EAF7EE] text-[#04330B]'
                                             : 'bg-transparent text-[#587E67] hover:bg-gray-50'
                                             }`}
@@ -121,7 +121,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                             </Link>
                         </div>
 
-                        <div className="hidden xl:flex flex-1 items-center justify-center gap-[4px] 2xl:gap-[8px] px-2 min-w-0">
+                        <div className="hidden lg:flex flex-1 items-center justify-center gap-[4px] xl:gap-[8px] px-2 min-w-0">
                             {links.map((link) => {
                                 const isActive = isLinkActive(link.href);
                                 return (
@@ -130,7 +130,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                                         href={link.href}
                                         target={(link as any).target}
                                         rel={(link as any).target === '_blank' ? "noopener noreferrer" : undefined}
-                                        className={`flex items-center justify-center rounded-[6px] px-[10px] 2xl:px-[16px] h-[42px] transition-colors font-['Familjen_Grotesk'] font-semibold text-[14px] 2xl:text-[16px] leading-[22px] tracking-[-0.2px] text-center whitespace-nowrap ${isActive
+                                        className={`flex items-center justify-center rounded-[6px] px-[8px] xl:px-[12px] 2xl:px-[16px] h-[42px] transition-colors font-['Familjen_Grotesk'] font-semibold text-[13px] xl:text-[14px] 2xl:text-[16px] leading-[22px] tracking-[-0.2px] text-center whitespace-nowrap ${isActive
                                             ? 'bg-[#EAF7EE] text-[#04330B]'
                                             : 'bg-transparent text-[#587E67] hover:bg-gray-50'
                                             }`}
@@ -148,7 +148,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
                     {/* Language Toggle */}
                     <div
-                        className="hidden xl:flex relative w-[60px] h-[30px] rounded-[6px] border border-[#B9D3C4] p-[2px] bg-white cursor-pointer"
+                        className="hidden lg:flex relative w-[60px] h-[30px] rounded-[6px] border border-[#B9D3C4] p-[2px] bg-white cursor-pointer"
                         onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
                     >
                         <div className={`flex-1 rounded-[4px] text-[12px] font-['Familjen_Grotesk'] font-semibold flex items-center justify-center transition-all ${language === 'hi' ? 'bg-[#EAF7EE] text-[#04330B]' : 'bg-transparent text-transparent'}`}>
@@ -160,7 +160,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     </div>
 
                     <div
-                        className="flex xl:hidden relative w-[50px] h-[36px] rounded-[8px] border border-[#B9D3C4] items-center justify-center font-bold text-[#04330B] cursor-pointer text-sm"
+                        className="flex lg:hidden relative w-[50px] h-[36px] rounded-[8px] border border-[#B9D3C4] items-center justify-center font-bold text-[#04330B] cursor-pointer text-sm"
                         onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
                     >
                         {language === 'en' ? 'HI' : 'EN'}
@@ -170,7 +170,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     {showProfileButton && (
                         <div className="relative">
                             <div
-                                className="hidden xl:flex items-center justify-center w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] cursor-pointer hover:bg-gray-50 text-[#04330B]"
+                                className="hidden lg:flex items-center justify-center w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] cursor-pointer hover:bg-gray-50 text-[#04330B]"
                                 onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                             >
                                 <User size={24} />
@@ -192,7 +192,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
                     <Link
                         href="/donation"
-                        className="hidden xl:flex px-[14px] 2xl:px-[20px] h-[42px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] 2xl:text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-green-50 transition-colors whitespace-nowrap"
+                        className="hidden lg:flex px-[12px] xl:px-[14px] 2xl:px-[20px] h-[42px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[13px] xl:text-[14px] 2xl:text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-green-50 transition-colors whitespace-nowrap"
                     >
                         {t.nav.donate}
                     </Link>
@@ -201,13 +201,13 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                         <>
                             <Link
                                 href="/join"
-                                className="hidden xl:flex px-[14px] 2xl:px-[20px] h-[42px] items-center justify-center bg-[#0D5229] text-white font-['Familjen_Grotesk'] font-semibold text-[14px] 2xl:text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-[#0a4220] transition-colors whitespace-nowrap"
+                                className="hidden lg:flex px-[12px] xl:px-[14px] 2xl:px-[20px] h-[42px] items-center justify-center bg-[#0D5229] text-white font-['Familjen_Grotesk'] font-semibold text-[13px] xl:text-[14px] 2xl:text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-[#0a4220] transition-colors whitespace-nowrap"
                             >
                                 {t.nav.join}
                             </Link>
                             <Link
                                 href="/login"
-                                className="hidden xl:flex px-[14px] 2xl:px-[20px] h-[42px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] 2xl:text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-green-50 transition-colors whitespace-nowrap"
+                                className="hidden lg:flex px-[12px] xl:px-[14px] 2xl:px-[20px] h-[42px] items-center justify-center border border-[#0D5229] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[13px] xl:text-[14px] 2xl:text-[16px] leading-[22px] tracking-[-0.2px] rounded-[6px] hover:bg-green-50 transition-colors whitespace-nowrap"
                             >
                                 {t.nav.login}
                             </Link>
@@ -215,7 +215,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     )}
 
                     <button
-                        className="xl:hidden p-2 text-gray-700 ml-auto"
+                        className="lg:hidden p-2 text-gray-700 ml-auto"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                     >
                         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -225,7 +225,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
 
             {/* Mobile Menu Dropdown */}
             {isMenuOpen && (
-                <div className="xl:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg h-[calc(100vh-70px)] overflow-y-auto z-50">
+                <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 p-4 flex flex-col gap-4 shadow-lg h-[calc(100vh-70px)] overflow-y-auto z-50">
                     {links.map((link) => {
                         const isActive = isLinkActive(link.href);
                         return (

@@ -2,22 +2,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
-import { getAuthHeader } from "../../../../../lib/supabaseClient";
-
-const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { adminFetch, getAdminToken } from "@/lib/adminApi";
 
 export default function AdminElectionCandidatesPage() {
   const params = useParams<{ id: string }>();
   const id = useMemo(() => parseInt(String(params?.id || "0"), 10) || 0, [params]);
+  const router = useRouter();
 
   const [detail, setDetail] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // form
   const [userId, setUserId] = useState("");
-  const [actorUserId, setActorUserId] = useState("1");
   const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -26,8 +24,7 @@ export default function AdminElectionCandidatesPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/elections/${id}`);
-      const data = await res.json();
+      const data = await adminFetch<any>(`elections/${id}`);
       setDetail(data);
     } catch (e: any) {
       setError(e?.message || "Failed to load election");
@@ -37,6 +34,10 @@ export default function AdminElectionCandidatesPage() {
   };
 
   useEffect(() => {
+    if (!getAdminToken()) {
+      router.replace("/admin/login");
+      return;
+    }
     load();
   }, [id]);
 
@@ -45,13 +46,13 @@ export default function AdminElectionCandidatesPage() {
     setError(null);
     try {
       setSubmitting(true);
-      const auth = await getAuthHeader();
-      const res = await fetch(`${API}/admin/elections/${id}/candidates`, {
+      const uid = parseInt(userId || "0", 10);
+      if (!uid) throw new Error("Candidate User ID is required");
+      if (reason.trim().length < 3) throw new Error("Reason must be at least 3 characters");
+      await adminFetch(`admin/elections/${id}/candidates`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...auth },
-        body: JSON.stringify({ userId: parseInt(userId || "0", 10), actorUserId: parseInt(actorUserId || "0", 10), reason }),
+        body: JSON.stringify({ userId: uid, reason: reason.trim() }),
       });
-      if (!res.ok) throw new Error(await res.text());
       setUserId("");
       setReason("");
       await load();
@@ -63,46 +64,83 @@ export default function AdminElectionCandidatesPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
-      <div className="flex items-end justify-between">
-        <h1 className="text-2xl font-semibold text-green-800">Admin: Manage Candidates (Election #{id})</h1>
+    <div className="space-y-6 font-['Familjen_Grotesk']">
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold text-[#04330B]">Manage Candidates</h1>
+          <p className="text-sm text-[#587E67] mt-1">Election #{id}</p>
+        </div>
+        <Link href="/admin/elections" className="text-sm font-semibold text-[#0D5229] hover:text-[#04330B]">
+          ← Back to Elections
+        </Link>
       </div>
-      {loading && <div className="rounded border p-3">Loading…</div>}
-      {error && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3">{error}</div>}
+
+      {loading && (
+        <div className="rounded-[8px] border border-[#B9D3C4] bg-white p-3 text-sm text-[#587E67]">
+          Loading…
+        </div>
+      )}
+      {error && (
+        <div className="rounded-[8px] border border-red-300 bg-red-50 text-red-800 p-3 text-sm">
+          {error}
+        </div>
+      )}
 
       {detail && (
-        <div className="rounded border border-gray-200 bg-white p-5">
-          <p className="mb-3 text-sm text-gray-700">
-            <b>{detail.election?.councilLevel} - {detail.election?.position}</b> ({detail.election?.status})
+        <div className="rounded-[8px] border border-[#B9D3C4] bg-white p-5 shadow-sm">
+          <p className="mb-3 text-sm text-[#587E67]">
+            <span className="font-semibold text-[#04330B]">
+              {detail.election?.councilLevel} — {detail.election?.position}
+            </span>{" "}
+            ({detail.election?.status})
           </p>
-          <h3 className="font-medium mb-2">Candidates</h3>
-          <ul className="divide-y">
+          <h3 className="font-semibold mb-2 text-[#04330B]">Candidates</h3>
+          <ul className="divide-y divide-[#E4F2EA]">
             {(detail.candidates || []).map((c: any) => (
               <li key={c.id} className="py-2 text-sm flex items-center justify-between">
-                <span>{c.user?.name} ({c.user?.phone}) — Votes: <b>{c.votes}</b></span>
-                <span className="text-xs text-gray-500">userId: {c.user?.id}</span>
+                <span>
+                  {c.user?.name} ({c.user?.phone}) — Votes:{" "}
+                  <b>{c.votes}</b>
+                </span>
+                <span className="text-xs text-[#587E67]">userId: {c.user?.id}</span>
               </li>
             ))}
+            {(detail.candidates || []).length === 0 && (
+              <li className="py-3 text-sm text-[#587E67]">No candidates yet.</li>
+            )}
           </ul>
         </div>
       )}
 
-      <form onSubmit={onAdd} className="rounded border border-gray-200 bg-white p-5">
-        <h3 className="text-lg font-medium mb-3">Add Candidate</h3>
+      <form onSubmit={onAdd} className="rounded-[8px] border border-[#B9D3C4] bg-white p-5 shadow-sm">
+        <h3 className="text-lg font-semibold mb-3 text-[#04330B]">Add Candidate</h3>
         <div className="flex flex-wrap items-end gap-3">
-          <label className="text-sm text-gray-700">
+          <label className="text-sm text-[#587E67] flex flex-col gap-1">
             Candidate User ID
-            <input value={userId} onChange={(e) => setUserId(e.target.value)} className="ml-2 border rounded px-2 py-1 w-40" />
+            <input
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="mt-1 border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm w-40"
+              required
+            />
           </label>
-          <label className="text-sm text-gray-700">
-            Actor User ID
-            <input value={actorUserId} onChange={(e) => setActorUserId(e.target.value)} className="ml-2 border rounded px-2 py-1 w-40" />
-          </label>
-          <label className="text-sm text-gray-700 flex-1">
+          <label className="text-sm text-[#587E67] flex-1 flex flex-col gap-1">
             Reason
-            <input value={reason} onChange={(e) => setReason(e.target.value)} className="ml-2 border rounded px-2 py-1 w-full" />
+            <input
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="mt-1 border border-[#B9D3C4] rounded-[6px] px-3 py-2 text-sm w-full"
+              placeholder="Audit reason (required)"
+              required
+            />
           </label>
-          <button type="submit" disabled={submitting} className="bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded">Add</button>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="bg-[#0D5229] hover:bg-[#0a4220] text-white px-4 py-2 rounded-[8px] text-sm font-semibold disabled:opacity-50"
+          >
+            {submitting ? "Adding…" : "Add"}
+          </button>
         </div>
       </form>
     </div>
