@@ -122,8 +122,8 @@ export default function AdminPage() {
         Array.isArray(auditLogs)
           ? auditLogs
           : Array.isArray((auditLogs as any)?.logs)
-            ? (auditLogs as any).logs
-            : asList(auditLogs)
+            ? ((auditLogs as any).logs as AuditLog[])
+            : []
       );
       setPendingSquads(asTotal(squads));
       setPendingMissions(asTotal(missions));
