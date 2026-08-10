@@ -1,38 +1,9 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { GraduationCap, Loader2, RefreshCw, ChevronLeft } from "lucide-react";
-
-function normalizeApiBaseUrl(baseUrl: string) {
-  const cleaned = String(baseUrl || "").replace(/\/$/, "");
-  if (!cleaned) return "http://localhost:3002/v1";
-  if (cleaned.endsWith("/v1")) return cleaned;
-  return `${cleaned}/v1`;
-}
-
-const API = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002");
-
-async function adminFetch(path: string, opts: RequestInit = {}) {
-  const token =
-    typeof window !== "undefined"
-      ? localStorage.getItem("adminToken") || sessionStorage.getItem("admin_access_token")
-      : null;
-  const res = await fetch(`${API}/${path}`, {
-    ...opts,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(opts.headers || {}),
-    },
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `HTTP ${res.status}`);
-  }
-  return res.json();
-}
+import { Loader2, RefreshCw, Search } from "lucide-react";
+import { adminFetch, getAdminToken } from "@/lib/adminApi";
 
 type Application = {
   id: number;
@@ -51,11 +22,11 @@ type Application = {
 const STATUSES = ["pending", "reviewed", "accepted", "rejected", "waitlisted"] as const;
 
 const STATUS_STYLE: Record<string, string> = {
-  pending: "bg-yellow-50 text-yellow-800",
-  reviewed: "bg-blue-50 text-blue-800",
-  accepted: "bg-green-50 text-green-800",
-  rejected: "bg-red-50 text-red-800",
-  waitlisted: "bg-purple-50 text-purple-800",
+  pending: "bg-sky-50 text-sky-700",
+  reviewed: "bg-amber-50 text-amber-700",
+  accepted: "bg-emerald-50 text-emerald-700",
+  rejected: "bg-red-50 text-red-700",
+  waitlisted: "bg-purple-50 text-purple-700",
 };
 
 export default function AdminLeadershipAcademyPage() {
@@ -64,6 +35,7 @@ export default function AdminLeadershipAcademyPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("All");
+  const [search, setSearch] = useState("");
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [toast, setToast] = useState("");
 
@@ -76,13 +48,12 @@ export default function AdminLeadershipAcademyPage() {
     setLoading(true);
     setError("");
     try {
-      const token = localStorage.getItem("adminToken") || sessionStorage.getItem("admin_access_token");
-      if (!token) {
+      if (!getAdminToken()) {
         router.replace("/admin/login");
         return;
       }
       const q = filter !== "All" ? `?status=${filter}` : "";
-      const data = await adminFetch(`leadership-academy/applications${q}`);
+      const data = await adminFetch<Application[]>(`leadership-academy/applications${q}`);
       setItems(Array.isArray(data) ? data : []);
     } catch (e: any) {
       setError(e.message || "Failed to load");
@@ -92,8 +63,21 @@ export default function AdminLeadershipAcademyPage() {
   }, [filter, router]);
 
   useEffect(() => {
+    const initialQ = new URLSearchParams(window.location.search).get("q") || "";
+    if (initialQ) setSearch(initialQ);
     load();
   }, [load]);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return items;
+    return items.filter((a) =>
+      [a.fullName, a.email, a.phone, a.city, a.department, a.college || ""]
+        .join(" ")
+        .toLowerCase()
+        .includes(q)
+    );
+  }, [items, search]);
 
   const updateStatus = async (id: number, status: string) => {
     setUpdatingId(id);
@@ -112,110 +96,147 @@ export default function AdminLeadershipAcademyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0FBF4]">
-      <div className="bg-[#04330B] text-white px-6 py-5 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Link href="/admin" className="text-[#86EFAC] hover:text-white">
-            <ChevronLeft size={20} />
-          </Link>
-          <div>
-            <p className="text-xs font-bold tracking-widest text-[#86EFAC] uppercase">Admin</p>
-            <h1 className="text-xl font-black mt-0.5 flex items-center gap-2">
-              <GraduationCap size={20} /> Internship
-            </h1>
-          </div>
+    <div className="w-full max-w-full min-w-0 space-y-5">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-xl sm:text-2xl font-black text-[#04330B]">Internship Applications</h2>
+          <p className="text-sm text-[#587E67] font-medium">
+            Review, shortlist and update applicant status.
+          </p>
         </div>
         <button
+          type="button"
           onClick={load}
-          className="flex items-center gap-2 text-sm text-[#86EFAC] hover:text-white"
+          className="inline-flex items-center gap-2 rounded-xl border border-[#DDEEE4] bg-white px-4 py-2.5 text-sm font-bold text-[#04330B] hover:bg-[#F8FBF9]"
         >
           <RefreshCw size={15} className={loading ? "animate-spin" : ""} /> Refresh
         </button>
       </div>
 
-      <main className="max-w-6xl mx-auto px-4 py-6">
-        <div className="flex flex-wrap gap-2 mb-5">
+      <div className="flex flex-col md:flex-row md:items-center gap-3">
+        <div className="flex flex-wrap gap-2 flex-1">
           {["All", ...STATUSES].map((s) => (
             <button
               key={s}
               type="button"
               onClick={() => setFilter(s)}
               className={`px-3 py-1.5 rounded-full text-xs font-bold capitalize ${
-                filter === s ? "bg-[#04330B] text-white" : "bg-white text-[#04330B] border border-[#DDEEE4]"
+                filter === s
+                  ? "bg-[#04330B] text-white"
+                  : "bg-white text-[#04330B] border border-[#DDEEE4]"
               }`}
             >
               {s}
             </button>
           ))}
         </div>
+        <div className="relative w-full md:w-72">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search name, phone, email…"
+            className="w-full h-10 rounded-xl border border-[#DDEEE4] bg-white pl-9 pr-3 text-sm font-medium outline-none focus:border-[#16A34A]"
+          />
+        </div>
+      </div>
 
-        {error ? (
-          <p className="rounded-lg bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm font-semibold mb-4">
-            {error}
-          </p>
-        ) : null}
+      {error ? (
+        <p className="rounded-xl bg-red-50 border border-red-200 text-red-700 px-4 py-3 text-sm font-semibold">
+          {error}
+        </p>
+      ) : null}
 
+      <div className="rounded-2xl border border-[#E4F2EA] bg-white shadow-sm overflow-hidden w-full max-w-full min-w-0">
         {loading ? (
           <div className="flex items-center justify-center py-20 text-[#587E67] gap-2 font-semibold">
             <Loader2 className="animate-spin" size={18} /> Loading applications…
           </div>
-        ) : items.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <p className="text-center py-16 text-[#587E67] font-semibold">No applications found.</p>
         ) : (
-          <div className="space-y-3">
-            {items.map((app) => (
-              <article
-                key={app.id}
-                className="bg-white border border-[#DDEEE4] rounded-xl p-4 sm:p-5 shadow-sm"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="font-bold text-[#04330B] text-lg">
-                        #{app.id} · {app.fullName}
-                      </h2>
+          <div className="overflow-x-auto w-full max-w-full overscroll-x-contain">
+            <table className="w-full min-w-[720px] text-left">
+              <thead className="bg-[#F8FBF9] border-b border-[#E4F2EA] text-[11px] uppercase tracking-wide text-[#587E67]">
+                <tr>
+                  <th className="px-4 py-3 font-bold">Applicant</th>
+                  <th className="px-4 py-3 font-bold">Department</th>
+                  <th className="px-4 py-3 font-bold">Mode</th>
+                  <th className="px-4 py-3 font-bold">Status</th>
+                  <th className="px-4 py-3 font-bold">Applied</th>
+                  <th className="px-4 py-3 font-bold">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((app) => (
+                  <tr key={app.id} className="border-b border-[#F0F5F2] align-top">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-[#EAF7EE] text-[#04330B] flex items-center justify-center text-sm font-black shrink-0">
+                          {app.fullName.slice(0, 1).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-[#04330B]">
+                            #{app.id} · {app.fullName}
+                          </p>
+                          <p className="text-xs text-[#587E67] font-medium truncate">
+                            {app.email} · {app.phone}
+                          </p>
+                          <p className="text-xs text-[#94A3B8] font-medium">
+                            {app.city}
+                            {app.college ? ` · ${app.college}` : ""}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="mt-2 text-xs text-[#587E67] line-clamp-2 max-w-md">
+                        {app.motivation}
+                      </p>
+                    </td>
+                    <td className="px-4 py-4 text-sm font-semibold text-[#04330B]">
+                      {app.department}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="inline-flex rounded-full bg-[#F0F5F2] px-2.5 py-1 text-[11px] font-bold capitalize text-[#04330B]">
+                        {app.mode}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
                       <span
-                        className={`text-[11px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                        className={`inline-flex text-[11px] font-bold uppercase px-2.5 py-1 rounded-full ${
                           STATUS_STYLE[app.status] || "bg-gray-100 text-gray-700"
                         }`}
                       >
                         {app.status}
                       </span>
-                    </div>
-                    <p className="mt-1 text-sm text-[#587E67]">
-                      {app.email} · {app.phone} · {app.city}
-                      {app.college ? ` · ${app.college}` : ""}
-                    </p>
-                    <p className="mt-1 text-sm font-semibold text-[#04330B]">
-                      {app.department} · {app.mode}
-                    </p>
-                    <p className="mt-2 text-sm text-[#587E67] line-clamp-3">{app.motivation}</p>
-                    <p className="mt-2 text-xs text-[#94A3B8]">
+                    </td>
+                    <td className="px-4 py-4 text-xs font-semibold text-[#587E67] whitespace-nowrap">
                       {new Date(app.createdAt).toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap gap-2 shrink-0">
-                    {STATUSES.map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        disabled={updatingId === app.id || app.status === s}
-                        onClick={() => updateStatus(app.id, s)}
-                        className="px-2.5 py-1 rounded-md text-[11px] font-bold border border-[#DDEEE4] bg-[#F8FBF9] text-[#04330B] hover:bg-[#EAF7EE] disabled:opacity-40 capitalize"
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </article>
-            ))}
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex flex-wrap gap-1.5 max-w-[220px]">
+                        {STATUSES.map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            disabled={updatingId === app.id || app.status === s}
+                            onClick={() => updateStatus(app.id, s)}
+                            className="px-2 py-1 rounded-md text-[10px] font-bold border border-[#DDEEE4] bg-[#F8FBF9] text-[#04330B] hover:bg-[#EAF7EE] disabled:opacity-40 capitalize"
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
-      </main>
+      </div>
 
       {toast ? (
-        <div className="fixed bottom-5 right-5 bg-[#04330B] text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-lg">
+        <div className="fixed bottom-5 right-5 bg-[#04330B] text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-lg z-50">
           {toast}
         </div>
       ) : null}

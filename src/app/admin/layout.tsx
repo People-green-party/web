@@ -3,14 +3,19 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import { RequireAdmin } from "../../components/RequireAdmin";
+import { AdminShell } from "../../components/admin/AdminShell";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // Login page must stay public
+  // Login stays standalone — no website navbar/footer, no admin shell
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
 
-  return <RequireAdmin>{children}</RequireAdmin>;
+  return (
+    <RequireAdmin>
+      <AdminShell>{children}</AdminShell>
+    </RequireAdmin>
+  );
 }

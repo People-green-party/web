@@ -1,18 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Navbar } from "../../../components/Navbar";
 import Link from "next/link";
-import { AlertTriangle, Building2, ClipboardCheck, Flag, KeyRound, School, Users, CheckCircle2, XCircle, TrendingUp, Award, MessageSquare, Target } from "lucide-react";
+import { AlertTriangle, Building2, ClipboardCheck, Flag, School, Users, CheckCircle2, XCircle, TrendingUp, Award, MessageSquare, Target } from "lucide-react";
+import { ADMIN_API, getAdminToken } from "@/lib/adminApi";
 
-function normalizeApiBaseUrl(baseUrl: string) {
-  const cleaned = String(baseUrl || "").replace(/\/$/, "");
-  if (!cleaned) return "http://localhost:3002/v1";
-  if (cleaned.endsWith("/v1")) return cleaned;
-  return `${cleaned}/v1`;
-}
-
-const API = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3002");
+const API = ADMIN_API;
 
 type YouthDashboard = {
   totalYouth: number;
@@ -65,7 +58,6 @@ const cards = [
 ] as const;
 
 export default function AdminYouthPage() {
-  const [password, setPassword] = useState("");
   const [accessGranted, setAccessGranted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,8 +66,7 @@ export default function AdminYouthPage() {
   const [actionQueue, setActionQueue] = useState<ActionQueue | null>(null);
 
   const getAdminAccessHeader = (): Record<string, string> => {
-    if (typeof window === "undefined") return {};
-    const token = window.sessionStorage.getItem("admin_access_token");
+    const token = getAdminToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
@@ -128,39 +119,12 @@ export default function AdminYouthPage() {
     }
   };
 
-  const verifyPasswordGate = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`${API}/users/admin/access/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
-      });
-      if (!res.ok) {
-        if (res.status === 401) throw new Error("Invalid admin password");
-        throw new Error(await res.text());
-      }
-      const auth = await res.json();
-      if (typeof window !== "undefined") {
-        window.sessionStorage.setItem("admin_youth_access_granted", "1");
-        window.sessionStorage.setItem("admin_access_token", auth.token);
-        window.sessionStorage.setItem("admin_access_scope", auth.scope);
-      }
-      setAccessGranted(true);
-      await loadDashboard();
-    } catch (e: any) {
-      setError(e?.message || "Access verification failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (typeof window !== "undefined" && window.sessionStorage.getItem("admin_youth_access_granted") === "1") {
-      setAccessGranted(true);
-      loadDashboard();
-    }
+    const token = getAdminToken();
+    if (!token) return;
+    sessionStorage.setItem("admin_youth_access_granted", "1");
+    setAccessGranted(true);
+    loadDashboard();
   }, []);
 
   useEffect(() => {
@@ -170,95 +134,119 @@ export default function AdminYouthPage() {
   }, [accessGranted, activeTab]);
 
   return (
-    <div className="min-h-screen bg-[#F5FBF7] text-[#04330B] pt-[70px] lg:pt-[92px] font-['Familjen_Grotesk']">
-      <Navbar />
-      <main className="mx-auto max-w-7xl px-5 lg:px-8 py-10">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-          <div>
-            <div className="text-sm font-black text-[#16A34A] uppercase tracking-[0.22em]">Production Operations</div>
-            <h1 className="mt-2 text-4xl lg:text-6xl font-black tracking-[-0.05em]">Youth Front Dashboard</h1>
-            <p className="mt-3 text-[#587E67] font-semibold">Monitor youth membership, review issues, and manage action queues.</p>
-          </div>
-          {accessGranted && (
-            <button onClick={() => activeTab === "dashboard" ? loadDashboard() : loadActionQueue()} disabled={loading} className="rounded-2xl bg-[#04330B] px-6 py-3 font-black text-white disabled:opacity-60">
-              {loading ? "Refreshing..." : "Refresh"}
-            </button>
-          )}
+    <div className="w-full max-w-full min-w-0 space-y-5 font-['Familjen_Grotesk'] text-[#04330B]">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-xs font-black text-[#16A34A] uppercase tracking-[0.18em]">
+            Peoples Green Party
+          </p>
+          <h2 className="mt-1 text-xl sm:text-2xl lg:text-3xl font-black tracking-tight">
+            Youth Front Dashboard
+          </h2>
+          <p className="mt-1 text-sm text-[#587E67] font-medium">
+            Live youth membership, issues and action queues.
+          </p>
         </div>
-
-        {!accessGranted && (
-          <section className="mt-10 max-w-xl rounded-[28px] border border-[#DDEEE4] bg-white p-7 shadow-sm">
-            <div className="flex items-center gap-3 text-2xl font-black"><KeyRound /> Admin Access</div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-6 h-12 w-full rounded-xl border border-[#DDEEE4] px-4 font-semibold outline-none"
-              placeholder="Enter admin password"
-            />
-            <button onClick={verifyPasswordGate} disabled={loading || !password} className="mt-4 w-full rounded-xl bg-[#04330B] px-5 py-3 font-black text-white disabled:opacity-60">
-              {loading ? "Checking..." : "Open Dashboard"}
-            </button>
-          </section>
-        )}
-
-        {error && <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 font-bold text-red-700">{error}</div>}
-
         {accessGranted && (
-          <>
-            {/* Tabs */}
-            <div className="mt-8 flex gap-2 border-b border-[#DDEEE4] pb-2">
+          <button
+            type="button"
+            onClick={() => (activeTab === "dashboard" ? loadDashboard() : loadActionQueue())}
+            disabled={loading}
+            className="shrink-0 rounded-xl bg-[#04330B] px-4 py-2.5 text-sm font-black text-white disabled:opacity-60"
+          >
+            {loading ? "Refreshing…" : "Refresh"}
+          </button>
+        )}
+      </div>
+
+      {!accessGranted && (
+        <section className="rounded-2xl border border-[#DDEEE4] bg-white p-6 shadow-sm text-center">
+          <p className="font-bold text-[#04330B]">Admin session required</p>
+          <p className="mt-2 text-sm text-[#587E67] font-medium">
+            Sign in at /admin/login to load live Youth Front data.
+          </p>
+        </section>
+      )}
+
+      {error && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 font-bold text-red-700 text-sm">
+          {error}
+        </div>
+      )}
+
+      {accessGranted && (
+        <>
+          <div className="-mx-1 px-1 overflow-x-auto overscroll-x-contain">
+            <div className="flex w-max min-w-full gap-2 pb-2 border-b border-[#DDEEE4]">
               <button
+                type="button"
                 onClick={() => setActiveTab("dashboard")}
-                className={`px-4 py-2 font-bold rounded-lg ${activeTab === "dashboard" ? "bg-[#04330B] text-white" : "text-[#587E67] hover:bg-[#DCFCE7]"}`}
+                className={`shrink-0 px-3 sm:px-4 py-2 text-sm font-bold rounded-lg inline-flex items-center gap-2 ${
+                  activeTab === "dashboard"
+                    ? "bg-[#04330B] text-white"
+                    : "text-[#587E67] hover:bg-[#DCFCE7]"
+                }`}
               >
-                <TrendingUp size={16} className="inline mr-2" />
+                <TrendingUp size={16} />
                 Dashboard
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab("action-queue")}
-                className={`px-4 py-2 font-bold rounded-lg ${activeTab === "action-queue" ? "bg-[#04330B] text-white" : "text-[#587E67] hover:bg-[#DCFCE7]"}`}
+                className={`shrink-0 px-3 sm:px-4 py-2 text-sm font-bold rounded-lg inline-flex items-center gap-2 ${
+                  activeTab === "action-queue"
+                    ? "bg-[#04330B] text-white"
+                    : "text-[#587E67] hover:bg-[#DCFCE7]"
+                }`}
               >
-                <MessageSquare size={16} className="inline mr-2" />
+                <MessageSquare size={16} />
                 Action Queue
               </button>
               <Link
                 href="/admin/youth/missions"
-                className="px-4 py-2 font-bold rounded-lg text-[#587E67] hover:bg-[#DCFCE7] flex items-center gap-2"
+                className="shrink-0 px-3 sm:px-4 py-2 text-sm font-bold rounded-lg text-[#587E67] hover:bg-[#DCFCE7] inline-flex items-center gap-2"
               >
                 <Target size={16} />
-                Mission Approvals
+                Missions
               </Link>
               <Link
                 href="/admin/youth/squads"
-                className="px-4 py-2 font-bold rounded-lg text-[#587E67] hover:bg-[#DCFCE7] flex items-center gap-2"
+                className="shrink-0 px-3 sm:px-4 py-2 text-sm font-bold rounded-lg text-[#587E67] hover:bg-[#DCFCE7] inline-flex items-center gap-2"
               >
                 <Users size={16} />
                 Squads
               </Link>
               <Link
                 href="/admin/youth/squad-missions"
-                className="px-4 py-2 font-bold rounded-lg text-[#587E67] hover:bg-[#DCFCE7] flex items-center gap-2"
+                className="shrink-0 px-3 sm:px-4 py-2 text-sm font-bold rounded-lg text-[#587E67] hover:bg-[#DCFCE7] inline-flex items-center gap-2"
               >
                 <Target size={16} />
                 Squad Missions
               </Link>
             </div>
+          </div>
 
-            {activeTab === "dashboard" && data && (
-              <section className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {cards.map((card) => {
-                  const Icon = card.icon;
-                  return (
-                    <div key={card.key} className="rounded-[28px] border border-[#DDEEE4] bg-white p-6 shadow-sm">
-                      <Icon className="text-[#16A34A]" size={32} />
-                      <div className="mt-5 text-4xl font-black">{data[card.key]}</div>
-                      <div className="mt-1 font-bold text-[#587E67]">{card.title}</div>
+          {activeTab === "dashboard" && data && (
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
+              {cards.map((card) => {
+                const Icon = card.icon;
+                return (
+                  <div
+                    key={card.key}
+                    className="rounded-2xl border border-[#DDEEE4] bg-white p-4 sm:p-5 shadow-sm min-w-0"
+                  >
+                    <Icon className="text-[#16A34A]" size={24} />
+                    <div className="mt-3 text-2xl sm:text-3xl font-black tabular-nums">
+                      {data[card.key]}
                     </div>
-                  );
-                })}
-              </section>
-            )}
+                    <div className="mt-1 text-sm font-bold text-[#587E67] leading-snug">
+                      {card.title}
+                    </div>
+                  </div>
+                );
+              })}
+            </section>
+          )}
 
             {activeTab === "action-queue" && actionQueue && (
               <section className="mt-10 space-y-6">
@@ -272,24 +260,24 @@ export default function AdminYouthPage() {
                     <div className="space-y-4">
                       {actionQueue.p0Issues.map((issue) => (
                         <div key={issue.id} className="rounded-xl bg-white p-5 border border-red-200">
-                          <div className="flex justify-between items-start mb-3">
-                            <div className="flex-1">
-                              <div className="font-bold text-lg text-[#04330B]">{issue.title}</div>
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="font-bold text-base sm:text-lg text-[#04330B] break-words">{issue.title}</div>
                               <div className="text-sm text-[#587E67] mt-1">
                                 <span className="font-semibold">{issue.category}</span> • {issue.priority} • {issue.urgency}
                               </div>
                             </div>
-                            <div className="flex gap-2 ml-4">
+                            <div className="flex flex-wrap gap-2 shrink-0">
                               <button
                                 onClick={() => reviewIssue(issue.id, "HumanVerified")}
-                                className="px-3 py-1 rounded-lg bg-green-600 text-white text-sm font-bold hover:bg-green-700"
+                                className="px-3 py-1.5 rounded-lg bg-green-600 text-white text-sm font-bold hover:bg-green-700"
                               >
                                 <CheckCircle2 size={16} className="inline mr-1" />
                                 Verify
                               </button>
                               <button
                                 onClick={() => reviewIssue(issue.id, "Rejected")}
-                                className="px-3 py-1 rounded-lg bg-red-600 text-white text-sm font-bold hover:bg-red-700"
+                                className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm font-bold hover:bg-red-700"
                               >
                                 <XCircle size={16} className="inline mr-1" />
                                 Reject
@@ -331,24 +319,24 @@ export default function AdminYouthPage() {
                     <div className="space-y-4">
                       {actionQueue.p1Issues.map((issue) => (
                         <div key={issue.id} className="rounded-xl bg-white p-5 border border-orange-200">
-                          <div className="flex justify-between items-start mb-3">
-                            <div className="flex-1">
-                              <div className="font-bold text-lg text-[#04330B]">{issue.title}</div>
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="font-bold text-base sm:text-lg text-[#04330B] break-words">{issue.title}</div>
                               <div className="text-sm text-[#587E67] mt-1">
                                 <span className="font-semibold">{issue.category}</span> • {issue.priority} • {issue.urgency}
                               </div>
                             </div>
-                            <div className="flex gap-2 ml-4">
+                            <div className="flex flex-wrap gap-2 shrink-0">
                               <button
                                 onClick={() => reviewIssue(issue.id, "HumanVerified")}
-                                className="px-3 py-1 rounded-lg bg-green-600 text-white text-sm font-bold hover:bg-green-700"
+                                className="px-3 py-1.5 rounded-lg bg-green-600 text-white text-sm font-bold hover:bg-green-700"
                               >
                                 <CheckCircle2 size={16} className="inline mr-1" />
                                 Verify
                               </button>
                               <button
                                 onClick={() => reviewIssue(issue.id, "Rejected")}
-                                className="px-3 py-1 rounded-lg bg-red-600 text-white text-sm font-bold hover:bg-red-700"
+                                className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-sm font-bold hover:bg-red-700"
                               >
                                 <XCircle size={16} className="inline mr-1" />
                                 Reject
@@ -389,24 +377,24 @@ export default function AdminYouthPage() {
                     </h3>
                     <div className="space-y-4">
                       {actionQueue.highDuplicateIssues.map((issue) => (
-                        <div key={issue.id} className="rounded-xl bg-white p-5 border border-yellow-200">
-                          <div className="flex justify-between items-start mb-3">
-                            <div className="flex-1">
-                              <div className="font-bold text-lg text-[#04330B]">{issue.title}</div>
+                        <div key={issue.id} className="rounded-xl bg-white p-4 sm:p-5 border border-yellow-200 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="font-bold text-base sm:text-lg text-[#04330B] break-words">{issue.title}</div>
                               <div className="text-sm text-[#587E67] mt-1">
                                 <span className="font-semibold">{issue.category}</span> • {issue.priority} • {issue.urgency}
                               </div>
                             </div>
-                            <div className="flex gap-2 ml-4">
+                            <div className="flex flex-wrap gap-2 shrink-0">
                               <button
                                 onClick={() => reviewIssue(issue.id, "DuplicateMerged")}
-                                className="px-3 py-1 rounded-lg bg-yellow-600 text-white text-sm font-bold hover:bg-yellow-700"
+                                className="px-3 py-1.5 rounded-lg bg-yellow-600 text-white text-sm font-bold hover:bg-yellow-700"
                               >
                                 Mark Duplicate
                               </button>
                               <button
                                 onClick={() => reviewIssue(issue.id, "HumanVerified")}
-                                className="px-3 py-1 rounded-lg bg-green-600 text-white text-sm font-bold hover:bg-green-700"
+                                className="px-3 py-1.5 rounded-lg bg-green-600 text-white text-sm font-bold hover:bg-green-700"
                               >
                                 Verify
                               </button>
@@ -446,25 +434,25 @@ export default function AdminYouthPage() {
                     </h3>
                     <div className="space-y-4">
                       {actionQueue.sensitiveIssues.map((issue) => (
-                        <div key={issue.id} className="rounded-xl bg-white p-5 border border-purple-200">
-                          <div className="flex justify-between items-start mb-3">
-                            <div className="flex-1">
-                              <div className="font-bold text-lg text-[#04330B]">{issue.title}</div>
+                        <div key={issue.id} className="rounded-xl bg-white p-4 sm:p-5 border border-purple-200 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3">
+                            <div className="min-w-0 flex-1">
+                              <div className="font-bold text-base sm:text-lg text-[#04330B] break-words">{issue.title}</div>
                               <div className="text-sm text-[#587E67] mt-1">
                                 <span className="font-semibold">{issue.category}</span> • {issue.priority} • {issue.urgency}
                               </div>
                             </div>
-                            <div className="flex gap-2 ml-4">
+                            <div className="flex flex-wrap gap-2 shrink-0">
                               <button
                                 onClick={() => reviewIssue(issue.id, "HumanVerified")}
-                                className="px-3 py-1 rounded-lg bg-green-600 text-white text-sm font-bold hover:bg-green-700"
+                                className="px-3 py-1.5 rounded-lg bg-green-600 text-white text-sm font-bold hover:bg-green-700"
                               >
                                 <CheckCircle2 size={16} className="inline mr-1" />
                                 Verify
                               </button>
                               <button
                                 onClick={() => reviewIssue(issue.id, "Escalated")}
-                                className="px-3 py-1 rounded-lg bg-purple-600 text-white text-sm font-bold hover:bg-purple-700"
+                                className="px-3 py-1.5 rounded-lg bg-purple-600 text-white text-sm font-bold hover:bg-purple-700"
                               >
                                 Escalate
                               </button>
@@ -504,9 +492,8 @@ export default function AdminYouthPage() {
                 )}
               </section>
             )}
-          </>
-        )}
-      </main>
+        </>
+      )}
     </div>
   );
 }

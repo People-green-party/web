@@ -103,11 +103,15 @@ export default function MyDashboardPage() {
   };
 
   const handleJoinWhatsapp = async (userMissionId: number) => {
-    window.open("https://chat.whatsapp.com/invite/pgp-youth-front-placeholder", "_blank");
+    const inviteUrl =
+      process.env.NEXT_PUBLIC_YOUTH_WHATSAPP_INVITE ||
+      "https://wa.me/919521627701?text=" +
+        encodeURIComponent("Hi, I want to join the PGP Youth Front WhatsApp community.");
+    window.open(inviteUrl, "_blank");
     try {
       await fetchApi(`youth/my-missions/${userMissionId}/proof`, {
         method: "POST",
-        body: JSON.stringify({ proofUrl: "https://chat.whatsapp.com/invite/pgp-youth-front-placeholder" }),
+        body: JSON.stringify({ proofUrl: inviteUrl }),
       });
       fetchDashboard();
     } catch (e) {

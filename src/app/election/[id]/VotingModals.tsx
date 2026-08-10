@@ -135,19 +135,34 @@ export const ConfirmVotesModal = ({ selectedCandidates, onCancel, onConfirm }: C
 };
 
 interface VerifyMobileModalProps {
-    onVerify: () => void;
+    onVerify: () => void | Promise<void>;
     onCancel: () => void;
+    /** Linked member phone (10 digits, no +91) */
+    initialPhone?: string;
 }
 
-export const VerifyMobileModal = ({ onVerify, onCancel }: VerifyMobileModalProps) => {
+function digitsOnlyPhone(raw: string): string {
+    const d = String(raw || '').replace(/\D/g, '');
+    if (d.length >= 10) return d.slice(-10);
+    return d;
+}
+
+export const VerifyMobileModal = ({ onVerify, onCancel, initialPhone }: VerifyMobileModalProps) => {
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
-    const [phoneNumber, setPhoneNumber] = useState('9876512345');
+    const [phoneNumber, setPhoneNumber] = useState(() => digitsOnlyPhone(initialPhone || ''));
     const [isEditing, setIsEditing] = useState(false);
     const [tempNumber, setTempNumber] = useState('');
     const [isError, setIsError] = useState(false);
     const [timeLeft, setTimeLeft] = useState(60);
+    const [submitting, setSubmitting] = useState(false);
+    const [verifyError, setVerifyError] = useState('');
 
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+    useEffect(() => {
+        const p = digitsOnlyPhone(initialPhone || '');
+        if (p) setPhoneNumber(p);
+    }, [initialPhone]);
 
     useEffect(() => {
         if (timeLeft > 0) {
@@ -159,6 +174,14 @@ export const VerifyMobileModal = ({ onVerify, onCancel }: VerifyMobileModalProps
     // Initialize refs array
     useEffect(() => {
         inputRefs.current = inputRefs.current.slice(0, 6);
+    }, []);
+
+    // Auto-send OTP once we have a linked phone
+    useEffect(() => {
+        if (phoneNumber.length === 10) {
+            void sendOtp(phoneNumber);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleEditClick = () => {
@@ -217,12 +240,15 @@ export const VerifyMobileModal = ({ onVerify, onCancel }: VerifyMobileModalProps
 
     const handleVerify = async () => {
         const token = otp.join('');
-        if (token.length !== 6) return;
+        if (token.length !== 6 || phoneNumber.length !== 10 || submitting) return;
 
         const formattedNumber = `+91${phoneNumber}`;
+        setSubmitting(true);
+        setVerifyError('');
+        setIsError(false);
 
         try {
-            const { data, error } = await supabase.auth.verifyOtp({
+            const { error } = await supabase.auth.verifyOtp({
                 phone: formattedNumber,
                 token: token,
                 type: 'sms',
@@ -230,26 +256,17 @@ export const VerifyMobileModal = ({ onVerify, onCancel }: VerifyMobileModalProps
 
             if (error) {
                 const { isAuthDevMode } = await import('../../../lib/authDevMode');
-                if (isAuthDevMode() && token === '123456') {
-                    setIsError(false);
-                    onVerify();
-                } else {
-                    console.error('Verification Error:', error.message);
+                if (!(isAuthDevMode() && token === '123456')) {
                     setIsError(true);
+                    return;
                 }
-            } else {
-                console.log('Phone verified successfully:', data);
-                setIsError(false);
-                onVerify();
             }
-        } catch (err) {
-            const { isAuthDevMode } = await import('../../../lib/authDevMode');
-            if (isAuthDevMode() && token === '123456') {
-                setIsError(false);
-                onVerify();
-            } else {
-                setIsError(true);
-            }
+
+            await onVerify();
+        } catch (err: any) {
+            setVerifyError(err?.message || 'Vote failed. Please try again.');
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -301,9 +318,15 @@ export const VerifyMobileModal = ({ onVerify, onCancel }: VerifyMobileModalProps
                     </p>
                 </div>
 
+                {!phoneNumber && !isEditing ? (
+                    <p className="text-center text-sm text-amber-700 font-semibold mb-4">
+                        No linked phone found. Tap Edit to enter your registered 10-digit number.
+                    </p>
+                ) : null}
+
                 {/* Phone Number & Edit */}
                 <div className="flex justify-between items-center px-1 mb-6">
-                    {isEditing ? (
+                    {isEditing || !phoneNumber ? (
                         <div className="flex w-full gap-2 items-center">
                             <span className="text-[#0F392B] font-bold text-lg">+91</span>
                             <input
@@ -381,17 +404,22 @@ export const VerifyMobileModal = ({ onVerify, onCancel }: VerifyMobileModalProps
                     </p>
                 </div>
 
+                {verifyError ? (
+                    <p className="text-center text-sm text-red-600 font-semibold mb-3">{verifyError}</p>
+                ) : null}
+
                 {/* Verify Button */}
                 <div className="mt-8">
                     <button
                         onClick={handleVerify}
-                        disabled={!otp.every(t => t !== '')}
-                        className={`w-full py-4 rounded-xl text-white font-bold text-lg transition-colors duration-300 ${otp.every(t => t !== '')
-                            ? 'bg-[#CDE6D9] hover:bg-[#0F392B] cursor-pointer'
+                        disabled={!otp.every(t => t !== '') || phoneNumber.length !== 10 || submitting}
+                        className={`w-full py-4 rounded-xl text-white font-bold text-lg transition-colors duration-300 ${
+                            otp.every(t => t !== '') && phoneNumber.length === 10 && !submitting
+                            ? 'bg-[#0F392B] hover:bg-[#0b2b20] cursor-pointer'
                             : 'bg-gray-300 cursor-not-allowed text-white'
                             }`}
                     >
-                        Verify
+                        {submitting ? 'Submitting vote…' : 'Verify & Submit Vote'}
                     </button>
                 </div>
             </div>
