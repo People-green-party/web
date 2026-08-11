@@ -61,13 +61,19 @@ export default function UnionDashboardPage() {
 
       // 2. We have a token, safe to call the backend
       const sum = await fetchApi('users/me/summary');
+      const unionName = (sum as UnionUserSummary)?.user?.unionName;
+      if (!unionName) {
+        // Party/Youth account without Union membership — do not show Union dashboard
+        window.location.replace('/union/join');
+        return;
+      }
       setSummary(sum as UnionUserSummary);
       setError(null);
       setLoading(false); // Stop loading ONLY on success
 
     } catch (e: any) {
       console.error(`Dashboard Load Error:`, e);
-      window.location.replace(`/login?next=${encodeURIComponent("/union/dashboard")}`);
+      window.location.replace(`/union/login?next=${encodeURIComponent('/union/dashboard')}`);
     }
   };
 
@@ -181,7 +187,7 @@ export default function UnionDashboardPage() {
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-[#04330B] mb-2">Session Expired</h2>
             <p className="text-gray-600 mb-6">{error || "Please log in again to view your dashboard."}</p>
-            <button onClick={() => router.push('/login')} className="w-full py-3 bg-[#04330B] text-white rounded-xl font-bold hover:bg-[#0B5A2A]">
+            <button onClick={() => router.push('/union/login')} className="w-full py-3 bg-[#04330B] text-white rounded-xl font-bold hover:bg-[#0B5A2A]">
               Go to Login
             </button>
           </div>

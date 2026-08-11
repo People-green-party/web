@@ -24,8 +24,8 @@ const SQUAD_RANK_EMOJI: Record<string, string> = {
 
 const STATUS_UI: Record<string, { label: string; color: string }> = {
   Active:              { label: "Active", color: "text-green-600 bg-green-50" },
-  New:                 { label: "Forming", color: "text-yellow-600 bg-yellow-50" },
-  PendingVerification: { label: "Pending", color: "text-blue-600 bg-blue-50" },
+  New:                 { label: "Forming · auto in 48h", color: "text-yellow-600 bg-yellow-50" },
+  PendingVerification: { label: "Pending · auto in 48h", color: "text-blue-600 bg-blue-50" },
   Flagged:             { label: "Flagged", color: "text-red-600 bg-red-50" },
 };
 
@@ -60,7 +60,7 @@ function SquadsContent() {
   const loadSquads = useCallback(async () => {
     setLoading(true);
     try {
-      const q = new URLSearchParams({ status: "Active", limit: "30" });
+      const q = new URLSearchParams({ status: "discoverable", limit: "30" });
       if (district) q.set("district", district);
       const data = await fetchApi(`youth/squads?${q}`).catch(() => ({ items: [] }));
       setSquads(data.items || []);
@@ -84,6 +84,17 @@ function SquadsContent() {
     loadSquads();
     checkExistingSquad();
   }, [loadSquads, checkExistingSquad]);
+
+  useEffect(() => {
+    const code = params?.get("code");
+    const tabParam = params?.get("tab");
+    if (code) {
+      setJoinCode(code);
+      setTab("code");
+    } else if (tabParam === "code") {
+      setTab("code");
+    }
+  }, [params]);
 
   const handleJoin = async () => {
     setJoinError("");
@@ -109,8 +120,10 @@ function SquadsContent() {
         <Navbar />
         <main className="mx-auto max-w-lg px-5 py-16 text-center">
           <div className="text-6xl mb-4">⚔️</div>
-          <h1 className="text-2xl font-black text-[#04330B]">Request Sent!</h1>
-          <p className="text-[#587E67] mt-2">You have requested to join <strong>{joinSuccess}</strong>. Wait for Squad Leader approval.</p>
+          <h1 className="text-2xl font-black text-[#04330B]">You&apos;re in!</h1>
+          <p className="text-[#587E67] mt-2">
+            You joined <strong>{joinSuccess}</strong>. If the Squad is still forming, it auto-activates within 48 hours.
+          </p>
           <button onClick={() => router.push("/youth-front/my-dashboard")} className="mt-8 bg-[#04330B] text-white font-black px-8 py-3 rounded-2xl">
             Go to Dashboard
           </button>
@@ -130,7 +143,7 @@ function SquadsContent() {
             <h3 className="text-lg font-black text-[#04330B] mb-1">
               {joinTarget ? `Join: ${joinTarget.name}` : "Join via Invite Code"}
             </h3>
-            <p className="text-sm text-[#587E67] mb-4">Your request will go to the Squad Leader for approval.</p>
+            <p className="text-sm text-[#587E67] mb-4">You&apos;ll join immediately. Forming squads go Active within 48h if needed.</p>
 
             {!joinTarget && (
               <input

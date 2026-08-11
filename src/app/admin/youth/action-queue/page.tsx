@@ -6,9 +6,8 @@ import {
   CheckCircle2,
   Clock,
   FileText,
+  Flag,
   Loader2,
-  RefreshCw,
-  Users,
   XCircle,
 } from "lucide-react";
 import { adminFetch, getAdminScope } from "@/lib/adminApi";
@@ -99,7 +98,7 @@ export default function AdminActionQueuePage() {
     { id: "p0" as const, label: "P0 Emergency", icon: AlertTriangle, count: queue?.p0Issues?.length || 0 },
     { id: "p1" as const, label: "P1 High Priority", icon: Clock, count: queue?.p1Issues?.length || 0 },
     { id: "recent" as const, label: "High Duplicate", icon: FileText, count: queue?.highDuplicateIssues?.length || 0 },
-    { id: "sensitive" as const, label: "Sensitive Issues", icon: Users, count: queue?.sensitiveIssues?.length || 0 },
+    { id: "sensitive" as const, label: "Sensitive Issues", icon: Flag, count: queue?.sensitiveIssues?.length || 0 },
     { id: "overdue" as const, label: "Overdue Follow-ups", icon: Clock, count: queue?.followUpOverdue?.length || 0 },
   ];
 
@@ -181,27 +180,18 @@ export default function AdminActionQueuePage() {
         <div>
           <h2 className="text-2xl font-black text-[#04330B]">Action Queue</h2>
           <p className="text-sm text-[#587E67] font-medium">
-            Review Youth Front issues that need PGP ops attention.
+            Review Jinda Youth issues that need PGP ops attention.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span
-            className={`px-3 py-1.5 rounded-full text-[11px] font-bold border ${
-              canEdit
-                ? "bg-[#EAF7EE] text-[#0D5229] border-[#B9D3C4]"
-                : "bg-amber-50 text-amber-700 border-amber-200"
-            }`}
-          >
-            {canEdit ? "Editor" : "View only"}
-          </span>
-          <button
-            type="button"
-            onClick={fetchQueue}
-            className="inline-flex items-center gap-2 rounded-xl border border-[#DDEEE4] bg-white px-4 py-2.5 text-sm font-bold"
-          >
-            <RefreshCw size={15} className={loading ? "animate-spin" : ""} /> Refresh
-          </button>
-        </div>
+        <span
+          className={`px-3 py-1.5 rounded-full text-[11px] font-bold border ${
+            canEdit
+              ? "bg-[#EAF7EE] text-[#0D5229] border-[#B9D3C4]"
+              : "bg-amber-50 text-amber-700 border-amber-200"
+          }`}
+        >
+          {canEdit ? "Editor" : "View only"}
+        </span>
       </div>
 
       {error ? (

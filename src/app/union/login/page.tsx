@@ -26,7 +26,8 @@ const translations = {
       notRegistered: "अभी तक पंजीकृत नहीं हैं?",
       joinNow: "अभी जुड़ें",
       invalidNumber: "कृपया 10 अंकों का मोबाइल नंबर दर्ज करें",
-      numberNotFound: "यह मोबाइल नंबर पंजीकृत नहीं है। कृपया पहले जुड़ें।",
+      numberNotFound: "यह मोबाइल नंबर यूनियन सदस्य के रूप में पंजीकृत नहीं है। कृपया पहले यूनियन जॉइन करें।",
+      notUnionMember: "यह नंबर पार्टी/अन्य पोर्टल पर है, यूनियन में नहीं। पहले यूनियन जॉइन पूरा करें।",
       invalidOtp: "OTP गलत है। कृपया दोबारा कोशिश करें।",
       loginSuccess: "लॉगिन सफल!",
       back: "वापस",
@@ -35,7 +36,7 @@ const translations = {
   en: {
     loginPage: {
       title: "Union Member Login",
-      subtitle: "Sign in to your account",
+      subtitle: "Sign in to your Union account",
       mobile: "Mobile Number",
       sendOtp: "Send OTP",
       sending: "Sending...",
@@ -45,10 +46,11 @@ const translations = {
       verifying: "Verifying...",
       resend: "Resend OTP",
       resendIn: "Resend OTP in {seconds}s",
-      notRegistered: "Not registered yet?",
-      joinNow: "Join Now",
+      notRegistered: "Not a Union member yet?",
+      joinNow: "Join Union",
       invalidNumber: "Please enter a valid 10-digit mobile number",
-      numberNotFound: "This mobile number is not registered. Please join first.",
+      numberNotFound: "This number is not registered as a Union member. Please join the Union first.",
+      notUnionMember: "This number is registered on another portal, not Union. Complete Union join first.",
       invalidOtp: "Invalid OTP. Please try again.",
       loginSuccess: "Login Successful!",
       back: "Back",
@@ -101,7 +103,7 @@ const UnionLoginPageContent = () => {
     try {
       const phoneNumber = `+91${sanitizedPhone}`;
       
-      // Check if phone is registered
+      // Only Union-registered accounts can login here
       const check = await fetchApi('users/check-phone', {
         method: 'POST',
         body: JSON.stringify({ phone: phoneNumber }),
@@ -109,6 +111,11 @@ const UnionLoginPageContent = () => {
 
       if (!check?.exists) {
         setError(t.loginPage.numberNotFound);
+        setLoading(false);
+        return;
+      }
+      if (!check?.canLoginUnion && !check?.portals?.union) {
+        setError(t.loginPage.notUnionMember);
         setLoading(false);
         return;
       }
@@ -169,11 +176,22 @@ const UnionLoginPageContent = () => {
       const phoneNumber = `+91${sanitizePhoneInput(phone)}`;
 
       const { isAuthDevMode } = await import('../../../lib/authDevMode');
-      // Dev-only OTP simulation
+      // Dev-only OTP simulation → real JWT for this phone (not anonymous Supabase)
       if ((otpSimulated || isAuthDevMode()) && isAuthDevMode()) {
         if (otp === '123456') {
-          const { error: sessionError } = await supabase.auth.signInAnonymously();
-          if (sessionError) throw sessionError;
+          const loginRes = await fetchApi('users/dev-login', {
+            method: 'POST',
+            body: JSON.stringify({ phone: phoneNumber }),
+          });
+          if (!loginRes?.access_token) {
+            throw new Error('Dev login failed — no token returned');
+          }
+          if (typeof window !== 'undefined') {
+            window.localStorage.setItem('access_token', loginRes.access_token);
+            if (loginRes?.id) {
+              window.localStorage.setItem('devUserId', String(loginRes.id));
+            }
+          }
           router.push('/union/dashboard');
           return;
         }
@@ -241,6 +259,10 @@ const UnionLoginPageContent = () => {
 
               {/* Phone Input */}
               <div className="space-y-4">
+                <label className="block text-sm font-semibold text-[#04330B]">
+                  {t.loginPage.mobile}
+                  <span className="text-[#D93025] font-bold ml-0.5" aria-hidden="true">*</span>
+                </label>
                 <div className="grid grid-cols-[70px_1fr] gap-3">
                   <div className="h-[56px] rounded-[12px] border border-[#BBF7D0] px-3 flex items-center justify-center font-bold text-[#04330B] bg-white text-lg">
                     +91
@@ -314,6 +336,10 @@ const UnionLoginPageContent = () => {
 
               {/* OTP Input */}
               <div className="space-y-4">
+                <label className="block text-sm font-semibold text-[#04330B]">
+                  OTP
+                  <span className="text-[#D93025] font-bold ml-0.5" aria-hidden="true">*</span>
+                </label>
                 <input
                   type="text"
                   value={otp}

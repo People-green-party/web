@@ -212,15 +212,8 @@ export default function AdminCommitteesPage() {
       </div>
 
       <div className="rounded-[8px] border border-[#B9D3C4] bg-white p-4 shadow-sm">
-        <div className="flex items-center justify-between mb-3">
+        <div className="mb-3">
           <h2 className="font-semibold text-[#04330B]">Existing Committees</h2>
-          <button
-            type="button"
-            onClick={loadCommittees}
-            className="text-sm font-semibold text-[#0D5229] hover:text-[#04330B]"
-          >
-            Refresh
-          </button>
         </div>
         {listLoading && <p className="text-sm text-[#587E67]">Loading…</p>}
         {listErr && <p className="text-sm text-red-700 mb-2">{listErr}</p>}

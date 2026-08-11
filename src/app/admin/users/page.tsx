@@ -15,14 +15,26 @@ type UserRow = {
   phone: string;
   role: string;
   memberId?: string;
+  unionName?: string | null;
+  programTag?: string | null;
+  registrationStatus?: string;
   createdAt: string;
   localUnit?: {
     name: string;
     type: string;
     vidhansabha: { name: string; loksabha: { name: string } };
-  };
+  } | null;
   _count?: { recruits: number };
 };
+
+type Segment = "all" | "party" | "union" | "youth";
+
+const SEGMENTS: { key: Segment; label: string }[] = [
+  { key: "all", label: "All users" },
+  { key: "party", label: "Party only" },
+  { key: "union", label: "Union only" },
+  { key: "youth", label: "Jinda Youth" },
+];
 
 function roleBadge(role: string) {
   if (role === "Admin") return "bg-red-50 text-red-700 border-red-200";
@@ -31,8 +43,19 @@ function roleBadge(role: string) {
   return "bg-gray-50 text-gray-600 border-gray-200";
 }
 
+function portalTags(u: UserRow): string[] {
+  const tags: string[] = [];
+  if (u.localUnit) tags.push("Party");
+  if (String(u.unionName || "").trim()) tags.push("Union");
+  const tag = String(u.programTag || "").toLowerCase();
+  if (tag.includes("youth") || tag.includes("jinda")) tags.push("Youth");
+  if (tags.length === 0) tags.push("Incomplete");
+  return tags;
+}
+
 export default function AdminUsersPage() {
   const [q, setQ] = useState("");
+  const [segment, setSegment] = useState<Segment>("all");
   const [results, setResults] = useState<UserRow[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -55,13 +78,13 @@ export default function AdminUsersPage() {
     return token ? { Authorization: `Bearer ${token}` } : {};
   };
 
-  const load = useCallback(async (query: string, pageNum: number) => {
+  const load = useCallback(async (query: string, pageNum: number, seg: Segment) => {
     setLoading(true);
     setError(null);
     try {
       const auth = getAdminAccessHeader();
       const res = await fetch(
-        `${API}/users/admin/users/search?q=${encodeURIComponent(query)}&take=${PAGE_SIZE}&page=${pageNum}`,
+        `${API}/users/admin/users/search?segment=${encodeURIComponent(seg)}&q=${encodeURIComponent(query)}&take=${PAGE_SIZE}&page=${pageNum}`,
         { headers: { ...auth } }
       );
       if (!res.ok) {
@@ -91,7 +114,7 @@ export default function AdminUsersPage() {
 
   const search = () => {
     setPage(1);
-    load(q, 1);
+    load(q, 1, segment);
   };
 
   useEffect(() => {
@@ -100,15 +123,24 @@ export default function AdminUsersPage() {
     setAccessGranted(true);
     setAccessScope(getAdminScope());
     sessionStorage.setItem("admin_users_access_granted", "1");
-    const initialQ = new URLSearchParams(window.location.search).get("q") || "";
+    const params = new URLSearchParams(window.location.search);
+    const initialQ = params.get("q") || "";
+    const initialSeg = (params.get("segment") as Segment) || "all";
     if (initialQ) setQ(initialQ);
-    load(initialQ, 1);
+    if (["all", "party", "union", "youth"].includes(initialSeg)) setSegment(initialSeg);
+    load(initialQ, 1, ["all", "party", "union", "youth"].includes(initialSeg) ? initialSeg : "all");
   }, [load]);
 
   const goToPage = (next: number) => {
     const clamped = Math.max(1, Math.min(pages, next));
     setPage(clamped);
-    load(q, clamped);
+    load(q, clamped, segment);
+  };
+
+  const applySegment = (seg: Segment) => {
+    setSegment(seg);
+    setPage(1);
+    load(q, 1, seg);
   };
 
   const updateRole = async (userId: number, newRole: string) => {
@@ -160,10 +192,15 @@ export default function AdminUsersPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3">
             <div className="min-w-0">
               <h2 className="text-xl sm:text-[28px] font-bold text-[#04330B] leading-tight">
-                PGP Members
+                All Registered Users
               </h2>
               <p className="text-[#587E67] font-semibold mt-1 text-sm">
-                Search party members and manage leadership roles.
+                Full User table from the database. Total updates every time someone enrolls (Party,
+                Union, or Jinda Youth). Internships are on their own page.
+              </p>
+              <p className="text-[12px] text-amber-700 font-medium mt-2 max-w-2xl">
+                Use the filters below to narrow by portal. Incomplete joins (no name/location) are
+                included in “All users”.
               </p>
             </div>
             <div
@@ -184,12 +221,31 @@ export default function AdminUsersPage() {
             </div>
           )}
 
+          <div className="flex flex-wrap gap-2">
+            {SEGMENTS.map((s) => (
+              <button
+                key={s.key}
+                type="button"
+                onClick={() => applySegment(s.key)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors ${
+                  segment === s.key
+                    ? "bg-[#04330B] text-white border-[#04330B]"
+                    : "bg-white text-[#04330B] border-[#DDEEE4] hover:border-[#16A34A]"
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4 min-w-0">
-              <p className="text-[#587E67] text-xs font-bold uppercase tracking-wide">Total Members</p>
+              <p className="text-[#587E67] text-xs font-bold uppercase tracking-wide">
+                Total in database
+              </p>
               <p className="text-2xl font-bold text-[#04330B] mt-2">{total}</p>
               <p className="text-xs text-[#587E67] mt-1 font-medium">
-                Showing {from}–{to}
+                Showing {from}–{to} · filter: {segment}
               </p>
             </div>
             <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4 min-w-0">
@@ -262,11 +318,32 @@ export default function AdminUsersPage() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h3 className="font-bold text-[#04330B] text-base break-words">{u.name}</h3>
+                      <h3 className="font-bold text-[#04330B] text-base break-words">
+                        {u.name?.trim() || "Name not provided"}
+                      </h3>
                       <p className="text-sm text-[#587E67] font-semibold break-all">{u.phone}</p>
                       <p className="text-xs text-[#587E67] mt-0.5">ID: {u.id}</p>
-                      <span className="inline-block mt-1.5 px-2 py-0.5 rounded bg-[#EAF7EE] text-[#0D5229] text-[11px] font-bold border border-[#B9D3C4]">
-                        {u.memberId || "Pending"}
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        {portalTags(u).map((t) => (
+                          <span
+                            key={t}
+                            className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F1FBF6] text-[#0D5229] border border-[#B9D3C4]"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                      <span
+                        className={`inline-block mt-1.5 px-2 py-0.5 rounded text-[11px] font-bold border ${
+                          u.memberId
+                            ? "bg-[#EAF7EE] text-[#0D5229] border-[#B9D3C4]"
+                            : "bg-amber-50 text-amber-800 border-amber-200"
+                        }`}
+                      >
+                        {u.memberId ||
+                          (u.registrationStatus === "pending"
+                            ? "Incomplete join"
+                            : "No Member ID")}
                       </span>
                     </div>
                     <span
@@ -371,13 +448,34 @@ export default function AdminUsersPage() {
                     results.map((u) => (
                       <tr key={u.id} className="hover:bg-[#FAFCFB] transition-colors">
                         <td className="px-6 py-4">
-                          <div className="font-bold text-[#04330B] text-[16px]">{u.name}</div>
+                          <div className="font-bold text-[#04330B] text-[16px]">
+                            {u.name?.trim() || "Name not provided"}
+                          </div>
                           <div className="text-[13px] text-[#587E67] font-semibold mt-0.5">
                             {u.phone}
                           </div>
                           <div className="text-[12px] text-[#587E67] mt-0.5">ID: {u.id}</div>
-                          <div className="inline-block mt-1.5 px-2 py-0.5 rounded bg-[#EAF7EE] text-[#0D5229] text-[11px] font-bold tracking-wide border border-[#B9D3C4]">
-                            {u.memberId || "Pending"}
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {portalTags(u).map((t) => (
+                              <span
+                                key={t}
+                                className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F1FBF6] text-[#0D5229] border border-[#B9D3C4]"
+                              >
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                          <div
+                            className={`inline-block mt-1.5 px-2 py-0.5 rounded text-[11px] font-bold tracking-wide border ${
+                              u.memberId
+                                ? "bg-[#EAF7EE] text-[#0D5229] border-[#B9D3C4]"
+                                : "bg-amber-50 text-amber-800 border-amber-200"
+                            }`}
+                          >
+                            {u.memberId ||
+                              (u.registrationStatus === "pending"
+                                ? "Incomplete join"
+                                : "No Member ID")}
                           </div>
                         </td>
                         <td className="px-6 py-4">

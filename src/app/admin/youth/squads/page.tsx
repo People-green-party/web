@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import {
-  CheckCircle2, XCircle, Flag, Zap, RefreshCw, Users,
+  CheckCircle2, XCircle, Flag, Users,
   ChevronLeft, ChevronRight, AlertTriangle, ShieldOff,
 } from "lucide-react";
 import { adminFetch } from "@/lib/adminApi";
@@ -117,140 +117,187 @@ export default function AdminSquadsPage() {
   };
 
   return (
-    <div className="w-full max-w-full min-w-0 font-['Familjen_Grotesk']">
+    <div className="w-full max-w-full min-w-0 space-y-5 font-['Familjen_Grotesk']">
+      {toast ? (
+        <div className="fixed top-4 right-4 z-50 rounded-lg bg-[#04330B] px-4 py-3 text-sm font-semibold text-white shadow-lg">
+          {toast}
+        </div>
+      ) : null}
 
-      {toast && (
-        <div className="fixed top-20 right-4 z-50 bg-[#04330B] text-white px-4 py-3 rounded-xl text-sm font-bold shadow-lg">{toast}</div>
-      )}
-
-      {/* Reject modal */}
-      {rejectTarget && (
+      {rejectTarget ? (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h3 className="text-lg font-black text-[#04330B] mb-1">Reject Squad</h3>
-            <p className="text-sm text-gray-500 mb-1">{rejectTarget.name}</p>
+            <p className="text-sm text-[#587E67] mb-1">{rejectTarget.name}</p>
             <textarea
-              className="w-full border border-gray-200 rounded-xl p-3 text-sm resize-none focus:outline-none focus:border-[#04330B] mt-3"
-              rows={3} placeholder="Reason for rejection..."
-              value={rejectReason} onChange={(e) => setRejectReason(e.target.value)}
+              className="w-full border border-[#DDEEE4] rounded-xl p-3 text-sm resize-none focus:outline-none focus:border-[#04330B] mt-3"
+              rows={3}
+              placeholder="Reason for rejection..."
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
             />
             <div className="flex gap-3 mt-4">
-              <button onClick={handleReject} disabled={!rejectReason.trim()} className="flex-1 bg-red-600 text-white rounded-xl py-2.5 text-sm font-bold hover:bg-red-700 disabled:opacity-50">
+              <button
+                type="button"
+                onClick={handleReject}
+                disabled={!rejectReason.trim()}
+                className="flex-1 bg-red-600 text-white rounded-xl py-2.5 text-sm font-bold hover:bg-red-700 disabled:opacity-50"
+              >
                 Confirm Reject
               </button>
-              <button onClick={() => { setRejectTarget(null); setRejectReason(""); }} className="flex-1 border border-gray-200 rounded-xl py-2.5 text-sm font-bold">Cancel</button>
+              <button
+                type="button"
+                onClick={() => {
+                  setRejectTarget(null);
+                  setRejectReason("");
+                }}
+                className="flex-1 border border-[#DDEEE4] rounded-xl py-2.5 text-sm font-bold"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
-      {/* Flag modal */}
-      {flagTarget && (
+      {flagTarget ? (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h3 className="text-lg font-black text-[#04330B] mb-1">Flag Squad</h3>
-            <p className="text-sm text-gray-500 mb-1">{flagTarget.name}</p>
+            <p className="text-sm text-[#587E67] mb-1">{flagTarget.name}</p>
             <textarea
-              className="w-full border border-gray-200 rounded-xl p-3 text-sm resize-none focus:outline-none focus:border-[#04330B] mt-3"
-              rows={3} placeholder="Reason for flagging..."
-              value={flagReason} onChange={(e) => setFlagReason(e.target.value)}
+              className="w-full border border-[#DDEEE4] rounded-xl p-3 text-sm resize-none focus:outline-none focus:border-[#04330B] mt-3"
+              rows={3}
+              placeholder="Reason for flagging..."
+              value={flagReason}
+              onChange={(e) => setFlagReason(e.target.value)}
             />
             <div className="flex gap-3 mt-4">
-              <button onClick={handleFlag} disabled={!flagReason.trim()} className="flex-1 bg-orange-500 text-white rounded-xl py-2.5 text-sm font-bold hover:bg-orange-600 disabled:opacity-50">
+              <button
+                type="button"
+                onClick={handleFlag}
+                disabled={!flagReason.trim()}
+                className="flex-1 bg-orange-500 text-white rounded-xl py-2.5 text-sm font-bold hover:bg-orange-600 disabled:opacity-50"
+              >
                 Confirm Flag
               </button>
-              <button onClick={() => { setFlagTarget(null); setFlagReason(""); }} className="flex-1 border border-gray-200 rounded-xl py-2.5 text-sm font-bold">Cancel</button>
+              <button
+                type="button"
+                onClick={() => {
+                  setFlagTarget(null);
+                  setFlagReason("");
+                }}
+                className="flex-1 border border-[#DDEEE4] rounded-xl py-2.5 text-sm font-bold"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
-      <main className="mx-auto max-w-6xl px-5 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-black text-[#04330B]">Squad Management</h1>
-            <p className="text-sm text-[#587E67] mt-0.5">{total} squads</p>
-          </div>
-          <button onClick={load} className="flex items-center gap-2 text-sm font-bold text-[#587E67] hover:text-[#04330B]">
-            <RefreshCw size={15} /> Refresh
-          </button>
-        </div>
+      <div>
+        <h2 className="text-2xl font-black text-[#04330B]">Squads</h2>
+        <p className="text-sm text-[#587E67] font-medium">{total} squads · approve, reject or flag</p>
+      </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-2xl border border-[#BBF7D0] p-4 mb-6 flex flex-wrap gap-3 items-end">
-          <div>
-            <label className="text-xs font-bold text-[#587E67] block mb-1">Status</label>
-            <div className="flex flex-wrap gap-1.5">
-              {STATUS_FILTERS.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => { setFilterStatus(s); setPage(1); }}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-                    filterStatus === s ? "bg-[#04330B] text-white" : "border border-gray-200 text-[#587E67] hover:border-[#04330B]"
-                  }`}
-                >
-                  {s === "PendingVerification" ? "Pending" : s}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="text-xs font-bold text-[#587E67] block mb-1">District</label>
-            <input
-              type="text" placeholder="e.g. Jaipur" value={filterDistrict}
-              onChange={(e) => { setFilterDistrict(e.target.value); setPage(1); }}
-              className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#04330B] w-36"
-            />
+      <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4 shadow-sm flex flex-wrap gap-3 items-end">
+        <div>
+          <label className="text-xs font-bold text-[#587E67] block mb-1">Status</label>
+          <div className="flex flex-wrap gap-1.5">
+            {STATUS_FILTERS.map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => {
+                  setFilterStatus(s);
+                  setPage(1);
+                }}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                  filterStatus === s
+                    ? "bg-[#04330B] text-white"
+                    : "border border-[#DDEEE4] text-[#587E67] hover:border-[#04330B]"
+                }`}
+              >
+                {s === "PendingVerification" ? "Pending" : s}
+              </button>
+            ))}
           </div>
         </div>
+        <div>
+          <label className="text-xs font-bold text-[#587E67] block mb-1">District</label>
+          <input
+            type="text"
+            placeholder="e.g. Jaipur"
+            value={filterDistrict}
+            onChange={(e) => {
+              setFilterDistrict(e.target.value);
+              setPage(1);
+            }}
+            className="border border-[#DDEEE4] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#04330B] w-36"
+          />
+        </div>
+      </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4 text-red-700 text-sm font-semibold flex items-center gap-2">
-            <AlertTriangle size={16} /> {error}
-          </div>
-        )}
+      {error ? (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 flex items-center gap-2">
+          <AlertTriangle size={16} /> {error}
+        </p>
+      ) : null}
 
+      <div className="rounded-2xl border border-[#E4F2EA] bg-white shadow-sm overflow-hidden">
         {loading ? (
-          <div className="text-center py-16 text-[#587E67] font-semibold">Loading squads...</div>
+          <p className="text-center py-16 text-[#587E67] font-semibold">Loading squads…</p>
         ) : squads.length === 0 ? (
-          <div className="text-center py-16 text-[#9CA3AF]">
+          <div className="text-center py-16 text-[#94A3B8]">
             <Users size={40} className="mx-auto mb-3 opacity-30" />
             <p className="font-semibold">No squads match your filters</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="divide-y divide-[#F0F5F2]">
             {squads.map((sq) => {
               const sc = STATUS_UI[sq.status] || { label: sq.status, color: "text-gray-500", bg: "bg-gray-50" };
               const rankEmoji = SQUAD_RANK_EMOJI[sq.squadRank] || "🥉";
               return (
-                <div key={sq.id} className="bg-white rounded-2xl border border-[#E5E7EB] p-5 hover:border-[#BBF7D0] transition-all">
+                <article key={sq.id} className="px-4 py-4">
                   <div className="flex items-start justify-between gap-4 flex-wrap">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="font-black text-[#04330B] text-base">{sq.name}</span>
-                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${sc.bg} ${sc.color}`}>{sc.label}</span>
+                        <span className="font-bold text-[#04330B] text-base">{sq.name}</span>
+                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${sc.bg} ${sc.color}`}>
+                          {sc.label}
+                        </span>
                       </div>
-                      <div className="flex flex-wrap gap-3 text-xs text-[#587E67] mb-2">
-                        {sq.district && <span>📍 {sq.district}</span>}
-                        {sq.squadType && <span>{sq.squadType}</span>}
-                        <span><Users size={10} className="inline mr-0.5" />{sq.memberCount} members</span>
-                        <span>{rankEmoji} {sq.squadRank} · {sq.squadXp} XP</span>
-                        {sq.captainName && <span>Leader: {sq.captainName}</span>}
+                      <div className="flex flex-wrap gap-3 text-xs text-[#587E67] font-medium mb-2">
+                        {sq.district ? <span>{sq.district}</span> : null}
+                        {sq.squadType ? <span>{sq.squadType}</span> : null}
+                        <span>
+                          <Users size={10} className="inline mr-0.5" />
+                          {sq.memberCount} members
+                        </span>
+                        <span>
+                          {rankEmoji} {sq.squadRank} · {sq.squadXp} XP
+                        </span>
+                        {sq.captainName ? <span>Leader: {sq.captainName}</span> : null}
                       </div>
-                      {sq.purpose && <p className="text-xs text-[#587E67] line-clamp-2">{sq.purpose}</p>}
+                      {sq.purpose ? (
+                        <p className="text-xs text-[#587E67] line-clamp-2">{sq.purpose}</p>
+                      ) : null}
                     </div>
 
                     <div className="flex flex-col gap-2 items-end shrink-0">
                       {(sq.status === "New" || sq.status === "PendingVerification") && (
                         <div className="flex gap-2">
                           <button
+                            type="button"
                             onClick={() => handleApprove(sq.id)}
                             disabled={actionLoading === sq.id}
                             className="flex items-center gap-1.5 bg-[#04330B] text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-[#16A34A] disabled:opacity-50"
                           >
-                            <CheckCircle2 size={12} /> {actionLoading === sq.id ? "..." : "Approve"}
+                            <CheckCircle2 size={12} /> {actionLoading === sq.id ? "…" : "Approve"}
                           </button>
                           <button
+                            type="button"
                             onClick={() => setRejectTarget(sq)}
                             className="flex items-center gap-1.5 border border-red-200 text-red-600 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-red-50"
                           >
@@ -259,47 +306,63 @@ export default function AdminSquadsPage() {
                         </div>
                       )}
                       <div className="flex gap-2">
-                        {sq.status !== "Flagged" && (
+                        {sq.status !== "Flagged" ? (
                           <button
+                            type="button"
                             onClick={() => setFlagTarget(sq)}
                             className="flex items-center gap-1.5 border border-orange-200 text-orange-600 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-orange-50"
                           >
                             <Flag size={12} /> Flag
                           </button>
-                        )}
+                        ) : null}
                         <button
+                          type="button"
                           onClick={() => handleFreezeXp(sq.id)}
                           disabled={actionLoading === sq.id}
-                          className="flex items-center gap-1.5 border border-gray-200 text-gray-600 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                          className="flex items-center gap-1.5 border border-[#DDEEE4] text-[#587E67] text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-[#F8FBF9] disabled:opacity-50"
                         >
                           <ShieldOff size={12} /> Freeze XP
                         </button>
                       </div>
-                      <span className="text-[10px] text-gray-400">
-                        Created {new Date(sq.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}
+                      <span className="text-[10px] text-[#94A3B8] font-medium">
+                        Created{" "}
+                        {new Date(sq.createdAt).toLocaleDateString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                        })}
                       </span>
                     </div>
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>
         )}
+      </div>
 
-        {pages > 1 && (
-          <div className="flex items-center justify-center gap-3 mt-8">
-            <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-              className="flex items-center gap-1 px-4 py-2 rounded-xl border border-gray-200 text-sm font-bold disabled:opacity-40">
-              <ChevronLeft size={14} /> Prev
-            </button>
-            <span className="text-sm text-gray-500 font-semibold">Page {page} of {pages}</span>
-            <button onClick={() => setPage((p) => Math.min(pages, p + 1))} disabled={page === pages}
-              className="flex items-center gap-1 px-4 py-2 rounded-xl border border-gray-200 text-sm font-bold disabled:opacity-40">
-              Next <ChevronRight size={14} />
-            </button>
-          </div>
-        )}
-      </main>
+      {pages > 1 ? (
+        <div className="flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="flex items-center gap-1 px-4 py-2 rounded-xl border border-[#DDEEE4] text-sm font-bold disabled:opacity-40"
+          >
+            <ChevronLeft size={14} /> Prev
+          </button>
+          <span className="text-sm text-[#587E67] font-semibold">
+            Page {page} of {pages}
+          </span>
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.min(pages, p + 1))}
+            disabled={page === pages}
+            className="flex items-center gap-1 px-4 py-2 rounded-xl border border-[#DDEEE4] text-sm font-bold disabled:opacity-40"
+          >
+            Next <ChevronRight size={14} />
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

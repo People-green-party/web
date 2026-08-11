@@ -52,7 +52,7 @@ export const translations = {
             { title: "Our New Rajasthan Bill Will Change the World", path: "/join" },
             { title: "War on Corruption\nHonest Government", path: "/donation" },
             { title: "Nature Conservation\nProtection of Humanity", path: "/about" },
-            { title: "A Small Donation\nBoon for Change", path: "/declaration" }
+            { title: "A Small Donation\nBoon for Change", path: "/donation" }
         ],
         visionSection: {
             title: "Our Vision for a Better Tomorrow",
@@ -137,10 +137,10 @@ export const translations = {
                 satyanarayan: "Satyanarayan Saini",
                 dineshSaraf: "Dinesh Saraf",
                 drSuchi: "Dr. Suchi",
-                jpBhadu: "J.P. Bhadu",
                 rajaram: "Rajaram Nayak",
                 rajendra: "Rajendra Meena",
-                shankerLal: "Shanker Lal"
+                shankerLal: "Shanker Lal",
+                pawanMehar: "Pawan Mehar"
             }
         },
         dashboard: {
@@ -259,6 +259,28 @@ export const translations = {
             sub: "50 IDEAS TO TRANSFORM THE PINK CITY",
             desc: "A blueprint for a sustainable, inclusive, and globally admired Jaipur."
         },
+        homePrograms: {
+            title: "Join the Movement",
+            subtitle: "Three ways to get involved — organise as workers, lead as youth, or build skills through internships.",
+            viewMore: "View more",
+            items: {
+                unions: {
+                    title: "Unions",
+                    description:
+                        "PGP Union Network empowers unorganized workers to organise, protect their rights, and build collective strength.",
+                },
+                youth: {
+                    title: "Jinda Youth",
+                    description:
+                        "Don't just watch politics — build it. Join India's Jinda Youth movement to shape policy and create real impact.",
+                },
+                internships: {
+                    title: "Internships",
+                    description:
+                        "A two-week PGP Internship where you work on real projects, gain practical skills, and earn a professional certificate.",
+                },
+            },
+        },
         synergy: {
             tag: "The Synergy Engine",
             title: "A Future Built on",
@@ -330,7 +352,7 @@ export const translations = {
             { title: "हमारा नया राजस्थान बिल, बदलेगा दुनिया", path: "/join" },
             { title: "करप्शन पर वर चाहिए ईमानदार सरकार", path: "/donation" },
             { title: "प्रकृति का संरक्षण मानवता की रक्षा", path: "/about" },
-            { title: "थोड़ा सा दान बदलाव के लिए वरदान", path: "/declaration" }
+            { title: "थोड़ा सा दान बदलाव के लिए वरदान", path: "/donation" }
         ],
         visionSection: {
             title: "बेहतर कल के लिए हमारा दृष्टिकोण",
@@ -415,10 +437,10 @@ export const translations = {
                 satyanarayan: "सत्यनारायण सैनी",
                 dineshSaraf: "दिनेश सर्राफ",
                 drSuchi: "डॉ. शुचि",
-                jpBhadu: "जे.पी. भादू",
                 rajaram: "राजाराम नायक",
                 rajendra: "राजेन्द्र मीणा",
-                shankerLal: "शंकर लाल"
+                shankerLal: "शंकर लाल",
+                pawanMehar: "पवन मेहर"
             }
         },
         dashboard: {
@@ -533,6 +555,28 @@ export const translations = {
             title: "विजन जयपुर 2040",
             sub: "गुलाबी नगरी को बदलने के लिए 50 विचार",
             desc: "एक स्थायी, समावेशी और विश्व स्तर पर प्रशंसित जयपुर के लिए एक ब्लूप्रिंट।"
+        },
+        homePrograms: {
+            title: "आंदोलन से जुड़ें",
+            subtitle: "तीन रास्ते — मजदूरों के रूप में संगठित हों, युवा नेतृत्व करें, या इंटर्नशिप से कौशल बनाएँ।",
+            viewMore: "और देखें",
+            items: {
+                unions: {
+                    title: "यूनियन्स",
+                    description:
+                        "PGP यूनियन नेटवर्क असंगठित कामगारों को संगठित होने, अधिकार सुरक्षित रखने और सामूहिक शक्ति बनाने में सशक्त बनाता है।",
+                },
+                youth: {
+                    title: "जिंदा यूथ",
+                    description:
+                        "केवल राजनीति मत देखो — उसे बनाओ। नीति गढ़ने और असली असर लाने के लिए जिंदा यूथ आंदोलन से जुड़ें।",
+                },
+                internships: {
+                    title: "इंटर्नशिप्स",
+                    description:
+                        "दो सप्ताह की पीजीपी इंटर्नशिप — असली परियोजनाओं पर काम करें, कौशल सीखें और प्रोफेशनल प्रमाणपत्र पाएँ।",
+                },
+            },
         },
         synergy: {
             tag: "द सिनर्जी इंजन",

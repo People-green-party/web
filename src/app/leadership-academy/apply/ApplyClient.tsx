@@ -9,6 +9,7 @@ import { DEPARTMENTS } from "@/data/leadership-academy/departments";
 import { getAcademyI18n } from "@/data/leadership-academy/i18n";
 import { useLanguage } from "@/components/LanguageContext";
 import { fetchApi } from "@/lib/api";
+import { FormFieldLabel } from "@/components/FormFieldLabel";
 
 const VALID_DEPTS = new Set<string>(DEPARTMENTS.map((d) => d.slug));
 
@@ -183,81 +184,97 @@ export default function LeadershipAcademyApplyPage() {
                   <div className="mt-8 mb-5 max-w-[520px] mx-auto">
                     <form className="space-y-6" onSubmit={onSubmit}>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input
-                          type="text"
-                          name="fullName"
-                          required
-                          disabled={submitting}
-                          value={form.fullName}
-                          onChange={onChange}
-                          className={inputClass}
-                          placeholder={a.fields.fullName}
-                          autoComplete="name"
-                        />
-                        <input
-                          type="email"
-                          name="email"
-                          required
-                          disabled={submitting}
-                          value={form.email}
-                          onChange={onChange}
-                          className={inputClass}
-                          placeholder={a.fields.email}
-                          autoComplete="email"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="grid grid-cols-[70px_1fr] gap-3 min-w-0">
-                          <div className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-3 flex items-center justify-center font-semibold text-[#587E67] bg-white">
-                            +91
-                          </div>
+                        <div>
+                          <FormFieldLabel required>{a.fields.fullName}</FormFieldLabel>
                           <input
-                            type="tel"
-                            name="phone"
+                            type="text"
+                            name="fullName"
                             required
                             disabled={submitting}
-                            value={form.phone}
-                            onChange={(e) => {
-                              const digits = e.target.value.replace(/\D/g, "");
-                              const normalized = digits.startsWith("91")
-                                ? digits.slice(2)
-                                : digits.startsWith("0")
-                                  ? digits.slice(1)
-                                  : digits;
-                              setForm((prev) => ({ ...prev, phone: normalized.slice(0, 10) }));
-                              if (error) setError("");
-                            }}
-                            inputMode="numeric"
-                            className={`${inputClass} min-w-0`}
-                            placeholder={a.fields.phone}
-                            autoComplete="tel"
+                            value={form.fullName}
+                            onChange={onChange}
+                            className={inputClass}
+                            placeholder={a.fields.fullName}
+                            autoComplete="name"
                           />
                         </div>
-                        <input
-                          type="text"
-                          name="city"
-                          required
-                          disabled={submitting}
-                          value={form.city}
-                          onChange={onChange}
-                          className={inputClass}
-                          placeholder={a.fields.city}
-                          autoComplete="address-level2"
-                        />
+                        <div>
+                          <FormFieldLabel required>{a.fields.email}</FormFieldLabel>
+                          <input
+                            type="email"
+                            name="email"
+                            required
+                            disabled={submitting}
+                            value={form.email}
+                            onChange={onChange}
+                            className={inputClass}
+                            placeholder={a.fields.email}
+                            autoComplete="email"
+                          />
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input
-                          type="text"
-                          name="college"
-                          disabled={submitting}
-                          value={form.college}
-                          onChange={onChange}
-                          className={inputClass}
-                          placeholder={a.fields.college}
-                        />
+                        <div>
+                          <FormFieldLabel required>{a.fields.phone}</FormFieldLabel>
+                          <div className="grid grid-cols-[70px_1fr] gap-3 min-w-0">
+                            <div className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-3 flex items-center justify-center font-semibold text-[#587E67] bg-white">
+                              +91
+                            </div>
+                            <input
+                              type="tel"
+                              name="phone"
+                              required
+                              disabled={submitting}
+                              value={form.phone}
+                              onChange={(e) => {
+                                const digits = e.target.value.replace(/\D/g, "");
+                                const normalized = digits.startsWith("91")
+                                  ? digits.slice(2)
+                                  : digits.startsWith("0")
+                                    ? digits.slice(1)
+                                    : digits;
+                                setForm((prev) => ({ ...prev, phone: normalized.slice(0, 10) }));
+                                if (error) setError("");
+                              }}
+                              inputMode="numeric"
+                              className={`${inputClass} min-w-0`}
+                              placeholder={a.fields.phone}
+                              autoComplete="tel"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <FormFieldLabel required>{a.fields.city}</FormFieldLabel>
+                          <input
+                            type="text"
+                            name="city"
+                            required
+                            disabled={submitting}
+                            value={form.city}
+                            onChange={onChange}
+                            className={inputClass}
+                            placeholder={a.fields.city}
+                            autoComplete="address-level2"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <FormFieldLabel>{a.fields.college}</FormFieldLabel>
+                          <input
+                            type="text"
+                            name="college"
+                            disabled={submitting}
+                            value={form.college}
+                            onChange={onChange}
+                            className={inputClass}
+                            placeholder={a.fields.college}
+                          />
+                        </div>
                         <div className="relative">
+                          <FormFieldLabel required>{a.fields.selectDepartment}</FormFieldLabel>
                           <select
                             name="department"
                             required
@@ -276,7 +293,7 @@ export default function LeadershipAcademyApplyPage() {
                             ))}
                           </select>
                           <span
-                            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#587E67]"
+                            className="pointer-events-none absolute right-3 top-[38px] text-[#587E67]"
                             aria-hidden
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -287,6 +304,7 @@ export default function LeadershipAcademyApplyPage() {
                       </div>
 
                       <div className="relative">
+                        <FormFieldLabel required>Mode</FormFieldLabel>
                         <select
                           name="mode"
                           required
@@ -299,7 +317,7 @@ export default function LeadershipAcademyApplyPage() {
                           <option value="hybrid">{a.fields.hybrid}</option>
                         </select>
                         <span
-                          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#587E67]"
+                          className="pointer-events-none absolute right-3 top-[38px] text-[#587E67]"
                           aria-hidden
                         >
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -308,17 +326,20 @@ export default function LeadershipAcademyApplyPage() {
                         </span>
                       </div>
 
-                      <textarea
-                        name="motivation"
-                        required
-                        rows={4}
-                        minLength={10}
-                        disabled={submitting}
-                        value={form.motivation}
-                        onChange={onChange}
-                        className="w-full rounded-[10px] border border-[#DDEEE4] px-4 py-3 font-semibold text-[#04330B] outline-none bg-white resize-y disabled:opacity-60"
-                        placeholder={a.fields.motivation}
-                      />
+                      <div>
+                        <FormFieldLabel required>{a.fields.motivation}</FormFieldLabel>
+                        <textarea
+                          name="motivation"
+                          required
+                          rows={4}
+                          minLength={10}
+                          disabled={submitting}
+                          value={form.motivation}
+                          onChange={onChange}
+                          className="w-full rounded-[10px] border border-[#DDEEE4] px-4 py-3 font-semibold text-[#04330B] outline-none bg-white resize-y disabled:opacity-60"
+                          placeholder={a.fields.motivation}
+                        />
+                      </div>
 
                       <button
                         type="submit"

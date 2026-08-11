@@ -12,7 +12,8 @@ import {
   Loader2,
   Swords,
   Target,
-  RefreshCw,
+  Building2,
+  HandCoins,
 } from "lucide-react";
 import { ADMIN_API, adminFetch, getAdminToken } from "@/lib/adminApi";
 
@@ -80,10 +81,12 @@ export default function AdminPage() {
   const [pendingMissions, setPendingMissions] = useState(0);
   const [pendingSquadMissions, setPendingSquadMissions] = useState(0);
   const [actionQueueCount, setActionQueueCount] = useState(0);
+  const [unionTotal, setUnionTotal] = useState(0);
+  const [memberTotal, setMemberTotal] = useState(0);
+  const [donationTotal, setDonationTotal] = useState(0);
+  const [donationConfirmedSum, setDonationConfirmedSum] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
-
   const load = async () => {
     const token = getAdminToken();
     if (!token) return;
@@ -98,6 +101,9 @@ export default function AdminPage() {
         missions,
         squadMissions,
         actionQueue,
+        unionStats,
+        membersPage,
+        donationsPage,
       ] = await Promise.all([
         adminFetch<YouthStats>("admin/youth/dashboard").catch(() => ({})),
         adminFetch<InternshipApp[]>("leadership-academy/applications").catch(() => []),
@@ -113,6 +119,13 @@ export default function AdminPage() {
           total: 0,
         })),
         adminFetch<Countish>("admin/youth/action-queue").catch(() => []),
+        adminFetch<{ total?: number }>("users/admin/unions/stats").catch(() => ({ total: 0 })),
+        adminFetch<Countish>("users/admin/users/search?segment=all&take=1&page=1").catch(() => ({
+          total: 0,
+        })),
+        adminFetch<{ total?: number; confirmedAmountSum?: number }>("admin/donations?limit=1").catch(
+          () => ({ total: 0, confirmedAmountSum: 0 })
+        ),
       ]);
 
       setYouth(youthDash || {});
@@ -129,11 +142,14 @@ export default function AdminPage() {
       setPendingMissions(asTotal(missions));
       setPendingSquadMissions(asTotal(squadMissions));
       setActionQueueCount(actionQueueTotal(actionQueue));
+      setUnionTotal(Number(unionStats?.total || 0));
+      setMemberTotal(asTotal(membersPage));
+      setDonationTotal(Number(donationsPage?.total || 0));
+      setDonationConfirmedSum(Number(donationsPage?.confirmedAmountSum || 0));
     } catch (e: any) {
       setError(e?.message || "Could not load dashboard data");
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   };
 
@@ -203,18 +219,42 @@ export default function AdminPage() {
 
   const cards = [
     {
-      label: "Internship Applications",
+      label: "All Registered Users",
+      value: memberTotal,
+      icon: Users,
+      hint: "Full User database — updates on every enrollment",
+      href: "/admin/users",
+    },
+    {
+      label: "Union Workers",
+      value: unionTotal,
+      icon: Building2,
+      hint: "Click to view union member list",
+      href: "/admin/unions",
+    },
+    {
+      label: "Jinda Youth",
+      value: youth.totalYouth ?? "—",
+      icon: Flag,
+      hint: "Click card → member details",
+      href: "/admin/youth/members",
+    },
+    {
+      label: "Internships",
       value: internshipStats.total,
       icon: GraduationCap,
-      hint: `${internshipStats.pending} pending review`,
+      hint: `${internshipStats.pending} pending — view applications`,
       href: "/admin/leadership-academy",
     },
     {
-      label: "Youth Members",
-      value: youth.totalYouth ?? "—",
-      icon: Users,
-      hint: "Youth Front network",
-      href: "/admin/youth",
+      label: "Donations",
+      value: donationTotal,
+      icon: HandCoins,
+      hint:
+        donationConfirmedSum > 0
+          ? `₹${donationConfirmedSum.toLocaleString("en-IN")} confirmed`
+          : "Form submissions",
+      href: "/admin/donations",
     },
     {
       label: "Open Elections",
@@ -256,23 +296,11 @@ export default function AdminPage() {
 
   return (
     <div className="w-full max-w-full min-w-0 space-y-5 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-        <div className="min-w-0">
-          <h2 className="text-xl sm:text-2xl font-black text-[#04330B]">Party Dashboard</h2>
-          <p className="text-sm text-[#587E67] font-medium">
-            Live data — Internships, Youth Front, Elections and ops.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => {
-            setRefreshing(true);
-            load();
-          }}
-          className="inline-flex items-center gap-2 rounded-xl border border-[#DDEEE4] bg-white px-4 py-2.5 text-sm font-bold text-[#04330B] shrink-0"
-        >
-          <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} /> Refresh
-        </button>
+      <div>
+        <h2 className="text-xl sm:text-2xl font-black text-[#04330B]">Party Dashboard</h2>
+        <p className="text-sm text-[#587E67] font-medium">
+          Live data — Members, Unions, Youth, Internships, Donations and ops.
+        </p>
       </div>
 
       {error ? (
@@ -448,11 +476,11 @@ export default function AdminPage() {
       </div>
 
       <section className="rounded-2xl border border-[#E4F2EA] bg-white p-5 shadow-sm">
-        <h3 className="font-black text-[#04330B] mb-1">Youth Front pulse</h3>
+        <h3 className="font-black text-[#04330B] mb-1">Jinda Youth pulse</h3>
         <p className="text-xs text-[#587E67] font-medium mb-4">Live ops counters</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { label: "Pending issues", value: youth.pendingIssues ?? "—", href: "/admin/youth/action-queue", icon: AlertTriangle },
+            { label: "Open issues", value: youth.pendingIssues ?? "—", href: "/admin/youth/action-queue", icon: AlertTriangle },
             { label: "Flagged members", value: youth.flaggedMembers ?? "—", href: "/admin/youth", icon: Flag },
             { label: "Escalated", value: youth.escalatedIssues ?? "—", href: "/admin/youth/action-queue", icon: ClipboardList },
           ].map((item) => {
