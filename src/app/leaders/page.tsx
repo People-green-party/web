@@ -26,10 +26,10 @@ export default function LeadersPage() {
         { name: t.committee.members.satyanarayan, role: t.committee.roles.statePresident, image: "/Members/satyanrayan.png", rawName: "Satyanarayan Saini" },
         { name: t.committee.members.dineshSaraf, role: t.committee.roles.executiveMember, image: "/Members/dineshsaraf.png", rawName: "Dinesh Saraf" },
         { name: t.committee.members.drSuchi, role: t.committee.roles.executiveMember, image: "/Members/Dr.suchi.png", rawName: "Dr. Suchi" },
-        { name: t.committee.members.jpBhadu, role: t.committee.roles.executiveMember, image: "/Members/Jpbhadu.png", rawName: "J.P. Bhadu" },
         { name: t.committee.members.rajaram, role: t.committee.roles.executiveMember, image: "/Members/RajaramNayak.png", rawName: "Rajaram Nayak" },
         { name: t.committee.members.rajendra, role: t.committee.roles.executiveMember, image: "/Members/RajendraMeena.png", rawName: "Rajendra Meena" },
-        { name: t.committee.members.shankerLal, role: t.committee.roles.executiveMember, image: "/Members/shankerlal.png", rawName: "Shanker Lal" }
+        { name: t.committee.members.shankerLal, role: t.committee.roles.executiveMember, image: "/Members/shankerlal.png", rawName: "Shanker Lal" },
+        { name: t.committee.members.pawanMehar, role: t.committee.roles.executiveMember, image: "/Members/PawanMehar.png", rawName: "Pawan Mehar" }
     ];
 
     const allCommittee = [...initialCommittee, ...extraCommittee];

@@ -7,6 +7,7 @@ import { getTranslation } from './location_utils';
 import { useLanguage } from '../../components/LanguageContext';
 import { Phone, Eye, EyeOff } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
+import { FormFieldLabel } from '../../components/FormFieldLabel';
 import html2canvas from 'html2canvas';
 
 // --- Canvas / color helpers ---
@@ -462,6 +463,16 @@ const JoinPageContent = () => {
     };
   }, []);
 
+  // Youth referrals should land on Jinda Youth join, not party Join Us
+  useEffect(() => {
+    const program = (searchParams.get('program') || '').toLowerCase();
+    if (program.includes('youth') || program.includes('jinda')) {
+      const ref = searchParams.get('ref');
+      const q = ref ? `?ref=${encodeURIComponent(ref)}` : '';
+      router.replace(`/youth-front/join${q}`);
+    }
+  }, [searchParams, router]);
+
   // Clear form on mount but preserve referral code if present in URL
   useEffect(() => {
     const urlRefCode = searchParams.get('ref') || '';
@@ -659,17 +670,25 @@ const JoinPageContent = () => {
 
       const { fetchApi } = await import('../../lib/api');
 
-      if (!formData.localUnitId) {
-        setOtpError('Please select your Local Unit');
+      const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
+      if (fullName.length < 2) {
+        setOtpError('Please enter your full name.');
+        setLoading(false);
         return;
       }
+      if (!formData.localUnitId) {
+        setOtpError('Please select your Local Unit (Vidhan Sabha / Gram Panchayat / Ward).');
+        setLoading(false);
+        return;
+      }
+
       const userProfileData = {
-        name: `${formData.firstName} ${formData.lastName}`,
+        name: fullName,
         phone: phoneNumber,
         password: randomPassword,
         pin: formData.pin,
         address: 'India',
-        localUnitId: parseInt(formData.localUnitId),
+        localUnitId: parseInt(formData.localUnitId, 10),
         referralCode: formData.referralCode || undefined,
         authUserId: authUserData?.user?.id || undefined,
       };
@@ -830,6 +849,21 @@ const JoinPageContent = () => {
         setOtpError(registrationValidationError);
         return;
       }
+      try {
+        const { fetchApi } = await import('../../lib/api');
+        const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
+        const check = await fetchApi('users/check-phone', {
+          method: 'POST',
+          body: JSON.stringify({ phone: phoneNumber }),
+        });
+        if (check?.exists && !check?.canJoinParty) {
+          setOtpError('This mobile number is already registered as a Party member. Please log in instead.');
+          setTimeout(() => router.push('/login'), 1200);
+          return;
+        }
+      } catch {
+        // Dev join can proceed if check-phone is unreachable
+      }
       setOtpSent(true);
       setShowOtpField(true);
       setOtpSimulated(true);
@@ -857,8 +891,9 @@ const JoinPageContent = () => {
         body: JSON.stringify({ phone: phoneNumber }),
       });
 
-      if (check?.exists) {
-        setOtpError('This mobile number is already registered. Please log in instead.');
+      // Already a Party member → login. Otherwise allow upgrade OTP (Union/Youth → Party).
+      if (check?.exists && !check?.canJoinParty) {
+        setOtpError('This mobile number is already registered as a Party member. Please log in instead.');
         setTimeout(() => {
           router.push('/login');
         }, 1200);
@@ -1007,43 +1042,53 @@ const JoinPageContent = () => {
               <div className="mt-8 mb-5 max-w-[520px] mx-auto">
                 <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input
-                      type="text"
-                      value={formData.firstName}
-                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                      className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none"
-                      placeholder="First Name"
-                      autoComplete="off"
-                    />
-                    <input
-                      type="text"
-                      value={formData.lastName}
-                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                      className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none"
-                      placeholder="Last Name"
-                      autoComplete="off"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="grid grid-cols-[70px_1fr] gap-3 min-w-0">
-                      <div className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-3 flex items-center justify-center font-semibold text-[#587E67] bg-white">+91</div>
+                    <div>
+                      <FormFieldLabel required>First Name</FormFieldLabel>
                       <input
-                        type="tel"
-                        value={formData.mobile}
-                        onChange={(e) => {
-                          const digits = e.target.value.replace(/\D/g, '');
-                          const normalized = digits.startsWith('91') ? digits.slice(2) : (digits.startsWith('0') ? digits.slice(1) : digits);
-                          setFormData({ ...formData, mobile: normalized.slice(0, 10) });
-                        }}
-                        inputMode="numeric"
-                        className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none min-w-0"
-                        placeholder="Mobile Number"
+                        type="text"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none"
+                        placeholder="First Name"
                         autoComplete="off"
                       />
                     </div>
+                    <div>
+                      <FormFieldLabel required>Last Name</FormFieldLabel>
+                      <input
+                        type="text"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none"
+                        placeholder="Last Name"
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <FormFieldLabel required>Mobile Number</FormFieldLabel>
+                      <div className="grid grid-cols-[70px_1fr] gap-3 min-w-0">
+                        <div className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-3 flex items-center justify-center font-semibold text-[#587E67] bg-white">+91</div>
+                        <input
+                          type="tel"
+                          value={formData.mobile}
+                          onChange={(e) => {
+                            const digits = e.target.value.replace(/\D/g, '');
+                            const normalized = digits.startsWith('91') ? digits.slice(2) : (digits.startsWith('0') ? digits.slice(1) : digits);
+                            setFormData({ ...formData, mobile: normalized.slice(0, 10) });
+                          }}
+                          inputMode="numeric"
+                          className="h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none min-w-0"
+                          placeholder="Mobile Number"
+                          autoComplete="off"
+                        />
+                      </div>
+                    </div>
 
                     <div className="relative">
+                      <FormFieldLabel required>Login PIN</FormFieldLabel>
                       <input
                         type={showPin ? "text" : "password"}
                         value={formData.pin}
@@ -1056,7 +1101,7 @@ const JoinPageContent = () => {
                       <button
                         type="button"
                         onClick={() => setShowPin(!showPin)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
+                        className="absolute right-3 top-[38px] text-[#587E67] hover:text-[#04330B] transition-colors"
                       >
                         {showPin ? <EyeOff size={18} /> : <Eye size={18} />}
                       </button>
@@ -1064,42 +1109,51 @@ const JoinPageContent = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <select
-                      value={formData.loksabhaId}
-                      onChange={handleLoksabhaChange}
-                      disabled={locLoading.loksabhas}
-                      className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#587E67] bg-white outline-none"
-                    >
-                      <option value="">Select Loksabha</option>
-                      {loksabhas.map((l: any) => (
-                        <option key={l.id} value={l.id}>{getTranslation(l.name, language)}</option>
-                      ))}
-                    </select>
+                    <div>
+                      <FormFieldLabel required>Loksabha</FormFieldLabel>
+                      <select
+                        value={formData.loksabhaId}
+                        onChange={handleLoksabhaChange}
+                        disabled={locLoading.loksabhas}
+                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#587E67] bg-white outline-none"
+                      >
+                        <option value="">Select Loksabha</option>
+                        {loksabhas.map((l: any) => (
+                          <option key={l.id} value={l.id}>{getTranslation(l.name, language)}</option>
+                        ))}
+                      </select>
+                    </div>
 
+                    <div>
+                      <FormFieldLabel required>Vidhansabha</FormFieldLabel>
+                      <select
+                        value={formData.vidhansabhaId}
+                        onChange={handleVidhansabhaChange}
+                        disabled={!formData.loksabhaId || locLoading.vidhansabhas}
+                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#587E67] bg-white outline-none"
+                      >
+                        <option value="">Select Vidhansabha</option>
+                        {vidhansabhas.map((v: any) => (
+                          <option key={v.id} value={v.id}>{getTranslation(v.name, language)}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <FormFieldLabel required>Local area (Ward / Village)</FormFieldLabel>
                     <select
-                      value={formData.vidhansabhaId}
-                      onChange={handleVidhansabhaChange}
-                      disabled={!formData.loksabhaId || locLoading.vidhansabhas}
+                      value={formData.localUnitId}
+                      onChange={(e) => setFormData({ ...formData, localUnitId: e.target.value })}
+                      disabled={!formData.vidhansabhaId || locLoading.localUnits}
                       className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#587E67] bg-white outline-none"
                     >
-                      <option value="">Select Vidhansabha</option>
-                      {vidhansabhas.map((v: any) => (
-                        <option key={v.id} value={v.id}>{getTranslation(v.name, language)}</option>
+                      <option value="">Select Local area (Ward/Village)</option>
+                      {localUnits.map((u: any) => (
+                        <option key={u.id} value={u.id}>{getTranslation(u.name, language)}{u.type ? ` (${u.type})` : ''}</option>
                       ))}
                     </select>
                   </div>
-
-                  <select
-                    value={formData.localUnitId}
-                    onChange={(e) => setFormData({ ...formData, localUnitId: e.target.value })}
-                    disabled={!formData.vidhansabhaId || locLoading.localUnits}
-                    className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#587E67] bg-white outline-none"
-                  >
-                    <option value="">Select Local area (Ward/Village)</option>
-                    {localUnits.map((u: any) => (
-                      <option key={u.id} value={u.id}>{getTranslation(u.name, language)}{u.type ? ` (${u.type})` : ''}</option>
-                    ))}
-                  </select>
 
                   {!showReferralInput && !formData.referralCode ? (
                     <button

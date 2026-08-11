@@ -135,6 +135,12 @@ export default function LeadershipAcademyPage() {
                   {t.hero.apply} <ArrowRight size={18} />
                 </Link>
                 <Link
+                  href="/leadership-academy/status"
+                  className="inline-flex items-center gap-2 px-[28px] py-[12px] border border-[#04330B] text-[#04330B] hover:bg-[#F5FBF7] rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors"
+                >
+                  {isHi ? "आवेदन स्थिति" : "Check status"}
+                </Link>
+                <Link
                   href="#departments"
                   className="inline-flex items-center gap-2 px-[28px] py-[12px] border border-[#E4F2EA] text-[#04330B] hover:bg-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors"
                 >
@@ -258,8 +264,8 @@ export default function LeadershipAcademyPage() {
             subtitle={`${t.certificate.description} ${t.cta.subtitle}`}
             primaryHref="/leadership-academy/apply"
             primaryLabel={t.cta.apply}
-            secondaryHref="/leadership-academy/faq"
-            secondaryLabel={t.cta.knowMore}
+            secondaryHref="/leadership-academy/status"
+            secondaryLabel={isHi ? "आवेदन स्थिति देखें" : "Check application status"}
             image="/leadership-academy/cta-student.jpg"
             points={[...t.certificate.points]}
           />

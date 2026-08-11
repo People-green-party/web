@@ -1,12 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { ChevronLeft, X, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '../../lib/supabaseClient';
 import { fetchApi } from '../../lib/api';
+import { FormFieldLabel } from '../../components/FormFieldLabel';
 
-export default function LoginScreen() {
+function LoginScreenInner() {
+  const searchParams = useSearchParams();
+  const nextPath = searchParams?.get('next') || '';
+  const modeParam = searchParams?.get('mode');
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState('');
   const [otp, setOtp] = useState('');
@@ -16,7 +20,9 @@ export default function LoginScreen() {
   const [error, setError] = useState('');
 
   // Modes: 'login' (Phone+PIN), 'otp_request' (Forgot PIN), 'otp_verify' (Verify OTP), 'set_new_pin' (Set New PIN)
-  const [mode, setMode] = useState<'login' | 'otp_request' | 'otp_verify' | 'set_new_pin'>('login');
+  const [mode, setMode] = useState<'login' | 'otp_request' | 'otp_verify' | 'set_new_pin'>(
+    modeParam === 'otp_request' ? 'otp_request' : 'login',
+  );
 
   const [newPin, setNewPin] = useState('');
   const [confirmNewPin, setConfirmNewPin] = useState('');
@@ -89,13 +95,28 @@ export default function LoginScreen() {
       });
 
       if (data.access_token) {
-        // Store token for API access
         localStorage.setItem('access_token', data.access_token);
-        // Also store user info if needed
         if (data.user) {
           localStorage.setItem('user_info', JSON.stringify(data.user));
         }
-        router.push('/dashboard');
+
+        // Don't dump people into the wrong portal via ?next=
+        const tag = String(data.user?.programTag || '').toLowerCase();
+        const isYouth = tag.includes('jinda') || tag.includes('youth');
+        const isUnion = !!data.user?.unionName;
+        let dest =
+          nextPath && nextPath.startsWith('/') && !nextPath.startsWith('//')
+            ? nextPath
+            : '/dashboard';
+
+        if (dest.startsWith('/youth-front') && !isYouth) {
+          dest = '/dashboard';
+        }
+        if (dest.startsWith('/union') && !isUnion) {
+          dest = '/dashboard';
+        }
+
+        router.push(dest);
       } else {
         throw new Error('No access token received');
       }
@@ -322,6 +343,7 @@ export default function LoginScreen() {
               {/* Phone Input */}
               {(mode === 'login' || mode === 'otp_request') && (
                 <div className="flex flex-col">
+                  <FormFieldLabel required>Phone Number</FormFieldLabel>
                   <input
                     type="tel"
                     placeholder="Phone Number"
@@ -347,6 +369,7 @@ export default function LoginScreen() {
               {/* PIN Input (Login Mode) */}
               {mode === 'login' && (
                 <div className="flex flex-col">
+                  <FormFieldLabel required>PIN</FormFieldLabel>
                   <div className="relative w-full h-[46px]">
                     <input
                       type={showPin ? "text" : "password"}
@@ -379,6 +402,7 @@ export default function LoginScreen() {
               {/* OTP Input */}
               {mode === 'otp_verify' && (
                 <div className="flex flex-col">
+                  <FormFieldLabel required>OTP</FormFieldLabel>
                   <div className="relative w-full h-[46px]">
                     <input
                       type={showOtp ? "text" : "password"}
@@ -412,33 +436,39 @@ export default function LoginScreen() {
               {mode === 'set_new_pin' && (
                 <>
                   <div className="flex flex-col gap-4">
-                    <div className="relative w-full h-[46px]">
-                      <input
-                        type={showNewPin ? "text" : "password"}
-                        placeholder="New PIN (4-6 digits)"
-                        value={newPin}
-                        onChange={(e) => setNewPin(e.target.value)}
-                        className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
-                        maxLength={6}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowNewPin(!showNewPin)}
-                        className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
-                      >
-                        {showNewPin ? <EyeOff size={20} /> : <Eye size={20} />}
-                      </button>
+                    <div>
+                      <FormFieldLabel required>New PIN</FormFieldLabel>
+                      <div className="relative w-full h-[46px]">
+                        <input
+                          type={showNewPin ? "text" : "password"}
+                          placeholder="New PIN (4-6 digits)"
+                          value={newPin}
+                          onChange={(e) => setNewPin(e.target.value)}
+                          className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
+                          maxLength={6}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPin(!showNewPin)}
+                          className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
+                        >
+                          {showNewPin ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="relative w-full h-[46px]">
-                      <input
-                        type={showNewPin ? "text" : "password"}
-                        placeholder="Confirm New PIN"
-                        value={confirmNewPin}
-                        onChange={(e) => setConfirmNewPin(e.target.value)}
-                        className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
-                        maxLength={6}
-                      />
+                    <div>
+                      <FormFieldLabel required>Confirm New PIN</FormFieldLabel>
+                      <div className="relative w-full h-[46px]">
+                        <input
+                          type={showNewPin ? "text" : "password"}
+                          placeholder="Confirm New PIN"
+                          value={confirmNewPin}
+                          onChange={(e) => setConfirmNewPin(e.target.value)}
+                          className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
+                          maxLength={6}
+                        />
+                      </div>
                     </div>
                   </div>
                 </>
@@ -472,5 +502,13 @@ export default function LoginScreen() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginScreen() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <LoginScreenInner />
+    </Suspense>
   );
 }

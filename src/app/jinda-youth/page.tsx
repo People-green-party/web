@@ -47,12 +47,12 @@ const translations = {
       btnReportIssue: "Report an Issue",
       btnLogin: "Login",
       feeNote: "Free to join — pick a track and start creating impact.",
-      stat1Val: "25K+",
+      stat1Val: "Growing",
       stat1Lbl: "Active Jinda Youth",
-      stat2Val: "500+",
-      stat2Lbl: "Cities",
-      stat3Val: "10K+",
-      stat3Lbl: "Actions Taken"
+      stat2Val: "RJ-wide",
+      stat2Lbl: "Districts & campuses",
+      stat3Val: "Daily",
+      stat3Lbl: "Issues & actions"
     },
     scope: {
       titlePre: "This is not",
@@ -137,10 +137,10 @@ const translations = {
       titlePre: "Young voices.",
       titleHighlight: "Real impact.",
       stats: [
-        { val: "25K+", label: "Active Jinda Youth" },
-        { val: "500+", label: "Cities" },
-        { val: "10K+", label: "Actions Taken" },
-        { val: "120+", label: "Jinda Youth Cells" }
+        { val: "Growing", label: "Active Jinda Youth" },
+        { val: "RJ-wide", label: "Districts & campuses" },
+        { val: "Daily", label: "Issues & actions" },
+        { val: "Open", label: "Squads forming now" }
       ]
     },
     cta: {
@@ -170,12 +170,12 @@ const translations = {
       btnReportIssue: "मुद्दा रिपोर्ट करें",
       btnLogin: "लॉगिन करें",
       feeNote: "मुफ़्त में जुड़ें — ट्रैक चुनें और प्रभाव बनाना शुरू करें।",
-      stat1Val: "25K+",
+      stat1Val: "बढ़ते हुए",
       stat1Lbl: "सक्रिय जिंदा यूथ",
-      stat2Val: "500+",
-      stat2Lbl: "शहर",
-      stat3Val: "10K+",
-      stat3Lbl: "कार्य किए गए"
+      stat2Val: "पूरा RJ",
+      stat2Lbl: "जिले और कैंपस",
+      stat3Val: "रोज़",
+      stat3Lbl: "मुद्दे और कार्य"
     },
     scope: {
       titlePre: "यह केवल",
@@ -236,10 +236,10 @@ const translations = {
       titlePre: "युवा आवाज।",
       titleHighlight: "वास्तविक प्रभाव।",
       stats: [
-        { val: "25K+", label: "सक्रिय जिंदा यूथ" },
-        { val: "500+", label: "शहर" },
-        { val: "10K+", label: "कार्य किए गए" },
-        { val: "120+", label: "जिंदा यूथ सेल्स" }
+        { val: "बढ़ते हुए", label: "सक्रिय जिंदा यूथ" },
+        { val: "पूरा RJ", label: "जिले और कैंपस" },
+        { val: "रोज़", label: "मुद्दे और कार्य" },
+        { val: "खुला", label: "स्क्वाड बन रहे हैं" }
       ]
     },
     cta: {

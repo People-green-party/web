@@ -19,6 +19,7 @@ import { translations } from "@/components/translations";
 import ScrollReveal from '@/components/ScrollReveal';
 import SocialMediaFeed from '@/components/SocialMediaFeed';
 import VisionCarousel from '@/components/VisionCarousel';
+import { HomeProgramsSection } from '@/components/HomeProgramsSection';
 import { Footer } from '@/components/Footer';
 
 
@@ -432,6 +433,47 @@ const LandingPageContent = () => {
 
       {/* 3. OUR VISION - New Carousel Section */}
       <VisionCarousel language={language} />
+
+      {/* 3b. Unions · Jinda Youth · Internships */}
+      <HomeProgramsSection
+        title={t.homePrograms.title}
+        subtitle={t.homePrograms.subtitle}
+        cards={[
+          {
+            title: t.homePrograms.items.unions.title,
+            description: t.homePrograms.items.unions.description,
+            cta: t.homePrograms.viewMore,
+            href: "/union",
+            image: "/union_hero_graphic.png",
+            imageAlt: t.homePrograms.items.unions.title,
+            tone: "dark",
+            objectFit: "cover",
+          },
+          {
+            title: t.homePrograms.items.youth.title,
+            description: t.homePrograms.items.youth.description,
+            cta: t.homePrograms.viewMore,
+            href: "/jinda-youth",
+            image:
+              language === "hi"
+                ? "/jinda_youth_hero_blend_hi.png"
+                : "/jinda_youth_hero_blend.png",
+            imageAlt: t.homePrograms.items.youth.title,
+            tone: "dark",
+            objectFit: "contain",
+          },
+          {
+            title: t.homePrograms.items.internships.title,
+            description: t.homePrograms.items.internships.description,
+            cta: t.homePrograms.viewMore,
+            href: "/leadership-academy",
+            image: "/leadership-academy/hero-students.jpg",
+            imageAlt: t.homePrograms.items.internships.title,
+            tone: "light",
+            objectFit: "cover",
+          },
+        ]}
+      />
 
       {/* 4. MEET OUR IDEOLOGICAL LEADER */}
       <section className="bg-white w-full flex justify-center py-[60px] lg:py-[100px]">

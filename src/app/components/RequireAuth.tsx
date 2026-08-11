@@ -39,7 +39,14 @@ export function RequireAuth({ children }: RequireAuthProps) {
         // ignore
       }
       const next = pathname ? `?next=${encodeURIComponent(pathname)}` : "";
-      router.replace(`/login${next}`);
+      const isYouthPath = typeof pathname === "string" && pathname.startsWith("/youth-front");
+      const isUnionPath = typeof pathname === "string" && pathname.startsWith("/union");
+      const loginPath = isYouthPath
+        ? `/youth-front/login${next}`
+        : isUnionPath
+          ? `/union/login${next}`
+          : `/login${next}`;
+      router.replace(loginPath);
       setAllowed(false);
       setChecking(false);
     };

@@ -66,9 +66,6 @@ export default function AuditLogsPage() {
             className="ml-2 border rounded px-2 py-1 w-24"
           />
         </label>
-        <button onClick={load} className="rounded bg-green-700 text-white px-3 py-1.5 text-sm">
-          Refresh
-        </button>
       </div>
       {loading && <div className="rounded border p-3">Loading…</div>}
       {error && <div className="rounded border border-red-300 bg-red-50 text-red-800 p-3">{error}</div>}

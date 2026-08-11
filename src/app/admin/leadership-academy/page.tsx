@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, RefreshCw, Search } from "lucide-react";
+import { Loader2, Search } from "lucide-react";
 import { adminFetch, getAdminToken } from "@/lib/adminApi";
 
 type Application = {
@@ -52,15 +52,15 @@ export default function AdminLeadershipAcademyPage() {
         router.replace("/admin/login");
         return;
       }
-      const q = filter !== "All" ? `?status=${filter}` : "";
-      const data = await adminFetch<Application[]>(`leadership-academy/applications${q}`);
+      // Always load full list so status cards show true portal totals
+      const data = await adminFetch<Application[]>(`leadership-academy/applications`);
       setItems(Array.isArray(data) ? data : []);
     } catch (e: any) {
       setError(e.message || "Failed to load");
     } finally {
       setLoading(false);
     }
-  }, [filter, router]);
+  }, [router]);
 
   useEffect(() => {
     const initialQ = new URLSearchParams(window.location.search).get("q") || "";
@@ -70,14 +70,15 @@ export default function AdminLeadershipAcademyPage() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter((a) =>
-      [a.fullName, a.email, a.phone, a.city, a.department, a.college || ""]
+    return items.filter((a) => {
+      if (filter !== "All" && a.status !== filter) return false;
+      if (!q) return true;
+      return [a.fullName, a.email, a.phone, a.city, a.department, a.college || ""]
         .join(" ")
         .toLowerCase()
-        .includes(q)
-    );
-  }, [items, search]);
+        .includes(q);
+    });
+  }, [items, search, filter]);
 
   const updateStatus = async (id: number, status: string) => {
     setUpdatingId(id);
@@ -97,20 +98,38 @@ export default function AdminLeadershipAcademyPage() {
 
   return (
     <div className="w-full max-w-full min-w-0 space-y-5">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-        <div className="min-w-0">
-          <h2 className="text-xl sm:text-2xl font-black text-[#04330B]">Internship Applications</h2>
-          <p className="text-sm text-[#587E67] font-medium">
-            Review, shortlist and update applicant status.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={load}
-          className="inline-flex items-center gap-2 rounded-xl border border-[#DDEEE4] bg-white px-4 py-2.5 text-sm font-bold text-[#04330B] hover:bg-[#F8FBF9]"
-        >
-          <RefreshCw size={15} className={loading ? "animate-spin" : ""} /> Refresh
-        </button>
+      <div>
+        <h2 className="text-xl sm:text-2xl font-black text-[#04330B]">Internship Applications</h2>
+        <p className="text-sm text-[#587E67] font-medium">
+          All internship applicants — click a status card to filter the list below.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        {[
+          { key: "All", label: "Total Applications", count: items.length },
+          ...STATUSES.map((s) => ({
+            key: s,
+            label: s,
+            count: items.filter((a) => a.status === s).length,
+          })),
+        ].map((card) => (
+          <button
+            key={card.key}
+            type="button"
+            onClick={() => setFilter(card.key)}
+            className={`rounded-2xl border p-4 text-left transition-colors capitalize ${
+              filter === card.key
+                ? "border-[#16A34A] bg-[#EAF7EE]"
+                : "border-[#E4F2EA] bg-white hover:border-[#16A34A]"
+            }`}
+          >
+            <p className="text-[11px] font-bold text-[#587E67] uppercase tracking-wide">
+              {card.label}
+            </p>
+            <p className="mt-2 text-2xl font-black text-[#0D5229]">{card.count}</p>
+          </button>
+        ))}
       </div>
 
       <div className="flex flex-col md:flex-row md:items-center gap-3">

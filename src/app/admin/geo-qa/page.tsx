@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RefreshCw } from "lucide-react";
 import { adminFetch } from "@/lib/adminApi";
 
 type Qa = {
@@ -43,13 +42,6 @@ export default function GeoQaPage() {
             Quick counts to verify Loksabha / Vidhan Sabha / Local Unit imports.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={load}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-[#0D5229] hover:text-[#04330B]"
-        >
-          <RefreshCw size={14} /> Refresh
-        </button>
       </div>
 
       {error && (

@@ -18,8 +18,14 @@ const SocialIcon = ({ Icon, href }: { Icon: any, href: string }) => (
 export const Footer = () => {
     const { t } = useLanguage();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [docTitle, setDocTitle] = useState("Select Document Year");
     const pathname = usePathname();
     const router = useRouter();
+
+    const openDocModal = (title: string) => {
+        setDocTitle(title);
+        setIsModalOpen(true);
+    };
 
     const handleLogoClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -97,16 +103,16 @@ export const Footer = () => {
 
                         <div className="w-full flex flex-col gap-2">
                             {[
-                                t.footer.audit,
-                                t.footer.eci,
-                                t.footer.criminal
-                            ].map((text, i) => (
+                                { label: t.footer.audit, title: "Audit reports — select year" },
+                                { label: t.footer.eci, title: "ECI filings — select year" },
+                                { label: t.footer.criminal, title: "Criminal cases disclosure — select year" },
+                            ].map((item, i) => (
                                 <a
                                     key={i}
-                                    onClick={() => setIsModalOpen(true)}
+                                    onClick={() => openDocModal(item.title)}
                                     className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] hover:text-[#04330B] block cursor-pointer"
                                 >
-                                    {text}
+                                    {item.label}
                                 </a>
                             ))}
                         </div>
@@ -162,7 +168,7 @@ export const Footer = () => {
                         </button>
 
                         <h3 className="font-['Familjen_Grotesk'] font-semibold text-[24px] text-[#04330B] mb-6 text-center">
-                            Select Document Year
+                            {docTitle}
                         </h3>
 
                         <div className="grid grid-cols-3 gap-4">

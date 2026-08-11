@@ -6,6 +6,7 @@ import { Navbar } from "../../../components/Navbar";
 import { AlertCircle, CheckCircle2, MapPin, Upload } from "lucide-react";
 import { fetchApi } from "../../../lib/api";
 import { RequireAuth } from "../../components/RequireAuth";
+import { FormFieldLabel } from "../../../components/FormFieldLabel";
 
 export default function ReportIssuePage() {
   const router = useRouter();
@@ -31,8 +32,28 @@ export default function ReportIssuePage() {
     setLoading(true);
     setError(null);
 
+    const required: Array<[keyof typeof formData, string]> = [
+      ['title', 'Issue title'],
+      ['category', 'Category'],
+      ['description', 'Description'],
+      ['district', 'District'],
+      ['ward', 'Ward'],
+      ['village', 'Village'],
+      ['locality', 'Locality'],
+      ['location', 'Location description'],
+      ['urgency', 'Urgency'],
+      ['proofUrl', 'Proof URL'],
+    ];
+    for (const [key, label] of required) {
+      if (!String(formData[key] || '').trim()) {
+        setError(`${label} is required.`);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
-      const response = await fetchApi('youth/issues', {
+      await fetchApi('youth/issues', {
         method: "POST",
         body: JSON.stringify(formData),
       });
@@ -90,7 +111,7 @@ export default function ReportIssuePage() {
 
             <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div>
-              <label className="block text-sm font-bold text-[#04330B] mb-2">Issue Title *</label>
+              <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">Issue Title</FormFieldLabel>
               <input
                 type="text"
                 required
@@ -103,7 +124,7 @@ export default function ReportIssuePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#04330B] mb-2">Category *</label>
+              <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">Category</FormFieldLabel>
               <select
                 required
                 value={formData.category}
@@ -128,7 +149,7 @@ export default function ReportIssuePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#04330B] mb-2">Description *</label>
+              <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">Description</FormFieldLabel>
               <textarea
                 required
                 maxLength={3000}
@@ -142,9 +163,10 @@ export default function ReportIssuePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-[#04330B] mb-2">District</label>
+                <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">District</FormFieldLabel>
                 <input
                   type="text"
+                  required
                   value={formData.district}
                   onChange={(e) => setFormData({ ...formData, district: e.target.value })}
                   className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
@@ -152,9 +174,10 @@ export default function ReportIssuePage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-[#04330B] mb-2">Ward</label>
+                <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">Ward</FormFieldLabel>
                 <input
                   type="text"
+                  required
                   value={formData.ward}
                   onChange={(e) => setFormData({ ...formData, ward: e.target.value })}
                   className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
@@ -165,9 +188,10 @@ export default function ReportIssuePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-[#04330B] mb-2">Village</label>
+                <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">Village</FormFieldLabel>
                 <input
                   type="text"
+                  required
                   value={formData.village}
                   onChange={(e) => setFormData({ ...formData, village: e.target.value })}
                   className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
@@ -175,9 +199,10 @@ export default function ReportIssuePage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-[#04330B] mb-2">Locality</label>
+                <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">Locality</FormFieldLabel>
                 <input
                   type="text"
+                  required
                   value={formData.locality}
                   onChange={(e) => setFormData({ ...formData, locality: e.target.value })}
                   className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
@@ -187,9 +212,10 @@ export default function ReportIssuePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#04330B] mb-2">Location Description</label>
+              <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">Location Description</FormFieldLabel>
               <input
                 type="text"
+                required
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
@@ -198,7 +224,7 @@ export default function ReportIssuePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#04330B] mb-2">GPS Coordinates (Optional)</label>
+              <FormFieldLabel className="block text-sm font-bold text-[#04330B] mb-2">GPS Coordinates (Optional)</FormFieldLabel>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -230,8 +256,9 @@ export default function ReportIssuePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#04330B] mb-2">Urgency</label>
+              <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">Urgency</FormFieldLabel>
               <select
+                required
                 value={formData.urgency}
                 onChange={(e) => setFormData({ ...formData, urgency: e.target.value })}
                 className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#587E67] bg-white outline-none focus:border-[#16A34A]"
@@ -245,9 +272,10 @@ export default function ReportIssuePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#04330B] mb-2">Proof URL (Photo/Video)</label>
+              <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">Proof URL (Photo/Video)</FormFieldLabel>
               <input
                 type="url"
+                required
                 value={formData.proofUrl}
                 onChange={(e) => setFormData({ ...formData, proofUrl: e.target.value })}
                 className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"

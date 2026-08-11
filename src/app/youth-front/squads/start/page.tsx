@@ -97,7 +97,7 @@ export default function StartSquadPage() {
   };
 
   const copyInviteLink = () => {
-    const link = `https://peoplesgreen.org/join-squad?code=${result?.inviteCode}`;
+    const link = `https://peoplesgreen.org/join-squad?code=${encodeURIComponent(result?.inviteCode || '')}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -105,7 +105,7 @@ export default function StartSquadPage() {
 
   const whatsappShare = () => {
     const msg = encodeURIComponent(
-      `Join my JINDA Squad: ${result?.name}\n\nUse invite code: ${result?.inviteCode}\nOr join here: https://peoplesgreen.org/join-squad?code=${result?.inviteCode}`,
+      `Join my JINDA Squad: ${result?.name}\n\nUse invite code: ${result?.inviteCode}\nOr join here: https://peoplesgreen.org/join-squad?code=${encodeURIComponent(result?.inviteCode || '')}`,
     );
     window.open(`https://wa.me/?text=${msg}`, "_blank");
   };
@@ -215,7 +215,7 @@ export default function StartSquadPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Squad name */}
             <div>
-              <label className="text-sm font-bold text-[#04330B] block mb-1.5">Squad Name *</label>
+              <label className="text-sm font-bold text-[#04330B] block mb-1.5">Squad Name <span className="text-[#D93025] font-bold" aria-hidden="true">*</span></label>
               <input
                 type="text"
                 value={form.name}
@@ -228,7 +228,7 @@ export default function StartSquadPage() {
 
             {/* Squad type */}
             <div>
-              <label className="text-sm font-bold text-[#04330B] block mb-1.5">Squad Type *</label>
+              <label className="text-sm font-bold text-[#04330B] block mb-1.5">Squad Type <span className="text-[#D93025] font-bold" aria-hidden="true">*</span></label>
               <div className="grid grid-cols-2 gap-2">
                 {SQUAD_TYPES.map((t) => (
                   <button

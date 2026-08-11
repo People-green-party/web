@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "../../../components/Navbar";
 import { Phone, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useLanguage } from "../../../components/LanguageContext";
+import { FormFieldLabel, RequiredMark } from "../../../components/FormFieldLabel";
 
 // --- Translations ---
 const translations = {
@@ -12,11 +13,11 @@ const translations = {
     wizard: {
       step1Title: "अपनी JINDA प्रोफाइल बनाएं",
       step1Subtitle: "अपनी JINDA आईडी प्राप्त करें, मिशन अनलॉक करें, XP अर्जित करें और एक स्क्वाड में शामिल हों।",
-      firstName: "पहला नाम *",
+      firstName: "पहला नाम",
       firstNamePlaceholder: "पहला नाम",
-      lastName: "अंतिम नाम *",
+      lastName: "अंतिम नाम",
       lastNamePlaceholder: "अंतिम नाम",
-      mobileNumber: "मोबाइल नंबर *",
+      mobileNumber: "मोबाइल नंबर",
       mobilePlaceholder: "+91 XXXXX XXXXX",
       referralCode: "रेफरल कोड (वैकल्पिक)",
       referralPlaceholder: "रेफरल कोड दर्ज करें",
@@ -25,7 +26,7 @@ const translations = {
       
       step2Title: "OTP सत्यापन",
       step2Subtitle: "कोड भेजा गया:",
-      otpLabel: "OTP दर्ज करें *",
+      otpLabel: "OTP दर्ज करें",
       otpPlaceholder: "6-अंकों का OTP दर्ज करें",
       btnVerify: "सत्यापित करें और आगे बढ़ें",
       btnVerifying: "सत्यापित कर रहे हैं...",
@@ -33,7 +34,7 @@ const translations = {
 
       step3Title: "अपनी JINDA प्रोफाइल बनाएं",
       step3Subtitle: "हमें अपने बारे में बताएं कि आप कौन हैं और कैसे योगदान देना चाहते हैं।",
-      ageGroup: "आयु वर्ग *",
+      ageGroup: "आयु वर्ग",
       selectAgeGroup: "आयु वर्ग चुनें",
       gender: "लिंग (वैकल्पिक)",
       selectGender: "लिंग चुनें",
@@ -41,15 +42,15 @@ const translations = {
       male: "पुरुष",
       other: "अन्य",
       preferNotToSay: "बताना नहीं चाहते",
-      joinAs: "मैं शामिल हो रहा हूँ *",
+      joinAs: "मैं शामिल हो रहा हूँ",
       selectOption: "विकल्प चुनें",
-      workOn: "मैं काम करना चाहता हूँ *",
+      workOn: "मैं काम करना चाहता हूँ",
       selectTrack: "ट्रैक चुनें",
-      schoolCollege: "स्कूल / कॉलेज / विश्वविद्यालय / पेशा *",
+      schoolCollege: "स्कूल / कॉलेज / विश्वविद्यालय / पेशा",
       schoolCollegePlaceholder: "संस्था का नाम दर्ज करें",
       courseClass: "कोर्स / कक्षा / वर्तमान भूमिका (वैकल्पिक)",
       courseClassPlaceholder: "जैसे: बी.टेक, बीए द्वितीय वर्ष, कक्षा 12",
-      pinLabel: "लॉगिन पिन बनाएं (4-6 अंक) *",
+      pinLabel: "लॉगिन पिन बनाएं (4-6 अंक)",
       pinPlaceholder: "4-6 अंकों का पिन बनाएं",
       pinHint: "अपने खाते में लॉगिन करने के लिए इस पिन का उपयोग करें",
       district: "जिला",
@@ -62,7 +63,7 @@ const translations = {
       skills: "कौशल (वैकल्पिक)",
       consentTitle: "संचार सहमति",
       consentText: "मैं अपडेट, कार्यों, कार्यक्रमों और मुद्दों के फॉलो-अप के लिए फोन, व्हाट्सएप, एसएमएस या ईमेल पर Jinda Youth से संचार प्राप्त करने के लिए सहमत हूं। आप किसी भी समय ऑप्ट आउट कर सकते हैं।",
-      conductTitle: "आचार संहिता *",
+      conductTitle: "आचार संहिता",
       conductText: "मैं आचार संहिता स्वीकार करता हूं: कोई हिंसा, अभद्र भाषा, फर्जी खबरें, उत्पीड़न, धमकी, जातिगत दुर्व्यवहार, सांप्रदायिक लक्ष्यीकरण या डॉक्सिंग नहीं। उल्लंघन के परिणामस्वरूप हटाने सहित अनुशासनात्मक कार्रवाई होगी।",
       btnRegister: "मेरी JINDA आईडी बनाएं",
       btnRegistering: "JINDA आईडी बनाई जा रही है..."
@@ -95,7 +96,7 @@ const translations = {
     },
     errors: {
       selectAge: "कृपया अपना आयु वर्ग चुनें।",
-      below16Limit: "16 वर्ष से कम आयु के पंजीकरणों को ऑनबोर्डिंग से पहले कानूनी समीक्षा की आवश्यकता होती है।",
+      below16Limit: "16 वर्ष से कम आयु में अभी पूर्ण सदस्यता नहीं खुलती। पैरेंट/अभिभावक के साथ partypeoplesgreen@gmail.com पर लिखें — हम आपको waitlist पर रखेंगे।",
       enterCampus: "कृपया अपना स्कूल, कॉलेज, विश्वविद्यालय या पेशा दर्ज करें।",
       selectJoinAs: "कृपया चुनें कि आप किस रूप में जुड़ रहे हैं।",
       selectTrack: "कृपया चुनें कि आप किस काम में शामिल होना चाहते हैं।",
@@ -105,18 +106,18 @@ const translations = {
       otpFailed: "OTP सत्यापन विफल रहा",
       devOtpHint: "Dev mode: Use OTP 123456",
       invalidOtp: "अमान्य OTP। देव मोड में 123456 का उपयोग करें।",
-      alreadyRegistered: "यह मोबाइल नंबर पहले से रजिस्टर है। कृपया लॉगिन करें।"
+      alreadyRegistered: "यह नंबर पहले से Jinda Youth में रजिस्टर है। कृपया Youth Login से लॉगिन करें।"
     }
   },
   en: {
     wizard: {
       step1Title: "Create Your JINDA Profile",
       step1Subtitle: "Get your JINDA ID, unlock missions, earn XP and join a Squad.",
-      firstName: "First Name *",
+      firstName: "First Name",
       firstNamePlaceholder: "First name",
-      lastName: "Last Name *",
+      lastName: "Last Name",
       lastNamePlaceholder: "Last name",
-      mobileNumber: "Mobile Number *",
+      mobileNumber: "Mobile Number",
       mobilePlaceholder: "+91 XXXXX XXXXX",
       referralCode: "Referral Code (Optional)",
       referralPlaceholder: "Enter referral code",
@@ -125,7 +126,7 @@ const translations = {
       
       step2Title: "OTP Verification",
       step2Subtitle: "Code sent to:",
-      otpLabel: "Enter OTP *",
+      otpLabel: "Enter OTP",
       otpPlaceholder: "Enter 6-digit OTP",
       btnVerify: "Verify & Continue",
       btnVerifying: "Verifying...",
@@ -133,7 +134,7 @@ const translations = {
 
       step3Title: "Create Your JINDA Profile",
       step3Subtitle: "Tell us who you are and how you want to contribute.",
-      ageGroup: "Age Group *",
+      ageGroup: "Age Group",
       selectAgeGroup: "Select age group",
       gender: "Gender (Optional)",
       selectGender: "Select gender",
@@ -141,15 +142,15 @@ const translations = {
       male: "Male",
       other: "Other",
       preferNotToSay: "Prefer not to say",
-      joinAs: "I am joining as *",
+      joinAs: "I am joining as",
       selectOption: "Select option",
-      workOn: "I want to work on *",
+      workOn: "I want to work on",
       selectTrack: "Select track",
-      schoolCollege: "School / College / University / Profession *",
+      schoolCollege: "School / College / University / Profession",
       schoolCollegePlaceholder: "Enter institution name",
       courseClass: "Course / Class / Current Role (Optional)",
       courseClassPlaceholder: "e.g., B.Tech, BA 2nd Year, Class 12",
-      pinLabel: "Create Login PIN (4-6 digits) *",
+      pinLabel: "Create Login PIN (4-6 digits)",
       pinPlaceholder: "Create 4-6 digit PIN",
       pinHint: "Use this PIN to login to your account",
       district: "District",
@@ -162,7 +163,7 @@ const translations = {
       skills: "Skills (Optional)",
       consentTitle: "Communication Consent",
       consentText: "I agree to receive communication from Jinda Youth on phone, WhatsApp, SMS, or email for updates, tasks, events, and issue follow-ups. You can opt out anytime.",
-      conductTitle: "Code of Conduct *",
+      conductTitle: "Code of Conduct",
       conductText: "I accept the code of conduct: no violence, hate speech, fake news, harassment, threats, caste abuse, communal targeting, or doxxing. Violations will result in disciplinary action including removal.",
       btnRegister: "Create My JINDA ID",
       btnRegistering: "Creating JINDA ID..."
@@ -195,7 +196,7 @@ const translations = {
     },
     errors: {
       selectAge: "Please select your age group.",
-      below16Limit: "Below 16 signups need legal review before onboarding.",
+      below16Limit: "Full membership opens at 16+. Email partypeoplesgreen@gmail.com with a parent/guardian — we'll keep you on the waitlist.",
       enterCampus: "Please enter your school, college, university, or profession.",
       selectJoinAs: "Please select who you are joining as.",
       selectTrack: "Please select what you want to work on.",
@@ -205,7 +206,7 @@ const translations = {
       otpFailed: "OTP verification failed",
       devOtpHint: "Dev mode: Use OTP 123456",
       invalidOtp: "Invalid OTP. Use 123456 in dev mode.",
-      alreadyRegistered: "This mobile number is already registered. Please login."
+      alreadyRegistered: "This number is already a Jinda Youth account. Please use Youth Login."
     }
   }
 };
@@ -221,11 +222,12 @@ const SKILLS_LIST = [
   { value: 'Photography', labelHi: 'फोटोग्राफी', labelEn: 'Photography' },
 ];
 
-export default function YouthJoinPage() {
+function YouthJoinPageInner() {
   const { language } = useLanguage();
   const t = translations[language as 'en' | 'hi'] || translations.en;
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -253,6 +255,13 @@ export default function YouthJoinPage() {
     codeOfConductAccepted: false,
   });
 
+  useEffect(() => {
+    const ref = searchParams?.get('ref');
+    if (ref) {
+      setFormData((prev) => (prev.referralCode ? prev : { ...prev, referralCode: ref }));
+    }
+  }, [searchParams]);
+
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -271,13 +280,13 @@ export default function YouthJoinPage() {
       const { fetchApi } = await import('../../../lib/api');
       const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
 
-      // Check if phone is already registered
+      // Portal-aware check: same phone can be Party/Union and still join Jinda Youth
       const check = await fetchApi('users/check-phone', {
         method: 'POST',
         body: JSON.stringify({ phone: phoneNumber }),
       });
 
-      if (check?.exists) {
+      if (check?.exists && (check?.portals?.youth || check?.canLoginYouth)) {
         setError(t.errors.alreadyRegistered);
         setLoading(false);
         return;
@@ -369,9 +378,17 @@ export default function YouthJoinPage() {
       setLoading(false);
       return;
     }
-    // District is required for non-student/coaching types for proper JINDA ID generation
-    if (formData.memberType !== 'student' && formData.memberType !== 'coaching' && !formData.district.trim()) {
-      setError('Please enter your district for JINDA ID generation.');
+    if (!formData.district.trim()) {
+      setError(language === 'hi'
+        ? 'JINDA ID के लिए कृपया अपना जिला दर्ज करें।'
+        : 'Please enter your district for JINDA ID generation.');
+      setLoading(false);
+      return;
+    }
+    if (!formData.communicationConsent) {
+      setError(language === 'hi'
+        ? 'आगे बढ़ने के लिए कृपया संचार सहमति स्वीकार करें।'
+        : 'Please accept communication consent to continue.');
       setLoading(false);
       return;
     }
@@ -391,20 +408,35 @@ export default function YouthJoinPage() {
         console.warn('Could not fetch Supabase user after OTP verification:', authUserError.message);
       }
 
+      const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim();
+      if (fullName.length < 2) {
+        setError('Please enter your full name.');
+        setLoading(false);
+        return;
+      }
+
       const userProfileData = {
-        name: `${formData.firstName} ${formData.lastName}`,
+        name: fullName,
         phone: phoneNumber,
         pin: formData.pin,
         referralCode: formData.referralCode || undefined,
         programTag: 'Jinda Youth',
         campaignSource: 'CockroachCampusMovement',
         youthAgeGroup: formData.youthAgeGroup,
+        memberType: formData.memberType || undefined,
+        track: formData.track || undefined,
+        district: formData.district?.trim() || undefined,
+        ward: formData.ward?.trim() || undefined,
+        village: formData.village?.trim() || undefined,
         gender: formData.gender || undefined,
         campusName: formData.campusName.trim(),
         courseOrClass: formData.courseOrClass.trim(),
         instagramId: formData.instagramId.trim() || undefined,
         whatsappNumber: formData.whatsappNumber.replace(/\D/g, '').slice(-10) || undefined,
-        youthSkills: formData.youthSkills.join(','),
+        youthSkills: [
+          ...formData.youthSkills,
+          formData.track ? `track:${formData.track}` : '',
+        ].filter(Boolean).join(','),
         communicationConsent: formData.communicationConsent,
         codeOfConductAccepted: formData.codeOfConductAccepted,
         authUserId: authUserData?.user?.id || undefined,
@@ -414,6 +446,23 @@ export default function YouthJoinPage() {
         method: 'POST',
         body: JSON.stringify(userProfileData),
       });
+
+      // Keep the new member signed in so thank-you → dashboard works
+      if (userData?.access_token) {
+        try {
+          localStorage.setItem('access_token', userData.access_token);
+          localStorage.setItem(
+            'user_info',
+            JSON.stringify({
+              id: userData.id,
+              name: userData.name,
+              programTag: userData.programTag || 'Jinda Youth',
+            }),
+          );
+        } catch {
+          /* ignore storage errors */
+        }
+      }
 
       router.push('/youth-front/thank-you');
     } catch (err: any) {
@@ -473,7 +522,7 @@ export default function YouthJoinPage() {
               <form onSubmit={handleSendOtp} className="mt-8 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.firstName}</label>
+                    <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.firstName}</FormFieldLabel>
                     <input
                       type="text"
                       required
@@ -484,7 +533,7 @@ export default function YouthJoinPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.lastName}</label>
+                    <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.lastName}</FormFieldLabel>
                     <input
                       type="text"
                       required
@@ -497,7 +546,7 @@ export default function YouthJoinPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.mobileNumber}</label>
+                  <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.mobileNumber}</FormFieldLabel>
                   <div className="flex gap-2">
                     <input
                       type="tel"
@@ -549,7 +598,7 @@ export default function YouthJoinPage() {
 
               <form onSubmit={handleVerifyOtp} className="mt-8 space-y-6">
                 <div>
-                  <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.otpLabel}</label>
+                  <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.otpLabel}</FormFieldLabel>
                   <div className="flex gap-2">
                     <input
                       type={showPin ? 'text' : 'password'}
@@ -607,7 +656,7 @@ export default function YouthJoinPage() {
               <form onSubmit={handleRegister} className="mt-8 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.ageGroup}</label>
+                    <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.ageGroup}</FormFieldLabel>
                     <select
                       required
                       value={formData.youthAgeGroup}
@@ -638,7 +687,7 @@ export default function YouthJoinPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.joinAs}</label>
+                    <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.joinAs}</FormFieldLabel>
                     <select
                       required
                       value={formData.memberType}
@@ -659,7 +708,7 @@ export default function YouthJoinPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.workOn}</label>
+                    <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.workOn}</FormFieldLabel>
                     <select
                       required
                       value={formData.track}
@@ -681,7 +730,7 @@ export default function YouthJoinPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-[#04330B] mb-2">{getCampusLabel()} *</label>
+                  <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{getCampusLabel()}</FormFieldLabel>
                   <input
                     type="text"
                     required
@@ -705,7 +754,7 @@ export default function YouthJoinPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.pinLabel}</label>
+                  <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.pinLabel}</FormFieldLabel>
                   <div className="flex gap-2">
                     <input
                       type={showPin ? 'text' : 'password'}
@@ -729,41 +778,41 @@ export default function YouthJoinPage() {
                   <p className="mt-1 text-xs text-[#587E67]">{t.wizard.pinHint}</p>
                 </div>
 
-                {/* District/Ward/Village - only show for non-student/coaching types */}
-                {formData.memberType !== 'student' && formData.memberType !== 'coaching' && (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.district}</label>
-                      <input
-                        type="text"
-                        value={formData.district}
-                        onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
-                        placeholder={t.wizard.district}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.ward}</label>
-                      <input
-                        type="text"
-                        value={formData.ward}
-                        onChange={(e) => setFormData({ ...formData, ward: e.target.value })}
-                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
-                        placeholder={t.wizard.wardPlaceholder || t.wizard.ward}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.village}</label>
-                      <input
-                        type="text"
-                        value={formData.village}
-                        onChange={(e) => setFormData({ ...formData, village: e.target.value })}
-                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
-                        placeholder={t.wizard.villagePlaceholder || t.wizard.village}
-                      />
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-bold text-[#04330B] mb-2">
+                      {t.wizard.district} <span className="text-[#D93025]" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.district}
+                      onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                      className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
+                      placeholder={t.wizard.district}
+                    />
                   </div>
-                )}
+                  <div>
+                    <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.ward}</label>
+                    <input
+                      type="text"
+                      value={formData.ward}
+                      onChange={(e) => setFormData({ ...formData, ward: e.target.value })}
+                      className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
+                      placeholder={t.wizard.wardPlaceholder || t.wizard.ward}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.village}</label>
+                    <input
+                      type="text"
+                      value={formData.village}
+                      onChange={(e) => setFormData({ ...formData, village: e.target.value })}
+                      className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
+                      placeholder={t.wizard.villagePlaceholder || t.wizard.village}
+                    />
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -809,20 +858,27 @@ export default function YouthJoinPage() {
                 </div>
 
                 <div className="rounded-xl bg-[#FFF7ED] p-4 border border-[#FED7AA]">
-                  <div className="text-sm font-bold text-[#9A3412] mb-3">{t.wizard.consentTitle}</div>
+                  <div className="text-sm font-bold text-[#9A3412] mb-3">
+                    {t.wizard.consentTitle}
+                    <RequiredMark />
+                  </div>
                   <label className="flex items-start gap-3 text-[12px] font-semibold text-[#04330B]">
                     <input
                       type="checkbox"
                       checked={formData.communicationConsent}
                       onChange={(e) => setFormData({ ...formData, communicationConsent: e.target.checked })}
                       className="mt-1"
+                      required
                     />
                     <span>{t.wizard.consentText}</span>
                   </label>
                 </div>
 
                 <div className="rounded-xl bg-[#FEF2F2] p-4 border border-[#FECACA]">
-                  <div className="text-sm font-bold text-[#991B1B] mb-3">{t.wizard.conductTitle}</div>
+                  <div className="text-sm font-bold text-[#991B1B] mb-3">
+                    {t.wizard.conductTitle}
+                    <RequiredMark />
+                  </div>
                   <label className="flex items-start gap-3 text-[12px] font-semibold text-[#04330B]">
                     <input
                       type="checkbox"
@@ -856,5 +912,19 @@ export default function YouthJoinPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function YouthJoinPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F5FBF7] pt-[70px] lg:pt-[92px] flex items-center justify-center font-['Familjen_Grotesk'] text-[#587E67]">
+          Loading…
+        </div>
+      }
+    >
+      <YouthJoinPageInner />
+    </Suspense>
   );
 }

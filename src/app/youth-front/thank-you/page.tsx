@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CheckCircle2, Copy, MessageCircle, Users, Download } from 'lucide-react';
+import { CheckCircle2, Users } from 'lucide-react';
 import { Navbar } from '../../../components/Navbar';
 
 export default function YouthFrontThankYouPage() {
@@ -12,18 +12,18 @@ export default function YouthFrontThankYouPage() {
             <CheckCircle2 className="text-[#16A34A]" size={44} />
           </div>
           <h1 className="mt-7 text-4xl lg:text-6xl font-black tracking-[-0.05em]">Welcome to JINDA</h1>
-          <p className="mt-4 text-lg font-semibold text-[#587E67]">You are now part of Jinda Youth's youth action network.</p>
-          <p className="mt-2 text-base font-semibold text-[#04330B]">Your JINDA journey starts now.</p>
+          <p className="mt-4 text-lg font-semibold text-[#587E67]">You are now part of Jinda Youth.</p>
+          <p className="mt-2 text-base font-semibold text-[#04330B]">Your account is ready — start your first missions.</p>
 
           <div className="mt-8 rounded-2xl bg-[#DCFCE7] p-6 text-left">
             <div className="text-xl font-black text-[#04330B] mb-4">Your first missions:</div>
             <div className="mt-4 grid gap-3">
               {[
-                'Complete your JINDA profile.',
-                'Join your district feed.',
-                'Invite 5 teammates.',
-                'Report one real issue.',
-                'Join or start a Squad.',
+                'Join your district WhatsApp group.',
+                'Invite 5 teammates with your invite link.',
+                'Report one real issue from your area.',
+                'Join or start a Squad near you.',
+                'Upload a joining story when you are ready.',
               ].map((item, index) => (
                 <div key={item} className="flex items-center gap-3 rounded-xl bg-white p-4 font-bold">
                   <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#16A34A] text-white text-sm">{index + 1}</span>
@@ -33,7 +33,6 @@ export default function YouthFrontThankYouPage() {
             </div>
             <p className="mt-4 text-sm font-bold text-[#04330B]">Earn XP. Build your streak. Unlock your rank. Grow with your Squad.</p>
           </div>
-
 
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/youth-front/my-dashboard" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#04330B] px-7 py-4 font-black text-white">
@@ -46,7 +45,7 @@ export default function YouthFrontThankYouPage() {
               Join / Start Squad
             </Link>
           </div>
-          
+
           <p className="mt-6 text-sm text-[#587E67]">
             Check your JINDA dashboard for your referral link, XP history, and Squad status.
           </p>

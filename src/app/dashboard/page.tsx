@@ -481,8 +481,9 @@ export default function DemoDashboard() {
         { name: t.nav.election, href: '/election' }
     ];
 
-    // Check if user is a union worker
-    const isUnionWorker = !!summary?.user?.unionName;
+    // Party dashboard always shows Party product. Dual Party+Union members keep Party UI here;
+    // Union-only workers (no local unit) see the Union card view.
+    const isUnionWorker = !!summary?.user?.unionName && !summary?.user?.localUnit;
 
     // Don't render content until we know the user type
     if (loading) {

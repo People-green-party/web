@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -17,13 +17,13 @@ import {
   LogOut,
   Menu,
   X,
-  Search,
   Bell,
-  ChevronLeft,
   ExternalLink,
   MapPinned,
+  HandCoins,
+  Building2,
 } from "lucide-react";
-import { clearAdminSession, getAdminScope } from "@/lib/adminApi";
+import { adminFetch, clearAdminSession, getAdminScope, getAdminToken } from "@/lib/adminApi";
 
 type NavItem = {
   href: string;
@@ -36,21 +36,35 @@ type NavSection = {
   items: NavItem[];
 };
 
+type AuditLog = {
+  id: number;
+  action?: string;
+  entityType?: string;
+  entityId?: string | null;
+  reason?: string | null;
+  createdAt?: string;
+  actor?: { name?: string | null } | null;
+};
+
 const NAV: NavSection[] = [
   {
     title: "Party Overview",
     items: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard }],
   },
   {
-    title: "Internship Portal",
+    title: "People & Programmes",
     items: [
-      { href: "/admin/leadership-academy", label: "Applications", icon: GraduationCap },
+      { href: "/admin/users", label: "All Users", icon: Users },
+      { href: "/admin/unions", label: "Unions", icon: Building2 },
+      { href: "/admin/youth", label: "Jinda Youth", icon: BarChart3 },
+      { href: "/admin/youth/members", label: "Youth Members", icon: Users },
+      { href: "/admin/leadership-academy", label: "Internships", icon: GraduationCap },
+      { href: "/admin/donations", label: "Donations", icon: HandCoins },
     ],
   },
   {
-    title: "Youth Front",
+    title: "Youth Ops",
     items: [
-      { href: "/admin/youth", label: "Youth Dashboard", icon: BarChart3 },
       { href: "/admin/youth/squads", label: "Squads", icon: Users },
       { href: "/admin/youth/missions", label: "Missions", icon: Target },
       { href: "/admin/youth/squad-missions", label: "Squad Missions", icon: Swords },
@@ -60,7 +74,6 @@ const NAV: NavSection[] = [
   {
     title: "Organisation",
     items: [
-      { href: "/admin/users", label: "Members", icon: Users },
       { href: "/admin/elections", label: "Elections", icon: ShieldCheck },
       { href: "/admin/committees", label: "Committees", icon: Flag },
       { href: "/admin/audit-logs", label: "Audit Logs", icon: ClipboardList },
@@ -72,6 +85,11 @@ const NAV: NavSection[] = [
 function isActive(pathname: string, href: string) {
   if (href === "/admin") return pathname === "/admin";
   return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function formatAction(action?: string) {
+  if (!action) return "Activity";
+  return action.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
 }
 
 function AdminSidebar({
@@ -118,48 +136,51 @@ function AdminSidebar({
               <p className="px-3 mb-2 text-[10px] font-bold tracking-[0.16em] uppercase text-white/45">
                 {section.title}
               </p>
-              <div className="space-y-1">
+              <ul className="space-y-1">
                 {section.items.map((item) => {
                   const Icon = item.icon;
                   const active = isActive(pathname, item.href);
                   return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={onNavigate}
-                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
-                        active
-                          ? "bg-[#16A34A] text-white"
-                          : "text-white/75 hover:bg-white/10 hover:text-white"
-                      }`}
-                    >
-                      <Icon size={18} className="shrink-0" />
-                      <span className="truncate">{item.label}</span>
-                    </Link>
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        onClick={onNavigate}
+                        className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
+                          active
+                            ? "bg-white/15 text-white"
+                            : "text-white/75 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        <Icon size={17} className="shrink-0 opacity-90" />
+                        <span className="truncate">{item.label}</span>
+                      </Link>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             </div>
           ))}
         </div>
       </nav>
 
-      <div className="shrink-0 border-t border-white/10 p-4 pb-5 space-y-3 mt-auto">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-full bg-[#16A34A] flex items-center justify-center text-sm font-black shrink-0">
+      <div className="shrink-0 border-t border-white/10 p-4 space-y-3">
+        <div className="flex items-center gap-3 px-1">
+          <div className="h-9 w-9 rounded-full bg-white/15 flex items-center justify-center text-xs font-black">
             P
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold truncate">PGP Admin</p>
+            <p className="text-sm font-bold truncate">PGP Admin</p>
             <p className="text-[11px] text-white/55 capitalize">{scope} access</p>
           </div>
         </div>
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-xs font-semibold text-[#86EFAC] hover:text-white"
+        <a
+          href="https://peoplesgreen.org"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 rounded-xl border border-white/15 px-3 py-2.5 text-sm font-semibold text-white/85 hover:bg-white/10"
         >
-          <ExternalLink size={14} /> Open peoplesgreen.org
-        </Link>
+          <ExternalLink size={15} /> Open peoplesgreen.org
+        </a>
         <button
           type="button"
           onClick={onLogout}
@@ -184,18 +205,36 @@ export function AdminShell({
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [query, setQuery] = useState("");
   const [scope, setScope] = useState<"view" | "edit">("view");
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifLoading, setNotifLoading] = useState(false);
+  const [notifications, setNotifications] = useState<AuditLog[]>([]);
+  const notifRef = useRef<HTMLDivElement | null>(null);
+
+  const loadNotifications = async () => {
+    if (!getAdminToken()) return;
+    setNotifLoading(true);
+    try {
+      const data = await adminFetch<{ logs?: AuditLog[] }>("audit/logs?limit=12");
+      setNotifications(Array.isArray(data?.logs) ? data.logs : []);
+    } catch {
+      setNotifications([]);
+    } finally {
+      setNotifLoading(false);
+    }
+  };
 
   useEffect(() => {
     setScope(getAdminScope());
+    void loadNotifications();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     setMobileOpen(false);
+    setNotifOpen(false);
   }, [pathname]);
 
-  // Admin is a fixed viewport shell — lock body so only the main pane scrolls
   useEffect(() => {
     const prevHtml = document.documentElement.style.overflow;
     const prevBody = document.body.style.overflow;
@@ -206,6 +245,15 @@ export function AdminShell({
       document.body.style.overflow = prevBody;
     };
   }, []);
+
+  useEffect(() => {
+    if (!notifOpen) return;
+    const onDoc = (e: MouseEvent) => {
+      if (!notifRef.current?.contains(e.target as Node)) setNotifOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [notifOpen]);
 
   const pageTitle = useMemo(() => {
     if (title) return title;
@@ -222,20 +270,14 @@ export function AdminShell({
     router.push("/admin/login");
   };
 
-  const onSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const q = query.trim();
-    if (!q) return;
-    if (/^\d{10}$/.test(q) || q.includes("@")) {
-      router.push(`/admin/users?q=${encodeURIComponent(q)}`);
-      return;
-    }
-    router.push(`/admin/leadership-academy?q=${encodeURIComponent(q)}`);
+  const toggleNotifications = async () => {
+    const next = !notifOpen;
+    setNotifOpen(next);
+    if (next) await loadNotifications();
   };
 
   return (
     <div className="fixed inset-0 z-40 flex bg-[#F3F6F4] text-[#04330B] font-['Familjen_Grotesk']">
-      {/* Desktop sidebar: always full viewport height */}
       <div className="hidden lg:flex h-full w-[260px] shrink-0 flex-col">
         <AdminSidebar pathname={pathname} scope={scope} onLogout={logout} />
       </div>
@@ -272,15 +314,6 @@ export function AdminShell({
               <Menu size={18} />
             </button>
 
-            {pathname !== "/admin" ? (
-              <Link
-                href="/admin"
-                className="hidden md:inline-flex items-center gap-1 text-sm font-semibold text-[#587E67] hover:text-[#04330B] shrink-0"
-              >
-                <ChevronLeft size={16} /> Dashboard
-              </Link>
-            ) : null}
-
             <div className="min-w-0 flex-1 overflow-hidden">
               <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.12em] uppercase text-[#587E67] truncate">
                 PGP · Website Admin
@@ -291,32 +324,70 @@ export function AdminShell({
               ) : null}
             </div>
 
-            <form
-              onSubmit={onSearch}
-              className="hidden lg:flex items-center gap-2 flex-1 max-w-md min-w-0"
-            >
-              <div className="relative w-full min-w-0">
-                <Search
-                  size={16}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]"
-                />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search members or applications…"
-                  className="w-full h-10 rounded-xl border border-[#DDEEE4] bg-[#F8FBF9] pl-9 pr-3 text-sm font-medium outline-none focus:border-[#16A34A]"
-                />
-              </div>
-            </form>
+            <div className="relative shrink-0" ref={notifRef}>
+              <button
+                type="button"
+                onClick={toggleNotifications}
+                className="relative h-10 w-10 rounded-xl border border-[#DDEEE4] flex items-center justify-center text-[#04330B] hover:bg-[#F8FBF9]"
+                aria-label="Notifications"
+                title="Recent admin activity"
+              >
+                <Bell size={18} />
+                {notifications.length > 0 ? (
+                  <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#BE1E2D] text-white text-[10px] font-bold flex items-center justify-center">
+                    {Math.min(notifications.length, 9)}
+                    {notifications.length > 9 ? "+" : ""}
+                  </span>
+                ) : null}
+              </button>
 
-            <Link
-              href="/admin/youth/action-queue"
-              className="relative h-10 w-10 shrink-0 rounded-xl border border-[#DDEEE4] flex items-center justify-center text-[#04330B]"
-              aria-label="Action queue"
-              title="Action queue"
-            >
-              <Bell size={18} />
-            </Link>
+              {notifOpen ? (
+                <div className="absolute right-0 mt-2 w-[min(360px,calc(100vw-1.5rem))] rounded-2xl border border-[#E4F2EA] bg-white shadow-xl overflow-hidden z-50">
+                  <div className="px-4 py-3 border-b border-[#E4F2EA] flex items-center justify-between">
+                    <p className="text-sm font-black text-[#04330B]">Recent activity</p>
+                    <Link
+                      href="/admin/audit-logs"
+                      onClick={() => setNotifOpen(false)}
+                      className="text-xs font-bold text-[#0D5229] hover:underline"
+                    >
+                      View all
+                    </Link>
+                  </div>
+                  <div className="max-h-[360px] overflow-y-auto">
+                    {notifLoading ? (
+                      <p className="px-4 py-8 text-sm text-[#587E67] font-medium text-center">
+                        Loading…
+                      </p>
+                    ) : notifications.length === 0 ? (
+                      <p className="px-4 py-8 text-sm text-[#587E67] font-medium text-center">
+                        No recent activity yet.
+                      </p>
+                    ) : (
+                      <ul className="divide-y divide-[#F0F5F2]">
+                        {notifications.map((log) => (
+                          <li key={log.id} className="px-4 py-3">
+                            <p className="text-sm font-bold text-[#04330B]">
+                              {formatAction(log.action)}
+                            </p>
+                            <p className="mt-0.5 text-xs text-[#587E67] font-medium line-clamp-2">
+                              {[log.entityType, log.entityId, log.reason]
+                                .filter(Boolean)
+                                .join(" · ") || "Admin action"}
+                            </p>
+                            <p className="mt-1 text-[11px] text-[#94A3B8] font-medium">
+                              {log.actor?.name ? `${log.actor.name} · ` : ""}
+                              {log.createdAt
+                                ? new Date(log.createdAt).toLocaleString("en-IN")
+                                : ""}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+            </div>
 
             <div className="hidden sm:flex items-center gap-2 rounded-xl border border-[#DDEEE4] px-2.5 py-1.5 shrink-0">
               <div className="h-8 w-8 rounded-full bg-[#04330B] text-white flex items-center justify-center text-xs font-black">
@@ -328,24 +399,8 @@ export function AdminShell({
               </div>
             </div>
           </div>
-
-          <form onSubmit={onSearch} className="lg:hidden px-3 pb-3">
-            <div className="relative w-full">
-              <Search
-                size={16}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]"
-              />
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search members or applications…"
-                className="w-full h-10 rounded-xl border border-[#DDEEE4] bg-[#F8FBF9] pl-9 pr-3 text-sm font-medium outline-none focus:border-[#16A34A]"
-              />
-            </div>
-          </form>
         </header>
 
-        {/* Only this pane scrolls — sidebar stays full-height */}
         <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-6">
           <div className="w-full min-w-0 max-w-full pb-8">{children}</div>
         </main>

@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { Phone, Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "../../../components/Navbar";
 
-export default function YouthLoginPage() {
+function YouthLoginInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = searchParams?.get('next') || '/youth-front/my-dashboard';
   const [phone, setPhone] = useState('');
   const [pin, setPin] = useState('');
   const [showPin, setShowPin] = useState(false);
@@ -16,6 +18,11 @@ export default function YouthLoginPage() {
   const sanitizePhoneInput = (value: string) => {
     const digitsOnly = String(value || '').replace(/\D/g, '');
     return digitsOnly.slice(0, 10);
+  };
+
+  const safeNext = (path: string) => {
+    if (path.startsWith('/youth-front')) return path;
+    return '/youth-front/my-dashboard';
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -45,17 +52,26 @@ export default function YouthLoginPage() {
       });
 
       if (data.access_token) {
+        const tag = String(data.user?.programTag || '').toLowerCase();
+        const isYouth = tag.includes('jinda') || tag.includes('youth');
+        if (!isYouth) {
+          // Never leave a live session after a rejected Youth login
+          try {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user_info');
+          } catch {
+            /* ignore */
+          }
+          setError(
+            'This is not a Jinda Youth account. Join Jinda Youth first, or use Party / Union login for those portals.',
+          );
+          return;
+        }
         localStorage.setItem('access_token', data.access_token);
         if (data.user) {
           localStorage.setItem('user_info', JSON.stringify(data.user));
         }
-        
-        // Check if user is youth member
-        if (data.user?.programTag === 'PGP Youth Front' || data.user?.programTag === 'Jinda Youth') {
-          router.push('/youth-front/my-dashboard');
-        } else {
-          setError('This is not a Jinda Youth account. Please use the main login page.');
-        }
+        router.push(safeNext(nextPath));
       } else {
         throw new Error('Login failed');
       }
@@ -79,7 +95,7 @@ export default function YouthLoginPage() {
             Back
           </button>
 
-          <h1 className="text-3xl lg:text-4xl font-black tracking-[-0.05em]">Youth Login</h1>
+          <h1 className="text-3xl lg:text-4xl font-black tracking-[-0.05em]">Jinda Youth Login</h1>
           <p className="mt-3 text-[#587E67] font-semibold">
             Login to your Jinda Youth account
           </p>
@@ -93,7 +109,7 @@ export default function YouthLoginPage() {
 
           <form onSubmit={handleLogin} className="mt-8 space-y-6">
             <div>
-              <label className="block text-sm font-bold text-[#04330B] mb-2">Mobile Number *</label>
+              <label className="block text-sm font-bold text-[#04330B] mb-2">Mobile Number <span className="text-[#D93025] font-bold" aria-hidden="true">*</span></label>
               <div className="flex gap-2">
                 <div className="flex h-[46px] items-center rounded-[10px] border border-[#DDEEE4] bg-[#F5FBF7] px-4 font-semibold text-[#587E67]">
                   +91
@@ -113,7 +129,7 @@ export default function YouthLoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-[#04330B] mb-2">Login PIN *</label>
+              <label className="block text-sm font-bold text-[#04330B] mb-2">Login PIN <span className="text-[#D93025] font-bold" aria-hidden="true">*</span></label>
               <div className="flex gap-2">
                 <input
                   type={showPin ? 'text' : 'password'}
@@ -135,6 +151,17 @@ export default function YouthLoginPage() {
                   {showPin ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
+              <button
+                type="button"
+                onClick={() =>
+                  router.push(
+                    `/login?mode=otp_request&next=${encodeURIComponent(safeNext(nextPath))}`,
+                  )
+                }
+                className="mt-2 text-sm font-semibold text-[#0D5229] hover:underline"
+              >
+                Forgot PIN?
+              </button>
             </div>
 
             <button
@@ -158,5 +185,19 @@ export default function YouthLoginPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function YouthLoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#F5FBF7] pt-[70px] flex items-center justify-center text-[#587E67] font-['Familjen_Grotesk']">
+          Loading…
+        </div>
+      }
+    >
+      <YouthLoginInner />
+    </Suspense>
   );
 }

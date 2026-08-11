@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import {
-  CheckCircle2, XCircle, Clock, Filter, RefreshCw, ExternalLink,
-  ChevronLeft, ChevronRight, Shield, Zap, AlertTriangle, Image as ImageIcon,
+  CheckCircle2, XCircle, Clock, ExternalLink,
+  ChevronLeft, ChevronRight, Zap, AlertTriangle, Image as ImageIcon,
 } from "lucide-react";
 import { adminFetch } from "@/lib/adminApi";
 
@@ -118,23 +118,22 @@ export default function AdminMissionsPage() {
   const pendingCount = submissions.filter((s) => s.status === "submitted").length;
 
   return (
-    <div className="w-full max-w-full min-w-0 font-['Familjen_Grotesk']">
-
-      {/* Toast */}
-      {toast && (
-        <div className="fixed top-20 right-4 z-50 bg-[#04330B] text-white px-4 py-3 rounded-xl text-sm font-bold shadow-lg">
+    <div className="w-full max-w-full min-w-0 space-y-5 font-['Familjen_Grotesk']">
+      {toast ? (
+        <div className="fixed top-4 right-4 z-50 rounded-lg bg-[#04330B] px-4 py-3 text-sm font-semibold text-white shadow-lg">
           {toast}
         </div>
-      )}
+      ) : null}
 
-      {/* Reject modal */}
-      {rejectTarget !== null && (
+      {rejectTarget !== null ? (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
             <h3 className="text-lg font-black text-[#04330B] mb-1">Reject Submission</h3>
-            <p className="text-sm text-gray-500 mb-4">The member will see this reason on their dashboard.</p>
+            <p className="text-sm text-[#587E67] mb-4">
+              The member will see this reason on their dashboard.
+            </p>
             <textarea
-              className="w-full border border-gray-200 rounded-xl p-3 text-sm resize-none focus:outline-none focus:border-[#04330B]"
+              className="w-full border border-[#DDEEE4] rounded-xl p-3 text-sm resize-none focus:outline-none focus:border-[#04330B]"
               rows={3}
               placeholder="e.g. Proof image is unclear. Please resubmit with a clearer photo."
               value={rejectReason}
@@ -142,195 +141,228 @@ export default function AdminMissionsPage() {
             />
             <div className="flex gap-3 mt-4">
               <button
+                type="button"
                 onClick={handleReject}
                 disabled={!rejectReason.trim() || actionLoading === rejectTarget}
                 className="flex-1 bg-red-600 text-white rounded-xl py-2.5 text-sm font-bold hover:bg-red-700 disabled:opacity-50"
               >
-                {actionLoading === rejectTarget ? "Rejecting..." : "Confirm Reject"}
+                {actionLoading === rejectTarget ? "Rejecting…" : "Confirm Reject"}
               </button>
               <button
-                onClick={() => { setRejectTarget(null); setRejectReason(""); }}
-                className="flex-1 border border-gray-200 rounded-xl py-2.5 text-sm font-bold hover:bg-gray-50"
+                type="button"
+                onClick={() => {
+                  setRejectTarget(null);
+                  setRejectReason("");
+                }}
+                className="flex-1 border border-[#DDEEE4] rounded-xl py-2.5 text-sm font-bold hover:bg-[#F8FBF9]"
               >
                 Cancel
               </button>
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
-      <main className="mx-auto max-w-6xl px-5 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-black text-[#04330B]">Mission Submissions</h1>
-            <p className="text-sm text-[#587E67] mt-0.5">{total} total · {pendingCount} pending review</p>
-          </div>
-          <button onClick={load} className="flex items-center gap-2 text-sm font-bold text-[#587E67] hover:text-[#04330B]">
-            <RefreshCw size={15} /> Refresh
-          </button>
+      <div>
+        <h2 className="text-2xl font-black text-[#04330B]">Missions</h2>
+        <p className="text-sm text-[#587E67] font-medium">
+          {total} total · {pendingCount} pending review on this page
+        </p>
+      </div>
+
+      <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4 shadow-sm flex flex-wrap gap-3 items-end">
+        <div>
+          <label className="text-xs font-bold text-[#587E67] block mb-1">Status</label>
+          <select
+            value={filterStatus}
+            onChange={(e) => {
+              setFilterStatus(e.target.value);
+              setPage(1);
+            }}
+            className="border border-[#DDEEE4] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#04330B]"
+          >
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {s === "All" ? "All statuses" : s.charAt(0).toUpperCase() + s.slice(1)}
+              </option>
+            ))}
+          </select>
         </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-2xl border border-[#BBF7D0] p-4 mb-6 flex flex-wrap gap-3 items-end">
-          <div>
-            <label className="text-xs font-bold text-[#587E67] block mb-1">Status</label>
-            <select
-              value={filterStatus}
-              onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
-              className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#04330B]"
-            >
-              {STATUSES.map((s) => <option key={s} value={s}>{s === "All" ? "All statuses" : s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs font-bold text-[#587E67] block mb-1">Mission Type</label>
-            <select
-              value={filterType}
-              onChange={(e) => { setFilterType(e.target.value); setPage(1); }}
-              className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#04330B]"
-            >
-              {MISSION_TYPES.map((t) => <option key={t}>{t}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs font-bold text-[#587E67] block mb-1">District</label>
-            <input
-              type="text"
-              placeholder="e.g. Jaipur"
-              value={filterDistrict}
-              onChange={(e) => { setFilterDistrict(e.target.value); setPage(1); }}
-              className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#04330B] w-32"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-bold text-[#587E67] block mb-1">Member ID</label>
-            <input
-              type="number"
-              placeholder="ID"
-              value={filterMember}
-              onChange={(e) => { setFilterMember(e.target.value); setPage(1); }}
-              className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#04330B] w-24"
-            />
-          </div>
+        <div>
+          <label className="text-xs font-bold text-[#587E67] block mb-1">Mission Type</label>
+          <select
+            value={filterType}
+            onChange={(e) => {
+              setFilterType(e.target.value);
+              setPage(1);
+            }}
+            className="border border-[#DDEEE4] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#04330B]"
+          >
+            {MISSION_TYPES.map((t) => (
+              <option key={t}>{t}</option>
+            ))}
+          </select>
         </div>
+        <div>
+          <label className="text-xs font-bold text-[#587E67] block mb-1">District</label>
+          <input
+            type="text"
+            placeholder="e.g. Jaipur"
+            value={filterDistrict}
+            onChange={(e) => {
+              setFilterDistrict(e.target.value);
+              setPage(1);
+            }}
+            className="border border-[#DDEEE4] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#04330B] w-32"
+          />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-[#587E67] block mb-1">Member ID</label>
+          <input
+            type="number"
+            placeholder="ID"
+            value={filterMember}
+            onChange={(e) => {
+              setFilterMember(e.target.value);
+              setPage(1);
+            }}
+            className="border border-[#DDEEE4] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#04330B] w-24"
+          />
+        </div>
+      </div>
 
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4 text-red-700 text-sm font-semibold flex items-center gap-2">
-            <AlertTriangle size={16} /> {error}
-          </div>
-        )}
+      {error ? (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 flex items-center gap-2">
+          <AlertTriangle size={16} /> {error}
+        </p>
+      ) : null}
 
+      <div className="rounded-2xl border border-[#E4F2EA] bg-white shadow-sm overflow-hidden">
         {loading ? (
-          <div className="text-center py-16 text-[#587E67] font-semibold">Loading submissions...</div>
+          <p className="text-center py-16 text-[#587E67] font-semibold">Loading submissions…</p>
         ) : submissions.length === 0 ? (
-          <div className="text-center py-16 text-[#9CA3AF]">
+          <div className="text-center py-16 text-[#94A3B8]">
             <CheckCircle2 size={40} className="mx-auto mb-3 opacity-30" />
             <p className="font-semibold">No submissions match your filters</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="divide-y divide-[#F0F5F2]">
             {submissions.map((s) => {
               const sc = STATUS_CONFIG[s.status] || STATUS_CONFIG.assigned;
               return (
-                <div key={s.userMissionId} className="bg-white rounded-2xl border border-[#E5E7EB] p-5 hover:border-[#BBF7D0] transition-all">
+                <article key={s.userMissionId} className="px-4 py-4">
                   <div className="flex items-start justify-between gap-4">
-                    {/* Left: member + mission info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="font-black text-[#04330B]">{s.memberName || `Member #${s.memberId}`}</span>
-                        {s.jindaId && (
-                          <span className="text-[10px] font-mono bg-[#DCFCE7] text-[#16A34A] px-2 py-0.5 rounded-full">{s.jindaId}</span>
-                        )}
-                        {s.district && (
-                          <span className="text-[10px] text-gray-400 font-semibold">{s.district}</span>
-                        )}
-                        <span className={`flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${sc.bg} ${sc.color}`}>
+                        <span className="font-bold text-[#04330B]">
+                          {s.memberName || `Member #${s.memberId}`}
+                        </span>
+                        {s.jindaId ? (
+                          <span className="text-[10px] font-mono bg-[#DCFCE7] text-[#16A34A] px-2 py-0.5 rounded-full">
+                            {s.jindaId}
+                          </span>
+                        ) : null}
+                        {s.district ? (
+                          <span className="text-[10px] text-[#94A3B8] font-semibold">{s.district}</span>
+                        ) : null}
+                        <span
+                          className={`flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full ${sc.bg} ${sc.color}`}
+                        >
                           {sc.icon} {sc.label}
                         </span>
                       </div>
-                      <p className="text-sm font-semibold text-gray-700">{s.missionTitle}</p>
+                      <p className="text-sm font-semibold text-[#04330B]">{s.missionTitle}</p>
                       <div className="flex items-center gap-3 mt-1 flex-wrap">
-                        <span className="text-xs text-gray-400">{s.missionType}</span>
+                        <span className="text-xs text-[#94A3B8]">{s.missionType}</span>
                         <span className="text-xs font-bold text-[#16A34A]">+{s.xpReward} XP</span>
-                        <span className="text-xs text-gray-400">{new Date(s.createdAt).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}</span>
+                        <span className="text-xs text-[#94A3B8]">
+                          {new Date(s.createdAt).toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
                       </div>
-                      {s.rejectionReason && (
+                      {s.rejectionReason ? (
                         <div className="mt-2 text-xs text-red-600 font-semibold bg-red-50 rounded-lg px-3 py-1.5 inline-block">
                           Rejected: {s.rejectionReason}
                         </div>
-                      )}
+                      ) : null}
                     </div>
 
-                    {/* Right: proof + actions */}
                     <div className="flex flex-col items-end gap-2 shrink-0">
                       {s.proofUrl ? (
                         <a
                           href={s.proofUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-lg"
+                          className="flex items-center gap-1.5 text-xs font-bold text-[#0D5229] hover:underline bg-[#EAF7EE] px-3 py-1.5 rounded-lg"
                         >
                           <ImageIcon size={12} /> View Proof <ExternalLink size={10} />
                         </a>
                       ) : (
-                        <span className="text-xs text-gray-400 italic">No proof attached</span>
+                        <span className="text-xs text-[#94A3B8] italic">No proof attached</span>
                       )}
 
-                      {s.status === "submitted" && (
+                      {s.status === "submitted" ? (
                         <div className="flex gap-2">
                           <button
+                            type="button"
                             onClick={() => handleApprove(s.userMissionId)}
                             disabled={actionLoading === s.userMissionId}
-                            className="flex items-center gap-1.5 bg-[#04330B] text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-[#16A34A] disabled:opacity-50 transition-colors"
+                            className="flex items-center gap-1.5 bg-[#04330B] text-white text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-[#16A34A] disabled:opacity-50"
                           >
                             <CheckCircle2 size={12} />
-                            {actionLoading === s.userMissionId ? "..." : "Approve"}
+                            {actionLoading === s.userMissionId ? "…" : "Approve"}
                           </button>
                           <button
+                            type="button"
                             onClick={() => setRejectTarget(s.userMissionId)}
                             disabled={actionLoading === s.userMissionId}
-                            className="flex items-center gap-1.5 border border-red-300 text-red-600 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-red-50 disabled:opacity-50 transition-colors"
+                            className="flex items-center gap-1.5 border border-red-300 text-red-600 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-red-50 disabled:opacity-50"
                           >
                             <XCircle size={12} /> Reject
                           </button>
                         </div>
-                      )}
+                      ) : null}
 
-                      {s.status === "approved" && s.approvedAt && (
+                      {s.status === "approved" && s.approvedAt ? (
                         <span className="text-[10px] text-green-600 font-semibold">
                           Approved {new Date(s.approvedAt).toLocaleDateString("en-IN")}
                         </span>
-                      )}
+                      ) : null}
                     </div>
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>
         )}
+      </div>
 
-        {/* Pagination */}
-        {pages > 1 && (
-          <div className="flex items-center justify-center gap-3 mt-8">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="flex items-center gap-1 px-4 py-2 rounded-xl border border-gray-200 text-sm font-bold disabled:opacity-40 hover:border-[#04330B]"
-            >
-              <ChevronLeft size={14} /> Prev
-            </button>
-            <span className="text-sm text-gray-500 font-semibold">Page {page} of {pages}</span>
-            <button
-              onClick={() => setPage((p) => Math.min(pages, p + 1))}
-              disabled={page === pages}
-              className="flex items-center gap-1 px-4 py-2 rounded-xl border border-gray-200 text-sm font-bold disabled:opacity-40 hover:border-[#04330B]"
-            >
-              Next <ChevronRight size={14} />
-            </button>
-          </div>
-        )}
-      </main>
+      {pages > 1 ? (
+        <div className="flex items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="flex items-center gap-1 px-4 py-2 rounded-xl border border-[#DDEEE4] text-sm font-bold disabled:opacity-40"
+          >
+            <ChevronLeft size={14} /> Prev
+          </button>
+          <span className="text-sm text-[#587E67] font-semibold">
+            Page {page} of {pages}
+          </span>
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.min(pages, p + 1))}
+            disabled={page === pages}
+            className="flex items-center gap-1 px-4 py-2 rounded-xl border border-[#DDEEE4] text-sm font-bold disabled:opacity-40"
+          >
+            Next <ChevronRight size={14} />
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

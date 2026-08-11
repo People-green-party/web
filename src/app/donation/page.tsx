@@ -8,6 +8,8 @@ import {
 import { useLanguage } from "../../components/LanguageContext";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
+import { fetchApi } from "../../lib/api";
+import { FormFieldLabel, RequiredMark } from "../../components/FormFieldLabel";
 
 // --- 1. Translation Data ---
 
@@ -29,14 +31,15 @@ const translations = {
       p7: "Fight with us. Fight for Bringing the Change."
     },
     form: {
-      title: "Donation Form",
-      subtitle: "Every Donation Brings Us Closer to a Better Tomorrow",
+      title: "Donation Interest Form",
+      subtitle: "Share your pledge — our team will contact you for the secure payment process",
+      notice: "Online payment gateway is not live yet. Submitting this form does not charge your account. It is a pledge / callback request only.",
       existingMember: "If you are existing member?",
       placeholders: {
         name: "Name",
         mobile: "Mobile Number",
         email: "Email",
-        amount: "Amount",
+        amount: "Pledge amount (₹)",
         country: "Country",
         state: "State",
         city: "City",
@@ -45,8 +48,8 @@ const translations = {
         pan: "PAN Card Number (Mandatory)",
         occupation: "Occupation / Profession"
       },
-      declaration: "I hereby declare that I am an Indian citizen and this donation is made through my own legitimate funds. I am aware of the legal provisions regarding political donations.",
-      submit: "Submit"
+      declaration: "I hereby declare that I am an Indian citizen and this donation interest is made through my own legitimate funds. I am aware of the legal provisions regarding political donations.",
+      submit: "Submit pledge request"
     },
     campaigns: {
       title: "Fund for democracy"
@@ -69,14 +72,15 @@ const translations = {
       p7: "हमारे साथ लड़ें। बदलाव लाने के लिए लड़ें।"
     },
     form: {
-      title: "दान फॉर्म",
-      subtitle: "हर दान हमें बेहतर कल के करीब लाता है",
+      title: "दान रुचि फॉर्म",
+      subtitle: "अपना वचन दर्ज करें — सुरक्षित भुगतान प्रक्रिया के लिए हमारी टीम संपर्क करेगी",
+      notice: "ऑनलाइन भुगतान अभी लाइव नहीं है। यह फॉर्म जमा करने से आपके खाते से पैसे नहीं कटेंगे। यह केवल वचन / कॉलबैक अनुरोध है।",
       existingMember: "क्या आप मौजूदा सदस्य हैं?",
       placeholders: {
         name: "नाम",
         mobile: "मोबाइल नंबर",
         email: "ईमेल",
-        amount: "राशि",
+        amount: "वचन राशि (₹)",
         country: "देश",
         state: "राज्य",
         city: "शहर",
@@ -85,8 +89,8 @@ const translations = {
         pan: "पैन कार्ड नंबर (अनिवार्य)",
         occupation: "व्यवसाय / पेशा"
       },
-      declaration: "मैं इसके द्वारा घोषणा करता हूँ कि मैं एक भारतीय नागरिक हूँ और यह दान मेरे अपने वैध धन के माध्यम से किया गया है। मैं राजनीतिक दान के संबंध में कानूनी प्रावधानों से अवगत हूँ।",
-      submit: "दान करें"
+      declaration: "मैं इसके द्वारा घोषणा करता हूँ कि मैं एक भारतीय नागरिक हूँ और यह दान रुचि मेरे अपने वैध धन के माध्यम से की गई है। मैं राजनीतिक दान के संबंध में कानूनी प्रावधानों से अवगत हूँ।",
+      submit: "वचन अनुरोध जमा करें"
     },
     campaigns: {
       title: "लोकतंत्र के लिए फंड"
@@ -136,6 +140,91 @@ const DonationPageContent = () => {
 
   const [isExistingMember, setIsExistingMember] = useState(false);
   const [isDeclared, setIsDeclared] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitMsg, setSubmitMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [form, setForm] = useState({
+    fullName: "",
+    phone: "",
+    email: "",
+    amount: "",
+    pan: "",
+    occupation: "",
+    country: "India",
+    state: "Rajasthan",
+    city: "Jaipur",
+    pincode: "",
+    address: "",
+  });
+
+  const setField = (key: keyof typeof form, value: string) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitMsg(null);
+    if (!isDeclared) {
+      setSubmitMsg({ type: "err", text: "Please accept the declaration to continue." });
+      return;
+    }
+    const amount = parseInt(form.amount, 10);
+    const phoneDigits = form.phone.replace(/\D/g, "").slice(-10);
+    const pan = form.pan.trim().toUpperCase();
+    if (!form.fullName.trim() || !phoneDigits || !amount) {
+      setSubmitMsg({ type: "err", text: "Name, mobile and amount are required." });
+      return;
+    }
+    if (phoneDigits.length !== 10) {
+      setSubmitMsg({ type: "err", text: "Please enter a valid 10-digit mobile number." });
+      return;
+    }
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
+      setSubmitMsg({ type: "err", text: "Please enter a valid PAN (e.g. ABCDE1234F)." });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await fetchApi("donations", {
+        method: "POST",
+        body: JSON.stringify({
+          fullName: form.fullName.trim(),
+          phone: phoneDigits,
+          email: form.email.trim() || undefined,
+          amount,
+          pan,
+          occupation: form.occupation.trim() || undefined,
+          country: form.country || undefined,
+          state: form.state || undefined,
+          city: form.city || undefined,
+          pincode: form.pincode.trim() || undefined,
+          address: form.address.trim() || undefined,
+          isExistingMember,
+        }),
+      });
+      setSubmitMsg({
+        type: "ok",
+        text: "Thank you! Your pledge request was received. No payment was taken — our team will contact you for the secure donation process.",
+      });
+      setForm({
+        fullName: "",
+        phone: "",
+        email: "",
+        amount: "",
+        pan: "",
+        occupation: "",
+        country: "India",
+        state: "Rajasthan",
+        city: "Jaipur",
+        pincode: "",
+        address: "",
+      });
+      setIsDeclared(false);
+      setIsExistingMember(false);
+    } catch (err: any) {
+      setSubmitMsg({ type: "err", text: err?.message || "Submission failed. Please try again." });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white text-gray-800 font-sans pt-[70px] lg:pt-[92px]">
@@ -179,12 +268,15 @@ const DonationPageContent = () => {
               <h2 className="text-center font-['Familjen_Grotesk'] font-bold text-[32px] text-[#04330B] mb-[8px]">
                 {t.form.title}
               </h2>
-              <p className="text-center font-['Familjen_Grotesk'] font-semibold text-[16px] text-[#587E67] mb-[32px]">
+              <p className="text-center font-['Familjen_Grotesk'] font-semibold text-[16px] text-[#587E67] mb-[12px]">
                 {t.form.subtitle}
+              </p>
+              <p className="text-center font-['Familjen_Grotesk'] font-medium text-[13px] leading-snug text-[#854D0E] bg-[#FEFCE8] border border-yellow-200 rounded-[10px] px-3 py-2 mb-[24px]">
+                {t.form.notice}
               </p>
             </div>
 
-            <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-[24px] relative z-10">
+            <form onSubmit={onSubmit} className="flex flex-col gap-[24px] relative z-10">
 
               {/* Existing Member Checkbox */}
               <div
@@ -202,54 +294,76 @@ const DonationPageContent = () => {
                 </label>
               </div>
 
-              {/* Name */}
               <div className="flex flex-col gap-[8px]">
+                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">
+                  {t.form.placeholders.name}
+                </FormFieldLabel>
                 <input
                   type="text"
+                  value={form.fullName}
+                  onChange={(e) => setField("fullName", e.target.value)}
                   placeholder={t.form.placeholders.name}
                   className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
                 />
               </div>
 
-              {/* Mobile */}
-              <div className="flex gap-[16px]">
-                <div className="w-[100px] h-[56px] relative">
-                  <select className="w-full h-full rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate">
-                    <option>+91</option>
-                    <option>+1</option>
-                  </select>
-                  <ChevronDown className="absolute right-[12px] top-[16px] text-[#587E67] pointer-events-none" size={24} />
-                </div>
-                <div className="flex-1">
-                  <input
-                    type="tel"
-                    placeholder={t.form.placeholders.mobile}
-                    className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
-                  />
+              <div>
+                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B] mb-2">
+                  {t.form.placeholders.mobile}
+                </FormFieldLabel>
+                <div className="flex gap-[16px]">
+                  <div className="w-[100px] h-[56px] relative">
+                    <select className="w-full h-full rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate">
+                      <option>+91</option>
+                    </select>
+                    <ChevronDown className="absolute right-[12px] top-[16px] text-[#587E67] pointer-events-none" size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      type="tel"
+                      value={form.phone}
+                      onChange={(e) => setField("phone", e.target.value)}
+                      placeholder={t.form.placeholders.mobile}
+                      className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Email */}
               <div className="flex flex-col gap-[8px]">
+                <FormFieldLabel className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">
+                  {t.form.placeholders.email}
+                </FormFieldLabel>
                 <input
                   type="email"
+                  value={form.email}
+                  onChange={(e) => setField("email", e.target.value)}
                   placeholder={t.form.placeholders.email}
                   className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
                 />
               </div>
 
-              {/* Amount & PAN */}
               <div className="flex gap-[16px]">
                 <div className="flex-1">
+                  <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B] mb-2">
+                    {t.form.placeholders.amount}
+                  </FormFieldLabel>
                   <input
                     type="number"
+                    value={form.amount}
+                    onChange={(e) => setField("amount", e.target.value)}
                     placeholder={t.form.placeholders.amount}
                     className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
                   />
                 </div>
                 <div className="flex-1">
+                  <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B] mb-2">
+                    PAN
+                  </FormFieldLabel>
                   <input
                     type="text"
+                    value={form.pan}
+                    onChange={(e) => setField("pan", e.target.value)}
                     placeholder={t.form.placeholders.pan}
                     className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors uppercase"
                   />
@@ -260,6 +374,8 @@ const DonationPageContent = () => {
               <div className="flex flex-col gap-[8px]">
                 <input
                   type="text"
+                  value={form.occupation}
+                  onChange={(e) => setField("occupation", e.target.value)}
                   placeholder={t.form.placeholders.occupation}
                   className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
                 />
@@ -268,16 +384,22 @@ const DonationPageContent = () => {
               {/* Country & State */}
               <div className="flex gap-[16px]">
                 <div className="flex-1 relative">
-                  <select className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate">
-                    <option>{t.form.placeholders.country}</option>
-                    <option>India</option>
+                  <select
+                    value={form.country}
+                    onChange={(e) => setField("country", e.target.value)}
+                    className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate"
+                  >
+                    <option value="India">India</option>
                   </select>
                   <ChevronDown className="absolute right-[12px] top-[16px] text-[#587E67] pointer-events-none" size={24} />
                 </div>
                 <div className="flex-1 relative">
-                  <select className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate">
-                    <option>{t.form.placeholders.state}</option>
-                    <option>Rajasthan</option>
+                  <select
+                    value={form.state}
+                    onChange={(e) => setField("state", e.target.value)}
+                    className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate"
+                  >
+                    <option value="Rajasthan">Rajasthan</option>
                   </select>
                   <ChevronDown className="absolute right-[12px] top-[16px] text-[#587E67] pointer-events-none" size={24} />
                 </div>
@@ -286,15 +408,20 @@ const DonationPageContent = () => {
               {/* City & Pincode */}
               <div className="flex gap-[16px]">
                 <div className="flex-1 relative">
-                  <select className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate">
-                    <option>{t.form.placeholders.city}</option>
-                    <option>Jaipur</option>
+                  <select
+                    value={form.city}
+                    onChange={(e) => setField("city", e.target.value)}
+                    className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate"
+                  >
+                    <option value="Jaipur">Jaipur</option>
                   </select>
                   <ChevronDown className="absolute right-[12px] top-[16px] text-[#587E67] pointer-events-none" size={24} />
                 </div>
                 <div className="flex-1">
                   <input
                     type="text"
+                    value={form.pincode}
+                    onChange={(e) => setField("pincode", e.target.value)}
                     placeholder={t.form.placeholders.pincode}
                     className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
                   />
@@ -305,6 +432,8 @@ const DonationPageContent = () => {
               <div className="flex flex-col gap-[8px]">
                 <input
                   type="text"
+                  value={form.address}
+                  onChange={(e) => setField("address", e.target.value)}
                   placeholder={t.form.placeholders.address}
                   className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
                 />
@@ -323,18 +452,32 @@ const DonationPageContent = () => {
                 </div>
                 <label className="font-['Familjen_Grotesk'] font-medium text-[13px] leading-[1.4] text-[#587E67] cursor-pointer select-none">
                   {t.form.declaration}
+                  <RequiredMark />
                 </label>
               </div>
 
+              {submitMsg ? (
+                <p
+                  className={`text-sm font-semibold rounded-[8px] px-3 py-2 ${
+                    submitMsg.type === "ok"
+                      ? "bg-emerald-50 text-emerald-800"
+                      : "bg-red-50 text-red-700"
+                  }`}
+                >
+                  {submitMsg.text}
+                </p>
+              ) : null}
+
               {/* Submit */}
               <button
+                type="submit"
                 className={`
                   w-full h-[60px] rounded-[12px] font-['Familjen_Grotesk'] font-bold text-[18px] text-white transition-all shadow-lg
-                  ${isDeclared ? 'bg-[#04330B] hover:bg-[#064e11] hover:scale-[1.02]' : 'bg-gray-400 cursor-not-allowed'}
+                  ${isDeclared && !submitting ? 'bg-[#04330B] hover:bg-[#064e11] hover:scale-[1.02]' : 'bg-gray-400 cursor-not-allowed'}
                 `}
-                disabled={!isDeclared}
+                disabled={!isDeclared || submitting}
               >
-                {t.form.submit}
+                {submitting ? "Submitting…" : t.form.submit}
               </button>
 
             </form>

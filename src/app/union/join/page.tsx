@@ -6,6 +6,7 @@ import { supabase } from '../../../lib/supabaseClient';
 import { useLanguage } from '../../../components/LanguageContext';
 import { Phone, Eye, EyeOff } from 'lucide-react';
 import { Navbar } from '../../../components/Navbar';
+import { FormFieldLabel } from '../../../components/FormFieldLabel';
 
 // --- Translations ---
 const translations = {
@@ -221,14 +222,15 @@ const UnionJoinPageContent = () => {
       const { fetchApi } = await import('../../../lib/api');
 
       const userProfileData = {
-        name: formData.name,
+        name: formData.name.trim(),
         phone: phoneNumber,
         password: randomPassword,
-        address: formData.address,
-        unionName: formData.unionName,
-        vehicleNumber: formData.vehicleNumber || undefined,
-        governmentId: formData.governmentId || undefined,
-        // photoUrl removed - upload photo separately after registration
+        address: formData.address.trim(),
+        unionName: formData.unionName.trim(),
+        vehicleNumber: formData.vehicleNumber.trim()
+          ? formData.vehicleNumber.trim().toUpperCase()
+          : undefined,
+        governmentId: formData.governmentId.trim().toUpperCase(),
         authUserId: authUserData?.user?.id || undefined,
       };
 
@@ -310,27 +312,16 @@ const UnionJoinPageContent = () => {
         body: JSON.stringify({ phone: phoneNumber }),
       });
 
-      if (check?.exists) {
+      // Already a Union member → login, don't re-register
+      if (check?.exists && (check?.portals?.union || check?.canLoginUnion)) {
         setOtpError('ALREADY_REGISTERED');
         setLoading(false);
         return;
       }
 
-      try {
-        await fetchApi('users/partial-register', {
-          method: 'POST',
-          body: JSON.stringify({
-            phone: phoneNumber,
-            name: formData.name || undefined,
-            unionName: formData.unionName || undefined,
-            vehicleNumber: formData.vehicleNumber || undefined,
-            governmentId: formData.governmentId || undefined,
-            address: formData.address || undefined,
-          }),
-        });
-      } catch (e) {
-        console.warn('Partial save failed (non-critical):', e);
-      }
+      // Party/Youth member without Union → allow OTP, then upgrade on submit
+      // New phone → allow OTP for fresh Union registration
+      // Do NOT write a pending DB row on OTP — incomplete joins polluted admin data.
 
       const { error } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
@@ -464,34 +455,37 @@ const UnionJoinPageContent = () => {
             {step === 1 && (
               <div className="mt-8 mb-5 max-w-[520px] mx-auto">
                 <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-                  {/* Full Name */}
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none"
-                    placeholder={t.joinPage.form.fullName}
-                    autoComplete="off"
-                  />
+                  <div>
+                    <FormFieldLabel required>{t.joinPage.form.fullName}</FormFieldLabel>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none"
+                      placeholder={t.joinPage.form.fullName}
+                      autoComplete="off"
+                    />
+                  </div>
 
-                  {/* Mobile Number */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="grid grid-cols-[70px_1fr] gap-3 min-w-0">
-                      <div className="h-[46px] rounded-[10px] border border-[#BBF7D0] px-3 flex items-center justify-center font-semibold text-[#04330B] bg-white">+91</div>
-                      <input
-                        type="tel"
-                        value={formData.mobile}
-                        onChange={(e) => {
-                          const digits = e.target.value.replace(/\D/g, '');
-                          // Only strip 91 if length > 10 (country code + number), not for 10-digit numbers starting with 91
-                          const normalized = (digits.length > 10 && digits.startsWith('91')) ? digits.slice(2) : (digits.startsWith('0') ? digits.slice(1) : digits);
-                          setFormData({ ...formData, mobile: normalized.slice(0, 10) });
-                        }}
-                        inputMode="numeric"
-                        className="h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none min-w-0"
-                        placeholder={t.joinPage.form.mobile}
-                        autoComplete="off"
-                      />
+                    <div>
+                      <FormFieldLabel required>{t.joinPage.form.mobile}</FormFieldLabel>
+                      <div className="grid grid-cols-[70px_1fr] gap-3 min-w-0">
+                        <div className="h-[46px] rounded-[10px] border border-[#BBF7D0] px-3 flex items-center justify-center font-semibold text-[#04330B] bg-white">+91</div>
+                        <input
+                          type="tel"
+                          value={formData.mobile}
+                          onChange={(e) => {
+                            const digits = e.target.value.replace(/\D/g, '');
+                            const normalized = (digits.length > 10 && digits.startsWith('91')) ? digits.slice(2) : (digits.startsWith('0') ? digits.slice(1) : digits);
+                            setFormData({ ...formData, mobile: normalized.slice(0, 10) });
+                          }}
+                          inputMode="numeric"
+                          className="h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none min-w-0"
+                          placeholder={t.joinPage.form.mobile}
+                          autoComplete="off"
+                        />
+                      </div>
                     </div>
 
                     {/* OTP Send Button - below phone */}
@@ -510,7 +504,8 @@ const UnionJoinPageContent = () => {
 
                     {/* OTP Input Field */}
                     {showOtpField && !phoneVerified && (
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-2 md:col-span-2">
+                        <FormFieldLabel required>OTP</FormFieldLabel>
                         <input
                           type="text"
                           value={otp}
@@ -541,15 +536,15 @@ const UnionJoinPageContent = () => {
                         {otpError === 'ALREADY_REGISTERED' && (
                           <div className="text-center bg-amber-50 border border-amber-200 rounded-xl p-3">
                             <p className="text-amber-700 text-sm font-semibold mb-2">
-                              यह मोबाइल नंबर पहले से पंजीकृत है।<br/>
-                              <span className="text-xs">(Already registered)</span>
+                              यह नंबर पहले से यूनियन सदस्य है।<br/>
+                              <span className="text-xs">(Already a Union member — please login)</span>
                             </p>
                             <button
                               type="button"
                               onClick={() => router.push('/union/login')}
                               className="w-full h-[36px] rounded-[8px] bg-[#04330B] text-white text-sm font-semibold"
                             >
-                              लॉगिन करें → (Login)
+                              यूनियन लॉगिन → (Union Login)
                             </button>
                           </div>
                         )}
@@ -557,43 +552,48 @@ const UnionJoinPageContent = () => {
                     )}
                   </div>
 
-                  {/* Union Selection Dropdown */}
-                  <select
-                    value={formData.unionName}
-                    onChange={(e) => setFormData({ ...formData, unionName: e.target.value })}
-                    className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] bg-white outline-none"
-                  >
-                    <option value="">{t.joinPage.form.selectUnion}</option>
-                    {UNION_OPTIONS.map((u) => (
-                      <option key={u.value} value={u.value}>{u.label}</option>
-                    ))}
-                  </select>
+                  <div>
+                    <FormFieldLabel required>{t.joinPage.form.selectUnion}</FormFieldLabel>
+                    <select
+                      value={formData.unionName}
+                      onChange={(e) => setFormData({ ...formData, unionName: e.target.value })}
+                      className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] bg-white outline-none"
+                    >
+                      <option value="">{t.joinPage.form.selectUnion}</option>
+                      {UNION_OPTIONS.map((u) => (
+                        <option key={u.value} value={u.value}>{u.label}</option>
+                      ))}
+                    </select>
+                  </div>
 
-                  {/* Vehicle Number - Only for E-Rickshaw and Vahan Chalak unions */}
                   {['ई-रिक्शा चालक यूनियन', 'राजस्थान वाहन चालक यूनियन'].includes(formData.unionName) && (
-                    <input
-                      type="text"
-                      value={formData.vehicleNumber}
-                      onChange={(e) => setFormData({ ...formData, vehicleNumber: e.target.value.toUpperCase() })}
-                      className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none uppercase"
-                      placeholder={t.joinPage.form.vehicleNumberPlaceholder}
-                      autoComplete="off"
-                    />
+                    <div>
+                      <FormFieldLabel required>{t.joinPage.form.vehicleNumber}</FormFieldLabel>
+                      <input
+                        type="text"
+                        value={formData.vehicleNumber}
+                        onChange={(e) => setFormData({ ...formData, vehicleNumber: e.target.value.toUpperCase() })}
+                        className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none uppercase"
+                        placeholder={t.joinPage.form.vehicleNumberPlaceholder}
+                        autoComplete="off"
+                      />
+                    </div>
                   )}
 
-                  {/* Government ID */}
-                  <input
-                    type="text"
-                    value={formData.governmentId}
-                    onChange={(e) => setFormData({ ...formData, governmentId: e.target.value.toUpperCase() })}
-                    className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none uppercase"
-                    placeholder={t.joinPage.form.governmentIdPlaceholder}
-                    autoComplete="off"
-                  />
+                  <div>
+                    <FormFieldLabel required>Government ID</FormFieldLabel>
+                    <input
+                      type="text"
+                      value={formData.governmentId}
+                      onChange={(e) => setFormData({ ...formData, governmentId: e.target.value.toUpperCase() })}
+                      className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none uppercase"
+                      placeholder={t.joinPage.form.governmentIdPlaceholder}
+                      autoComplete="off"
+                    />
+                  </div>
 
-                  {/* Photo Upload */}
                   <div className="flex flex-col gap-2">
-                    <label className="text-[#04330B] font-semibold text-sm">{t.joinPage.form.uploadPhotoLabel}</label>
+                    <FormFieldLabel>{t.joinPage.form.uploadPhotoLabel}</FormFieldLabel>
                     <div className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] bg-white flex items-center px-4">
                       <input
                         type="file"
@@ -624,13 +624,15 @@ const UnionJoinPageContent = () => {
                     )}
                   </div>
 
-                  {/* Free Text Address */}
-                  <textarea
-                    value={formData.address}
-                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full h-[100px] rounded-[10px] border border-[#BBF7D0] p-3 font-semibold text-[#04330B] outline-none resize-none"
-                    placeholder={t.joinPage.form.addressPlaceholder}
-                  />
+                  <div>
+                    <FormFieldLabel required>{t.joinPage.form.address}</FormFieldLabel>
+                    <textarea
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      className="w-full h-[100px] rounded-[10px] border border-[#BBF7D0] p-3 font-semibold text-[#04330B] outline-none resize-none"
+                      placeholder={t.joinPage.form.addressPlaceholder}
+                    />
+                  </div>
 
                   <button
                     type="button"

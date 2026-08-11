@@ -128,25 +128,25 @@ export default function AdminSquadMissionsPage() {
   };
 
   return (
-    <div className="space-y-6 font-['Familjen_Grotesk']">
-      {toast && (
-        <div className="fixed top-4 right-4 z-50 bg-gray-900 text-white px-4 py-3 rounded-lg shadow-lg text-sm">
+    <div className="w-full max-w-full min-w-0 space-y-5 font-['Familjen_Grotesk']">
+      {toast ? (
+        <div className="fixed top-4 right-4 z-50 rounded-lg bg-[#04330B] px-4 py-3 text-sm font-semibold text-white shadow-lg">
           {toast}
         </div>
-      )}
+      ) : null}
 
       <div>
-        <h1 className="text-2xl font-semibold text-[#04330B]">Squad Mission Approvals</h1>
-        <p className="text-sm text-[#587E67] mt-1">{total} submissions</p>
+        <h2 className="text-2xl font-black text-[#04330B]">Squad Missions</h2>
+        <p className="text-sm text-[#587E67] font-medium">{total} submissions · approve team proofs</p>
       </div>
 
-      {error && (
-        <div className="rounded-[8px] border border-red-300 bg-red-50 p-3 text-sm text-red-800">
+      {error ? (
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
           {error}
-        </div>
-      )}
+        </p>
+      ) : null}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4 shadow-sm flex flex-wrap gap-2">
         {["submitted", "approved", "rejected", "All"].map((s) => (
           <button
             key={s}
@@ -155,10 +155,10 @@ export default function AdminSquadMissionsPage() {
               setStatusFilter(s);
               setPage(1);
             }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
               statusFilter === s
-                ? "bg-[#0D5229] text-white"
-                : "bg-white text-[#587E67] border border-[#B9D3C4] hover:bg-[#F5F8F6]"
+                ? "bg-[#04330B] text-white"
+                : "border border-[#DDEEE4] text-[#587E67] hover:border-[#04330B]"
             }`}
           >
             {s === "All" ? "All" : s.charAt(0).toUpperCase() + s.slice(1)}
@@ -166,16 +166,17 @@ export default function AdminSquadMissionsPage() {
         ))}
       </div>
 
+      <div className="rounded-2xl border border-[#E4F2EA] bg-white shadow-sm overflow-hidden">
       {loading ? (
-        <div className="text-center py-12 text-[#587E67]">Loading…</div>
+        <p className="text-center py-16 text-[#587E67] font-semibold">Loading…</p>
       ) : items.length === 0 ? (
-        <div className="text-center py-12 text-[#587E67]">No submissions found</div>
+        <p className="text-center py-16 text-[#587E67] font-semibold">No submissions found</p>
       ) : (
-        <div className="space-y-3">
+        <div className="divide-y divide-[#F0F5F2]">
           {items.map((item) => (
-            <div
+            <article
               key={item.id}
-              className="bg-white rounded-[8px] border border-[#B9D3C4] p-5 hover:border-[#0D5229]/40 transition-colors"
+              className="px-4 py-4"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -269,34 +270,35 @@ export default function AdminSquadMissionsPage() {
                   View Proof →
                 </a>
               )}
-            </div>
+            </article>
           ))}
         </div>
       )}
+      </div>
 
-      {pages > 1 && (
-        <div className="flex justify-center gap-2">
+      {pages > 1 ? (
+        <div className="flex items-center justify-center gap-3">
           <button
             type="button"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1 rounded border border-[#B9D3C4] text-sm disabled:opacity-40"
+            className="flex items-center gap-1 px-4 py-2 rounded-xl border border-[#DDEEE4] text-sm font-bold disabled:opacity-40"
           >
             Prev
           </button>
-          <span className="px-3 py-1 text-sm text-[#587E67]">
-            Page {page} / {pages}
+          <span className="text-sm text-[#587E67] font-semibold">
+            Page {page} of {pages}
           </span>
           <button
             type="button"
             onClick={() => setPage((p) => Math.min(pages, p + 1))}
             disabled={page === pages}
-            className="px-3 py-1 rounded border border-[#B9D3C4] text-sm disabled:opacity-40"
+            className="flex items-center gap-1 px-4 py-2 rounded-xl border border-[#DDEEE4] text-sm font-bold disabled:opacity-40"
           >
             Next
           </button>
         </div>
-      )}
+      ) : null}
 
       {selected && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
