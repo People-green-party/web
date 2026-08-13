@@ -136,7 +136,7 @@ export default function LeadershipAcademyPage() {
                 </Link>
                 <Link
                   href="/leadership-academy/status"
-                  className="inline-flex items-center gap-2 px-[28px] py-[12px] border border-[#04330B] text-[#04330B] hover:bg-[#F5FBF7] rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors"
+                  className="inline-flex items-center gap-2 px-[32px] py-[12px] bg-[#04330B] hover:bg-[#0D5229] text-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors shadow-xl"
                 >
                   {isHi ? "इंटर्नशिप लॉगिन" : "Intern Login"}
                 </Link>
@@ -149,7 +149,7 @@ export default function LeadershipAcademyPage() {
                       block: "start",
                     });
                   }}
-                  className="inline-flex items-center gap-2 px-[28px] py-[12px] border border-[#E4F2EA] text-[#04330B] hover:bg-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors"
+                  className="inline-flex items-center gap-2 px-[32px] py-[12px] bg-[#04330B] hover:bg-[#0D5229] text-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors shadow-xl"
                 >
                   {t.hero.knowMore}
                 </Link>

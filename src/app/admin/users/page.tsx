@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Calendar, ChevronLeft, ChevronRight, MapPin, Search, ShieldAlert, Users, X } from "lucide-react";
+import { Calendar, ChevronLeft, ChevronRight, MapPin, Search, ShieldAlert, User, Users, X } from "lucide-react";
 import { ADMIN_API, getAdminScope, getAdminToken } from "@/lib/adminApi";
 
 const API = ADMIN_API;
@@ -37,6 +37,7 @@ type UserRow = {
   phone: string;
   role: string;
   memberId?: string;
+  photoUrl?: string | null;
   unionName?: string | null;
   programTag?: string | null;
   registrationStatus?: string;
@@ -49,6 +50,48 @@ type UserRow = {
   } | null;
   _count?: { recruits: number };
 };
+
+function resolveAdminPhotoUrl(url: string | null | undefined) {
+  if (!url) return null;
+  if (url.startsWith("http")) {
+    return url.replace(/\/v1(\/uploads\/)/i, "$1");
+  }
+  let base = String(ADMIN_API || "").replace(/\/$/, "").replace(/\/v1$/i, "");
+  return `${base}${url.startsWith("/") ? url : `/${url}`}`;
+}
+
+function MemberAvatar({ name, photoUrl }: { name?: string | null; photoUrl?: string | null }) {
+  const [broken, setBroken] = useState(false);
+  const src = resolveAdminPhotoUrl(photoUrl);
+  const initials = String(name || "?")
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((p) => p[0]?.toUpperCase() || "")
+    .join("") || "?";
+
+  if (src && !broken) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={name || "Member"}
+        className="w-11 h-11 rounded-full object-cover border border-[#B9D3C4] bg-[#F1FBF6] shrink-0"
+        onError={() => setBroken(true)}
+      />
+    );
+  }
+
+  return (
+    <div className="w-11 h-11 rounded-full bg-[#EAF7EE] border border-[#B9D3C4] flex items-center justify-center shrink-0 text-[#0D5229]">
+      {initials.length ? (
+        <span className="text-[12px] font-black tracking-wide">{initials}</span>
+      ) : (
+        <User size={18} />
+      )}
+    </div>
+  );
+}
 
 function LocationCell({ u }: { u: UserRow }) {
   const address = String(u.address || "").trim();
@@ -510,34 +553,37 @@ export default function AdminUsersPage() {
                   className="rounded-2xl border border-[#E4F2EA] bg-white p-4 shadow-sm space-y-3 min-w-0"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <h3 className="font-bold text-[#04330B] text-base break-words">
-                        {u.name?.trim() || "Name not provided"}
-                      </h3>
-                      <p className="text-sm text-[#587E67] font-semibold break-all">{u.phone}</p>
-                      <p className="text-xs text-[#587E67] mt-0.5">ID: {u.id}</p>
-                      <div className="flex flex-wrap gap-1 mt-1.5">
-                        {portalTags(u).map((t) => (
-                          <span
-                            key={t}
-                            className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F1FBF6] text-[#0D5229] border border-[#B9D3C4]"
-                          >
-                            {t}
-                          </span>
-                        ))}
+                    <div className="min-w-0 flex items-start gap-3">
+                      <MemberAvatar name={u.name} photoUrl={u.photoUrl} />
+                      <div className="min-w-0">
+                        <h3 className="font-bold text-[#04330B] text-base break-words">
+                          {u.name?.trim() || "Name not provided"}
+                        </h3>
+                        <p className="text-sm text-[#587E67] font-semibold break-all">{u.phone}</p>
+                        <p className="text-xs text-[#587E67] mt-0.5">ID: {u.id}</p>
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {portalTags(u).map((t) => (
+                            <span
+                              key={t}
+                              className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F1FBF6] text-[#0D5229] border border-[#B9D3C4]"
+                            >
+                              {t}
+                            </span>
+                          ))}
+                        </div>
+                        <span
+                          className={`inline-block mt-1.5 px-2 py-0.5 rounded text-[11px] font-bold border ${
+                            u.memberId
+                              ? "bg-[#EAF7EE] text-[#0D5229] border-[#B9D3C4]"
+                              : "bg-amber-50 text-amber-800 border-amber-200"
+                          }`}
+                        >
+                          {u.memberId ||
+                            (u.registrationStatus === "pending"
+                              ? "Incomplete join"
+                              : "No Member ID")}
+                        </span>
                       </div>
-                      <span
-                        className={`inline-block mt-1.5 px-2 py-0.5 rounded text-[11px] font-bold border ${
-                          u.memberId
-                            ? "bg-[#EAF7EE] text-[#0D5229] border-[#B9D3C4]"
-                            : "bg-amber-50 text-amber-800 border-amber-200"
-                        }`}
-                      >
-                        {u.memberId ||
-                          (u.registrationStatus === "pending"
-                            ? "Incomplete join"
-                            : "No Member ID")}
-                      </span>
                     </div>
                     <span
                       className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold border ${roleBadge(
@@ -640,34 +686,39 @@ export default function AdminUsersPage() {
                     results.map((u) => (
                       <tr key={u.id} className="hover:bg-[#FAFCFB] transition-colors">
                         <td className="px-6 py-4">
-                          <div className="font-bold text-[#04330B] text-[16px]">
-                            {u.name?.trim() || "Name not provided"}
-                          </div>
-                          <div className="text-[13px] text-[#587E67] font-semibold mt-0.5">
-                            {u.phone}
-                          </div>
-                          <div className="text-[12px] text-[#587E67] mt-0.5">ID: {u.id}</div>
-                          <div className="flex flex-wrap gap-1 mt-1.5">
-                            {portalTags(u).map((t) => (
-                              <span
-                                key={t}
-                                className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F1FBF6] text-[#0D5229] border border-[#B9D3C4]"
+                          <div className="flex items-start gap-3">
+                            <MemberAvatar name={u.name} photoUrl={u.photoUrl} />
+                            <div className="min-w-0">
+                              <div className="font-bold text-[#04330B] text-[16px]">
+                                {u.name?.trim() || "Name not provided"}
+                              </div>
+                              <div className="text-[13px] text-[#587E67] font-semibold mt-0.5">
+                                {u.phone}
+                              </div>
+                              <div className="text-[12px] text-[#587E67] mt-0.5">ID: {u.id}</div>
+                              <div className="flex flex-wrap gap-1 mt-1.5">
+                                {portalTags(u).map((t) => (
+                                  <span
+                                    key={t}
+                                    className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F1FBF6] text-[#0D5229] border border-[#B9D3C4]"
+                                  >
+                                    {t}
+                                  </span>
+                                ))}
+                              </div>
+                              <div
+                                className={`inline-block mt-1.5 px-2 py-0.5 rounded text-[11px] font-bold tracking-wide border ${
+                                  u.memberId
+                                    ? "bg-[#EAF7EE] text-[#0D5229] border-[#B9D3C4]"
+                                    : "bg-amber-50 text-amber-800 border-amber-200"
+                                }`}
                               >
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                          <div
-                            className={`inline-block mt-1.5 px-2 py-0.5 rounded text-[11px] font-bold tracking-wide border ${
-                              u.memberId
-                                ? "bg-[#EAF7EE] text-[#0D5229] border-[#B9D3C4]"
-                                : "bg-amber-50 text-amber-800 border-amber-200"
-                            }`}
-                          >
-                            {u.memberId ||
-                              (u.registrationStatus === "pending"
-                                ? "Incomplete join"
-                                : "No Member ID")}
+                                {u.memberId ||
+                                  (u.registrationStatus === "pending"
+                                    ? "Incomplete join"
+                                    : "No Member ID")}
+                              </div>
+                            </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
