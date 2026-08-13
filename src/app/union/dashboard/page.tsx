@@ -86,23 +86,31 @@ export default function UnionDashboardPage() {
     if (!file) return;
     setUploading(true);
     try {
-        const auth = await getAuthHeader();
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        const res = await fetch(`${getApiBaseUrl()}/users/me/photo`, {
-            method: 'POST',
-            headers: { ...auth },
-            body: formData
-        });
-        
-        if (!res.ok) throw new Error('Upload failed');
-        await loadSummary(); // Refresh data
+      const { compressImageForUpload } = await import('../../../lib/compressImage');
+      const compressed = await compressImageForUpload(file);
+      const auth = await getAuthHeader();
+      if (!auth.Authorization) throw new Error('Please login again, then upload photo.');
+      const formData = new FormData();
+      formData.append('file', compressed);
+
+      const res = await fetch(`${getApiBaseUrl()}/users/me/photo`, {
+        method: 'POST',
+        headers: { ...auth },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || 'Upload failed');
+      }
+      await loadSummary();
+      alert('फोटो अपडेट हो गई / Photo updated');
     } catch (err: any) {
-        alert(`Failed to upload photo: ${err.message}`);
+      console.error(err);
+      alert(err?.message || 'फोटो अपलोड नहीं हुई। JPG/PNG try करें।');
     } finally {
-        setUploading(false);
-        if (fileInputRef.current) fileInputRef.current.value = '';
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 

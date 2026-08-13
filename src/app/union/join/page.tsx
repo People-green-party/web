@@ -7,6 +7,27 @@ import { useLanguage } from '../../../components/LanguageContext';
 import { Phone, Eye, EyeOff } from 'lucide-react';
 import { Navbar } from '../../../components/Navbar';
 import { FormFieldLabel } from '../../../components/FormFieldLabel';
+import { compressImageForUpload } from '../../../lib/compressImage';
+
+function friendlyOtpError(raw: string): string {
+  const msg = String(raw || '');
+  const lower = msg.toLowerCase();
+  if (
+    lower.includes('security purposes') ||
+    lower.includes('rate limit') ||
+    lower.includes('over_sms') ||
+    lower.includes('only request this after')
+  ) {
+    return 'इस नंबर पर OTP हाल ही में भेजा गया है। 60–90 सेकंड बाद Resend दबाएँ। / OTP recently sent — wait 60–90s then Resend.';
+  }
+  if (lower.includes('unsupported phone') || lower.includes('sms provider') || lower.includes('signups not allowed')) {
+    return 'SMS सेवा अस्थायी रूप से बंद है। थोड़ी देर बाद फिर कोशिश करें। / SMS temporarily unavailable.';
+  }
+  if (lower.includes('invalid phone') || lower.includes('phone number')) {
+    return 'कृपया सही 10 अंकों का मोबाइल नंबर डालें।';
+  }
+  return msg || 'OTP भेजने में समस्या हुई। कृपया दोबारा कोशिश करें।';
+}
 
 // --- Translations ---
 const translations = {
@@ -49,6 +70,8 @@ const translations = {
         noFileChosen: "कोई फ़ाइल नहीं चुनी गई",
         address: "पूरा घर का पता",
         addressPlaceholder: "अपना पूरा पता दर्ज करें",
+        referralCode: "रेफरल कोड (वैकल्पिक)",
+        referralPlaceholder: "रेफरल कोड दर्ज करें",
         submitting: "दर्ज किया जा रहा है...",
         submitRegistration: "पंजीकरण जमा करें",
         alreadyRegistered: "पहले से पंजीकृत हैं?",
@@ -101,6 +124,8 @@ const translations = {
         noFileChosen: "No file chosen",
         address: "Full Home Address",
         addressPlaceholder: "Enter your complete address",
+        referralCode: "Referral Code (Optional)",
+        referralPlaceholder: "Enter referral code",
         submitting: "Submitting...",
         submitRegistration: "Submit Registration",
         alreadyRegistered: "Already registered?",
@@ -143,6 +168,7 @@ const UnionJoinPageContent = () => {
     governmentId: '',
     address: '',
     photoUrl: '',
+    referralCode: '',
   });
   const [showPin, setShowPin] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -155,8 +181,18 @@ const UnionJoinPageContent = () => {
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [resendTimer, setResendTimer] = useState(0); // Countdown in seconds
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null); // Store File for upload after registration
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoHint, setPhotoHint] = useState('');
 
-  // Countdown timer for resend OTP
+  const resetOtpState = () => {
+    setOtp('');
+    setOtpError('');
+    setOtpSent(false);
+    setShowOtpField(false);
+    setPhoneVerified(false);
+    setOtpSimulated(false);
+    setResendTimer(0);
+  };
   useEffect(() => {
     if (resendTimer > 0) {
       const interval = setInterval(() => {
@@ -184,8 +220,9 @@ const UnionJoinPageContent = () => {
     return !registrationValidationError;
   }, [registrationValidationError]);
 
-  // Clear form on mount
+  // Clear form on mount; keep referral from ?ref=
   useEffect(() => {
+    const urlRef = (searchParams?.get('ref') || '').toUpperCase();
     setFormData({
       name: '',
       mobile: '',
@@ -194,12 +231,14 @@ const UnionJoinPageContent = () => {
       governmentId: '',
       address: '',
       photoUrl: '',
+      referralCode: urlRef,
     });
     setOtp('');
     setOtpError('');
     setOtpSent(false);
     setShowOtpField(false);
     setPhoneVerified(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleSubmit() {
@@ -232,6 +271,9 @@ const UnionJoinPageContent = () => {
           : undefined,
         governmentId: formData.governmentId.trim().toUpperCase(),
         authUserId: authUserData?.user?.id || undefined,
+        referralCode: formData.referralCode.trim()
+          ? formData.referralCode.trim().toUpperCase()
+          : undefined,
       };
 
       const userData = await fetchApi('users/register', {
@@ -242,32 +284,49 @@ const UnionJoinPageContent = () => {
       console.log('Union registration successful:', userData);
 
       if (typeof window !== 'undefined') {
+        if (userData?.access_token) {
+          window.localStorage.setItem('access_token', String(userData.access_token));
+        }
         const { isAuthDevMode } = await import('../../../lib/authDevMode');
         if (isAuthDevMode() && userData?.id) {
           window.localStorage.setItem('devUserId', String(userData.id));
         }
       }
 
-      // Upload photo separately after registration
+      // Upload photo separately after registration (prefer API JWT from register)
       if (selectedPhoto) {
         try {
           const { data: photoSession } = await supabase.auth.getSession();
-          const photoToken = photoSession?.session?.access_token;
-          
-          if (photoToken) {
-            const { getApiBaseUrl } = await import('../../../lib/api');
-            const photoData = new FormData();
-            photoData.append('file', selectedPhoto);
-            
-            await fetch(`${getApiBaseUrl()}/users/me/photo`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${photoToken}` },
-              body: photoData
-            });
-            console.log('Photo uploaded successfully');
+          const photoToken =
+            userData?.access_token ||
+            photoSession?.session?.access_token ||
+            (typeof window !== 'undefined' ? window.localStorage.getItem('access_token') : null);
+
+          if (!photoToken) {
+            throw new Error('No auth token for photo upload');
           }
-        } catch (photoError) {
+
+          const { getApiBaseUrl } = await import('../../../lib/api');
+          const photoData = new FormData();
+          photoData.append('file', selectedPhoto);
+
+          const photoRes = await fetch(`${getApiBaseUrl()}/users/me/photo`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${photoToken}` },
+            body: photoData,
+          });
+          if (!photoRes.ok) {
+            const errText = await photoRes.text();
+            throw new Error(errText || 'Photo upload failed');
+          }
+          console.log('Photo uploaded successfully');
+        } catch (photoError: any) {
           console.warn('Photo upload failed, but registration succeeded:', photoError);
+          setOtpError(
+            'पंजीकरण हो गया, लेकिन फोटो नहीं लगी। डैशबोर्ड से फोटो लगाएँ। / Registered, but photo failed — upload from dashboard.',
+          );
+          // Still go to dashboard after a short pause so they can fix photo
+          await new Promise((r) => setTimeout(r, 1800));
         }
       }
 
@@ -328,12 +387,14 @@ const UnionJoinPageContent = () => {
       });
 
       if (error) {
-        console.warn('Supabase Auth Error (falling back to simulation):', error.message);
+        console.warn('Supabase Auth Error:', error.message);
         throw error;
       }
 
       setShowOtpField(true);
+      setOtpSent(true);
       setResendTimer(60); // Start 60 second countdown
+      setOtpError('OTP भेज दिया गया। नहीं आया तो 60 सेकंड बाद Resend दबाएँ।');
     } catch (error: any) {
       console.error('Error sending OTP:', error);
       const isConfigError = error.message === 'Unsupported phone provider' ||
@@ -349,9 +410,16 @@ const UnionJoinPageContent = () => {
         setOtpError('SMS provider not configured. Use OTP: 123456');
         setResendTimer(60);
       } else if (isConfigError) {
-        setOtpError('SMS is temporarily unavailable. Please try again later.');
+        setOtpError(friendlyOtpError(error.message));
+        setShowOtpField(true); // still show field so user can retry / change number
       } else {
-        setOtpError(error.message || 'Failed to send OTP. Please try again.');
+        setOtpError(friendlyOtpError(error.message));
+        // Rate-limit: keep OTP field open so they can wait + resend
+        if (String(error.message || '').toLowerCase().includes('security purposes') ||
+            String(error.message || '').toLowerCase().includes('rate')) {
+          setShowOtpField(true);
+          setResendTimer(60);
+        }
       }
     } finally {
       setLoading(false);
@@ -478,7 +546,11 @@ const UnionJoinPageContent = () => {
                           onChange={(e) => {
                             const digits = e.target.value.replace(/\D/g, '');
                             const normalized = (digits.length > 10 && digits.startsWith('91')) ? digits.slice(2) : (digits.startsWith('0') ? digits.slice(1) : digits);
-                            setFormData({ ...formData, mobile: normalized.slice(0, 10) });
+                            const next = normalized.slice(0, 10);
+                            if (next !== formData.mobile) {
+                              resetOtpState();
+                            }
+                            setFormData({ ...formData, mobile: next });
                           }}
                           inputMode="numeric"
                           className="h-[46px] rounded-[10px] border border-[#BBF7D0] px-4 font-semibold text-[#04330B] outline-none min-w-0"
@@ -488,17 +560,26 @@ const UnionJoinPageContent = () => {
                       </div>
                     </div>
 
-                    {/* OTP Send Button - below phone */}
+                    {/* OTP Send / Resend */}
                     <button
                       type="button"
                       onClick={handleSendOtp}
-                      disabled={loading || formData.mobile.length < 10 || (showOtpField && !phoneVerified) || phoneVerified}
+                      disabled={
+                        loading ||
+                        formData.mobile.length < 10 ||
+                        phoneVerified ||
+                        (showOtpField && resendTimer > 0)
+                      }
                       className="w-full h-[46px] rounded-[10px] bg-[#04330B] text-white font-semibold disabled:opacity-60 flex items-center justify-center gap-2"
                     >
                       {loading ? (
                         <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
+                      ) : phoneVerified ? (
+                        '✓ Verified'
+                      ) : showOtpField ? (
+                        resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'
                       ) : (
-                        phoneVerified ? '✓ Verified' : (showOtpField ? 'OTP Sent' : 'Send OTP')
+                        'Send OTP'
                       )}
                     </button>
 
@@ -523,15 +604,9 @@ const UnionJoinPageContent = () => {
                         >
                           {loading ? 'Verifying...' : 'Verify OTP'}
                         </button>
-                        {/* Resend OTP Button */}
-                        <button
-                          type="button"
-                          onClick={handleSendOtp}
-                          disabled={resendTimer > 0 || loading}
-                          className="w-full h-[40px] rounded-[10px] border border-[#04330B] text-[#04330B] font-semibold disabled:opacity-40 disabled:border-gray-300 disabled:text-gray-400"
-                        >
-                          {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
-                        </button>
+                        <p className="text-[11px] text-[#587E67] font-semibold text-center">
+                          OTP नहीं आया? नंबर चेक करें, 60 सेकंड बाद ऊपर Resend दबाएँ।
+                        </p>
                         {otpError && otpError !== 'ALREADY_REGISTERED' && <div className="text-center text-[12px] text-red-500 font-semibold">{otpError}</div>}
                         {otpError === 'ALREADY_REGISTERED' && (
                           <div className="text-center bg-amber-50 border border-amber-200 rounded-xl p-3">
@@ -548,6 +623,23 @@ const UnionJoinPageContent = () => {
                             </button>
                           </div>
                         )}
+                      </div>
+                    )}
+                    {!showOtpField && otpError && otpError !== 'ALREADY_REGISTERED' && (
+                      <div className="text-center text-[12px] text-red-500 font-semibold">{otpError}</div>
+                    )}
+                    {!showOtpField && otpError === 'ALREADY_REGISTERED' && (
+                      <div className="text-center bg-amber-50 border border-amber-200 rounded-xl p-3">
+                        <p className="text-amber-700 text-sm font-semibold mb-2">
+                          यह नंबर पहले से यूनियन सदस्य है। Login करें।
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => router.push('/union/login')}
+                          className="w-full h-[36px] rounded-[8px] bg-[#04330B] text-white text-sm font-semibold"
+                        >
+                          यूनियन लॉगिन →
+                        </button>
                       </div>
                     )}
                   </div>
@@ -594,16 +686,29 @@ const UnionJoinPageContent = () => {
 
                   <div className="flex flex-col gap-2">
                     <FormFieldLabel>{t.joinPage.form.uploadPhotoLabel}</FormFieldLabel>
-                    <div className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] bg-white flex items-center px-4">
+                    <div className="w-full min-h-[46px] rounded-[10px] border border-[#BBF7D0] bg-white flex items-center px-4 py-2">
                       <input
                         type="file"
-                        accept="image/*"
-                        onChange={(e) => {
+                        accept="image/*,.jpg,.jpeg,.png,.webp"
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
-                          if (file) {
-                            setSelectedPhoto(file); // Save the file to upload later
-                            // Create a temporary local URL just for the UI preview (NOT base64)
-                            setFormData({ ...formData, photoUrl: URL.createObjectURL(file) });
+                          if (!file) return;
+                          setPhotoBusy(true);
+                          setPhotoHint('');
+                          try {
+                            const compressed = await compressImageForUpload(file);
+                            setSelectedPhoto(compressed);
+                            if (formData.photoUrl?.startsWith('blob:')) {
+                              URL.revokeObjectURL(formData.photoUrl);
+                            }
+                            setFormData({ ...formData, photoUrl: URL.createObjectURL(compressed) });
+                            setPhotoHint('फोटो तैयार है। Submit के बाद कार्ड पर लगेगी।');
+                          } catch (err: any) {
+                            setSelectedPhoto(null);
+                            setPhotoHint(err?.message || 'Photo failed. Use a clear JPG/PNG under 5MB.');
+                          } finally {
+                            setPhotoBusy(false);
+                            e.target.value = '';
                           }
                         }}
                         className="hidden"
@@ -613,12 +718,19 @@ const UnionJoinPageContent = () => {
                         htmlFor="photo-upload"
                         className="py-2 px-4 rounded-full bg-[#DCFCE7] text-[#04330B] font-semibold cursor-pointer hover:bg-[#BBF7D0] transition-colors"
                       >
-                        {t.joinPage.form.chooseFile}
+                        {photoBusy ? 'Processing…' : t.joinPage.form.chooseFile}
                       </label>
                       <span className="ml-3 text-[#04330B]/60 text-sm truncate">
                         {selectedPhoto ? t.joinPage.form.photoSelected : t.joinPage.form.noFileChosen}
                       </span>
                     </div>
+                    {photoHint ? (
+                      <p className="text-[11px] font-semibold text-[#0D5229]">{photoHint}</p>
+                    ) : (
+                      <p className="text-[11px] text-[#587E67] font-semibold">
+                        JPG/PNG चुनें। बाद में डैशबोर्ड से भी फोटो बदल सकते हैं।
+                      </p>
+                    )}
                     {formData.photoUrl && (
                       <img src={formData.photoUrl} alt="Preview" className="w-20 h-20 rounded-full object-cover mx-auto" />
                     )}
@@ -631,6 +743,25 @@ const UnionJoinPageContent = () => {
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                       className="w-full h-[100px] rounded-[10px] border border-[#BBF7D0] p-3 font-semibold text-[#04330B] outline-none resize-none"
                       placeholder={t.joinPage.form.addressPlaceholder}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-[#04330B] mb-2">
+                      {t.joinPage.form.referralCode}
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.referralCode}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          referralCode: e.target.value.toUpperCase(),
+                        })
+                      }
+                      className="w-full h-[46px] rounded-[10px] border border-[#BBF7D0] px-3 font-semibold text-[#04330B] outline-none"
+                      placeholder={t.joinPage.form.referralPlaceholder}
+                      autoComplete="off"
                     />
                   </div>
 

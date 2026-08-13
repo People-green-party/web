@@ -106,7 +106,9 @@ const translations = {
       otpFailed: "OTP सत्यापन विफल रहा",
       devOtpHint: "Dev mode: Use OTP 123456",
       invalidOtp: "अमान्य OTP। देव मोड में 123456 का उपयोग करें।",
-      alreadyRegistered: "यह नंबर पहले से Jinda Youth में रजिस्टर है। कृपया Youth Login से लॉगिन करें।"
+      alreadyRegistered: "यह नंबर पहले से Jinda Youth में रजिस्टर है। कृपया Youth Login से लॉगिन करें।",
+      invalidMobile: "कृपया सही 10 अंकों का मोबाइल नंबर डालें।",
+      invalidPin: "लॉगिन पिन 4 से 6 अंकों का होना चाहिए।",
     }
   },
   en: {
@@ -206,7 +208,9 @@ const translations = {
       otpFailed: "OTP verification failed",
       devOtpHint: "Dev mode: Use OTP 123456",
       invalidOtp: "Invalid OTP. Use 123456 in dev mode.",
-      alreadyRegistered: "This number is already a Jinda Youth account. Please use Youth Login."
+      alreadyRegistered: "This number is already a Jinda Youth account. Please use Youth Login.",
+      invalidMobile: "Please enter a valid 10-digit mobile number.",
+      invalidPin: "Login PIN must be 4-6 digits.",
     }
   }
 };
@@ -267,6 +271,18 @@ function YouthJoinPageInner() {
     setLoading(true);
     setError(null);
 
+    const mobileDigits = formData.mobile.replace(/\D/g, '').slice(-10);
+    if (mobileDigits.length !== 10) {
+      setError(t.errors.invalidMobile || 'Enter a valid 10-digit mobile number');
+      setLoading(false);
+      return;
+    }
+    if (!/^\d{4,6}$/.test(formData.pin || '')) {
+      setError(t.errors.invalidPin || 'Login PIN must be 4-6 digits');
+      setLoading(false);
+      return;
+    }
+
     const { isAuthDevMode } = await import('../../../lib/authDevMode');
     if (isAuthDevMode()) {
       setStep(2);
@@ -278,7 +294,7 @@ function YouthJoinPageInner() {
     try {
       const { supabase } = await import('../../../lib/supabaseClient');
       const { fetchApi } = await import('../../../lib/api');
-      const phoneNumber = formData.mobile.startsWith('+') ? formData.mobile : `+91${formData.mobile}`;
+      const phoneNumber = `+91${mobileDigits}`;
 
       // Portal-aware check: same phone can be Party/Union and still join Jinda Youth
       const check = await fetchApi('users/check-phone', {
@@ -548,15 +564,55 @@ function YouthJoinPageInner() {
                 <div>
                   <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.mobileNumber}</FormFieldLabel>
                   <div className="flex gap-2">
+                    <div className="flex h-[46px] items-center rounded-[10px] border border-[#DDEEE4] bg-[#F5FBF7] px-4 font-semibold text-[#587E67]">
+                      +91
+                    </div>
                     <input
                       type="tel"
                       required
+                      maxLength={10}
                       value={formData.mobile}
-                      onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          mobile: e.target.value.replace(/\D/g, '').slice(0, 10),
+                        })
+                      }
                       className="flex-1 h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
                       placeholder={t.wizard.mobilePlaceholder}
+                      inputMode="numeric"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">
+                    {t.wizard.pinLabel}
+                  </FormFieldLabel>
+                  <div className="flex gap-2">
+                    <input
+                      type={showPin ? 'text' : 'password'}
+                      required
+                      minLength={4}
+                      maxLength={6}
+                      pattern="[0-9]*"
+                      value={formData.pin}
+                      onChange={(e) =>
+                        setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '') })
+                      }
+                      className="flex-1 h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
+                      placeholder={t.wizard.pinPlaceholder}
+                      inputMode="numeric"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPin(!showPin)}
+                      className="h-[46px] px-4 rounded-[10px] border border-[#DDEEE4] bg-white text-[#04330B] hover:bg-[#F5FBF7]"
+                    >
+                      {showPin ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
+                  <p className="mt-1 text-xs text-[#587E67]">{t.wizard.pinHint}</p>
                 </div>
 
                 <div>
