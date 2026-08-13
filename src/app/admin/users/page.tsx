@@ -51,39 +51,30 @@ type UserRow = {
   _count?: { recruits: number };
 };
 
-/** Durable fallback when API omits photoUrl or Coolify /uploads is gone. */
-const DURABLE_MEMBER_PHOTOS: Record<number, string> = {
-  1035: "https://raw.githubusercontent.com/People-green-party/web/admin/public/member-photos/1035.png",
-  1110: "https://raw.githubusercontent.com/People-green-party/web/admin/public/member-photos/1110.png",
-};
-
-function resolveAdminPhotoUrl(url: string | null | undefined, userId?: number | null) {
-  if (url) {
-    if (url.startsWith("http")) {
-      return url.replace(/\/v1(\/uploads\/)/i, "$1");
-    }
-    // Ephemeral Coolify disk — prefer durable hosted photo when we have one
-    if (url.includes("/uploads/") && userId && DURABLE_MEMBER_PHOTOS[userId]) {
-      return DURABLE_MEMBER_PHOTOS[userId];
-    }
-    let base = String(ADMIN_API || "").replace(/\/$/, "").replace(/\/v1$/i, "");
-    return `${base}${url.startsWith("/") ? url : `/${url}`}`;
+function resolveAdminPhotoUrl(url: string | null | undefined) {
+  if (!url) return null;
+  if (url.startsWith("http")) {
+    // Strip accidental /v1 before /uploads on absolute API URLs
+    return url.replace(/\/v1(\/uploads\/)/i, "$1");
   }
-  if (userId && DURABLE_MEMBER_PHOTOS[userId]) return DURABLE_MEMBER_PHOTOS[userId];
-  return null;
+  let base = String(ADMIN_API || "").replace(/\/$/, "").replace(/\/v1$/i, "");
+  return `${base}${url.startsWith("/") ? url : `/${url}`}`;
 }
 
 function MemberAvatar({
-  id,
   name,
   photoUrl,
 }: {
-  id?: number | null;
   name?: string | null;
   photoUrl?: string | null;
 }) {
   const [broken, setBroken] = useState(false);
-  const src = resolveAdminPhotoUrl(photoUrl, id);
+  const src = resolveAdminPhotoUrl(photoUrl);
+
+  useEffect(() => {
+    setBroken(false);
+  }, [src]);
+
   const initials = String(name || "?")
     .trim()
     .split(/\s+/)
@@ -575,7 +566,7 @@ export default function AdminUsersPage() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex items-start gap-3">
-                      <MemberAvatar id={u.id} name={u.name} photoUrl={u.photoUrl} />
+                      <MemberAvatar name={u.name} photoUrl={u.photoUrl} />
                       <div className="min-w-0">
                         <h3 className="font-bold text-[#04330B] text-base break-words">
                           {u.name?.trim() || "Name not provided"}
@@ -708,7 +699,7 @@ export default function AdminUsersPage() {
                       <tr key={u.id} className="hover:bg-[#FAFCFB] transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-start gap-3">
-                            <MemberAvatar id={u.id} name={u.name} photoUrl={u.photoUrl} />
+                            <MemberAvatar name={u.name} photoUrl={u.photoUrl} />
                             <div className="min-w-0">
                               <div className="font-bold text-[#04330B] text-[16px]">
                                 {u.name?.trim() || "Name not provided"}
