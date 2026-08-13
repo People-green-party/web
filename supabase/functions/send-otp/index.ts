@@ -19,7 +19,20 @@ serve(async (req) => {
     // 3. Get the API password from secure environment variables
     const password = Deno.env.get("INDIAIT_PASSWORD");
     if (!password) {
-      throw new Error("Missing INDIAIT_PASSWORD in environment variables");
+      console.error("Missing INDIAIT_PASSWORD — set it in Supabase Edge Function secrets");
+      return new Response(
+        JSON.stringify({ error: "SMS provider not configured (missing INDIAIT_PASSWORD)" }),
+        { status: 500, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    // Normalize phone for IndiaIT (digits only; keep country code if present)
+    const mobiles = String(phone).replace(/\D/g, "");
+    if (mobiles.length < 10) {
+      return new Response(JSON.stringify({ error: "Invalid phone" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // 4. Construct the URL using safe URL parameters
@@ -27,7 +40,7 @@ serve(async (req) => {
     url.searchParams.append("user", "pgpparty");
     url.searchParams.append("password", password);
     url.searchParams.append("senderid", "IPGPTY");
-    url.searchParams.append("mobiles", phone);
+    url.searchParams.append("mobiles", mobiles);
     url.searchParams.append("sms", message);
     url.searchParams.append("accusage", "1"); // 1 = Transactional
     url.searchParams.append("entityid", "1701165113133141933");
@@ -42,11 +55,23 @@ serve(async (req) => {
 
     if (!response.ok) {
       console.error("SMS Gateway Error HTTP Status:", response.status, resultText);
-      throw new Error(`Gateway returned status ${response.status}`);
+      return new Response(
+        JSON.stringify({ error: `Gateway returned status ${response.status}`, detail: resultText.slice(0, 200) }),
+        { status: 502, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    // IndiaIT often returns XML with <status>error</status> even on HTTP 200
+    if (/<status>\s*error\s*<\/status>/i.test(resultText) || /InvalidUseridPassword/i.test(resultText)) {
+      console.error("SMS Gateway business error:", resultText);
+      return new Response(
+        JSON.stringify({ error: "SMS gateway rejected the request", detail: resultText.slice(0, 300) }),
+        { status: 502, headers: { "Content-Type": "application/json" } },
+      );
     }
 
     // IndiaITInfotech returns CSV-like string on success (e.g., "sent,000,success...")
-    console.log(`Successfully sent OTP to ${phone}. Gateway response:`, resultText);
+    console.log(`Successfully sent OTP to ${mobiles}. Gateway response:`, resultText);
 
     // 6. Tell Supabase the SMS was sent successfully
     return new Response(JSON.stringify({ success: true }), {

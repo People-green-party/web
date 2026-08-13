@@ -138,10 +138,17 @@ export default function LeadershipAcademyPage() {
                   href="/leadership-academy/status"
                   className="inline-flex items-center gap-2 px-[28px] py-[12px] border border-[#04330B] text-[#04330B] hover:bg-[#F5FBF7] rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors"
                 >
-                  {isHi ? "आवेदन स्थिति" : "Check status"}
+                  {isHi ? "इंटर्नशिप लॉगिन" : "Intern Login"}
                 </Link>
                 <Link
                   href="#departments"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById("departments")?.scrollIntoView({
+                      behavior: "smooth",
+                      block: "start",
+                    });
+                  }}
                   className="inline-flex items-center gap-2 px-[28px] py-[12px] border border-[#E4F2EA] text-[#04330B] hover:bg-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors"
                 >
                   {t.hero.knowMore}
@@ -265,7 +272,7 @@ export default function LeadershipAcademyPage() {
             primaryHref="/leadership-academy/apply"
             primaryLabel={t.cta.apply}
             secondaryHref="/leadership-academy/status"
-            secondaryLabel={isHi ? "आवेदन स्थिति देखें" : "Check application status"}
+            secondaryLabel={isHi ? "इंटर्नशिप लॉगिन" : "Intern Login"}
             image="/leadership-academy/cta-student.jpg"
             points={[...t.certificate.points]}
           />

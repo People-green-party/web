@@ -50,7 +50,19 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
         if (lower.includes('invalid referral code')) {
             return 'रेफरल कोड गलत है। कृपया जांचें।';
         }
-        if (lower.includes('invalid phone number')) {
+        // Prisma stack traces embed source lines like BadRequestException('Invalid phone number') —
+        // never treat those as the real user-facing error.
+        if (lower.includes('does not exist in the current database') || lower.includes('prisma.')) {
+            return 'सर्वर अपडेट अधूरा है। कृपया थोड़ी देर बाद दोबारा कोशिश करें।';
+        }
+        if (lower.includes('no internship application')) {
+            return 'इस नंबर पर कोई इंटर्नशिप आवेदन नहीं मिला। पहले Apply करें।';
+        }
+        if (
+            lower.includes('invalid phone number') &&
+            !lower.includes('badrequestexception') &&
+            !lower.includes('invocation')
+        ) {
             return 'कृपया सही मोबाइल नंबर डालें।';
         }
         if (lower.includes('pin must be shorter')) {

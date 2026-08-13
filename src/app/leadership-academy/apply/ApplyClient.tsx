@@ -40,6 +40,7 @@ export default function LeadershipAcademyApplyPage() {
     department: "",
     mode: "offline",
     motivation: "",
+    pin: "",
   });
 
   useEffect(() => {
@@ -67,6 +68,11 @@ export default function LeadershipAcademyApplyPage() {
       setSubmitting(false);
       return;
     }
+    if (!/^\d{4,6}$/.test(form.pin)) {
+      setError("Login PIN must be 4-6 digits");
+      setSubmitting(false);
+      return;
+    }
 
     try {
       const res = await fetchApi("leadership-academy/applications", {
@@ -80,8 +86,14 @@ export default function LeadershipAcademyApplyPage() {
           department: form.department,
           mode: form.mode,
           motivation: form.motivation.trim(),
+          pin: form.pin,
         }),
       });
+
+      if (res?.access_token) {
+        const { setInternSession } = await import("@/lib/internApi");
+        setInternSession(res.access_token, res.application);
+      }
 
       setApplicationId(res?.application?.id ?? null);
       setEmailSent(Boolean(res?.emailSent));
@@ -168,12 +180,20 @@ export default function LeadershipAcademyApplyPage() {
                   {emailSent ? (
                     <p className="mt-2 text-[14px] font-semibold text-[#0D5229]">{a.successEmailNote}</p>
                   ) : null}
-                  <Link
-                    href="/leadership-academy"
-                    className="mt-8 inline-flex items-center justify-center gap-2 w-full max-w-[280px] h-[50px] rounded-[12px] bg-[#04330B] text-white font-semibold"
-                  >
-                    {a.back} <ArrowRight size={18} />
-                  </Link>
+                  <div className="mt-8 flex flex-col items-center gap-3">
+                    <Link
+                      href="/leadership-academy/dashboard"
+                      className="inline-flex items-center justify-center gap-2 w-full max-w-[280px] h-[50px] rounded-[12px] bg-[#04330B] text-white font-semibold"
+                    >
+                      Open intern dashboard <ArrowRight size={18} />
+                    </Link>
+                    <Link
+                      href="/leadership-academy"
+                      className="text-sm font-semibold text-[#587E67] hover:underline"
+                    >
+                      {a.back}
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <>
@@ -339,6 +359,27 @@ export default function LeadershipAcademyApplyPage() {
                           className="w-full rounded-[10px] border border-[#DDEEE4] px-4 py-3 font-semibold text-[#04330B] outline-none bg-white resize-y disabled:opacity-60"
                           placeholder={a.fields.motivation}
                         />
+                      </div>
+
+                      <div>
+                        <FormFieldLabel required>Login PIN (4-6 digits)</FormFieldLabel>
+                        <input
+                          type="password"
+                          name="pin"
+                          required
+                          minLength={4}
+                          maxLength={6}
+                          pattern="[0-9]*"
+                          inputMode="numeric"
+                          disabled={submitting}
+                          value={form.pin}
+                          onChange={onChange}
+                          className={inputClass}
+                          placeholder="Create PIN for Internship Login"
+                        />
+                        <p className="mt-1 text-xs text-[#587E67] font-medium">
+                          Use this PIN later on Internship Login to open your dashboard.
+                        </p>
                       </div>
 
                       <button
