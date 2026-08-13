@@ -1,6 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { User } from 'lucide-react';
 import { toPng } from 'html-to-image';
+import { useLanguage } from './LanguageContext';
+import { localizeUnionName } from '../lib/unionNames';
 
 interface UnionIdCardProps {
   user: {
@@ -13,7 +15,38 @@ interface UnionIdCardProps {
   };
 }
 
+function PhotoSlot({ url, emptyLabel }: { url: string | null; emptyLabel: string }) {
+  const [broken, setBroken] = useState(false);
+
+  // New / changed photo must remount — otherwise a previous load error sticks forever
+  useEffect(() => {
+    setBroken(false);
+  }, [url]);
+
+  if (!url || broken) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center gap-1 bg-black/30">
+        <User size={42} color="rgba(255, 255, 255, 0.7)" />
+        <span className="text-[10px] font-semibold text-white/55 tracking-wide">{emptyLabel}</span>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      key={url}
+      src={url}
+      alt="Profile"
+      className="w-full h-full object-cover"
+      // Avoid crossOrigin on display — CORS failure was hiding valid photos behind the placeholder
+      onError={() => setBroken(true)}
+    />
+  );
+}
+
 export function UnionIdCard({ user }: UnionIdCardProps) {
+  const { language } = useLanguage();
+  const isHi = language === 'hi';
   const cardRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -39,13 +72,14 @@ export function UnionIdCard({ user }: UnionIdCardProps) {
 
   const getPhotoUrl = (url: string | null) => {
     if (!url) return null;
-    if (url.startsWith('http')) return url;
-    
+    // Absolute URL may wrongly include /v1 before /uploads — static files are not under /v1
+    if (url.startsWith('http')) {
+      return url.replace(/\/v1(\/uploads\/)/i, '$1');
+    }
+
     let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3002';
-    
-    // Remove /v1 suffix if present
     baseUrl = baseUrl.replace(/\/v1\/?$/, '');
-    return `${baseUrl}${url}`;
+    return `${baseUrl}${url.startsWith('/') ? url : `/${url}`}`;
   };
 
   const downloadCard = async () => {
@@ -64,17 +98,23 @@ export function UnionIdCard({ user }: UnionIdCardProps) {
       link.click();
     } catch (error) {
       console.error('Download error:', error);
-      alert('Download failed. Please try taking a screenshot.');
+      alert(isHi
+        ? 'डाउनलोड नहीं हो सका। कृपया स्क्रीनशॉट लें।'
+        : 'Download failed. Please try taking a screenshot.');
     }
   };
 
   // --- Title Text Logic ---
   const rawUnion = (user.unionName || '').trim();
   const isSpecificUnion = rawUnion.length > 0 && !['अन्य', 'पीपल्स ग्रीन असंगठित श्रमिक यूनियन'].includes(rawUnion);
-  
+  const defaultUnionHi = 'पीपल्स ग्रीन असंगठित श्रमिक यूनियन';
+  const defaultUnionEn = 'Peoples Green Unorganized Workers Union';
+  const displayUnion = localizeUnionName(rawUnion, language);
+  const defaultUnion = isHi ? defaultUnionHi : defaultUnionEn;
+
   // Removed \n so everything strictly sits on one line
-  const mainTitle = isSpecificUnion ? rawUnion : 'पीपल्स ग्रीन असंगठित श्रमिक यूनियन';
-  const subTitle = isSpecificUnion ? 'पीपल्स ग्रीन असंगठित श्रमिक यूनियन' : '';
+  const mainTitle = isSpecificUnion ? (displayUnion || defaultUnion) : defaultUnion;
+  const subTitle = isSpecificUnion ? defaultUnion : '';
 
   // Calculate dynamic font size based on string length to guarantee it fits on 1 line
   let titleFontSize = '28px';
@@ -138,16 +178,10 @@ export function UnionIdCard({ user }: UnionIdCardProps) {
               className="absolute top-8 right-8 w-[110px] h-[140px] rounded-[14px] flex items-center justify-center overflow-hidden shadow-lg bg-black/20"
               style={{ border: '2px solid rgba(255, 255, 255, 0.3)' }}
             >
-              {user.photoUrl ? (
-                <img
-                  src={getPhotoUrl(user.photoUrl)!}
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                  crossOrigin="anonymous"
-                />
-              ) : (
-                <User size={50} color="rgba(255, 255, 255, 0.6)" />
-              )}
+              <PhotoSlot
+                url={getPhotoUrl(user.photoUrl)}
+                emptyLabel={isHi ? 'फोटो नहीं' : 'NO PHOTO'}
+              />
             </div>
 
             {/* Bottom Left: User Details */}
@@ -159,7 +193,9 @@ export function UnionIdCard({ user }: UnionIdCardProps) {
                 {user.phone}
               </p>
               <p className="font-medium mt-3 text-[14px] text-white/90 leading-[1.4] max-w-[90%]">
-                कार्यालय: हम बदलेंगे भवन, 02 मिशन कंपाउंड, अजमेर पुलिया, जयपुर, राजस्थान
+                {isHi
+                  ? 'कार्यालय: हम बदलेंगे भवन, 02 मिशन कंपाउंड, अजमेर पुलिया, जयपुर, राजस्थान'
+                  : 'Office: Hum Badlenge Bhawan, 02 Mission Compound, Ajmer Pulia, Jaipur, Rajasthan'}
               </p>
             </div>
 
@@ -180,7 +216,7 @@ export function UnionIdCard({ user }: UnionIdCardProps) {
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
         </svg>
-        Download ID Card
+        {isHi ? 'ID कार्ड डाउनलोड करें' : 'Download ID Card'}
       </button>
     </div>
   );
