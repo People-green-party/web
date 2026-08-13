@@ -53,12 +53,21 @@ type UserRow = {
 
 function resolveAdminPhotoUrl(url: string | null | undefined) {
   if (!url) return null;
+  const apiBase = String(ADMIN_API || "").replace(/\/$/, "").replace(/\/v1$/i, "");
+  const isLocalApi = /localhost|127\.0\.0\.1/i.test(apiBase);
+
   if (url.startsWith("http")) {
-    // Strip accidental /v1 before /uploads on absolute API URLs
+    // Absolute API /uploads URLs die after Coolify redeploy — skip on live.
+    if (!isLocalApi && /\/uploads\//i.test(url) && /api\.peoplesgreen\.org/i.test(url)) {
+      return null;
+    }
     return url.replace(/\/v1(\/uploads\/)/i, "$1");
   }
-  let base = String(ADMIN_API || "").replace(/\/$/, "").replace(/\/v1$/i, "");
-  return `${base}${url.startsWith("/") ? url : `/${url}`}`;
+
+  // Relative /uploads only work on local API disk, not Coolify.
+  if (!isLocalApi && url.includes("/uploads/")) return null;
+
+  return `${apiBase}${url.startsWith("/") ? url : `/${url}`}`;
 }
 
 function MemberAvatar({
