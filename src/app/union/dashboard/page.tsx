@@ -117,6 +117,46 @@ function resolvePhotoUrl(url: string | null | undefined) {
   return `${baseUrl}${url.startsWith('/') ? url : `/${url}`}`;
 }
 
+/** Bridge until Coolify API returns address/vehicle/governmentId in summary */
+type CachedProfile = {
+  address?: string | null;
+  vehicleNumber?: string | null;
+  governmentId?: string | null;
+  name?: string | null;
+  photoUrl?: string | null;
+};
+
+function profileCacheKey(userId: number) {
+  return `pgp_union_profile_v1_${userId}`;
+}
+
+function readProfileCache(userId: number): CachedProfile | null {
+  if (typeof window === 'undefined' || !userId) return null;
+  try {
+    const raw = localStorage.getItem(profileCacheKey(userId));
+    if (!raw) return null;
+    return JSON.parse(raw) as CachedProfile;
+  } catch {
+    return null;
+  }
+}
+
+function writeProfileCache(userId: number, data: CachedProfile) {
+  if (typeof window === 'undefined' || !userId) return;
+  try {
+    const prev = readProfileCache(userId) || {};
+    localStorage.setItem(
+      profileCacheKey(userId),
+      JSON.stringify({
+        ...prev,
+        ...data,
+      }),
+    );
+  } catch {
+    /* ignore quota */
+  }
+}
+
 function DetailRow({
   icon,
   label,
@@ -188,22 +228,42 @@ export default function UnionDashboardPage() {
         return;
       }
 
-      setSummary((prev) => {
-        const user: UnionUser = {
-          ...incoming,
-          name: incoming.name || preserve?.name || prev?.user?.name || '',
-          address: incoming.address ?? preserve?.address ?? prev?.user?.address ?? null,
-          vehicleNumber:
-            incoming.vehicleNumber ?? preserve?.vehicleNumber ?? prev?.user?.vehicleNumber ?? null,
-          governmentId:
-            incoming.governmentId ?? preserve?.governmentId ?? prev?.user?.governmentId ?? null,
-          photoUrl:
-            preserve && Object.prototype.hasOwnProperty.call(preserve, 'photoUrl')
-              ? preserve.photoUrl ?? null
-              : (incoming.photoUrl ?? prev?.user?.photoUrl ?? null),
-        };
-        return { user };
+      const cached = readProfileCache(incoming.id);
+      const user: UnionUser = {
+        ...incoming,
+        name: incoming.name || preserve?.name || cached?.name || '',
+        // Prefer API when it actually returns fields; otherwise keep save/cache (old Coolify API omits these)
+        address:
+          incoming.address ??
+          preserve?.address ??
+          cached?.address ??
+          null,
+        vehicleNumber:
+          incoming.vehicleNumber ??
+          preserve?.vehicleNumber ??
+          cached?.vehicleNumber ??
+          null,
+        governmentId:
+          incoming.governmentId ??
+          preserve?.governmentId ??
+          cached?.governmentId ??
+          null,
+        photoUrl:
+          preserve && Object.prototype.hasOwnProperty.call(preserve, 'photoUrl')
+            ? preserve.photoUrl ?? null
+            : (incoming.photoUrl ?? cached?.photoUrl ?? null),
+      };
+
+      // Keep a local backup so hard refresh does not blank the form while API is outdated
+      writeProfileCache(incoming.id, {
+        name: user.name,
+        address: user.address,
+        vehicleNumber: user.vehicleNumber,
+        governmentId: user.governmentId,
+        photoUrl: user.photoUrl,
       });
+
+      setSummary({ user });
       setPhotoBroken(false);
       setError(null);
       setLoading(false);
@@ -260,13 +320,17 @@ export default function UnionDashboardPage() {
         ? `${data.photoUrl}&t=${Date.now()}`
         : `${data.photoUrl}?t=${Date.now()}`;
       setPhotoBroken(false);
-      setSummary((prev) =>
-        prev ? { user: { ...prev.user, photoUrl: nextUrl } } : prev,
-      );
+      setSummary((prev) => {
+        if (!prev) return prev;
+        writeProfileCache(prev.user.id, { photoUrl: nextUrl });
+        return { user: { ...prev.user, photoUrl: nextUrl } };
+      });
       await loadSummary(0, { photoUrl: data.photoUrl });
-      setSummary((prev) =>
-        prev ? { user: { ...prev.user, photoUrl: nextUrl } } : prev,
-      );
+      setSummary((prev) => {
+        if (!prev) return prev;
+        writeProfileCache(prev.user.id, { photoUrl: nextUrl });
+        return { user: { ...prev.user, photoUrl: nextUrl } };
+      });
       setSaveOk(true);
       setTimeout(() => setSaveOk(false), 2500);
     } catch (err: any) {
@@ -347,19 +411,24 @@ export default function UnionDashboardPage() {
         governmentId: updated.governmentId ?? payload.governmentId,
       };
 
-      setSummary((prev) =>
-        prev
-          ? {
-              user: {
-                ...prev.user,
-                name: preserved.name || prev.user.name,
-                address: preserved.address || null,
-                vehicleNumber: preserved.vehicleNumber || null,
-                governmentId: preserved.governmentId || null,
-              },
-            }
-          : prev,
-      );
+      setSummary((prev) => {
+        if (!prev) return prev;
+        const next = {
+          ...prev.user,
+          name: preserved.name || prev.user.name,
+          address: preserved.address || null,
+          vehicleNumber: preserved.vehicleNumber || null,
+          governmentId: preserved.governmentId || null,
+        };
+        writeProfileCache(prev.user.id, {
+          name: next.name,
+          address: next.address,
+          vehicleNumber: next.vehicleNumber,
+          governmentId: next.governmentId,
+          photoUrl: next.photoUrl,
+        });
+        return { user: next };
+      });
       setEditing(false);
       setSaveOk(true);
       setTimeout(() => setSaveOk(false), 3000);
