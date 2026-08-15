@@ -290,29 +290,12 @@ export default function UnionDashboardPage() {
       const compressed = await compressImageForUpload(file);
       const auth = await getAuthHeader();
       if (!auth.Authorization) throw new Error(t.loginAgain);
-      const formData = new FormData();
-      formData.append('file', compressed);
-
-      const res = await fetch(`${getApiBaseUrl()}/users/me/photo`, {
-        method: 'POST',
-        headers: { ...auth },
-        body: formData,
-      });
-
-      if (!res.ok) {
-        let msg = t.uploadFail;
-        try {
-          const raw = await res.text();
-          const parsed = JSON.parse(raw);
-          msg = Array.isArray(parsed?.message)
-            ? parsed.message.join(', ')
-            : parsed?.message || parsed?.error || raw || msg;
-        } catch {
-          /* keep default */
-        }
-        throw new Error(msg);
-      }
-      const data = await res.json().catch(() => null);
+      const { uploadMemberPhoto } = await import('../../../lib/uploadMemberPhoto');
+      const data = await uploadMemberPhoto(
+        compressed,
+        auth.Authorization,
+        (compressed as File).name || file.name || 'profile.jpg',
+      );
       if (!data?.photoUrl) {
         throw new Error(t.uploadFail);
       }

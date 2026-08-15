@@ -306,18 +306,14 @@ const UnionJoinPageContent = () => {
             throw new Error('No auth token for photo upload');
           }
 
-          const { getApiBaseUrl } = await import('../../../lib/api');
-          const photoData = new FormData();
-          photoData.append('file', selectedPhoto);
-
-          const photoRes = await fetch(`${getApiBaseUrl()}/users/me/photo`, {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${photoToken}` },
-            body: photoData,
-          });
-          if (!photoRes.ok) {
-            const errText = await photoRes.text();
-            throw new Error(errText || 'Photo upload failed');
+          const { uploadMemberPhoto } = await import("../../../lib/uploadMemberPhoto");
+          const uploaded = await uploadMemberPhoto(
+            selectedPhoto,
+            `Bearer ${photoToken}`,
+            selectedPhoto.name || "profile.jpg",
+          );
+          if (!uploaded?.photoUrl) {
+            throw new Error("Photo upload failed");
           }
           console.log('Photo uploaded successfully');
         } catch (photoError: any) {

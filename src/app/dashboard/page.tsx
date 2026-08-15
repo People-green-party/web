@@ -263,15 +263,9 @@ const NewMemberIdCard = ({ summary, loading, onPhotoUpdated }: { summary: Dashbo
         setUploading(true);
         try {
             const authHeader = await getAuthHeader();
-            const formData = new FormData();
-            formData.append('file', file, file.name || 'profile.jpg');
-            const baseUrl = getApiBaseUrl();
-            const response = await fetch(`${baseUrl}/users/me/photo`, {
-                method: 'POST',
-                headers: { ...authHeader },
-                body: formData,
-            });
-            if (!response.ok) throw new Error('Upload failed');
+            if (!authHeader.Authorization) throw new Error('Not logged in');
+            const { uploadMemberPhoto } = await import('../../lib/uploadMemberPhoto');
+            await uploadMemberPhoto(file, authHeader.Authorization, file.name || 'profile.jpg');
             onPhotoUpdated();
         } catch (e) {
             alert('Failed to upload photo');
@@ -489,7 +483,7 @@ export default function DemoDashboard() {
     if (loading) {
         return (
             <RequireAuth>
-                <div className="min-h-screen bg-white text-slate-900 flex items-center justify-center" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                <div className="min-h-screen bg-white text-slate-900 flex items-center justify-center" style={{ fontFamily: "var(--pgp-ui-font)" }}>
                     <div className="flex flex-col items-center gap-4">
                         <div className="w-12 h-12 border-4 border-[#04330B] border-t-transparent rounded-full animate-spin"></div>
                         <p className="text-[#04330B] font-semibold">लोड हो रहा है...</p>
@@ -501,8 +495,7 @@ export default function DemoDashboard() {
 
     return (
         <RequireAuth>
-            <div className={`min-h-screen ${isUnionWorker ? 'bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7]' : 'bg-white'} text-slate-900 overflow-x-hidden pt-[104px]`} style={{ fontFamily: "'Manrope', sans-serif" }}>
-                <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" />
+            <div className={`min-h-screen ${isUnionWorker ? 'bg-gradient-to-br from-[#F0FDF4] to-[#DCFCE7]' : 'bg-white'} text-slate-900 overflow-x-hidden pt-[104px]`} style={{ fontFamily: "var(--pgp-ui-font)" }}>
                 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
 
                 <style jsx global>{`
@@ -538,23 +531,14 @@ export default function DemoDashboard() {
                                 <input type="file" ref={fileInputRef} accept="image/*" className="hidden" onChange={async (e) => {
                                     const file = e.target.files?.[0];
                                     if (!file) return;
-                                    const formData = new FormData();
-                                    formData.append('file', file);
                                     try {
                                         const auth = await getAuthHeader();
-                                        const res = await fetch(`${getApiBaseUrl()}/users/me/photo`, {
-                                            method: 'POST',
-                                            headers: { ...auth },
-                                            body: formData
-                                        });
-                                        if (res.ok) {
-                                            refreshSummary();
-                                        } else {
-                                            const err = await res.json().catch(() => ({}));
-                                            alert(`Failed to upload photo: ${err.message || 'Server error'}`);
-                                        }
+                                        if (!auth.Authorization) throw new Error('Not logged in');
+                                        const { uploadMemberPhoto } = await import('../../lib/uploadMemberPhoto');
+                                        await uploadMemberPhoto(file, auth.Authorization, file.name || 'profile.jpg');
+                                        refreshSummary();
                                     } catch (err: any) {
-                                        alert(`Upload failed: ${err.message}`);
+                                        alert(`Upload failed: ${err.message || 'Server error'}`);
                                     } finally {
                                         if (fileInputRef.current) {
                                             fileInputRef.current.value = '';
@@ -793,7 +777,7 @@ export default function DemoDashboard() {
                                     <img src="/PGPlogo.svg" className="h-20" style={{ filter: 'brightness(0) invert(1)' }} alt="Logo" />
                                 </div>
                                 <div className="flex-1">
-                                    <h1 className="text-[52px] font-black leading-tight text-[#04330B] tracking-tight m-0 uppercase" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                                    <h1 className="text-[52px] font-black leading-tight text-[#04330B] tracking-tight m-0 uppercase" style={{ fontFamily: "var(--pgp-ui-font)" }}>
                                         {t.dashboard.partyName}
                                     </h1>
                                     <div className="h-1.5 w-full bg-[#04330B] mt-1 mb-2 opacity-20"></div>

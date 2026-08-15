@@ -236,13 +236,45 @@ export default function AdminUsersPage() {
         throw new Error(await res.text());
       }
       const data = await res.json();
+      let items: UserRow[] = Array.isArray(data)
+        ? data
+        : Array.isArray(data.items)
+          ? data.items
+          : [];
+
+      // Permanent: enrich durable photoUrl from DB via Vercel (not Coolify /uploads).
+      try {
+        const ids = items.map((u) => u.id).filter(Boolean);
+        if (ids.length && auth.Authorization) {
+          const photoRes = await fetch("/api/admin/member-photos", {
+            method: "POST",
+            headers: {
+              Authorization: auth.Authorization,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ ids }),
+          });
+          if (photoRes.ok) {
+            const photoJson = await photoRes.json().catch(() => null);
+            const photos = (photoJson?.photos || {}) as Record<string, string>;
+            items = items.map((u) => {
+              const durable = photos[String(u.id)];
+              if (!durable) return u;
+              return { ...u, photoUrl: durable };
+            });
+          }
+        }
+      } catch {
+        /* keep Nest photoUrl if enrichment fails */
+      }
+
       if (Array.isArray(data)) {
-        setResults(data);
-        setTotal(data.length);
+        setResults(items);
+        setTotal(items.length);
         setPage(1);
         setPages(1);
       } else {
-        setResults(Array.isArray(data.items) ? data.items : []);
+        setResults(items);
         setTotal(Number(data.total) || 0);
         setPage(Number(data.page) || pageNum);
         setPages(Number(data.pages) || 1);
