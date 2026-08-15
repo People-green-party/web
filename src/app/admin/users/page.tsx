@@ -242,10 +242,15 @@ export default function AdminUsersPage() {
           ? data.items
           : [];
 
-      // Permanent: enrich durable photoUrl from DB via Vercel (not Coolify /uploads).
+      // Optional enrichment (needs Vercel DATABASE_URL). Soft-fail — Nest photoUrl is enough
+      // once Coolify API returns photoUrl (no Vercel access required).
       try {
+        const needsEnrich = items.some((u) => {
+          const p = String(u.photoUrl || "");
+          return !p || /\/uploads\//i.test(p);
+        });
         const ids = items.map((u) => u.id).filter(Boolean);
-        if (ids.length && auth.Authorization) {
+        if (needsEnrich && ids.length && auth.Authorization) {
           const photoRes = await fetch("/api/admin/member-photos", {
             method: "POST",
             headers: {
@@ -265,7 +270,7 @@ export default function AdminUsersPage() {
           }
         }
       } catch {
-        /* keep Nest photoUrl if enrichment fails */
+        /* Nest photoUrl only */
       }
 
       if (Array.isArray(data)) {

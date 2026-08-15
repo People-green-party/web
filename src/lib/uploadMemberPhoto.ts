@@ -1,69 +1,68 @@
 /**
- * Upload a member profile photo to durable storage (Vercel → Supabase).
- * Falls back to Nest `/users/me/photo` only when the website route is unavailable.
- * Coolify disk is never the source of truth.
+ * Upload member profile photo to durable Supabase storage.
+ *
+ * Prefer Nest API on Coolify (already has SUPABASE_SERVICE_ROLE_KEY — used by recent uploads).
+ * Optional: Vercel /api/profile-photo if service role is configured there (not required).
+ * Never relies on Coolify disk /uploads.
  */
 export async function uploadMemberPhoto(
   file: File | Blob,
   authHeader: string,
   fileName = "profile.jpg",
 ): Promise<{ photoUrl: string }> {
+  const { getApiBaseUrl } = await import("./api");
+
+  // 1) Coolify API → Supabase (permanent; no Vercel env needed)
   const formData = new FormData();
   formData.append("file", file, fileName);
+  const res = await fetch(`${getApiBaseUrl()}/users/me/photo`, {
+    method: "POST",
+    headers: { Authorization: authHeader },
+    body: formData,
+  });
 
-  // 1) Prefer website route (survives Coolify redeploys forever)
+  if (res.ok) {
+    const data = await res.json().catch(() => null);
+    if (data?.photoUrl) {
+      const url = String(data.photoUrl);
+      // Reject ephemeral Coolify disk URLs — treat as failure and try website route
+      if (!/\/uploads\//i.test(url) || /supabase\.co\/storage\//i.test(url)) {
+        if (!/api\.peoplesgreen\.org\/uploads\//i.test(url) && !url.startsWith("/uploads/")) {
+          return { photoUrl: url };
+        }
+      }
+      if (/supabase\.co\/storage\//i.test(url)) {
+        return { photoUrl: url };
+      }
+    }
+  }
+
+  // 2) Optional Vercel route (only works if someone with Vercel access set service role)
   try {
+    const form2 = new FormData();
+    form2.append("file", file, fileName);
     const durable = await fetch("/api/profile-photo", {
       method: "POST",
       headers: { Authorization: authHeader },
-      body: formData,
+      body: form2,
     });
     if (durable.ok) {
       const data = await durable.json().catch(() => null);
       if (data?.photoUrl) return { photoUrl: String(data.photoUrl) };
     }
-    // 503 = Vercel missing SUPABASE_SERVICE_ROLE_KEY — fall through to API
-    if (durable.status !== 503 && durable.status !== 404) {
-      let msg = "Photo upload failed";
-      try {
-        const raw = await durable.text();
-        const parsed = JSON.parse(raw);
-        msg = Array.isArray(parsed?.message)
-          ? parsed.message.join(", ")
-          : parsed?.message || msg;
-      } catch {
-        /* keep default */
-      }
-      // Still try API fallback below for transient website errors
-      console.warn("[uploadMemberPhoto] durable route failed:", durable.status, msg);
-    }
-  } catch (e) {
-    console.warn("[uploadMemberPhoto] durable route error", e);
+  } catch {
+    /* ignore */
   }
 
-  // 2) Fallback: Nest API (must have SUPABASE_* on Coolify — never rely on /uploads)
-  const { getApiBaseUrl } = await import("./api");
-  const formData2 = new FormData();
-  formData2.append("file", file, fileName);
-  const res = await fetch(`${getApiBaseUrl()}/users/me/photo`, {
-    method: "POST",
-    headers: { Authorization: authHeader },
-    body: formData2,
-  });
-  if (!res.ok) {
-    let msg = "Photo upload failed";
-    try {
-      const raw = await res.text();
-      const parsed = JSON.parse(raw);
-      msg = Array.isArray(parsed?.message)
-        ? parsed.message.join(", ")
-        : parsed?.message || raw || msg;
-    } catch {
-      /* keep */
-    }
-    throw new Error(msg);
+  let msg = "Photo upload failed";
+  try {
+    const raw = await res.text();
+    const parsed = JSON.parse(raw);
+    msg = Array.isArray(parsed?.message)
+      ? parsed.message.join(", ")
+      : parsed?.message || raw || msg;
+  } catch {
+    /* keep */
   }
-  const data = await res.json().catch(() => null);
-  if (!data?.photoUrl) throw new Error("Photo upload failed");
-  return { photoUrl: String(data.photoUrl) };
+  throw new Error(msg);
 }
