@@ -4,6 +4,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Calendar, ChevronLeft, ChevronRight, MapPin, Search, ShieldAlert, User, Users, X } from "lucide-react";
 import { ADMIN_API, getAdminScope, getAdminToken } from "@/lib/adminApi";
+import { resolveMemberPhotoUrl } from "@/lib/memberPhoto";
 
 const API = ADMIN_API;
 const PAGE_SIZE = 50;
@@ -52,22 +53,7 @@ type UserRow = {
 };
 
 function resolveAdminPhotoUrl(url: string | null | undefined) {
-  if (!url) return null;
-  const apiBase = String(ADMIN_API || "").replace(/\/$/, "").replace(/\/v1$/i, "");
-  const isLocalApi = /localhost|127\.0\.0\.1/i.test(apiBase);
-
-  if (url.startsWith("http")) {
-    // Absolute API /uploads URLs die after Coolify redeploy — skip on live.
-    if (!isLocalApi && /\/uploads\//i.test(url) && /api\.peoplesgreen\.org/i.test(url)) {
-      return null;
-    }
-    return url.replace(/\/v1(\/uploads\/)/i, "$1");
-  }
-
-  // Relative /uploads only work on local API disk, not Coolify.
-  if (!isLocalApi && url.includes("/uploads/")) return null;
-
-  return `${apiBase}${url.startsWith("/") ? url : `/${url}`}`;
+  return resolveMemberPhotoUrl(url, ADMIN_API);
 }
 
 function MemberAvatar({
@@ -98,6 +84,7 @@ function MemberAvatar({
         src={src}
         alt={name || "Member"}
         className="w-11 h-11 rounded-full object-cover border border-[#B9D3C4] bg-[#F1FBF6] shrink-0"
+        referrerPolicy="no-referrer"
         onError={() => setBroken(true)}
       />
     );
@@ -249,13 +236,50 @@ export default function AdminUsersPage() {
         throw new Error(await res.text());
       }
       const data = await res.json();
+      let items: UserRow[] = Array.isArray(data)
+        ? data
+        : Array.isArray(data.items)
+          ? data.items
+          : [];
+
+      // Optional enrichment (needs Vercel DATABASE_URL). Soft-fail — Nest photoUrl is enough
+      // once Coolify API returns photoUrl (no Vercel access required).
+      try {
+        const needsEnrich = items.some((u) => {
+          const p = String(u.photoUrl || "");
+          return !p || /\/uploads\//i.test(p);
+        });
+        const ids = items.map((u) => u.id).filter(Boolean);
+        if (needsEnrich && ids.length && auth.Authorization) {
+          const photoRes = await fetch("/api/admin/member-photos", {
+            method: "POST",
+            headers: {
+              Authorization: auth.Authorization,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ ids }),
+          });
+          if (photoRes.ok) {
+            const photoJson = await photoRes.json().catch(() => null);
+            const photos = (photoJson?.photos || {}) as Record<string, string>;
+            items = items.map((u) => {
+              const durable = photos[String(u.id)];
+              if (!durable) return u;
+              return { ...u, photoUrl: durable };
+            });
+          }
+        }
+      } catch {
+        /* Nest photoUrl only */
+      }
+
       if (Array.isArray(data)) {
-        setResults(data);
-        setTotal(data.length);
+        setResults(items);
+        setTotal(items.length);
         setPage(1);
         setPages(1);
       } else {
-        setResults(Array.isArray(data.items) ? data.items : []);
+        setResults(items);
         setTotal(Number(data.total) || 0);
         setPage(Number(data.page) || pageNum);
         setPages(Number(data.pages) || 1);

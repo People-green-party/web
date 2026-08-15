@@ -1,12 +1,26 @@
 "use client";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { isAuthDevMode } from "./authDevMode";
 
-// ✅ STRICTLY USE ENVIRONMENT VARIABLES
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+/**
+ * Build-safe Supabase client.
+ * Vercel builds (and some preview envs) may not inject NEXT_PUBLIC_* at
+ * prerender time — createClient() must not throw or the whole build fails.
+ */
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() ||
+  "https://placeholder.supabase.co";
+const supabaseAnonKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder";
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+export function isSupabaseConfigured(): boolean {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  return Boolean(url && key && !url.includes("placeholder.supabase.co"));
+}
 
 export async function getAuthHeader(): Promise<Record<string, string>> {
   if (typeof window !== "undefined") {
@@ -14,18 +28,12 @@ export async function getAuthHeader(): Promise<Record<string, string>> {
     const customToken = window.localStorage.getItem("access_token");
     if (customToken) {
       try {
-        // Decode the JWT to check its expiration time
-        const payload = JSON.parse(atob(customToken.split('.')[1]));
-        // If it expires in more than 1 minute, it's good to use
+        const payload = JSON.parse(atob(customToken.split(".")[1]));
         if (payload.exp * 1000 > Date.now() + 60000) {
           return { Authorization: `Bearer ${customToken}` };
-        } else {
-          // Token is DEAD. Remove it so we can fall back to Supabase.
-          window.localStorage.removeItem("access_token");
-          console.log("Custom token expired, falling back to Supabase session...");
         }
-      } catch (e) {
-        // If parsing fails, it's corrupted. Remove it.
+        window.localStorage.removeItem("access_token");
+      } catch {
         window.localStorage.removeItem("access_token");
       }
     }
@@ -38,10 +46,15 @@ export async function getAuthHeader(): Promise<Record<string, string>> {
     }
   }
 
-  // 2. Fallback to Supabase
-  // By calling getSession(), the Supabase SDK will automatically
-  // refresh the token in the background if it has expired!
-  const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  if (!isSupabaseConfigured()) {
+    return {};
+  }
+
+  try {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
 }
