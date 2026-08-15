@@ -1,9 +1,9 @@
 /**
  * Upload member profile photo to durable Supabase storage.
  *
- * Prefer Nest API on Coolify (already has SUPABASE_SERVICE_ROLE_KEY — used by recent uploads).
- * Optional: Vercel /api/profile-photo if service role is configured there (not required).
- * Never relies on Coolify disk /uploads.
+ * Prefer Nest API on Coolify (already has SUPABASE_SERVICE_ROLE_KEY).
+ * Optional Vercel /api/profile-photo if service role exists there (not required).
+ * Never treats Coolify /uploads as success.
  */
 export async function uploadMemberPhoto(
   file: File | Blob,
@@ -12,7 +12,6 @@ export async function uploadMemberPhoto(
 ): Promise<{ photoUrl: string }> {
   const { getApiBaseUrl } = await import("./api");
 
-  // 1) Coolify API → Supabase (permanent; no Vercel env needed)
   const formData = new FormData();
   formData.append("file", file, fileName);
   const res = await fetch(`${getApiBaseUrl()}/users/me/photo`, {
@@ -23,21 +22,15 @@ export async function uploadMemberPhoto(
 
   if (res.ok) {
     const data = await res.json().catch(() => null);
-    if (data?.photoUrl) {
-      const url = String(data.photoUrl);
-      // Reject ephemeral Coolify disk URLs — treat as failure and try website route
-      if (!/\/uploads\//i.test(url) || /supabase\.co\/storage\//i.test(url)) {
-        if (!/api\.peoplesgreen\.org\/uploads\//i.test(url) && !url.startsWith("/uploads/")) {
-          return { photoUrl: url };
-        }
-      }
-      if (/supabase\.co\/storage\//i.test(url)) {
-        return { photoUrl: url };
-      }
+    const url = data?.photoUrl ? String(data.photoUrl) : "";
+    const isEphemeralUploads =
+      !!url && /\/uploads\//i.test(url) && !/supabase\.co\/storage\//i.test(url);
+    if (url && !isEphemeralUploads) {
+      return { photoUrl: url };
     }
   }
 
-  // 2) Optional Vercel route (only works if someone with Vercel access set service role)
+  // Optional: only works if Vercel has SUPABASE_SERVICE_ROLE_KEY (you don't need this)
   try {
     const form2 = new FormData();
     form2.append("file", file, fileName);
