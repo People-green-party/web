@@ -20,6 +20,7 @@ import ScrollReveal from '@/components/ScrollReveal';
 import SocialMediaFeed from '@/components/SocialMediaFeed';
 import VisionCarousel from '@/components/VisionCarousel';
 import { HomeProgramsSection } from '@/components/HomeProgramsSection';
+import { HomePgpVisionTeaser } from '@/components/HomePgpVisionTeaser';
 import { Footer } from '@/components/Footer';
 
 
@@ -356,20 +357,24 @@ const LandingPageContent = () => {
         </div>
       </section>
 
-      {/* 2. VISION FOR BETTER TOMORROW (Cards) */}
-      {/* 2. VISION FOR BETTER TOMORROW (Replaced with Image Grid) */}
-      <section className="bg-white px-4 mt-[340px] md:mt-[220px] lg:mt-[200px] pb-[40px] lg:pb-[60px]">
+      {/* 2. VISION FOR BETTER TOMORROW */}
+      <section
+        id="vision"
+        className="bg-white px-4 mt-[340px] md:mt-[220px] lg:mt-[200px] pb-[40px] lg:pb-[60px]"
+      >
         <div className="w-full max-w-[1320px] mx-auto flex flex-col items-center">
+          {/* Official PGP vision teaser (CM sir content) */}
+          <HomePgpVisionTeaser />
 
-          {/* Header */}
-          <div className="flex flex-col gap-[16px] w-full items-center text-center mb-[40px] lg:mb-[60px]">
+          {/* Topic vision cards */}
+          <div className="flex flex-col gap-[16px] w-full items-center text-center mb-[40px] lg:mb-[60px] pt-2 lg:pt-4">
             <ScrollReveal animation="fade-up" duration={800} className="w-full">
-              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] tracking-[-0.3px] text-[#04330B] text-center px-4 max-w-4xl mx-auto">
+              <h3 className="font-['Familjen_Grotesk'] font-semibold text-[28px] md:text-[36px] lg:text-[44px] leading-[1.1] tracking-[-0.3px] text-[#04330B] text-center px-4 max-w-4xl mx-auto">
                 {t.visionSection.title}
-              </h2>
+              </h3>
             </ScrollReveal>
             <ScrollReveal animation="fade-up" duration={800} delay={200} className="w-full">
-              <p className="font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[20px] text-[#587E67] max-w-[800px] mx-auto text-center px-4">
+              <p className="font-['Familjen_Grotesk'] font-medium text-[16px] lg:text-[18px] text-[#587E67] max-w-[800px] mx-auto text-center px-4">
                 {t.visionSection.sub}
               </p>
             </ScrollReveal>
@@ -615,7 +620,7 @@ const LandingPageContent = () => {
                           <Icon size={24} strokeWidth={2} />
                         </div>
 
-                        <h3 className="font-['Inter'] font-bold text-[42px] lg:text-[52px] leading-none tracking-tight text-[#04330B] mb-2 group-hover:text-[#0D5229] transition-colors">
+                        <h3 className="font-['Familjen_Grotesk'] font-bold text-[42px] lg:text-[52px] leading-none tracking-tight text-[#04330B] mb-2 group-hover:text-[#0D5229] transition-colors">
                           <CountUp value={stat.number} />
                         </h3>
 

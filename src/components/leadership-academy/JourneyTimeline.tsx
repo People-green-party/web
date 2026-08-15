@@ -70,7 +70,7 @@ export function JourneyTimeline({ steps, labels }: Props) {
             />
           </div>
 
-          <p className="font-['Inter'] font-bold text-[48px] lg:text-[64px] leading-none tracking-tight text-[#EAF7EE]">
+          <p className="font-['Familjen_Grotesk'] font-bold text-[48px] lg:text-[64px] leading-none tracking-tight text-[#EAF7EE]">
             {String(steps[active]?.num).padStart(2, "0")}
           </p>
           <h3 className="mt-2 font-['Familjen_Grotesk'] font-semibold text-[28px] sm:text-[32px] lg:text-[40px] leading-[1.15] tracking-[-0.3px] text-[#04330B]">

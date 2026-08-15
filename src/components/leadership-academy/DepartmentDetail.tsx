@@ -122,7 +122,7 @@ export function DepartmentDetail({ department }: Props) {
                 <ol className="space-y-5">
                   {content.objectives.map((obj, i) => (
                     <li key={obj} className="flex gap-4">
-                      <span className="font-['Inter'] font-bold text-[20px] text-[#0D5229] leading-none pt-0.5 shrink-0">
+                      <span className="font-['Familjen_Grotesk'] font-bold text-[20px] text-[#0D5229] leading-none pt-0.5 shrink-0">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <p className="font-['Familjen_Grotesk'] font-medium text-[15px] lg:text-[16px] leading-relaxed text-[#587E67]">
@@ -285,7 +285,7 @@ export function DepartmentDetail({ department }: Props) {
               <ul className="mt-6 space-y-4">
                 {content.learningOutcomes.map((item, i) => (
                   <li key={item} className="flex gap-3">
-                    <span className="font-['Inter'] font-bold text-[18px] text-[#0D5229] shrink-0">
+                    <span className="font-['Familjen_Grotesk'] font-bold text-[18px] text-[#0D5229] shrink-0">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <p className="font-['Familjen_Grotesk'] font-medium text-[15px] lg:text-[16px] text-[#587E67] leading-snug">

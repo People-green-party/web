@@ -35,7 +35,7 @@ export default function LeadersPage() {
     const allCommittee = [...initialCommittee, ...extraCommittee];
 
     return (
-        <div className="bg-white min-h-screen font-sans">
+        <div className="bg-white min-h-screen font-['Familjen_Grotesk']">
             <Navbar />
 
             {/* Spacer for Navbar */}
@@ -47,12 +47,12 @@ export default function LeadersPage() {
                     {/* Header First */}
                     <div className="flex flex-col items-center gap-[16px] mb-[32px] lg:mb-[64px]">
                         <ScrollReveal animation="fade-up" duration={800}>
-                            <h2 className="w-full text-center font-[family-name:var(--font-inter)] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B] whitespace-normal lg:whitespace-nowrap">
+                            <h2 className="w-full text-center font-['Familjen_Grotesk'] font-semibold text-[32px] md:text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B] whitespace-normal lg:whitespace-nowrap">
                                 {t.committee.title}
                             </h2>
                         </ScrollReveal>
                         <ScrollReveal animation="fade-up" duration={800} delay={200}>
-                            <p className="w-full text-center font-[family-name:var(--font-inter)] font-semibold text-[16px] lg:text-[24px] whitespace-normal md:whitespace-nowrap tracking-[-0.3px] text-[#587E67]">
+                            <p className="w-full text-center font-['Familjen_Grotesk'] font-semibold text-[16px] lg:text-[24px] whitespace-normal md:whitespace-nowrap tracking-[-0.3px] text-[#587E67]">
                                 {t.committee.sub}
                             </p>
                         </ScrollReveal>
@@ -69,10 +69,10 @@ export default function LeadersPage() {
                             <ScrollReveal key={index} animation="scale-up" delay={index * 100} className="w-full mx-auto max-w-[312px]">
                                 <div className="w-full h-[322px] rounded-[8px] border border-[#B9D3C4] p-[20px] flex flex-col justify-between bg-white shadow-md lg:shadow-[0px_4px_20px_0px_#0000001A] transition-all duration-300 ease-out hover:shadow-[0px_8px_30px_0px_#00000020] hover:-translate-y-1 cursor-pointer">
                                     <div className="flex flex-col gap-[4px] mb-[20px]">
-                                        <h3 className="font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
+                                        <h3 className="font-['Familjen_Grotesk'] font-semibold text-[24px] leading-[30px] tracking-[-0.3px] text-[#04330B]">
                                             {member.name}
                                         </h3>
-                                        <p className="font-[family-name:var(--font-familjen-grotesk)] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67]">
+                                        <p className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67]">
                                             {member.role}
                                         </p>
                                     </div>
