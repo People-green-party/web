@@ -9,7 +9,7 @@ import { translations } from "../../components/translations";
 import { ArrowRight, Leaf, MapPin, Recycle, Zap } from "lucide-react";
 
 export default function JaipurVisionPage() {
-    const [language, setLanguage] = useState("en");
+    const [language, setLanguage] = useState("hi");
 
     // Since we are setting up a new page context, we need to wrap content or just use the layout's provider if applicable.
     // RootLayout uses LanguageProvider. So we can use useLanguage directly inside a component.

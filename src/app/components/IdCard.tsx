@@ -23,7 +23,7 @@ interface Member {
 
 // --- Mock Data ---
 const currentUser = {
-  name: "Dr. Sudhanshu Sharma",
+  name: "Dr. Sudhanshu",
   id: "PGP-MEM-0639",
   role: "Worker",
   ward: "Ward 10 – Bani Park, Jaipur",

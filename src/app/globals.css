@@ -6,13 +6,16 @@
   /* green-50 */
   --foreground: #0f172a;
   /* slate-900 */
+
+  /* Site-wide UI font: Familjen for Latin + OS Devanagari for Hindi (navbar look) */
+  --pgp-ui-font: var(--font-familjen-grotesk), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-familjen-grotesk), var(--font-geist-sans), system-ui, sans-serif;
-  --font-familjen-grotesk: var(--font-familjen-grotesk), system-ui, sans-serif;
+  --font-sans: var(--pgp-ui-font);
+  --font-familjen-grotesk: var(--pgp-ui-font);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -30,6 +33,34 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--pgp-ui-font);
+}
+
+/*
+  Force one consistent font stack everywhere (home, login, admin, forms).
+  Same Hindi rendering as the navbar — no alternate Devanagari fonts.
+*/
+.font-sans,
+.font-\[\'Familjen_Grotesk\'\],
+.font-\[Familjen_Grotesk\] {
+  font-family: var(--pgp-ui-font) !important;
+}
+
+/* Catch leftover Inter / Geist / CSS variable font classes */
+.font-\[\'Inter\'\],
+.font-\[Inter\],
+.font-\[family-name\:var\(--font-inter\)\],
+.font-\[family-name\:var\(--font-familjen-grotesk\)\],
+.font-\[family-name\:var\(--font-geist-sans\)\] {
+  font-family: var(--pgp-ui-font) !important;
+}
+
+/* Negative letter-spacing breaks Hindi matras */
+html[lang="hi"] .tracking-\[-0\.3px\],
+html[lang="hi"] .tracking-\[-0\.2px\],
+html[lang="hi"] .tracking-tight,
+html[lang="hi"] .tracking-tighter {
+  letter-spacing: normal !important;
 }
 
 /* Global Selection Style */
@@ -52,6 +83,7 @@ select,
 textarea {
   min-height: 44px;
   /* Thumb-friendly target */
+  font-family: inherit;
 }
 
 /* Prevent iOS zoom {test} on focus for small inputs */

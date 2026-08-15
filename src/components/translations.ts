@@ -18,7 +18,8 @@ export const translations = {
             press: "Press & Media",
             union: "Unions",
             youth: "Jinda Youth",
-            academy: "Internships"
+            academy: "Internships",
+            vision: "Vision"
         },
         heroSlides: [
             {
@@ -55,8 +56,8 @@ export const translations = {
             { title: "A Small Donation\nBoon for Change", path: "/donation" }
         ],
         visionSection: {
-            title: "Our Vision for a Better Tomorrow",
-            sub: "Advocating for change, fostering growth, and ensuring a prosperous and just society.",
+            title: "Focus areas for a better tomorrow",
+            sub: "Explore the themes that shape our programmes across Rajasthan.",
             cards: visionCards.map(card => ({
                 title: card.en.title,
                 desc: card.en.desc,
@@ -87,7 +88,7 @@ export const translations = {
         leader: {
             title: "Meet Our Ideological Leader",
             sub: "The Face of Change, The Voice of the People.",
-            role: "– Dr. Sudhanshu Sharma, President",
+            role: "– Dr. Sudhanshu, President",
             bio: "Dr. Sudhanshu (born 19 February 1969) is a prominent Indian educationist, political leader, green activist, and climate change scientist based in Rajasthan. He is widely recognized as the co-founder and former vice-chancellor (2008–2011) of Suresh Gyan Vihar University in Jaipur. He comes from a family of noted academics; his grandfather was the scholar Acharya Purushottam Uttam, and his father, Shri Suresh Sharma, was a respected politician and educationist. Academically, Dr Sudhanshu holds a Doctorate in Earth Sciences (1992) from MNIT and a Law degree from the University of Rajasthan. In his early career as a geologist, he was credited with reporting the minerals Staurolite and Ottrelite in the Aravalli region for the first time.\n\nBeyond academia, he is a significant figure in Indian politics, having founded the Indian Peoples Green Party (PGP) in 2011 to advocate for sustainable growth. He is also the author of Indians@rest: The root cause of India's unrest, a satirical look at Indian politics."
         },
         stats: {
@@ -318,7 +319,8 @@ export const translations = {
             press: "प्रेस और मीडिया",
             union: "यूनियन्स",
             youth: "जिंदा यूथ",
-            academy: "इंटर्नशिप"
+            academy: "इंटर्नशिप",
+            vision: "विज़न"
         },
         heroSlides: [
             {
@@ -355,8 +357,8 @@ export const translations = {
             { title: "थोड़ा सा दान बदलाव के लिए वरदान", path: "/donation" }
         ],
         visionSection: {
-            title: "बेहतर कल के लिए हमारा दृष्टिकोण",
-            sub: "बदलाव की वकालत, विकास को बढ़ावा देना और एक समृद्ध व न्यायपूर्ण समाज सुनिश्चित करना।",
+            title: "बेहतर कल के प्रमुख विषय",
+            sub: "वे विषय जिनके इर्द-गिर्द राजस्थान में हमारे कार्यक्रम आकार लेते हैं।",
             cards: visionCards.map(card => ({
                 title: card.hi.title,
                 desc: card.hi.desc,
@@ -387,7 +389,7 @@ export const translations = {
         leader: {
             title: "अपने वैचारिक नेता से मिलें",
             sub: "बदलाव का चेहरा, जनता की आवाज़।",
-            role: "– डॉ. सुधांशु शर्मा, अध्यक्ष",
+            role: "– डॉ. सुधांशु, अध्यक्ष",
             bio: "डॉ. सुधांशु (जन्म: 19 फरवरी 1969) राजस्थान स्थित एक प्रसिद्ध भारतीय शिक्षाविद्, राजनीतिक नेता, पर्यावरण कार्यकर्ता तथा जलवायु परिवर्तन वैज्ञानिक हैं। उन्हें विशेष रूप से सुरेश ज्ञान विहार विश्वविद्यालय, जयपुर के सह-संस्थापक और पूर्व कुलपति (2008–2011) के रूप में जाना जाता है। वे एक प्रतिष्ठित शैक्षणिक परिवार से संबंध रखते हैं। उनके दादा आचार्य पुरुषोत्तम उत्तम एक विद्वान थे, जबकि उनके पिता श्री सुरेश शर्मा एक सम्मानित राजनेता और शिक्षाविद् रहे हैं। शैक्षणिक रूप से, डॉ. सुधांशु ने मालवीय राष्ट्रीय प्रौद्योगिकी संस्थान, जयपुर से वर्ष 1992 में पृथ्वी विज्ञान में डॉक्टरेट की उपाधि प्राप्त की तथा राजस्थान विश्वविद्यालय, जयपुर से विधि की डिग्री हासिल की। अपने प्रारंभिक करियर में एक भूवैज्ञानिक के रूप में, उन्होंने अरावली क्षेत्र में पहली बार स्टॉरोलाइट और ऑट्रेलाइट जैसे खनिजों की खोज/रिपोर्टिंग का श्रेय प्राप्त किया।\n\nशिक्षा के अलावा, वे भारतीय राजनीति में भी एक महत्वपूर्ण व्यक्तित्व हैं। उन्होंने वर्ष 2011 में सतत विकास को बढ़ावा देने के उद्देश्य से इंडियन पीपल्स ग्रीन पार्टी (पीजीपी) की स्थापना की। वे “इंडियंस एट रेस्ट: भारत में आधिकारिक तौर पर अशांति का मूल कारण” नामक पुस्तक के लेखक भी हैं, जो भारतीय राजनीति पर एक व्यंग्यात्मक दृष्टिकोण प्रस्तुत करती है।"
         },
         stats: {

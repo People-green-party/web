@@ -103,7 +103,7 @@ const pressData = {
                 image: "https://img.youtube.com/vi/uXHM70zcksk/hqdefault.jpg",
                 type: "Address",
                 youtubeId: "uXHM70zcksk",
-                desc: "National President Dr. Sudhanshu Sharma delivers a comprehensive address to PGP workers, discussing grassroots strategy and organizational expansion plans."
+                desc: "National President Dr. Sudhanshu delivers a comprehensive address to PGP workers, discussing grassroots strategy and organizational expansion plans."
             },
             {
                 id: 4,
@@ -191,7 +191,7 @@ const pressData = {
                 image: "https://img.youtube.com/vi/uXHM70zcksk/hqdefault.jpg",
                 type: "संबोधन",
                 youtubeId: "uXHM70zcksk",
-                desc: "राष्ट्रीय अध्यक्ष डॉ. सुधांशु शर्मा का पार्टी कार्यकर्ताओं के लिए विस्तृत संदेश, जिसमें ब्लॉक-स्तरीय रणनीतियों और संगठन विस्तार की चर्चा की गई।"
+                desc: "राष्ट्रीय अध्यक्ष डॉ. सुधांशु का पार्टी कार्यकर्ताओं के लिए विस्तृत संदेश, जिसमें ब्लॉक-स्तरीय रणनीतियों और संगठन विस्तार की चर्चा की गई।"
             },
             {
                 id: 4,
