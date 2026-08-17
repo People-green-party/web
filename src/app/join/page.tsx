@@ -9,6 +9,7 @@ import { Phone, Eye, EyeOff } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { FormFieldLabel } from '../../components/FormFieldLabel';
 import html2canvas from 'html2canvas';
+import { getPortalToken, setPortalToken } from '../../lib/portalAuth';
 
 // --- Canvas / color helpers ---
 const normalizeCssColor = (() => {
@@ -400,7 +401,7 @@ const JoinPageContent = () => {
   // Load user info if logged in (for referral QR)
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem('access_token');
+      const token = getPortalToken('party');
       if (!token) return;
 
       try {
@@ -711,7 +712,7 @@ const JoinPageContent = () => {
           window.localStorage.setItem('devUserId', String(userData.id));
         }
         if (loginRes?.access_token) {
-          window.localStorage.setItem('access_token', loginRes.access_token);
+          setPortalToken('party', loginRes.access_token);
         }
       }
 

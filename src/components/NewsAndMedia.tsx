@@ -29,42 +29,44 @@ interface PressItem {
     youtubeId?: string;
 }
 
-import rawNewsItems from "../data/news_items.json";
+import { getApiBaseUrl } from "../lib/api";
 
-const newsItemsEn = rawNewsItems.map(item => ({
-    id: item.id,
-    title: item.title_en,
-    date: item.date,
-    source: item.source,
-    image: item.image,
-    desc: item.desc_en,
-    content: item.content_en
-}));
+function mapStaticNews(raw: any[], lang: "en" | "hi"): NewsItem[] {
+    return (raw || []).map((item) => ({
+        id: item.id,
+        title: lang === "hi" ? item.title_hi : item.title_en,
+        date: item.date,
+        source: item.source,
+        image: item.image,
+        desc: lang === "hi" ? item.desc_hi : item.desc_en,
+        content: lang === "hi" ? item.content_hi : item.content_en,
+    }));
+}
 
-const newsItemsHi = rawNewsItems.map(item => ({
-    id: item.id,
-    title: item.title_hi,
-    date: item.date,
-    source: item.source,
-    image: item.image,
-    desc: item.desc_hi,
-    content: item.content_hi
-}));
+function mapApiNews(articles: any[], lang: "en" | "hi"): NewsItem[] {
+    return (articles || []).map((item) => ({
+        id: Number(item.id),
+        title: lang === "hi" ? item.titleHi : item.titleEn,
+        date: item.dateLabel || item.date || "",
+        source: item.source || "PGP",
+        image: item.imageUrl || item.image || "",
+        desc: lang === "hi" ? item.descHi : item.descEn,
+        content: (lang === "hi" ? item.contentHi : item.contentEn) || [],
+    }));
+}
 
-const newsData = {
+const newsUi = {
     en: {
         title: "News & Publications",
         subtitle: "Stay updated with our latest milestones, press coverages, and official statements.",
         readMore: "Read Full Article",
         close: "Close",
-        items: newsItemsEn
     },
     hi: {
         title: "समाचार और प्रकाशन",
         subtitle: "हमारे नवीनतम मील के पत्थर, प्रेस कवरेज और आधिकारिक बयान।",
         readMore: "पूरा लेख पढ़ें",
         close: "बंद करें",
-        items: newsItemsHi
     }
 };
 
@@ -259,6 +261,58 @@ export default function NewsAndMedia({ defaultTab = "news" }: NewsAndMediaProps)
     const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
     const [selectedVideo, setSelectedVideo] = useState<PressItem | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [newsItemsEn, setNewsItemsEn] = useState<NewsItem[]>([]);
+    const [newsItemsHi, setNewsItemsHi] = useState<NewsItem[]>([]);
+    const [newsLoading, setNewsLoading] = useState(true);
+
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            setNewsLoading(true);
+            try {
+                const res = await fetch(`${getApiBaseUrl()}/news`, {
+                    // Browser may reuse for ~1 minute; also helps soft navigations
+                    cache: "force-cache",
+                    next: { revalidate: 60 } as any,
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (!cancelled && Array.isArray(data) && data.length > 0) {
+                        setNewsItemsEn(mapApiNews(data, "en"));
+                        setNewsItemsHi(mapApiNews(data, "hi"));
+                        setNewsLoading(false);
+                        return;
+                    }
+                }
+            } catch {
+                // fall through to static JSON
+            }
+
+            try {
+                const mod = await import("../data/news_items.json");
+                const raw = (mod as any).default || mod;
+                if (!cancelled) {
+                    setNewsItemsEn(mapStaticNews(raw, "en"));
+                    setNewsItemsHi(mapStaticNews(raw, "hi"));
+                }
+            } catch {
+                if (!cancelled) {
+                    setNewsItemsEn([]);
+                    setNewsItemsHi([]);
+                }
+            } finally {
+                if (!cancelled) setNewsLoading(false);
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const liveNews = {
+        en: { ...newsUi.en, items: newsItemsEn },
+        hi: { ...newsUi.hi, items: newsItemsHi },
+    };
 
     useEffect(() => {
         setIsPlaying(false);
@@ -271,8 +325,8 @@ export default function NewsAndMedia({ defaultTab = "news" }: NewsAndMediaProps)
     const heroContent = {
         news: {
             tag: language === "hi" ? "आधिकारिक समाचार" : "OFFICIAL NEWS",
-            title: newsData[currentLang].title,
-            subtitle: newsData[currentLang].subtitle
+            title: liveNews[currentLang].title,
+            subtitle: liveNews[currentLang].subtitle
         },
         press: {
             tag: language === "hi" ? "प्रेस और मीडिया केंद्र" : "PRESS & MEDIA CENTER",
@@ -302,16 +356,16 @@ export default function NewsAndMedia({ defaultTab = "news" }: NewsAndMediaProps)
                     if (foundItem) {
                         setSelectedVideo(foundItem as PressItem);
                     }
-                } else {
-                    const foundItem = newsData.en.items.find(item => item.id === id) ||
-                                      newsData.hi.items.find(item => item.id === id);
+                } else if (newsItemsEn.length || newsItemsHi.length) {
+                    const pool = newsItemsEn.concat(newsItemsHi);
+                    const foundItem = pool.find(item => item.id === id);
                     if (foundItem) {
                         setSelectedNews(foundItem as NewsItem);
                     }
                 }
             }
         }
-    }, [defaultTab]);
+    }, [defaultTab, newsItemsEn, newsItemsHi]);
 
     // Update URL when selected news changes
     useEffect(() => {
@@ -455,8 +509,13 @@ export default function NewsAndMedia({ defaultTab = "news" }: NewsAndMediaProps)
                     {activeTab === "news" ? (
                         /* News Tab Content */
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-10">
-                            {newsData[currentLang].items.map((item, index) => (
-                                <ScrollReveal key={item.id} animation="fade-up" delay={index * 100}>
+                            {newsLoading && liveNews[currentLang].items.length === 0 ? (
+                                <p className="col-span-full text-center py-16 text-[#587E67] font-semibold">
+                                    {language === "hi" ? "समाचार लोड हो रहे हैं…" : "Loading news…"}
+                                </p>
+                            ) : null}
+                            {liveNews[currentLang].items.map((item, index) => (
+                                <ScrollReveal key={item.id} animation="fade-up" delay={Math.min(index, 6) * 40}>
                                     <div
                                         className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 group flex flex-col cursor-pointer border border-gray-100 h-full transform hover:-translate-y-2"
                                         onClick={() => setSelectedNews(item as NewsItem)}
@@ -489,7 +548,7 @@ export default function NewsAndMedia({ defaultTab = "news" }: NewsAndMediaProps)
                                                 </p>
                                             </div>
                                             <div className="flex items-center gap-2 text-[#0D5229] font-bold text-lg group-hover:gap-4 transition-all duration-300 w-fit pb-1 border-b-2 border-transparent group-hover:border-[#0D5229]">
-                                                {newsData[currentLang].readMore}
+                                                {liveNews[currentLang].readMore}
                                                 <ArrowRight size={20} />
                                             </div>
                                         </div>

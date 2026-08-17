@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "../../../../components/Navbar";
 import { fetchApi } from "../../../../lib/api";
 import { Copy, CheckCircle2, Share2, ChevronLeft } from "lucide-react";
+import { RequireAuth } from "../../../components/RequireAuth";
 
 const SQUAD_TYPES = [
   "Campus Squad",
@@ -40,6 +41,14 @@ const SQUAD_TYPE_DESC: Record<string, string> = {
 };
 
 export default function StartSquadPage() {
+  return (
+    <RequireAuth portal="youth">
+      <StartSquadInner />
+    </RequireAuth>
+  );
+}
+
+function StartSquadInner() {
   const router = useRouter();
 
   const [step, setStep]       = useState<"form" | "success">("form");

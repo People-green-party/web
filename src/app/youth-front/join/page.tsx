@@ -6,6 +6,7 @@ import { Navbar } from "../../../components/Navbar";
 import { Phone, Eye, EyeOff, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useLanguage } from "../../../components/LanguageContext";
 import { FormFieldLabel, RequiredMark } from "../../../components/FormFieldLabel";
+import { setPortalToken } from "../../../lib/portalAuth";
 
 // --- Translations ---
 const translations = {
@@ -466,7 +467,7 @@ function YouthJoinPageInner() {
       // Keep the new member signed in so thank-you → dashboard works
       if (userData?.access_token) {
         try {
-          localStorage.setItem('access_token', userData.access_token);
+          setPortalToken('youth', userData.access_token);
           localStorage.setItem(
             'user_info',
             JSON.stringify({

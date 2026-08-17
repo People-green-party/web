@@ -287,7 +287,15 @@ const LandingPageContent = () => {
       <section className="w-full relative h-[650px] md:h-[700px] lg:h-[800px] mt-[70px] lg:mt-[90px]">
         {/* Slider: Each slide clubs its own image + text together */}
         <div className="absolute inset-0 overflow-hidden bg-black">
-          {heroSlides.map((slide, index) => (
+          {heroSlides.map((slide, index) => {
+            // Only keep nearby slides in the DOM to cut decode/memory cost
+            const isNear =
+              index === currentHeroIndex ||
+              index === (currentHeroIndex + 1) % heroSlides.length ||
+              index === (currentHeroIndex - 1 + heroSlides.length) % heroSlides.length;
+            if (!isNear && index !== 0) return null;
+
+            return (
             <div
               key={index}
               className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentHeroIndex
@@ -301,9 +309,10 @@ const LandingPageContent = () => {
                 alt={`Hero ${index + 1}`}
                 fill
                 priority={index === 0}
+                loading={index === 0 ? "eager" : "lazy"}
                 className="object-cover"
                 sizes="100vw"
-                quality={90}
+                quality={75}
               />
               <div className="absolute inset-0 bg-black/40 z-20" />
 
@@ -319,7 +328,8 @@ const LandingPageContent = () => {
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Overlapping Quick Action Cards & Highlight */}
@@ -329,7 +339,7 @@ const LandingPageContent = () => {
             {t.quickLinks.map((item: any, i: number) => {
               const Icon = heroIcons[i];
               return (
-                <ScrollReveal key={i} animation="fade-in" delay={600 + (i * 100)} className={i === 4 ? 'col-span-2 md:col-span-1 border-t md:border-t-0 border-gray-200/50' : ''}>
+                <ScrollReveal key={i} animation="fade-in" delay={i * 40} className={i === 4 ? 'col-span-2 md:col-span-1 border-t md:border-t-0 border-gray-200/50' : ''}>
                   <Link
                     href={item.path}
                     className={`group flex flex-col items-center justify-center gap-2 p-4 md:p-6 hover:-translate-y-2 hover:shadow-2xl transition-all duration-300 ease-out cursor-pointer min-h-[160px] md:min-h-[180px] h-full bg-transparent hover:bg-white w-full`}
@@ -348,7 +358,7 @@ const LandingPageContent = () => {
 
           {/* Highlight Line */}
           <div className="w-full max-w-[1320px] bg-[#E85C2F] py-3 lg:py-4 flex items-center justify-center shadow-lg">
-            <ScrollReveal animation="slide-left" delay={1200} distance={50}>
+            <ScrollReveal animation="slide-left" delay={80} distance={30}>
               <h3 className="font-['Familjen_Grotesk'] font-bold text-[18px] md:text-[24px] leading-tight text-white text-center px-4">
                 {t.heroTagline}
               </h3>

@@ -1,24 +1,16 @@
-import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Familjen_Grotesk } from "next/font/google";
+import type { Metadata } from "next";
+import { Familjen_Grotesk } from "next/font/google";
 import "./globals.css";
 
 import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
 import { LanguageProvider } from "../components/LanguageContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 const familjenGrotesk = Familjen_Grotesk({
   variable: "--font-familjen-grotesk",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: true,
 });
 
 export const metadata: Metadata = {
@@ -45,7 +37,7 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="format-detection" content="telephone=no" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${familjenGrotesk.variable} antialiased font-sans`}>
+      <body className={`${familjenGrotesk.variable} antialiased font-sans`}>
         <div className="min-h-screen flex flex-col">
           <main className="flex-1">
             <LanguageProvider>

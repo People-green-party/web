@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "../../../components/Navbar";
 import { fetchApi } from "../../../lib/api";
 import { Users, Search, ChevronRight, Plus, Filter } from "lucide-react";
+import { RequireAuth } from "../../components/RequireAuth";
 
 const SQUAD_TYPE_LABELS: Record<string, string> = {
   Campus:             "Campus Squad",
@@ -323,8 +324,10 @@ function SquadsContent() {
 
 export default function SquadsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F5FBF7] text-[#04330B] font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px] flex items-center justify-center">Loading...</div>}>
-      <SquadsContent />
-    </Suspense>
+    <RequireAuth portal="youth">
+      <Suspense fallback={<div className="min-h-screen bg-[#F5FBF7] text-[#04330B] font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px] flex items-center justify-center">Loading...</div>}>
+        <SquadsContent />
+      </Suspense>
+    </RequireAuth>
   );
 }

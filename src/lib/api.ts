@@ -14,15 +14,63 @@ export function getApiBaseUrl() {
     return normalizeApiBaseUrl(baseUrl);
 }
 
+type FetchApiOptions = RequestInit & {
+    /** Skip auth header lookup (public endpoints). */
+    skipAuth?: boolean;
+    /** Client-side TTL cache for GET responses (ms). 0 = disabled. */
+    cacheTtlMs?: number;
+};
+
+const memoryCache = new Map<string, { expires: number; data: unknown }>();
+
+function isPublicGet(endpoint: string, method: string) {
+    if (method !== 'GET') return false;
+    const e = endpoint.replace(/^\//, '').split('?')[0];
+    return (
+        e === 'news' ||
+        /^news\/\d+$/.test(e) ||
+        e.startsWith('geo/') ||
+        e === 'elections' ||
+        /^elections\/\d+$/.test(e)
+    );
+}
+
+async function waitForAuthHeader(maxMs = 150): Promise<Record<string, string>> {
+    const started = Date.now();
+    let header = await getAuthHeader({ allowSession: true });
+    if (header.Authorization) return header;
+
+    while (Date.now() - started < maxMs) {
+        await new Promise((r) => setTimeout(r, 40));
+        header = await getAuthHeader({ allowSession: true });
+        if (header.Authorization) return header;
+    }
+    return header;
+}
+
 /**
  * Standard fetch wrapper for PGP Backend API calls.
  * Handles base URL, auth tokens, and common error scenarios.
  */
-export async function fetchApi(endpoint: string, options: RequestInit = {}) {
+export async function fetchApi(endpoint: string, options: FetchApiOptions = {}) {
     const baseUrl = getApiBaseUrl();
     const url = endpoint.startsWith('http')
         ? endpoint
         : `${baseUrl}/${endpoint.replace(/^\//, '')}`;
+
+    const method = String(options.method || 'GET').toUpperCase();
+    const publicGet = isPublicGet(endpoint, method);
+    const skipAuth = options.skipAuth ?? publicGet;
+    const cacheTtlMs =
+        options.cacheTtlMs ??
+        (publicGet ? 60_000 : 0);
+
+    if (cacheTtlMs > 0 && method === 'GET') {
+        const hit = memoryCache.get(url);
+        if (hit && hit.expires > Date.now()) {
+            return hit.data;
+        }
+    }
 
     const toFriendlyMessage = (msg: string | string[], status?: number, endpointName?: string) => {
         // Handle array messages from NestJS validation
@@ -86,29 +134,20 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
         return m;
     };
 
-    // Get auth token from localStorage if available
     let authHeader: Record<string, string> = {};
-    if (typeof window !== 'undefined') {
-        authHeader = await getAuthHeader();
+    if (typeof window !== 'undefined' && !skipAuth) {
+        authHeader = await getAuthHeader({ allowSession: true });
 
-        // 👇 THE ULTIMATE FIX: Intercept naked requests before they hit the backend 👇
-        // If we are hitting a protected user route but don't have a token yet...
+        // Brief poll for /me right after login (avoid fixed 500ms delay)
         if (endpoint.includes('/me') && !authHeader.Authorization) {
-            // Wait 500ms to allow Supabase/LocalStorage to finish saving token
-            console.log(`[API Guard] Delaying request to ${endpoint} to wait for auth token...`);
-            await new Promise(r => setTimeout(r, 500));
-            authHeader = await getAuthHeader(); // Try grabbing it one more time
-
-            // If it is STILL empty, cancel the request entirely.
-            // This prevents the backend from throwing "Missing bearer token" 401 error.
+            authHeader = await waitForAuthHeader(150);
             if (!authHeader.Authorization) {
-                console.warn(`[API Guard] Blocked naked request to ${endpoint}. User needs to log in.`);
                 throw new Error("No active session found. Please log in.");
             }
         }
-        // 👆 END FIX 👆
     }
 
+    const { skipAuth: _s, cacheTtlMs: _c, ...fetchInit } = options;
     const defaultHeaders = {
         'Content-Type': 'application/json',
         ...authHeader,
@@ -116,11 +155,12 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
     try {
         const response = await fetch(url, {
-            ...options,
-            cache: 'no-store',
+            ...fetchInit,
+            // Public GETs can use browser HTTP cache; authenticated stay fresh
+            cache: fetchInit.cache ?? (publicGet ? 'force-cache' : 'no-store'),
             headers: {
                 ...defaultHeaders,
-                ...options.headers,
+                ...fetchInit.headers,
             },
         });
 
@@ -144,6 +184,10 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
             }
 
             throw new Error(friendly);
+        }
+
+        if (cacheTtlMs > 0 && method === 'GET') {
+            memoryCache.set(url, { expires: Date.now() + cacheTtlMs, data });
         }
 
         return data;

@@ -237,7 +237,7 @@ export default function AdminPage() {
       value: youth.totalYouth ?? "—",
       icon: Flag,
       hint: "Click card → member details",
-      href: "/admin/youth/members",
+      href: "/admin/youth",
     },
     {
       label: "Internships",

@@ -74,7 +74,10 @@ export default function AdminElectionResultsPage() {
               </li>
             ))}
           </ol>
-          {(results.results || []).length === 0 && (
+          <p className="mt-3 text-sm text-[#04330B] font-semibold">
+            NOTA: {Number(results.notaCount || 0)}
+          </p>
+          {(results.results || []).length === 0 && Number(results.notaCount || 0) === 0 && (
             <p className="text-sm text-[#587E67]">No results yet.</p>
           )}
         </div>

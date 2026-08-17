@@ -16,7 +16,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--pgp-ui-font);
   --font-familjen-grotesk: var(--pgp-ui-font);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
