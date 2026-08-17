@@ -5,25 +5,34 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { supabase } from "../../lib/supabaseClient";
 import { isAuthDevMode } from "../../lib/authDevMode";
+import {
+  clearPortalToken,
+  detectPortalFromPath,
+  getPortalToken,
+  portalLoginPath,
+  type Portal,
+} from "../../lib/portalAuth";
 
 type RequireAuthProps = {
   children: React.ReactNode;
+  /** Force a portal; defaults from current path */
+  portal?: Portal;
 };
 
 function isJwtUsable(token: string): boolean {
   try {
     const payload = JSON.parse(atob(token.split(".")[1] || ""));
     if (!payload?.exp) return false;
-    // Same buffer as getAuthHeader — reject near-expiry / expired tokens
     return payload.exp * 1000 > Date.now() + 60_000;
   } catch {
     return false;
   }
 }
 
-export function RequireAuth({ children }: RequireAuthProps) {
+export function RequireAuth({ children, portal: portalProp }: RequireAuthProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const portal = portalProp || detectPortalFromPath(pathname);
   const [allowed, setAllowed] = useState(false);
   const [checking, setChecking] = useState(true);
 
@@ -33,20 +42,12 @@ export function RequireAuth({ children }: RequireAuthProps) {
     const deny = () => {
       if (cancelled) return;
       try {
-        window.localStorage.removeItem("access_token");
+        clearPortalToken(portal);
         if (!isAuthDevMode()) window.localStorage.removeItem("devUserId");
       } catch {
         // ignore
       }
-      const next = pathname ? `?next=${encodeURIComponent(pathname)}` : "";
-      const isYouthPath = typeof pathname === "string" && pathname.startsWith("/youth-front");
-      const isUnionPath = typeof pathname === "string" && pathname.startsWith("/union");
-      const loginPath = isYouthPath
-        ? `/youth-front/login${next}`
-        : isUnionPath
-          ? `/union/login${next}`
-          : `/login${next}`;
-      router.replace(loginPath);
+      router.replace(portalLoginPath(portal, pathname || undefined));
       setAllowed(false);
       setChecking(false);
     };
@@ -60,7 +61,6 @@ export function RequireAuth({ children }: RequireAuthProps) {
     const check = async () => {
       try {
         if (typeof window !== "undefined") {
-          // Dev bypass only when explicitly enabled (never in production builds)
           if (isAuthDevMode()) {
             const devUserId = window.localStorage.getItem("devUserId");
             if (devUserId && String(devUserId).trim()) {
@@ -69,19 +69,21 @@ export function RequireAuth({ children }: RequireAuthProps) {
             }
           }
 
-          const pinToken = window.localStorage.getItem("access_token");
+          const pinToken = getPortalToken(portal);
           if (pinToken) {
             if (isJwtUsable(pinToken)) {
               allow();
               return;
             }
-            window.localStorage.removeItem("access_token");
+            clearPortalToken(portal);
           }
         }
       } catch {
-        // ignore and fall through
+        // ignore
       }
 
+      // Union OTP often relies on Supabase session; allow it only on union portal.
+      // Party/Youth prefer portal JWT; Supabase is a secondary fallback.
       try {
         const { data } = await supabase.auth.getSession();
         const token = data.session?.access_token;
@@ -101,7 +103,7 @@ export function RequireAuth({ children }: RequireAuthProps) {
     return () => {
       cancelled = true;
     };
-  }, [router, pathname]);
+  }, [router, pathname, portal]);
 
   if (checking || !allowed) {
     return (

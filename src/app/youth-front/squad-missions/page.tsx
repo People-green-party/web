@@ -21,6 +21,14 @@ type Mission = {
 type Member = { id: number; name: string };
 
 export default function SquadMissionsPage() {
+  return (
+    <RequireAuth portal="youth">
+      <SquadMissionsInner />
+    </RequireAuth>
+  );
+}
+
+function SquadMissionsInner() {
   const router = useRouter();
   const [squad, setSquad]           = useState<any>(null);
   const [missions, setMissions]     = useState<Mission[]>([]);
@@ -95,7 +103,6 @@ export default function SquadMissionsPage() {
   const squadId     = squad?.id;
 
   return (
-    <RequireAuth>
       <div className="min-h-screen bg-[#F0FBF4] text-[#04330B] font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px]">
         <Navbar />
 
@@ -328,6 +335,5 @@ export default function SquadMissionsPage() {
           </div>
         )}
       </div>
-    </RequireAuth>
   );
 }

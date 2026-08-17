@@ -7,6 +7,7 @@ import { useLanguage } from '../../../components/LanguageContext';
 import { Phone, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 import { Navbar } from '../../../components/Navbar';
 import { fetchApi } from '../../../lib/api';
+import { setPortalToken } from '../../../lib/portalAuth';
 
 // --- Translations ---
 const translations = {
@@ -187,7 +188,7 @@ const UnionLoginPageContent = () => {
             throw new Error('Dev login failed — no token returned');
           }
           if (typeof window !== 'undefined') {
-            window.localStorage.setItem('access_token', loginRes.access_token);
+            setPortalToken('union', loginRes.access_token);
             if (loginRes?.id) {
               window.localStorage.setItem('devUserId', String(loginRes.id));
             }

@@ -8,6 +8,7 @@ import { Phone, Eye, EyeOff } from 'lucide-react';
 import { Navbar } from '../../../components/Navbar';
 import { FormFieldLabel } from '../../../components/FormFieldLabel';
 import { compressImageForUpload } from '../../../lib/compressImage';
+import { getPortalToken, setPortalToken } from '../../../lib/portalAuth';
 
 function friendlyOtpError(raw: string): string {
   const msg = String(raw || '');
@@ -285,7 +286,7 @@ const UnionJoinPageContent = () => {
 
       if (typeof window !== 'undefined') {
         if (userData?.access_token) {
-          window.localStorage.setItem('access_token', String(userData.access_token));
+          setPortalToken('union', String(userData.access_token));
         }
         const { isAuthDevMode } = await import('../../../lib/authDevMode');
         if (isAuthDevMode() && userData?.id) {
@@ -300,7 +301,7 @@ const UnionJoinPageContent = () => {
           const photoToken =
             userData?.access_token ||
             photoSession?.session?.access_token ||
-            (typeof window !== 'undefined' ? window.localStorage.getItem('access_token') : null);
+            getPortalToken('union');
 
           if (!photoToken) {
             throw new Error('No auth token for photo upload');

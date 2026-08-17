@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '../../lib/supabaseClient';
 import { fetchApi } from '../../lib/api';
 import { FormFieldLabel } from '../../components/FormFieldLabel';
+import { clearPortalToken, setPortalToken } from '../../lib/portalAuth';
 
 function LoginScreenInner() {
   const searchParams = useSearchParams();
@@ -95,7 +96,7 @@ function LoginScreenInner() {
       });
 
       if (data.access_token) {
-        localStorage.setItem('access_token', data.access_token);
+        setPortalToken('party', data.access_token);
         if (data.user) {
           localStorage.setItem('user_info', JSON.stringify(data.user));
         }
@@ -221,7 +222,7 @@ function LoginScreenInner() {
       // OTP Verified - now let user set new PIN
       // Clear any old custom token so fetchApi uses the fresh Supabase session
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('access_token');
+        clearPortalToken('party');
       }
       setMode('set_new_pin');
     } catch (err: any) {

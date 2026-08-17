@@ -214,8 +214,20 @@ function InternLoginInner() {
     }
     setLoading(true);
     try {
+      const { isAuthDevMode } = await import("@/lib/authDevMode");
+      const headers: Record<string, string> = {};
+      if (!isAuthDevMode()) {
+        const { supabase } = await import("@/lib/supabaseClient");
+        const { data } = await supabase.auth.getSession();
+        const token = data.session?.access_token;
+        if (!token) {
+          throw new Error("OTP session expired. Please verify OTP again.");
+        }
+        headers.Authorization = `Bearer ${token}`;
+      }
       const data = await fetchApi("leadership-academy/set-pin", {
         method: "POST",
+        headers,
         body: JSON.stringify({ phone: sanitize(phone), pin: newPin }),
       });
       if (!data?.access_token) throw new Error("Could not set PIN");

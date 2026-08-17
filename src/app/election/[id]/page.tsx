@@ -376,17 +376,26 @@ const ElectionVotingContent = () => {
                 const apiCandidates = Array.isArray(res?.candidates) ? res.candidates : [];
                 const election = res?.election || res;
 
-                const mapped: Candidate[] = apiCandidates.map((c: any) => ({
-                    id: String(c.user?.id ?? c.userId ?? c.id),
-                    name: { en: c.user?.name ?? '', hi: c.user?.name ?? '' },
-                    role: { en: '', hi: '' },
-                    image: null,
-                    selected: false,
-                    ageGroup: '',
-                    region: '',
-                    gender: '',
-                    isNota: false,
-                }));
+                const mapped: Candidate[] = apiCandidates.map((c: any) => {
+                    const u = c.user || {};
+                    const region =
+                        u.localUnit?.vidhansabha?.name ||
+                        u.localUnit?.name ||
+                        u.address ||
+                        '';
+                    const roleLabel = String(u.role || '').replace(/([A-Z])/g, ' $1').trim();
+                    return {
+                        id: String(u.id ?? c.userId ?? c.id),
+                        name: { en: u.name ?? '', hi: u.name ?? '' },
+                        role: { en: roleLabel, hi: roleLabel },
+                        image: u.photoUrl || null,
+                        selected: false,
+                        ageGroup: u.youthAgeGroup || '',
+                        region,
+                        gender: u.gender || '',
+                        isNota: false,
+                    };
+                });
 
                 const withNota: Candidate[] = [
                     ...mapped,
@@ -468,7 +477,12 @@ const ElectionVotingContent = () => {
         const selected = candidates.filter((c) => c.selected && !c.isNota);
         const notaOnly = candidates.some((c) => c.selected && c.isNota) && selected.length === 0;
         if (notaOnly) {
-            throw new Error('NOTA is not available for online submission yet. Please select at least one candidate.');
+            if (!electionId) throw new Error('Invalid election');
+            await fetchApi(`elections/${electionId}/vote`, {
+                method: 'POST',
+                body: JSON.stringify({ isNota: true, candidateUserIds: [] }),
+            });
+            return;
         }
         const candidateUserIds = selected
             .map((c) => parseInt(c.id, 10))
@@ -479,7 +493,7 @@ const ElectionVotingContent = () => {
         if (!electionId) throw new Error('Invalid election');
         await fetchApi(`elections/${electionId}/vote`, {
             method: 'POST',
-            body: JSON.stringify({ candidateUserIds }),
+            body: JSON.stringify({ candidateUserIds, isNota: false }),
         });
     };
 

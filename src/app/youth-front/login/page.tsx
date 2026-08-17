@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Navbar } from "../../../components/Navbar";
 import { FormFieldLabel } from "../../../components/FormFieldLabel";
 import { useLanguage } from "../../../components/LanguageContext";
+import { clearPortalToken, setPortalToken } from "../../../lib/portalAuth";
 
 type Mode = "login" | "otp_request" | "otp_verify" | "set_new_pin";
 
@@ -159,7 +160,8 @@ function YouthLoginInner() {
       const isYouth = tag.includes("jinda") || tag.includes("youth");
       if (!isYouth) {
         try {
-          localStorage.removeItem("access_token");
+          const { clearPortalToken } = await import("../../../lib/portalAuth");
+          clearPortalToken("youth");
           localStorage.removeItem("user_info");
         } catch {
           /* ignore */
@@ -170,7 +172,7 @@ function YouthLoginInner() {
         return;
       }
 
-      localStorage.setItem("access_token", data.access_token);
+      setPortalToken("youth", data.access_token);
       if (data.user) localStorage.setItem("user_info", JSON.stringify(data.user));
       router.push(safeNext(nextPath));
     } catch (err: any) {
@@ -273,7 +275,7 @@ function YouthLoginInner() {
       });
       if (verifyError) throw verifyError;
 
-      if (typeof window !== "undefined") localStorage.removeItem("access_token");
+      if (typeof window !== "undefined") clearPortalToken("youth");
       setMode("set_new_pin");
       setInfo("OTP verified. Set your new Jinda Youth PIN.");
     } catch (err: any) {

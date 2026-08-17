@@ -20,10 +20,21 @@ import {
   Bell,
   ExternalLink,
   MapPinned,
+  Newspaper,
   HandCoins,
   Building2,
 } from "lucide-react";
 import { adminFetch, clearAdminSession, getAdminScope, getAdminToken } from "@/lib/adminApi";
+import {
+  type AdminNotification,
+  formatNotificationBody,
+  formatNotificationTitle,
+  isNotificationRead,
+  loadNotifReadState,
+  markAllNotificationsRead,
+  markNotificationRead,
+  notificationHref,
+} from "@/lib/adminNotifications";
 
 type NavItem = {
   href: string;
@@ -34,16 +45,6 @@ type NavItem = {
 type NavSection = {
   title: string;
   items: NavItem[];
-};
-
-type AuditLog = {
-  id: number;
-  action?: string;
-  entityType?: string;
-  entityId?: string | null;
-  reason?: string | null;
-  createdAt?: string;
-  actor?: { name?: string | null } | null;
 };
 
 const NAV: NavSection[] = [
@@ -57,9 +58,9 @@ const NAV: NavSection[] = [
       { href: "/admin/users", label: "All Users", icon: Users },
       { href: "/admin/unions", label: "Unions", icon: Building2 },
       { href: "/admin/youth", label: "Jinda Youth", icon: BarChart3 },
-      { href: "/admin/youth/members", label: "Youth Members", icon: Users },
       { href: "/admin/leadership-academy", label: "Internships", icon: GraduationCap },
       { href: "/admin/donations", label: "Donations", icon: HandCoins },
+      { href: "/admin/news", label: "News CMS", icon: Newspaper },
     ],
   },
   {
@@ -85,11 +86,6 @@ const NAV: NavSection[] = [
 function isActive(pathname: string, href: string) {
   if (href === "/admin") return pathname === "/admin";
   return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-function formatAction(action?: string) {
-  if (!action) return "Activity";
-  return action.replace(/_/g, " ").toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
 }
 
 function AdminSidebar({
@@ -208,15 +204,22 @@ export function AdminShell({
   const [scope, setScope] = useState<"view" | "edit">("view");
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifLoading, setNotifLoading] = useState(false);
-  const [notifications, setNotifications] = useState<AuditLog[]>([]);
+  const [notifications, setNotifications] = useState<AdminNotification[]>([]);
+  const [readState, setReadState] = useState(() => loadNotifReadState());
   const notifRef = useRef<HTMLDivElement | null>(null);
+
+  const unreadCount = useMemo(
+    () => notifications.filter((n) => !isNotificationRead(n.id, readState)).length,
+    [notifications, readState]
+  );
 
   const loadNotifications = async () => {
     if (!getAdminToken()) return;
     setNotifLoading(true);
     try {
-      const data = await adminFetch<{ logs?: AuditLog[] }>("audit/logs?limit=12");
+      const data = await adminFetch<{ logs?: AdminNotification[] }>("audit/logs?limit=20");
       setNotifications(Array.isArray(data?.logs) ? data.logs : []);
+      setReadState(loadNotifReadState());
     } catch {
       setNotifications([]);
     } finally {
@@ -257,6 +260,7 @@ export function AdminShell({
 
   const pageTitle = useMemo(() => {
     if (title) return title;
+    if (pathname.startsWith("/admin/notifications")) return "Notifications";
     for (const section of NAV) {
       for (const item of section.items) {
         if (isActive(pathname, item.href)) return item.label;
@@ -274,6 +278,16 @@ export function AdminShell({
     const next = !notifOpen;
     setNotifOpen(next);
     if (next) await loadNotifications();
+  };
+
+  const openNotification = (n: AdminNotification) => {
+    setReadState(markNotificationRead(n.id));
+    setNotifOpen(false);
+    router.push(notificationHref(n));
+  };
+
+  const markAllRead = () => {
+    setReadState(markAllNotificationsRead(notifications));
   };
 
   return (
@@ -330,60 +344,106 @@ export function AdminShell({
                 onClick={toggleNotifications}
                 className="relative h-10 w-10 rounded-xl border border-[#DDEEE4] flex items-center justify-center text-[#04330B] hover:bg-[#F8FBF9]"
                 aria-label="Notifications"
-                title="Recent admin activity"
+                title="Notifications"
               >
                 <Bell size={18} />
-                {notifications.length > 0 ? (
+                {unreadCount > 0 ? (
                   <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-[#BE1E2D] text-white text-[10px] font-bold flex items-center justify-center">
-                    {Math.min(notifications.length, 9)}
-                    {notifications.length > 9 ? "+" : ""}
+                    {Math.min(unreadCount, 9)}
+                    {unreadCount > 9 ? "+" : ""}
                   </span>
                 ) : null}
               </button>
 
               {notifOpen ? (
-                <div className="absolute right-0 mt-2 w-[min(360px,calc(100vw-1.5rem))] rounded-2xl border border-[#E4F2EA] bg-white shadow-xl overflow-hidden z-50">
-                  <div className="px-4 py-3 border-b border-[#E4F2EA] flex items-center justify-between">
-                    <p className="text-sm font-black text-[#04330B]">Recent activity</p>
-                    <Link
-                      href="/admin/audit-logs"
-                      onClick={() => setNotifOpen(false)}
-                      className="text-xs font-bold text-[#0D5229] hover:underline"
-                    >
-                      View all
-                    </Link>
+                <div className="absolute right-0 mt-2 w-[min(380px,calc(100vw-1.5rem))] rounded-2xl border border-[#E4F2EA] bg-white shadow-xl overflow-hidden z-50">
+                  <div className="px-4 py-3 border-b border-[#E4F2EA] flex items-center justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-black text-[#04330B]">Notifications</p>
+                      <p className="text-[11px] font-medium text-[#587E67]">
+                        {unreadCount} unread
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={markAllRead}
+                        disabled={unreadCount === 0}
+                        className="text-[11px] font-bold text-[#04330B] disabled:opacity-40 hover:underline"
+                      >
+                        Mark all read
+                      </button>
+                      <Link
+                        href="/admin/notifications"
+                        onClick={() => setNotifOpen(false)}
+                        className="text-[11px] font-bold text-[#0D5229] hover:underline"
+                      >
+                        View all
+                      </Link>
+                    </div>
                   </div>
-                  <div className="max-h-[360px] overflow-y-auto">
+                  <div className="max-h-[380px] overflow-y-auto">
                     {notifLoading ? (
                       <p className="px-4 py-8 text-sm text-[#587E67] font-medium text-center">
                         Loading…
                       </p>
                     ) : notifications.length === 0 ? (
                       <p className="px-4 py-8 text-sm text-[#587E67] font-medium text-center">
-                        No recent activity yet.
+                        No notifications yet.
                       </p>
                     ) : (
                       <ul className="divide-y divide-[#F0F5F2]">
-                        {notifications.map((log) => (
-                          <li key={log.id} className="px-4 py-3">
-                            <p className="text-sm font-bold text-[#04330B]">
-                              {formatAction(log.action)}
-                            </p>
-                            <p className="mt-0.5 text-xs text-[#587E67] font-medium line-clamp-2">
-                              {[log.entityType, log.entityId, log.reason]
-                                .filter(Boolean)
-                                .join(" · ") || "Admin action"}
-                            </p>
-                            <p className="mt-1 text-[11px] text-[#94A3B8] font-medium">
-                              {log.actor?.name ? `${log.actor.name} · ` : ""}
-                              {log.createdAt
-                                ? new Date(log.createdAt).toLocaleString("en-IN")
-                                : ""}
-                            </p>
-                          </li>
-                        ))}
+                        {notifications.map((log) => {
+                          const unread = !isNotificationRead(log.id, readState);
+                          return (
+                            <li key={log.id}>
+                              <button
+                                type="button"
+                                onClick={() => openNotification(log)}
+                                className={`w-full text-left px-4 py-3 hover:bg-[#F8FBF9] transition-colors ${
+                                  unread ? "bg-[#F3FBF6]" : ""
+                                }`}
+                              >
+                                <div className="flex items-start gap-2.5">
+                                  <span
+                                    className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${
+                                      unread ? "bg-[#BE1E2D]" : "bg-[#D1D5DB]"
+                                    }`}
+                                  />
+                                  <div className="min-w-0 flex-1">
+                                    <p
+                                      className={`text-sm text-[#04330B] ${
+                                        unread ? "font-black" : "font-bold"
+                                      }`}
+                                    >
+                                      {formatNotificationTitle(log.action)}
+                                    </p>
+                                    <p className="mt-0.5 text-xs text-[#587E67] font-medium line-clamp-2">
+                                      {formatNotificationBody(log)}
+                                    </p>
+                                    <p className="mt-1 text-[11px] text-[#94A3B8] font-medium">
+                                      {log.actor?.name ? `${log.actor.name} · ` : ""}
+                                      {log.createdAt
+                                        ? new Date(log.createdAt).toLocaleString("en-IN")
+                                        : ""}
+                                    </p>
+                                  </div>
+                                </div>
+                              </button>
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
+                  </div>
+                  <div className="border-t border-[#E4F2EA] px-4 py-2.5 bg-[#F8FBF9]">
+                    <Link
+                      href="/admin/notifications"
+                      onClick={() => setNotifOpen(false)}
+                      className="block text-center text-xs font-bold text-[#0D5229] hover:underline"
+                    >
+                      View all messages
+                    </Link>
                   </div>
                 </div>
               ) : null}

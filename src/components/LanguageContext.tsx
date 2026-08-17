@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useContext, createContext } from "react";
+import React, { useState, useEffect, useContext, createContext, useMemo, useCallback } from "react";
 import { translations } from "./translations";
 
 const LanguageContext = createContext<any>(null);
@@ -28,17 +28,22 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
         }
     }, [language]);
 
-    const updateLanguage = (newLang: string) => {
+    const updateLanguage = useCallback((newLang: string) => {
         setLanguage(newLang);
         localStorage.setItem("pgp_ui_lang", newLang);
-    };
+    }, []);
 
-    return (
-        <LanguageContext.Provider value={{
+    const value = useMemo(
+        () => ({
             language,
             setLanguage: updateLanguage,
-            t: translations[language as keyof typeof translations] || translations.hi
-        }}>
+            t: translations[language as keyof typeof translations] || translations.hi,
+        }),
+        [language, updateLanguage]
+    );
+
+    return (
+        <LanguageContext.Provider value={value}>
             {children}
         </LanguageContext.Provider>
     );

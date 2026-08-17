@@ -25,7 +25,7 @@ const ElectionTable = () => {
                 const formatted = result.map((e: any) => ({
                     id: e.id,
                     name: e.position,
-                    candidates: "N/A",
+                    candidates: e.candidateCount ?? e._count?.candidates ?? 0,
                     start: new Date(e.openedAt).toLocaleDateString('en-GB').replace(/\//g, '-'),
                     end: e.closedAt ? new Date(e.closedAt).toLocaleDateString('en-GB').replace(/\//g, '-') : t.election.table.ongoing,
                     status: e.status,

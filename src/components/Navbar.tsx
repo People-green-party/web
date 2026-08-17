@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { X, Menu, User, LogOut } from 'lucide-react'; // Added User icon
 import { useLanguage } from "./LanguageContext";
+import { clearAllPortalTokens } from "../lib/portalAuth";
 
 interface NavbarProps {
     links?: { name: string; href: string; target?: string }[];
@@ -37,7 +38,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
         // Removed direct supabase call to avoid needing Anon Key on frontend for public pages
         if (typeof window !== 'undefined') {
             window.localStorage.removeItem('devUserId');
-            window.localStorage.removeItem('access_token');
+            clearAllPortalTokens();
             // Manually clear Supabase auth tokens to prevent auto-login
             Object.keys(window.localStorage).forEach((key) => {
                 if (key.startsWith('sb-')) {
