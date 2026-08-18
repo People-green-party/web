@@ -118,7 +118,7 @@ export default function AdminPage() {
         donationsPage,
       ] = await Promise.all([
         adminFetch<YouthStats>("admin/youth/dashboard").catch(() => ({})),
-        adminFetch<InternshipStats>("leadership-academy/applications/stats").catch(() => null),
+        adminFetch<InternshipStats>("internship/applications/stats").catch(() => null),
         fetch(`${ADMIN_API}/elections`, { cache: "no-store" })
           .then((r) => (r.ok ? r.json() : []))
           .catch(() => []),

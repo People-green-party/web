@@ -1,4 +1,4 @@
-export const academyI18n = {
+export const internshipI18n = {
   en: {
     hero: {
       tag: "PGP Internship",
@@ -950,8 +950,8 @@ export const academyI18n = {
   },
 } as const;
 
-export type AcademyLang = keyof typeof academyI18n;
+export type InternshipLang = keyof typeof internshipI18n;
 
-export function getAcademyI18n(lang: string) {
-  return academyI18n[lang as AcademyLang] || academyI18n.en;
+export function getInternshipI18n(lang: string) {
+  return internshipI18n[lang as InternshipLang] || internshipI18n.en;
 }

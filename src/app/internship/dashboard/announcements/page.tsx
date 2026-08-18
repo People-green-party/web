@@ -3,9 +3,9 @@
 import React, { useMemo } from "react";
 import { Pin } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
-import { useInternPortal } from "@/components/leadership-academy/portal/InternPortalContext";
-import { deptLabel } from "@/components/leadership-academy/portal/types";
-import PortalEmptyState from "@/components/leadership-academy/portal/PortalEmptyState";
+import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
+import { deptLabel } from "@/components/internship/portal/types";
+import PortalEmptyState from "@/components/internship/portal/PortalEmptyState";
 
 export default function InternAnnouncementsPage() {
   const { language } = useLanguage();

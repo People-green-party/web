@@ -3,8 +3,8 @@
 import React from "react";
 import { Award, CheckCircle2, Circle, ExternalLink } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
-import { useInternPortal } from "@/components/leadership-academy/portal/InternPortalContext";
-import { taskProgress } from "@/components/leadership-academy/portal/types";
+import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
+import { taskProgress } from "@/components/internship/portal/types";
 
 export default function InternCertificatePage() {
   const { language } = useLanguage();

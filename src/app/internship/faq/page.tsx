@@ -3,21 +3,21 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { AcademyShell } from "@/components/leadership-academy/AcademyShell";
-import { SectionHeading } from "@/components/leadership-academy/SectionHeading";
-import { FaqAccordion } from "@/components/leadership-academy/FaqAccordion";
-import { CtaBanner } from "@/components/leadership-academy/CtaBanner";
-import { DEPARTMENTS } from "@/data/leadership-academy/departments";
-import { getAcademyI18n } from "@/data/leadership-academy/i18n";
+import { InternshipShell } from "@/components/internship/InternshipShell";
+import { SectionHeading } from "@/components/internship/SectionHeading";
+import { FaqAccordion } from "@/components/internship/FaqAccordion";
+import { CtaBanner } from "@/components/internship/CtaBanner";
+import { DEPARTMENTS } from "@/data/internship/departments";
+import { getInternshipI18n } from "@/data/internship/i18n";
 import { useLanguage } from "@/components/LanguageContext";
 
-export default function LeadershipAcademyFaqPage() {
+export default function InternshipFaqPage() {
   const { language } = useLanguage();
-  const t = getAcademyI18n(language);
+  const t = getInternshipI18n(language);
   const f = t.faqPage;
 
   return (
-    <AcademyShell>
+    <InternshipShell>
       <section className="bg-white w-full flex justify-center pt-[40px] lg:pt-[70px] pb-[40px]">
         <div className="w-full max-w-[1320px] px-4 lg:px-8">
           <p className="font-['Familjen_Grotesk'] text-[12px] lg:text-[14px] font-bold uppercase tracking-wider text-[#E85C2F]">
@@ -76,6 +76,6 @@ export default function LeadershipAcademyFaqPage() {
           />
         </div>
       </section>
-    </AcademyShell>
+    </InternshipShell>
   );
 }

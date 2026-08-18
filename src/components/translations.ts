@@ -18,7 +18,7 @@ export const translations = {
             press: "Press & Media",
             union: "Unions",
             youth: "Jinda Youth",
-            academy: "Internships",
+            internship: "Internships",
             vision: "Vision"
         },
         heroSlides: [
@@ -319,7 +319,7 @@ export const translations = {
             press: "प्रेस और मीडिया",
             union: "यूनियन्स",
             youth: "जिंदा यूथ",
-            academy: "इंटर्नशिप",
+            internship: "इंटर्नशिप",
             vision: "विज़न"
         },
         heroSlides: [

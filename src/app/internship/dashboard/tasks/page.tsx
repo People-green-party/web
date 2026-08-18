@@ -9,10 +9,10 @@ import {
   Upload,
 } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
-import { useInternPortal } from "@/components/leadership-academy/portal/InternPortalContext";
+import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
 import { internFetch } from "@/lib/internApi";
-import { taskStatusLabel } from "@/components/leadership-academy/portal/types";
-import PortalEmptyState from "@/components/leadership-academy/portal/PortalEmptyState";
+import { taskStatusLabel } from "@/components/internship/portal/types";
+import PortalEmptyState from "@/components/internship/portal/PortalEmptyState";
 
 export default function InternTasksPage() {
   const { language } = useLanguage();
@@ -33,7 +33,7 @@ export default function InternTasksPage() {
     if (!proofUrl) return;
     setBusyId(assignmentId);
     try {
-      await internFetch(`leadership-academy/me/tasks/${assignmentId}/proof`, {
+      await internFetch(`internship/me/tasks/${assignmentId}/proof`, {
         method: "POST",
         body: JSON.stringify({ proofUrl }),
       });
@@ -58,7 +58,7 @@ export default function InternTasksPage() {
     try {
       const form = new FormData();
       form.append("file", file);
-      await internFetch(`leadership-academy/me/tasks/${assignmentId}/proof-upload`, {
+      await internFetch(`internship/me/tasks/${assignmentId}/proof-upload`, {
         method: "POST",
         body: form,
       });

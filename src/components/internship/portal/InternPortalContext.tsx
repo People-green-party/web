@@ -29,7 +29,7 @@ export function InternPortalProvider({ children }: { children: React.ReactNode }
     setLoading(true);
     setError("");
     try {
-      const dash = await internFetch<InternDash>("leadership-academy/me/dashboard");
+      const dash = await internFetch<InternDash>("internship/me/dashboard");
       // Applicants without a place see their application status instead.
       if (dash?.access?.granted === false) {
         router.replace("/internship/application-status");

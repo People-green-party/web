@@ -100,7 +100,7 @@ export function PortalSidebar({ onNavigate }: { onNavigate?: () => void }) {
     if (!subject.trim() || !message.trim()) return;
     setBusy(true);
     try {
-      await internFetch("leadership-academy/me/help-tickets", {
+      await internFetch("internship/me/help-tickets", {
         method: "POST",
         body: JSON.stringify({ subject: subject.trim(), message: message.trim() }),
       });

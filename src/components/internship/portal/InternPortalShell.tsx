@@ -63,7 +63,7 @@ export function InternPortalShell({ children }: { children: React.ReactNode }) {
   const markRead = async (id: number, href?: string | null) => {
     setNotifBusy(true);
     try {
-      await internFetch(`leadership-academy/me/notifications/${id}/read`, { method: "POST" });
+      await internFetch(`internship/me/notifications/${id}/read`, { method: "POST" });
       await refresh();
       setNotifOpen(false);
       if (href) router.push(href);
@@ -77,7 +77,7 @@ export function InternPortalShell({ children }: { children: React.ReactNode }) {
   const markAllRead = async () => {
     setNotifBusy(true);
     try {
-      await internFetch("leadership-academy/me/notifications/read-all", { method: "POST" });
+      await internFetch("internship/me/notifications/read-all", { method: "POST" });
       await refresh();
     } catch {
       // ignore

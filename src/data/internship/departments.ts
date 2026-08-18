@@ -1,4 +1,4 @@
-import type { AcademySlug, Department } from "./types";
+import type { InternshipSlug, Department } from "./types";
 
 const img = (name: string) => `/internship/${name}`;
 
@@ -795,12 +795,12 @@ export const DEPARTMENTS: Department[] = [
   },
 ];
 
-export const DEPARTMENTS_BY_SLUG: Record<AcademySlug, Department> = DEPARTMENTS.reduce(
+export const DEPARTMENTS_BY_SLUG: Record<InternshipSlug, Department> = DEPARTMENTS.reduce(
   (acc, dept) => {
     acc[dept.slug] = dept;
     return acc;
   },
-  {} as Record<AcademySlug, Department>
+  {} as Record<InternshipSlug, Department>
 );
 
 export function getDepartment(slug: string): Department | undefined {

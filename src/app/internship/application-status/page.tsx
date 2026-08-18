@@ -14,10 +14,10 @@ import {
   RefreshCw,
   XCircle,
 } from "lucide-react";
-import { AcademyShell } from "@/components/leadership-academy/AcademyShell";
+import { InternshipShell } from "@/components/internship/InternshipShell";
 import { useLanguage } from "@/components/LanguageContext";
 import { clearInternSession, getInternToken, internFetch } from "@/lib/internApi";
-import { deptLabel, type InternDash } from "@/components/leadership-academy/portal/types";
+import { deptLabel, type InternDash } from "@/components/internship/portal/types";
 
 type HelpTicket = {
   id: number;
@@ -189,7 +189,7 @@ export default function ApplicationStatusPage() {
 
   const loadTickets = useCallback(async () => {
     try {
-      const rows = await internFetch<HelpTicket[]>("leadership-academy/me/help-tickets");
+      const rows = await internFetch<HelpTicket[]>("internship/me/help-tickets");
       setTickets(Array.isArray(rows) ? rows : []);
     } catch {
       // The status view still works without the ticket history.
@@ -204,7 +204,7 @@ export default function ApplicationStatusPage() {
     setLoading(true);
     setError("");
     try {
-      const dash = await internFetch<InternDash>("leadership-academy/me/dashboard");
+      const dash = await internFetch<InternDash>("internship/me/dashboard");
       if (dash?.access?.granted !== false) {
         router.replace("/internship/dashboard");
         return;
@@ -239,7 +239,7 @@ export default function ApplicationStatusPage() {
     setSending(true);
     setHelpNote(null);
     try {
-      await internFetch("leadership-academy/me/help-tickets", {
+      await internFetch("internship/me/help-tickets", {
         method: "POST",
         body: JSON.stringify({ subject: subject.trim(), message: message.trim() }),
       });
@@ -256,17 +256,17 @@ export default function ApplicationStatusPage() {
 
   if (loading) {
     return (
-      <AcademyShell>
+      <InternshipShell>
         <div className="mx-auto w-full max-w-[860px] px-4 py-24 text-center font-semibold text-[#587E67]">
           {t.loading}
         </div>
-      </AcademyShell>
+      </InternshipShell>
     );
   }
 
   if (error || !data) {
     return (
-      <AcademyShell>
+      <InternshipShell>
         <div className="mx-auto w-full max-w-[560px] px-4 py-20">
           <div className="rounded-[24px] border border-[#F5CDCD] bg-[#FEF2F2] p-8 text-center">
             <AlertCircle size={26} className="mx-auto text-[#DC5555]" />
@@ -280,7 +280,7 @@ export default function ApplicationStatusPage() {
             </button>
           </div>
         </div>
-      </AcademyShell>
+      </InternshipShell>
     );
   }
 
@@ -306,7 +306,7 @@ export default function ApplicationStatusPage() {
   ];
 
   return (
-    <AcademyShell>
+    <InternshipShell>
       <section className="mx-auto w-full max-w-[860px] px-4 py-12 lg:px-8 lg:py-16">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -551,7 +551,7 @@ export default function ApplicationStatusPage() {
           ) : null}
         </div>
       </section>
-    </AcademyShell>
+    </InternshipShell>
   );
 }
 

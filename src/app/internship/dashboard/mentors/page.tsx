@@ -3,9 +3,9 @@
 import React from "react";
 import { Mail, MessageCircle, Phone } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
-import { useInternPortal } from "@/components/leadership-academy/portal/InternPortalContext";
-import { deptLabel, initialsFromName } from "@/components/leadership-academy/portal/types";
-import PortalEmptyState from "@/components/leadership-academy/portal/PortalEmptyState";
+import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
+import { deptLabel, initialsFromName } from "@/components/internship/portal/types";
+import PortalEmptyState from "@/components/internship/portal/PortalEmptyState";
 
 function digitsOnly(value?: string | null) {
   return String(value || "").replace(/\D/g, "");

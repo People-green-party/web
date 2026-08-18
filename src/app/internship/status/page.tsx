@@ -4,10 +4,10 @@ import React, { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
-import { AcademyShell } from "@/components/leadership-academy/AcademyShell";
+import { InternshipShell } from "@/components/internship/InternshipShell";
 import { FormFieldLabel } from "@/components/FormFieldLabel";
 import { useLanguage } from "@/components/LanguageContext";
-import { getAcademyI18n } from "@/data/leadership-academy/i18n";
+import { getInternshipI18n } from "@/data/internship/i18n";
 import { fetchApi } from "@/lib/api";
 import { clearInternSession, setInternSession } from "@/lib/internApi";
 
@@ -15,9 +15,9 @@ type Mode = "login" | "otp_request" | "otp_verify" | "set_pin";
 
 function InternLoginInner() {
   const { language } = useLanguage();
-  const academy = getAcademyI18n(language);
-  const t = academy.loginPage;
-  const a = academy.applyPage;
+  const internship = getInternshipI18n(language);
+  const t = internship.loginPage;
+  const a = internship.applyPage;
   const router = useRouter();
   const searchParams = useSearchParams();
   const modeParam = searchParams?.get("mode");
@@ -61,7 +61,7 @@ function InternLoginInner() {
     }
     setLoading(true);
     try {
-      const data = await fetchApi("leadership-academy/login-pin", {
+      const data = await fetchApi("internship/login-pin", {
         method: "POST",
         body: JSON.stringify({ phone: sanitize(phone), pin }),
       });
@@ -85,7 +85,7 @@ function InternLoginInner() {
     }
     setLoading(true);
     try {
-      const lookup = await fetchApi("leadership-academy/applications/status", {
+      const lookup = await fetchApi("internship/applications/status", {
         method: "POST",
         body: JSON.stringify({ phone: sanitize(phone) }),
       });
@@ -176,7 +176,7 @@ function InternLoginInner() {
         }
         headers.Authorization = `Bearer ${token}`;
       }
-      const data = await fetchApi("leadership-academy/set-pin", {
+      const data = await fetchApi("internship/set-pin", {
         method: "POST",
         headers,
         body: JSON.stringify({ phone: sanitize(phone), pin: newPin }),
@@ -201,7 +201,7 @@ function InternLoginInner() {
           : t.titleSetPin;
 
   return (
-    <AcademyShell>
+    <InternshipShell>
       <section className="mx-auto w-full max-w-[600px] px-4 lg:px-8 py-14">
         <div className="rounded-[28px] border border-[#BBF7D0] bg-white p-8 lg:p-12 shadow-[0px_20px_60px_rgba(0,0,0,0.08)]">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-[#16A34A]">{t.brand}</p>
@@ -369,13 +369,13 @@ function InternLoginInner() {
         </div>
         </div>
       </section>
-    </AcademyShell>
+    </InternshipShell>
   );
 }
 
 export default function InternshipLoginPage() {
   const { language } = useLanguage();
-  const t = getAcademyI18n(language).loginPage;
+  const t = getInternshipI18n(language).loginPage;
 
   return (
     <Suspense

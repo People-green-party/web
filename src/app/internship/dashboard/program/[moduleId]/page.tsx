@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Circle, ExternalLink, Lock } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
-import { useInternPortal } from "@/components/leadership-academy/portal/InternPortalContext";
+import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
 import {
   moduleUnlockState,
   sortedModules,
-} from "@/components/leadership-academy/portal/types";
-import PortalEmptyState from "@/components/leadership-academy/portal/PortalEmptyState";
+} from "@/components/internship/portal/types";
+import PortalEmptyState from "@/components/internship/portal/PortalEmptyState";
 
 export default function InternModulePage() {
   const { language } = useLanguage();

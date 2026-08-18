@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { AcademyImage } from "./AcademyImage";
+import { InternshipImage } from "./InternshipImage";
 
 type Props = {
   number: number;
@@ -31,7 +31,7 @@ export function DepartmentCard({
       className="group flex flex-col sm:flex-row bg-white rounded-[16px] border border-[#B9D3C4] overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500"
     >
       <div className="relative sm:w-[40%] aspect-[16/11] sm:aspect-auto sm:min-h-[170px] overflow-hidden bg-[#EAF7EE]">
-        <AcademyImage
+        <InternshipImage
           src={image}
           alt={name}
           sizes="(max-width: 640px) 100vw, 40vw"

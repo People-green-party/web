@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AcademyImage } from "./AcademyImage";
+import { InternshipImage } from "./InternshipImage";
 
 type Props = {
   title: string;
@@ -33,7 +33,7 @@ export function CertificateCard({ title, description, image, points }: Props) {
       </div>
       <div className="px-6 sm:px-8 pb-6 sm:pb-8">
         <div className="relative rounded-[12px] overflow-hidden border border-[#E4F2EA] shadow-md aspect-[16/10]">
-          <AcademyImage src={image} alt={title} sizes="(max-width: 1024px) 100vw, 50vw" />
+          <InternshipImage src={image} alt={title} sizes="(max-width: 1024px) 100vw, 50vw" />
         </div>
       </div>
     </article>

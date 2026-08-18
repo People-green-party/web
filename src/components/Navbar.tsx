@@ -58,7 +58,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
         { name: t.nav.constitution, href: '/constitution' },
         { name: t.nav.union || 'Unions', href: '/union' },
         { name: t.nav.youth || 'Jinda Youth', href: '/jinda-youth' },
-        { name: t.nav.academy || 'Internships', href: '/internship' },
+        { name: t.nav.internship || 'Internships', href: '/internship' },
         { name: t.nav.weAreAravali, href: 'https://wearearavali.org/', target: '_blank' },
     ];
 

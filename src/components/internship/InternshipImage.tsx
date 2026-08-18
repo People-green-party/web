@@ -18,7 +18,7 @@ type Props = {
  * Turbopack workspace-root quirks can't blank them. Files are already
  * JPEG-compressed on disk. Parent must be `relative` with size / aspect.
  */
-export function AcademyImage({
+export function InternshipImage({
   src,
   alt,
   className = "object-cover",

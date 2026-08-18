@@ -1,8 +1,8 @@
-import { academyI18n } from "@/data/leadership-academy/i18n";
+import { internshipI18n } from "@/data/internship/i18n";
 
 /** Server-safe FAQ structured data for SEO. */
 export function FaqJsonLd() {
-  const faqs = academyI18n.en.faqs;
+  const faqs = internshipI18n.en.faqs;
   const data = {
     "@context": "https://schema.org",
     "@type": "FAQPage",

@@ -3,14 +3,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Camera } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
-import { useInternPortal } from "@/components/leadership-academy/portal/InternPortalContext";
+import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
 import {
   deptLabel,
   initialsFromName,
   ticketStatusLabel,
-} from "@/components/leadership-academy/portal/types";
+} from "@/components/internship/portal/types";
 import { internFetch } from "@/lib/internApi";
-import PortalEmptyState from "@/components/leadership-academy/portal/PortalEmptyState";
+import PortalEmptyState from "@/components/internship/portal/PortalEmptyState";
 
 export default function InternProfilePage() {
   const { language } = useLanguage();
@@ -42,7 +42,7 @@ export default function InternProfilePage() {
   useEffect(() => {
     void (async () => {
       try {
-        const rows = await internFetch("leadership-academy/me/help-tickets");
+        const rows = await internFetch("internship/me/help-tickets");
         setTickets(Array.isArray(rows) ? rows : []);
       } catch {
         setTickets([]);
@@ -63,7 +63,7 @@ export default function InternProfilePage() {
     }
     setSaving(true);
     try {
-      await internFetch("leadership-academy/me/profile", {
+      await internFetch("internship/me/profile", {
         method: "PATCH",
         body: JSON.stringify({
           fullName: fullName.trim(),
@@ -87,7 +87,7 @@ export default function InternProfilePage() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      await internFetch("leadership-academy/me/profile/photo", {
+      await internFetch("internship/me/profile/photo", {
         method: "POST",
         body: fd,
       });

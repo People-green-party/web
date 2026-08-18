@@ -1,4 +1,4 @@
-import type { AcademySlug, Milestone } from "./types";
+import type { InternshipSlug, Milestone } from "./types";
 
 export type DepartmentLocalizedBody = {
   overview: string;
@@ -16,7 +16,7 @@ export type DepartmentLocalizedBody = {
   faqs: { q: string; a: string }[];
 };
 
-export const DEPARTMENTS_HI: Record<AcademySlug, DepartmentLocalizedBody> = {
+export const DEPARTMENTS_HI: Record<InternshipSlug, DepartmentLocalizedBody> = {
   "digital-growth-media": {
     overview:
       "डिजिटल ग्रोथ और मीडिया विभाग स्वयंसेवकों को अभियान क्रिएटिव डिज़ाइन करना, शॉर्ट-फॉर्म वीडियो बनाना, सोशल कंटेंट कैलेंडर संभालना और डिजिटल पहुँच मापना सिखाता है — लाइव पीजीपी परियोजनाओं के माध्यम से पेशेवर मीडिया पोर्टफोलियो बनाते हुए।",

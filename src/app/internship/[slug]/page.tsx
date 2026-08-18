@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { DepartmentDetail } from "@/components/leadership-academy/DepartmentDetail";
-import { DEPARTMENTS, getDepartment } from "@/data/leadership-academy/departments";
+import { DepartmentDetail } from "@/components/internship/DepartmentDetail";
+import { DEPARTMENTS, getDepartment } from "@/data/internship/departments";
 
 type Props = {
   params: Promise<{ slug: string }> | { slug: string };

@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { ArrowRight, ArrowLeft } from "lucide-react";
-import { AcademyImage } from "./AcademyImage";
+import { InternshipImage } from "./InternshipImage";
 
 type Step = {
   num: number;
@@ -103,7 +103,7 @@ export function JourneyTimeline({ steps, labels }: Props) {
         <div className="relative min-h-[260px] lg:min-h-full bg-white overflow-hidden">
           {activeImage ? (
             <>
-              <AcademyImage
+              <InternshipImage
                 key={activeImage}
                 src={activeImage}
                 alt={steps[active]?.title || ""}

@@ -22,16 +22,16 @@ import {
   Laptop,
   Megaphone,
 } from "lucide-react";
-import { AcademyShell } from "@/components/leadership-academy/AcademyShell";
-import { SectionHeading } from "@/components/leadership-academy/SectionHeading";
-import { FeatureCard } from "@/components/leadership-academy/FeatureCard";
-import { DepartmentCard } from "@/components/leadership-academy/DepartmentCard";
-import { JourneyTimeline } from "@/components/leadership-academy/JourneyTimeline";
-import { ComparisonCard } from "@/components/leadership-academy/ComparisonCard";
-import { CtaBanner } from "@/components/leadership-academy/CtaBanner";
-import { AcademyImage } from "@/components/leadership-academy/AcademyImage";
-import { DEPARTMENTS } from "@/data/leadership-academy/departments";
-import { getAcademyI18n } from "@/data/leadership-academy/i18n";
+import { InternshipShell } from "@/components/internship/InternshipShell";
+import { SectionHeading } from "@/components/internship/SectionHeading";
+import { FeatureCard } from "@/components/internship/FeatureCard";
+import { DepartmentCard } from "@/components/internship/DepartmentCard";
+import { JourneyTimeline } from "@/components/internship/JourneyTimeline";
+import { ComparisonCard } from "@/components/internship/ComparisonCard";
+import { CtaBanner } from "@/components/internship/CtaBanner";
+import { InternshipImage } from "@/components/internship/InternshipImage";
+import { DEPARTMENTS } from "@/data/internship/departments";
+import { getInternshipI18n } from "@/data/internship/i18n";
 import { useLanguage } from "@/components/LanguageContext";
 
 const WHY_ICONS = [Briefcase, Users, GraduationCap, FolderKanban, Award, Rocket];
@@ -66,9 +66,9 @@ const JOURNEY_IMAGES = [
   "/internship/journey-certificate.jpg",
 ];
 
-export default function LeadershipAcademyPage() {
+export default function InternshipPage() {
   const { language } = useLanguage();
-  const t = getAcademyI18n(language);
+  const t = getInternshipI18n(language);
   const isHi = language === "hi";
 
   const whyJoin = t.whyJoin.items.map((item, i) => ({
@@ -87,7 +87,7 @@ export default function LeadershipAcademyPage() {
   }));
 
   return (
-    <AcademyShell>
+    <InternshipShell>
       {/* Light PGP-aligned hero */}
       <section className="relative overflow-hidden bg-white w-full">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_90%_10%,rgba(13,82,41,0.08),transparent_55%)]" />
@@ -173,7 +173,7 @@ export default function LeadershipAcademyPage() {
             </div>
 
             <div className="relative rounded-[16px] overflow-hidden shadow-xl border border-[#B9D3C4] aspect-[5/4]">
-              <AcademyImage
+              <InternshipImage
                 src="/internship/hero-students.jpg"
                 alt={t.hero.tag}
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -278,6 +278,6 @@ export default function LeadershipAcademyPage() {
           />
         </div>
       </section>
-    </AcademyShell>
+    </InternshipShell>
   );
 }

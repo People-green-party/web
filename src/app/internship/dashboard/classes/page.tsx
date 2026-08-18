@@ -3,12 +3,12 @@
 import React, { useMemo, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock3, ExternalLink, PlayCircle, Radio, X } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
-import { useInternPortal } from "@/components/leadership-academy/portal/InternPortalContext";
+import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
 import {
   sessionPlatformLabel,
   upcomingLiveSessions,
-} from "@/components/leadership-academy/portal/types";
-import PortalEmptyState from "@/components/leadership-academy/portal/PortalEmptyState";
+} from "@/components/internship/portal/types";
+import PortalEmptyState from "@/components/internship/portal/PortalEmptyState";
 
 const dayKey = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;

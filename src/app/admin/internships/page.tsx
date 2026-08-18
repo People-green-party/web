@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BookOpen, ClipboardCheck, FileText, Layers, Loader2, Megaphone, Pencil, Search, Trash2, UserRound, UserMinus, Users, Video, X } from "lucide-react";
 import { adminFetch, getAdminToken } from "@/lib/adminApi";
-import { DEPARTMENTS } from "@/data/leadership-academy/departments";
+import { DEPARTMENTS } from "@/data/internship/departments";
 
 type Application = {
   id: number;
@@ -232,7 +232,7 @@ function fmtDate(iso?: string | null) {
   });
 }
 
-export default function AdminLeadershipAcademyPage() {
+export default function AdminInternshipPage() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("applications");
   const [items, setItems] = useState<Application[]>([]);
@@ -413,21 +413,21 @@ export default function AdminLeadershipAcademyPage() {
       const [apps, accepted, cls, tsk, asg, att, mnt, ann, res, mod, help] =
         await Promise.all([
           adminFetch<{ items: Application[]; total: number; pageCount: number }>(
-            `leadership-academy/applications?${query}`,
+            `internship/applications?${query}`,
           ),
           paged<Application>(
             "Accepted interns",
-            "leadership-academy/applications?status=accepted&pageSize=200",
+            "internship/applications?status=accepted&pageSize=200",
           ),
-          section<InternClass>("Classes", "leadership-academy/classes"),
-          section<InternTask>("Tasks", "leadership-academy/tasks"),
-          paged<Assignment>("Submissions", "leadership-academy/task-assignments"),
-          paged<AttendanceRow>("Attendance", "leadership-academy/attendance"),
-          section<Mentor>("Mentors", "leadership-academy/mentors"),
-          section<Announcement>("Announcements", "leadership-academy/announcements"),
-          section<Resource>("Resources", "leadership-academy/resources"),
-          section<ModuleRow>("Modules", "leadership-academy/modules"),
-          paged<HelpTicket>("Help desk", "leadership-academy/help-tickets"),
+          section<InternClass>("Classes", "internship/classes"),
+          section<InternTask>("Tasks", "internship/tasks"),
+          paged<Assignment>("Submissions", "internship/task-assignments"),
+          paged<AttendanceRow>("Attendance", "internship/attendance"),
+          section<Mentor>("Mentors", "internship/mentors"),
+          section<Announcement>("Announcements", "internship/announcements"),
+          section<Resource>("Resources", "internship/resources"),
+          section<ModuleRow>("Modules", "internship/modules"),
+          paged<HelpTicket>("Help desk", "internship/help-tickets"),
         ]);
 
       setItems(Array.isArray(apps?.items) ? apps.items : []);
@@ -506,7 +506,7 @@ export default function AdminLeadershipAcademyPage() {
   const updateStatus = async (id: number, status: string) => {
     setUpdatingId(id);
     try {
-      await adminFetch(`leadership-academy/applications/${id}/status`, {
+      await adminFetch(`internship/applications/${id}/status`, {
         method: "PATCH",
         body: JSON.stringify({ status }),
       });
@@ -535,7 +535,7 @@ export default function AdminLeadershipAcademyPage() {
           unchanged: number;
           emailed: number;
           failed: { id: number; reason: string }[];
-        }>("leadership-academy/applications/bulk-status", {
+        }>("internship/applications/bulk-status", {
           method: "PATCH",
           body: JSON.stringify({ applicationIds: selectedApps, status }),
         });
@@ -569,7 +569,7 @@ export default function AdminLeadershipAcademyPage() {
         if (!ok) return;
       }
       try {
-        await adminFetch(`leadership-academy/applications/${app.id}/certificate`, {
+        await adminFetch(`internship/applications/${app.id}/certificate`, {
           method: "PATCH",
           body: JSON.stringify({ certificateUrl: next || null }),
         });
@@ -587,7 +587,7 @@ export default function AdminLeadershipAcademyPage() {
 
   const editClass = (c: InternClass) =>
     setEditing({
-      endpoint: "leadership-academy/classes",
+      endpoint: "internship/classes",
       id: c.id,
       heading: "Edit class",
       fields: [
@@ -618,7 +618,7 @@ export default function AdminLeadershipAcademyPage() {
 
   const editTask = (t: InternTask) =>
     setEditing({
-      endpoint: "leadership-academy/tasks",
+      endpoint: "internship/tasks",
       id: t.id,
       heading: "Edit task",
       fields: [
@@ -649,7 +649,7 @@ export default function AdminLeadershipAcademyPage() {
 
   const editMentor = (m: Mentor) =>
     setEditing({
-      endpoint: "leadership-academy/mentors",
+      endpoint: "internship/mentors",
       id: m.id,
       heading: "Edit mentor",
       fields: [
@@ -681,7 +681,7 @@ export default function AdminLeadershipAcademyPage() {
 
   const editAnnouncement = (a: Announcement) =>
     setEditing({
-      endpoint: "leadership-academy/announcements",
+      endpoint: "internship/announcements",
       id: a.id,
       heading: "Edit announcement",
       fields: [
@@ -700,7 +700,7 @@ export default function AdminLeadershipAcademyPage() {
 
   const editResource = (r: Resource) =>
     setEditing({
-      endpoint: "leadership-academy/resources",
+      endpoint: "internship/resources",
       id: r.id,
       heading: "Edit resource",
       fields: [
@@ -730,7 +730,7 @@ export default function AdminLeadershipAcademyPage() {
 
   const editModule = (m: ModuleRow) =>
     setEditing({
-      endpoint: "leadership-academy/modules",
+      endpoint: "internship/modules",
       id: m.id,
       heading: "Edit module",
       fields: [
@@ -753,7 +753,7 @@ export default function AdminLeadershipAcademyPage() {
 
   const openReport = async (id: number) => {
     try {
-      const data = await adminFetch(`leadership-academy/applications/${id}/report`);
+      const data = await adminFetch(`internship/applications/${id}/report`);
       setReport(data);
     } catch (e: any) {
       showToast(e.message || "Report failed");
@@ -763,7 +763,7 @@ export default function AdminLeadershipAcademyPage() {
   const setCertificateApproval = (id: number, approved: boolean) =>
     run("cert-approve", async () => {
       try {
-        await adminFetch(`leadership-academy/applications/${id}/certificate-approval`, {
+        await adminFetch(`internship/applications/${id}/certificate-approval`, {
           method: "PATCH",
           body: JSON.stringify({ approved }),
         });
@@ -779,7 +779,7 @@ export default function AdminLeadershipAcademyPage() {
     e.preventDefault();
     return run("class", async () => {
       try {
-        await adminFetch("leadership-academy/classes", {
+        await adminFetch("internship/classes", {
           method: "POST",
           body: JSON.stringify({
             ...classForm,
@@ -800,7 +800,7 @@ export default function AdminLeadershipAcademyPage() {
     if (!window.confirm(`Delete class “${title}”?`)) return;
     return run(`class-${id}`, async () => {
       try {
-        await adminFetch(`leadership-academy/classes/${id}`, { method: "DELETE" });
+        await adminFetch(`internship/classes/${id}`, { method: "DELETE" });
         showToast("Class deleted");
         await load();
       } catch (err: any) {
@@ -817,7 +817,7 @@ export default function AdminLeadershipAcademyPage() {
     if (!window.confirm(warning)) return;
     return run(`task-${task.id}`, async () => {
       try {
-        await adminFetch(`leadership-academy/tasks/${task.id}`, { method: "DELETE" });
+        await adminFetch(`internship/tasks/${task.id}`, { method: "DELETE" });
         showToast("Task deleted");
         await load();
       } catch (err: any) {
@@ -830,7 +830,7 @@ export default function AdminLeadershipAcademyPage() {
     e.preventDefault();
     return run("task", async () => {
       try {
-        await adminFetch("leadership-academy/tasks", {
+        await adminFetch("internship/tasks", {
           method: "POST",
           body: JSON.stringify({
             ...taskForm,
@@ -870,7 +870,7 @@ export default function AdminLeadershipAcademyPage() {
     }
     return run(`review-${id}`, async () => {
       try {
-        await adminFetch(`leadership-academy/task-assignments/${id}`, {
+        await adminFetch(`internship/task-assignments/${id}`, {
           method: "PATCH",
           body: JSON.stringify({ status, notes }),
         });
@@ -890,7 +890,7 @@ export default function AdminLeadershipAcademyPage() {
     }
     return run("assign-task", async () => {
       try {
-        await adminFetch(`leadership-academy/tasks/${taskId}/assign`, {
+        await adminFetch(`internship/tasks/${taskId}/assign`, {
           method: "POST",
           body: JSON.stringify({ applicationIds: assignInternIds }),
         });
@@ -907,7 +907,7 @@ export default function AdminLeadershipAcademyPage() {
     e.preventDefault();
     return run("attendance", async () => {
       try {
-        const saved = await adminFetch<{ duplicate?: boolean }>("leadership-academy/attendance", {
+        const saved = await adminFetch<{ duplicate?: boolean }>("internship/attendance", {
           method: "POST",
           body: JSON.stringify({
             applicationId: Number(attForm.applicationId),
@@ -935,7 +935,7 @@ export default function AdminLeadershipAcademyPage() {
     try {
       const query = classId ? `?classId=${classId}` : "";
       const data = await adminFetch<{ items: RosterEntry[] }>(
-        `leadership-academy/attendance/roster${query}`,
+        `internship/attendance/roster${query}`,
       );
       const items = Array.isArray(data?.items) ? data.items : [];
       setRoster(items);
@@ -961,7 +961,7 @@ export default function AdminLeadershipAcademyPage() {
       }
       try {
         const res = await adminFetch<{ created: number; updated: number; failed: any[] }>(
-          "leadership-academy/attendance/bulk",
+          "internship/attendance/bulk",
           {
             method: "POST",
             body: JSON.stringify({
@@ -988,7 +988,7 @@ export default function AdminLeadershipAcademyPage() {
         if (debouncedSearch.trim()) query.set("search", debouncedSearch.trim());
 
         const data = await adminFetch<{ items: Application[] }>(
-          `leadership-academy/applications?${query}`,
+          `internship/applications?${query}`,
         );
         const rows = Array.isArray(data?.items) ? data.items : [];
         if (!rows.length) {
@@ -1055,7 +1055,7 @@ export default function AdminLeadershipAcademyPage() {
     e.preventDefault();
     return run("mentor", async () => {
       try {
-        await adminFetch("leadership-academy/mentors", {
+        await adminFetch("internship/mentors", {
           method: "POST",
           body: JSON.stringify({
             ...mentorForm,
@@ -1089,7 +1089,7 @@ export default function AdminLeadershipAcademyPage() {
     if (!window.confirm(`Delete mentor “${name}”?`)) return;
     return run(`mentor-${id}`, async () => {
       try {
-        await adminFetch(`leadership-academy/mentors/${id}`, { method: "DELETE" });
+        await adminFetch(`internship/mentors/${id}`, { method: "DELETE" });
         showToast("Mentor deleted");
         await load();
       } catch (err: any) {
@@ -1103,7 +1103,7 @@ export default function AdminLeadershipAcademyPage() {
     return run(`unassign-${mentorId}-${applicationId}`, async () => {
       try {
         await adminFetch(
-          `leadership-academy/mentors/${mentorId}/assignments/${applicationId}`,
+          `internship/mentors/${mentorId}/assignments/${applicationId}`,
           { method: "DELETE" },
         );
         showToast(`${internName} unassigned`);
@@ -1122,7 +1122,7 @@ export default function AdminLeadershipAcademyPage() {
     }
     return run("assign-mentor", async () => {
       try {
-        await adminFetch(`leadership-academy/mentors/${mentorId}/assign`, {
+        await adminFetch(`internship/mentors/${mentorId}/assign`, {
           method: "POST",
           body: JSON.stringify({ applicationIds: assignMentorInternIds }),
         });
@@ -1139,7 +1139,7 @@ export default function AdminLeadershipAcademyPage() {
     e.preventDefault();
     return run("announcement", async () => {
       try {
-        await adminFetch("leadership-academy/announcements", {
+        await adminFetch("internship/announcements", {
           method: "POST",
           body: JSON.stringify({
             ...announcementForm,
@@ -1159,7 +1159,7 @@ export default function AdminLeadershipAcademyPage() {
     if (!window.confirm(`Delete announcement “${title}”?`)) return;
     return run(`announcement-${id}`, async () => {
       try {
-        await adminFetch(`leadership-academy/announcements/${id}`, { method: "DELETE" });
+        await adminFetch(`internship/announcements/${id}`, { method: "DELETE" });
         showToast("Announcement deleted");
         await load();
       } catch (err: any) {
@@ -1172,7 +1172,7 @@ export default function AdminLeadershipAcademyPage() {
     e.preventDefault();
     return run("resource", async () => {
       try {
-        await adminFetch("leadership-academy/resources", {
+        await adminFetch("internship/resources", {
           method: "POST",
           body: JSON.stringify({
             ...resourceForm,
@@ -1193,7 +1193,7 @@ export default function AdminLeadershipAcademyPage() {
     if (!window.confirm(`Delete resource “${title}”?`)) return;
     return run(`resource-${id}`, async () => {
       try {
-        await adminFetch(`leadership-academy/resources/${id}`, { method: "DELETE" });
+        await adminFetch(`internship/resources/${id}`, { method: "DELETE" });
         showToast("Resource deleted");
         await load();
       } catch (err: any) {
@@ -1206,7 +1206,7 @@ export default function AdminLeadershipAcademyPage() {
     e.preventDefault();
     return run("module", async () => {
       try {
-        await adminFetch("leadership-academy/modules", {
+        await adminFetch("internship/modules", {
           method: "POST",
           body: JSON.stringify({
             title: moduleForm.title,
@@ -1237,7 +1237,7 @@ export default function AdminLeadershipAcademyPage() {
     if (!window.confirm(`Delete module “${title}”?`)) return;
     return run(`module-${id}`, async () => {
       try {
-        await adminFetch(`leadership-academy/modules/${id}`, { method: "DELETE" });
+        await adminFetch(`internship/modules/${id}`, { method: "DELETE" });
         showToast("Module deleted");
         await load();
       } catch (err: any) {
@@ -3051,7 +3051,7 @@ export default function AdminLeadershipAcademyPage() {
                             run(`help-${ticket.id}`, async () => {
                             const statusEl = document.getElementById(`help-status-${ticket.id}`) as HTMLSelectElement | null;
                             try {
-                              await adminFetch(`leadership-academy/help-tickets/${ticket.id}`, {
+                              await adminFetch(`internship/help-tickets/${ticket.id}`, {
                                 method: "PATCH",
                                 body: JSON.stringify({
                                   status: statusEl?.value || ticket.status,

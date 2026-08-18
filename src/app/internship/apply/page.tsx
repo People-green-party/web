@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import ApplyClient from "./ApplyClient";
 
-export default function LeadershipAcademyApplyPage() {
+export default function InternshipApplyPage() {
   return (
     <Suspense
       fallback={

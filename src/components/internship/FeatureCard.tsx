@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { LucideIcon } from "lucide-react";
-import { AcademyImage } from "./AcademyImage";
+import { InternshipImage } from "./InternshipImage";
 
 type Props = {
   image: string;
@@ -15,7 +15,7 @@ export function FeatureCard({ image, icon: Icon, title, description }: Props) {
   return (
     <article className="group relative h-full bg-white rounded-[20px] border border-[#B9D3C4] overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_-12px_rgba(13,82,41,0.15)] hover:-translate-y-1">
       <div className="relative aspect-[5/4] overflow-hidden">
-        <AcademyImage
+        <InternshipImage
           src={image}
           alt={title}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

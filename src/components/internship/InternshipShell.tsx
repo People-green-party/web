@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
-export function AcademyShell({ children }: { children: React.ReactNode }) {
+export function InternshipShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {

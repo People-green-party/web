@@ -1,4 +1,4 @@
-export type AcademySlug =
+export type InternshipSlug =
   | "digital-growth-media"
   | "research-policy"
   | "community-outreach"
@@ -14,7 +14,7 @@ export type Milestone = {
 };
 
 export type Department = {
-  slug: AcademySlug;
+  slug: InternshipSlug;
   number: number;
   name: string;
   shortName: string;

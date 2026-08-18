@@ -1,6 +1,6 @@
 "use client";
 
-import { DashboardHome } from "@/components/leadership-academy/portal/DashboardHome";
+import { DashboardHome } from "@/components/internship/portal/DashboardHome";
 
 export default function InternDashboardPage() {
   return <DashboardHome />;

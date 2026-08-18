@@ -2,7 +2,7 @@
 
 import React from "react";
 import type { LucideIcon } from "lucide-react";
-import { AcademyImage } from "./AcademyImage";
+import { InternshipImage } from "./InternshipImage";
 
 type Skill = {
   label: string;
@@ -24,7 +24,7 @@ export function SkillsGrid({ skills }: Props) {
         >
           {image ? (
             <div className="relative aspect-[16/10] overflow-hidden bg-[#EAF7EE]">
-              <AcademyImage
+              <InternshipImage
                 src={image}
                 alt={label}
                 sizes="(max-width: 640px) 50vw, 25vw"

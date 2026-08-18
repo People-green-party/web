@@ -4,12 +4,12 @@ import React, { useMemo } from "react";
 import Link from "next/link";
 import { ExternalLink, FileText, Link2, PlayCircle, BookOpen } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
-import { useInternPortal } from "@/components/leadership-academy/portal/InternPortalContext";
+import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
 import {
   deptLabel,
   resourceTypeLabel,
-} from "@/components/leadership-academy/portal/types";
-import PortalEmptyState from "@/components/leadership-academy/portal/PortalEmptyState";
+} from "@/components/internship/portal/types";
+import PortalEmptyState from "@/components/internship/portal/PortalEmptyState";
 
 const TYPE_ORDER = ["video", "pdf", "doc", "link"];
 

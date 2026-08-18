@@ -4,9 +4,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
-import { AcademyShell } from "@/components/leadership-academy/AcademyShell";
-import { DEPARTMENTS } from "@/data/leadership-academy/departments";
-import { getAcademyI18n } from "@/data/leadership-academy/i18n";
+import { InternshipShell } from "@/components/internship/InternshipShell";
+import { DEPARTMENTS } from "@/data/internship/departments";
+import { getInternshipI18n } from "@/data/internship/i18n";
 import { useLanguage } from "@/components/LanguageContext";
 import { fetchApi } from "@/lib/api";
 import { FormFieldLabel } from "@/components/FormFieldLabel";
@@ -20,9 +20,9 @@ function normalizePhone(raw: string) {
   return digits;
 }
 
-export default function LeadershipAcademyApplyPage() {
+export default function InternshipApplyPage() {
   const { language } = useLanguage();
-  const t = getAcademyI18n(language);
+  const t = getInternshipI18n(language);
   const a = t.applyPage;
   const searchParams = useSearchParams();
 
@@ -75,7 +75,7 @@ export default function LeadershipAcademyApplyPage() {
     }
 
     try {
-      const res = await fetchApi("leadership-academy/applications", {
+      const res = await fetchApi("internship/applications", {
         method: "POST",
         body: JSON.stringify({
           fullName: form.fullName.trim(),
@@ -131,7 +131,7 @@ export default function LeadershipAcademyApplyPage() {
   ];
 
   return (
-    <AcademyShell>
+    <InternshipShell>
       <div className="w-full bg-[#F7FCF9] text-gray-800 flex flex-col items-center font-['Familjen_Grotesk']">
         <main className="w-full max-w-[1200px] px-4 lg:px-8 mt-[28px] mb-12 lg:mb-24 flex flex-col items-center">
           <h1 className="text-center font-semibold text-[28px] lg:text-[44px] leading-tight tracking-[-0.3px] text-[#04330B] max-w-[880px] flex flex-col gap-3 lg:gap-2">
@@ -407,6 +407,6 @@ export default function LeadershipAcademyApplyPage() {
           </section>
         </main>
       </div>
-    </AcademyShell>
+    </InternshipShell>
   );
 }

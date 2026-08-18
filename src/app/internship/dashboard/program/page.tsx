@@ -4,15 +4,15 @@ import React, { useMemo } from "react";
 import Link from "next/link";
 import { CheckCircle2, Circle, Lock } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
-import { useInternPortal } from "@/components/leadership-academy/portal/InternPortalContext";
+import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
 import {
   deptLabel,
   moduleProgress,
   moduleUnlockState,
   sortedModules,
   taskProgress,
-} from "@/components/leadership-academy/portal/types";
-import PortalEmptyState from "@/components/leadership-academy/portal/PortalEmptyState";
+} from "@/components/internship/portal/types";
+import PortalEmptyState from "@/components/internship/portal/PortalEmptyState";
 
 export default function InternProgramPage() {
   const { language } = useLanguage();

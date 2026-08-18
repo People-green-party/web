@@ -178,7 +178,7 @@ export const TASK_STATUS_LABELS: Record<"en" | "hi", Record<string, string>> = {
   },
 };
 
-/** Canonical values from UpdateLeadershipAcademyStatusDto in the API. */
+/** Canonical values from UpdateInternshipStatusDto in the API. */
 export const APPLICATION_STATUS_LABELS: Record<"en" | "hi", Record<string, string>> = {
   en: {
     pending: "Application received",
@@ -196,7 +196,7 @@ export const APPLICATION_STATUS_LABELS: Record<"en" | "hi", Record<string, strin
   },
 };
 
-/** Canonical values from CreateLeadershipAcademyApplicationDto.mode in the API. */
+/** Canonical values from CreateInternshipApplicationDto.mode in the API. */
 export const MODE_LABELS: Record<"en" | "hi", Record<string, string>> = {
   en: {
     offline: "Offline",

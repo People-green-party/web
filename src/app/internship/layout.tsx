@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LeadershipAcademyLayout({
+export default function InternshipLayout({
   children,
 }: {
   children: React.ReactNode;

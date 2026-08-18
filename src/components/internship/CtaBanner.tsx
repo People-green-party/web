@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, Award } from "lucide-react";
-import { AcademyImage } from "./AcademyImage";
+import { InternshipImage } from "./InternshipImage";
 
 type Props = {
   title: string;
@@ -29,7 +29,7 @@ export function CtaBanner({
   return (
     <article className="relative overflow-hidden rounded-[20px] min-h-[300px] flex items-stretch bg-[#04330B]">
       {image ? (
-        <AcademyImage
+        <InternshipImage
           src={image}
           alt=""
           sizes="100vw"

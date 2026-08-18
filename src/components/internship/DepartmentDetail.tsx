@@ -3,15 +3,15 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronRight } from "lucide-react";
-import type { Department } from "@/data/leadership-academy/types";
-import { getAcademyI18n } from "@/data/leadership-academy/i18n";
-import { localizeDepartment } from "@/data/leadership-academy/localize-department";
+import type { Department } from "@/data/internship/types";
+import { getInternshipI18n } from "@/data/internship/i18n";
+import { localizeDepartment } from "@/data/internship/localize-department";
 import { useLanguage } from "@/components/LanguageContext";
-import { AcademyShell } from "./AcademyShell";
+import { InternshipShell } from "./InternshipShell";
 import { SectionHeading } from "./SectionHeading";
 import { FaqAccordion } from "./FaqAccordion";
 import { CtaBanner } from "./CtaBanner";
-import { AcademyImage } from "./AcademyImage";
+import { InternshipImage } from "./InternshipImage";
 
 type Props = {
   department: Department;
@@ -19,7 +19,7 @@ type Props = {
 
 export function DepartmentDetail({ department }: Props) {
   const { language } = useLanguage();
-  const t = getAcademyI18n(language);
+  const t = getInternshipI18n(language);
   const d = t.deptPage;
   const localized = t.deptNames[department.slug];
   const content = localizeDepartment(department, language);
@@ -32,7 +32,7 @@ export function DepartmentDetail({ department }: Props) {
   const isHi = language === "hi";
 
   return (
-    <AcademyShell>
+    <InternshipShell>
       {/* HERO */}
       <section className="bg-white w-full flex justify-center pt-[40px] lg:pt-[70px] pb-[50px] lg:pb-[80px]">
         <div className="w-full max-w-[1320px] px-4 lg:px-8">
@@ -90,7 +90,7 @@ export function DepartmentDetail({ department }: Props) {
             </div>
 
             <div className="relative rounded-[16px] overflow-hidden shadow-xl border border-[#B9D3C4] aspect-[5/4]">
-              <AcademyImage
+              <InternshipImage
                 src={department.image}
                 alt={displayName}
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -331,7 +331,7 @@ export function DepartmentDetail({ department }: Props) {
                 className="group relative rounded-[16px] overflow-hidden shadow-md border border-[#B9D3C4]"
               >
                 <div className="relative aspect-[4/5] overflow-hidden">
-                  <AcademyImage
+                  <InternshipImage
                     src={item.image}
                     alt={item.title}
                     sizes="(max-width: 640px) 100vw, 33vw"
@@ -382,6 +382,6 @@ export function DepartmentDetail({ department }: Props) {
           />
         </div>
       </section>
-    </AcademyShell>
+    </InternshipShell>
   );
 }

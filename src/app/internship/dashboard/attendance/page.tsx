@@ -3,9 +3,9 @@
 import React from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
-import { useInternPortal } from "@/components/leadership-academy/portal/InternPortalContext";
-import { attendanceProgress } from "@/components/leadership-academy/portal/types";
-import PortalEmptyState from "@/components/leadership-academy/portal/PortalEmptyState";
+import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
+import { attendanceProgress } from "@/components/internship/portal/types";
+import PortalEmptyState from "@/components/internship/portal/PortalEmptyState";
 
 export default function InternAttendancePage() {
   const { language } = useLanguage();
