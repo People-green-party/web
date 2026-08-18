@@ -58,7 +58,7 @@ const NAV: NavSection[] = [
       { href: "/admin/users", label: "All Users", icon: Users },
       { href: "/admin/unions", label: "Unions", icon: Building2 },
       { href: "/admin/youth", label: "Jinda Youth", icon: BarChart3 },
-      { href: "/admin/leadership-academy", label: "Internships", icon: GraduationCap },
+      { href: "/admin/internships", label: "Internships", icon: GraduationCap },
       { href: "/admin/donations", label: "Donations", icon: HandCoins },
       { href: "/admin/news", label: "News CMS", icon: Newspaper },
     ],

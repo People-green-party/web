@@ -10,7 +10,7 @@ export function HeroShield() {
       <div className="relative">
         <div className="relative rounded-[22px] overflow-hidden aspect-[5/4] border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.4)]">
           <img
-            src="/leadership-academy/hero-students.jpg"
+            src="/internship/hero-students.jpg"
             alt="Students collaborating at PGP Internship"
             className="w-full h-full object-cover object-[center_30%]"
           />

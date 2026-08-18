@@ -36,12 +36,12 @@ import { useLanguage } from "@/components/LanguageContext";
 
 const WHY_ICONS = [Briefcase, Users, GraduationCap, FolderKanban, Award, Rocket];
 const WHY_IMAGES = [
-  "/leadership-academy/why-practical.jpg",
-  "/leadership-academy/why-leadership.jpg",
-  "/leadership-academy/why-mentor.jpg",
-  "/leadership-academy/why-portfolio.jpg",
-  "/leadership-academy/why-certificate.jpg",
-  "/leadership-academy/why-career.jpg",
+  "/internship/why-practical.jpg",
+  "/internship/why-leadership.jpg",
+  "/internship/why-mentor.jpg",
+  "/internship/why-portfolio.jpg",
+  "/internship/why-certificate.jpg",
+  "/internship/why-career.jpg",
 ];
 const JOURNEY_ICONS = [
   UserPlus,
@@ -55,15 +55,15 @@ const JOURNEY_ICONS = [
   Trophy,
 ];
 const JOURNEY_IMAGES = [
-  "/leadership-academy/journey-register.jpg",
-  "/leadership-academy/journey-orientation.jpg",
-  "/leadership-academy/journey-allocation.jpg",
-  "/leadership-academy/journey-training.jpg",
-  "/leadership-academy/journey-milestones.jpg",
-  "/leadership-academy/journey-mentor.jpg",
-  "/leadership-academy/journey-portfolio.jpg",
-  "/leadership-academy/journey-presentation.jpg",
-  "/leadership-academy/journey-certificate.jpg",
+  "/internship/journey-register.jpg",
+  "/internship/journey-orientation.jpg",
+  "/internship/journey-allocation.jpg",
+  "/internship/journey-training.jpg",
+  "/internship/journey-milestones.jpg",
+  "/internship/journey-mentor.jpg",
+  "/internship/journey-portfolio.jpg",
+  "/internship/journey-presentation.jpg",
+  "/internship/journey-certificate.jpg",
 ];
 
 export default function LeadershipAcademyPage() {
@@ -129,13 +129,13 @@ export default function LeadershipAcademyPage() {
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
-                  href="/leadership-academy/apply"
+                  href="/internship/apply"
                   className="inline-flex items-center gap-2 px-[32px] py-[12px] bg-[#04330B] hover:bg-[#0D5229] text-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors shadow-xl"
                 >
                   {t.hero.apply} <ArrowRight size={18} />
                 </Link>
                 <Link
-                  href="/leadership-academy/status"
+                  href="/internship/status"
                   className="inline-flex items-center gap-2 px-[32px] py-[12px] bg-[#04330B] hover:bg-[#0D5229] text-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors shadow-xl"
                 >
                   {isHi ? "इंटर्नशिप लॉगिन" : "Intern Login"}
@@ -174,7 +174,7 @@ export default function LeadershipAcademyPage() {
 
             <div className="relative rounded-[16px] overflow-hidden shadow-xl border border-[#B9D3C4] aspect-[5/4]">
               <AcademyImage
-                src="/leadership-academy/hero-students.jpg"
+                src="/internship/hero-students.jpg"
                 alt={t.hero.tag}
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 priority
@@ -233,7 +233,7 @@ export default function LeadershipAcademyPage() {
                   name={localized.name}
                   description={localized.description}
                   image={dept.image}
-                  href={`/leadership-academy/${dept.slug}`}
+                  href={`/internship/${dept.slug}`}
                   viewDetailsLabel={t.departments.viewDetails}
                   departmentLabel={t.departments.departmentLabel.replace("{n}", String(dept.number))}
                 />
@@ -250,13 +250,13 @@ export default function LeadershipAcademyPage() {
             <ComparisonCard
               title={t.modes.offline.title}
               icon={Landmark}
-              image="/leadership-academy/mode-offline.jpg"
+              image="/internship/mode-offline.jpg"
               points={[...t.modes.offline.points]}
             />
             <ComparisonCard
               title={t.modes.hybrid.title}
               icon={Laptop}
-              image="/leadership-academy/mode-hybrid.jpg"
+              image="/internship/mode-hybrid.jpg"
               points={[...t.modes.hybrid.points]}
             />
           </div>
@@ -269,11 +269,11 @@ export default function LeadershipAcademyPage() {
           <CtaBanner
             title={t.cta.title}
             subtitle={`${t.certificate.description} ${t.cta.subtitle}`}
-            primaryHref="/leadership-academy/apply"
+            primaryHref="/internship/apply"
             primaryLabel={t.cta.apply}
-            secondaryHref="/leadership-academy/status"
+            secondaryHref="/internship/status"
             secondaryLabel={isHi ? "इंटर्नशिप लॉगिन" : "Intern Login"}
-            image="/leadership-academy/cta-student.jpg"
+            image="/internship/cta-student.jpg"
             points={[...t.certificate.points]}
           />
         </div>

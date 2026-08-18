@@ -46,7 +46,7 @@ export default function LeadershipAcademyFaqPage() {
             {DEPARTMENTS.map((dept) => (
               <Link
                 key={dept.slug}
-                href={`/leadership-academy/${dept.slug}`}
+                href={`/internship/${dept.slug}`}
                 className="rounded-[16px] border border-[#B9D3C4] bg-white p-5 hover:shadow-lg transition-all font-['Familjen_Grotesk']"
               >
                 <p className="text-[12px] font-bold uppercase tracking-wider text-[#0D5229]">
@@ -69,9 +69,9 @@ export default function LeadershipAcademyFaqPage() {
           <CtaBanner
             title={f.ctaTitle}
             subtitle={f.ctaSubtitle}
-            primaryHref="/leadership-academy/apply"
+            primaryHref="/internship/apply"
             primaryLabel={f.apply}
-            secondaryHref="/leadership-academy"
+            secondaryHref="/internship"
             secondaryLabel={f.back}
           />
         </div>

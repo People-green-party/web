@@ -1,6 +1,6 @@
 import type { AcademySlug, Department } from "./types";
 
-const img = (name: string) => `/leadership-academy/${name}`;
+const img = (name: string) => `/internship/${name}`;
 
 export const DEPARTMENTS: Department[] = [
   {

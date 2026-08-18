@@ -69,7 +69,7 @@ export default function LeadershipAcademyApplyPage() {
       return;
     }
     if (!/^\d{4,6}$/.test(form.pin)) {
-      setError("Login PIN must be 4-6 digits");
+      setError(a.errorPin);
       setSubmitting(false);
       return;
     }
@@ -105,7 +105,7 @@ export default function LeadershipAcademyApplyPage() {
       } else if (msg.toLowerCase().includes("invalid phone") || msg.toLowerCase().includes("phone number")) {
         setError(a.errorPhone);
       } else {
-        setError(msg || a.errorGeneric);
+        setError(a.errorGeneric);
       }
     } finally {
       setSubmitting(false);
@@ -125,9 +125,9 @@ export default function LeadershipAcademyApplyPage() {
     );
 
   const sidebarSteps = [
-    { n: 1, label: a.journeySteps[0]?.title || "Application", active: !submitted },
-    { n: 2, label: a.journeySteps[1]?.title || "Shortlisting", active: false },
-    { n: 3, label: a.journeySteps[4]?.title || "Programme Begins", active: submitted },
+    { n: 1, label: a.journeySteps[0].title, active: !submitted },
+    { n: 2, label: a.journeySteps[1].title, active: false },
+    { n: 3, label: a.journeySteps[4].title, active: submitted },
   ];
 
   return (
@@ -164,7 +164,7 @@ export default function LeadershipAcademyApplyPage() {
               <div className="mt-10">
                 <img src="/PGPlogo.svg" alt="PGP" className="w-[120px] opacity-90" />
                 <div className="mt-4 text-[12px] text-white/70 italic">
-                  &ldquo;Together we represent the power of choice and the future of Rajasthan.&rdquo;
+                  &ldquo;{a.sidebarQuote}&rdquo;
                 </div>
               </div>
             </div>
@@ -182,13 +182,13 @@ export default function LeadershipAcademyApplyPage() {
                   ) : null}
                   <div className="mt-8 flex flex-col items-center gap-3">
                     <Link
-                      href="/leadership-academy/dashboard"
+                      href="/internship/application-status"
                       className="inline-flex items-center justify-center gap-2 w-full max-w-[280px] h-[50px] rounded-[12px] bg-[#04330B] text-white font-semibold"
                     >
-                      Open intern dashboard <ArrowRight size={18} />
+                      {a.trackApplication} <ArrowRight size={18} />
                     </Link>
                     <Link
-                      href="/leadership-academy"
+                      href="/internship"
                       className="text-sm font-semibold text-[#587E67] hover:underline"
                     >
                       {a.back}
@@ -324,7 +324,7 @@ export default function LeadershipAcademyApplyPage() {
                       </div>
 
                       <div className="relative">
-                        <FormFieldLabel required>Mode</FormFieldLabel>
+                        <FormFieldLabel required>{a.fields.mode}</FormFieldLabel>
                         <select
                           name="mode"
                           required
@@ -362,7 +362,7 @@ export default function LeadershipAcademyApplyPage() {
                       </div>
 
                       <div>
-                        <FormFieldLabel required>Login PIN (4-6 digits)</FormFieldLabel>
+                        <FormFieldLabel required>{a.fields.pin}</FormFieldLabel>
                         <input
                           type="password"
                           name="pin"
@@ -375,11 +375,9 @@ export default function LeadershipAcademyApplyPage() {
                           value={form.pin}
                           onChange={onChange}
                           className={inputClass}
-                          placeholder="Create PIN for Internship Login"
+                          placeholder={a.fields.pinPlaceholder}
                         />
-                        <p className="mt-1 text-xs text-[#587E67] font-medium">
-                          Use this PIN later on Internship Login to open your dashboard.
-                        </p>
+                        <p className="mt-1 text-xs text-[#587E67] font-medium">{a.pinHint}</p>
                       </div>
 
                       <button

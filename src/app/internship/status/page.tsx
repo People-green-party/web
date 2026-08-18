@@ -7,73 +7,17 @@ import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import { AcademyShell } from "@/components/leadership-academy/AcademyShell";
 import { FormFieldLabel } from "@/components/FormFieldLabel";
 import { useLanguage } from "@/components/LanguageContext";
+import { getAcademyI18n } from "@/data/leadership-academy/i18n";
 import { fetchApi } from "@/lib/api";
 import { clearInternSession, setInternSession } from "@/lib/internApi";
 
 type Mode = "login" | "otp_request" | "otp_verify" | "set_pin";
 
-const COPY = {
-  en: {
-    brand: "PGP Internships",
-    titleLogin: "Internship Login",
-    titleForgot: "Forgot / Set PIN",
-    titleOtp: "Verify OTP",
-    titleSetPin: "Create Login PIN",
-    subtitle:
-      "Login with the mobile number and PIN from your internship application. You'll see status, classes, and tasks in your dashboard.",
-    mobile: "Mobile number",
-    mobilePh: "10-digit mobile",
-    pin: "Login PIN",
-    forgot: "Forgot PIN? / First-time set PIN",
-    login: "Login to dashboard",
-    loggingIn: "Logging in…",
-    sendOtp: "Send OTP",
-    sending: "Sending…",
-    backLogin: "← Back to login",
-    otp: "OTP",
-    verify: "Verify OTP",
-    verifying: "Verifying…",
-    newPin: "New PIN",
-    confirmPin: "Confirm PIN",
-    savePin: "Save PIN & open dashboard",
-    saving: "Saving…",
-    apply: "Apply for Internship →",
-    backInternships: "← Back to Internships",
-    loading: "Loading…",
-  },
-  hi: {
-    brand: "पीजीपी इंटर्नशिप",
-    titleLogin: "इंटर्नशिप लॉगिन",
-    titleForgot: "PIN भूल गए / PIN सेट करें",
-    titleOtp: "OTP सत्यापन",
-    titleSetPin: "लॉगिन PIN बनाएं",
-    subtitle:
-      "अपने इंटर्नशिप आवेदन के मोबाइल नंबर और PIN से लॉगिन करें। डैशबोर्ड में स्थिति, कक्षाएँ और कार्य दिखेंगे।",
-    mobile: "मोबाइल नंबर",
-    mobilePh: "10 अंकों का मोबाइल",
-    pin: "लॉगिन PIN",
-    forgot: "PIN भूल गए? / पहली बार PIN सेट करें",
-    login: "डैशबोर्ड में लॉगिन करें",
-    loggingIn: "लॉगिन हो रहा है…",
-    sendOtp: "OTP भेजें",
-    sending: "भेज रहे हैं…",
-    backLogin: "← लॉगिन पर वापस",
-    otp: "OTP",
-    verify: "OTP सत्यापित करें",
-    verifying: "सत्यापित हो रहा है…",
-    newPin: "नया PIN",
-    confirmPin: "PIN पुष्टि करें",
-    savePin: "PIN सेव करें और डैशबोर्ड खोलें",
-    saving: "सेव हो रहा है…",
-    apply: "इंटर्नशिप के लिए आवेदन करें →",
-    backInternships: "← इंटर्नशिप पर वापस",
-    loading: "लोड हो रहा है…",
-  },
-} as const;
-
 function InternLoginInner() {
   const { language } = useLanguage();
-  const t = COPY[language === "hi" ? "hi" : "en"];
+  const academy = getAcademyI18n(language);
+  const t = academy.loginPage;
+  const a = academy.applyPage;
   const router = useRouter();
   const searchParams = useSearchParams();
   const modeParam = searchParams?.get("mode");
@@ -98,15 +42,21 @@ function InternLoginInner() {
 
   const sanitize = (v: string) => v.replace(/\D/g, "").slice(0, 10);
 
+  /** Only accepted interns get the portal; everyone else tracks their application. */
+  const landingFor = (application: { status?: string } | undefined) =>
+    application?.status === "accepted"
+      ? "/internship/dashboard"
+      : "/internship/application-status";
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (sanitize(phone).length !== 10) {
-      setError("Enter a valid 10-digit mobile number");
+      setError(t.errorMobile);
       return;
     }
     if (!/^\d{4,6}$/.test(pin)) {
-      setError("PIN must be 4-6 digits");
+      setError(a.errorPin);
       return;
     }
     setLoading(true);
@@ -115,11 +65,11 @@ function InternLoginInner() {
         method: "POST",
         body: JSON.stringify({ phone: sanitize(phone), pin }),
       });
-      if (!data?.access_token) throw new Error("Login failed");
+      if (!data?.access_token) throw new Error(t.errorLogin);
       setInternSession(data.access_token, data.application);
-      router.push("/leadership-academy/dashboard");
-    } catch (err: any) {
-      setError(err?.message || "Login failed");
+      router.push(landingFor(data.application));
+    } catch {
+      setError(t.errorLogin);
     } finally {
       setLoading(false);
     }
@@ -130,7 +80,7 @@ function InternLoginInner() {
     setError("");
     setInfo("");
     if (sanitize(phone).length !== 10) {
-      setError("Enter a valid 10-digit mobile number");
+      setError(t.errorMobile);
       return;
     }
     setLoading(true);
@@ -140,7 +90,7 @@ function InternLoginInner() {
         body: JSON.stringify({ phone: sanitize(phone) }),
       });
       if (!lookup?.found) {
-        setError("No internship application found. Please Apply first.");
+        setError(t.errorNoApplication);
         return;
       }
 
@@ -151,16 +101,16 @@ function InternLoginInner() {
       if (isAuthDevMode()) {
         setOtpSimulated(true);
         setMode("otp_verify");
-        setInfo("Dev mode: use OTP 123456");
+        setInfo(t.infoOtpDev);
         return;
       }
 
       const { error: otpErr } = await supabase.auth.signInWithOtp({ phone: phoneNumber });
       if (otpErr) throw otpErr;
       setMode("otp_verify");
-      setInfo("OTP sent to your phone");
-    } catch (err: any) {
-      setError(err?.message || "Failed to send OTP");
+      setInfo(t.infoOtpSent);
+    } catch {
+      setError(t.errorOtpSend);
     } finally {
       setLoading(false);
     }
@@ -170,7 +120,7 @@ function InternLoginInner() {
     e.preventDefault();
     setError("");
     if (otp.length !== 6) {
-      setError("Enter 6-digit OTP");
+      setError(t.errorOtpLength);
       return;
     }
     setLoading(true);
@@ -179,11 +129,11 @@ function InternLoginInner() {
       const { supabase } = await import("@/lib/supabaseClient");
       if ((otpSimulated || isAuthDevMode()) && isAuthDevMode()) {
         if (otp !== "123456") {
-          setError("Invalid OTP");
+          setError(t.errorOtpInvalid);
           return;
         }
         setMode("set_pin");
-        setInfo("OTP verified. Set your internship login PIN.");
+        setInfo(t.infoOtpVerified);
         return;
       }
       const { error: vErr } = await supabase.auth.verifyOtp({
@@ -193,9 +143,9 @@ function InternLoginInner() {
       });
       if (vErr) throw vErr;
       setMode("set_pin");
-      setInfo("OTP verified. Set your internship login PIN.");
-    } catch (err: any) {
-      setError(err?.message || "Invalid OTP");
+      setInfo(t.infoOtpVerified);
+    } catch {
+      setError(t.errorOtpInvalid);
     } finally {
       setLoading(false);
     }
@@ -205,11 +155,11 @@ function InternLoginInner() {
     e.preventDefault();
     setError("");
     if (!/^\d{4,6}$/.test(newPin)) {
-      setError("PIN must be 4-6 digits");
+      setError(a.errorPin);
       return;
     }
     if (newPin !== confirmPin) {
-      setError("PINs do not match");
+      setError(t.errorPinMismatch);
       return;
     }
     setLoading(true);
@@ -221,7 +171,8 @@ function InternLoginInner() {
         const { data } = await supabase.auth.getSession();
         const token = data.session?.access_token;
         if (!token) {
-          throw new Error("OTP session expired. Please verify OTP again.");
+          setError(t.errorOtpExpired);
+          return;
         }
         headers.Authorization = `Bearer ${token}`;
       }
@@ -230,11 +181,11 @@ function InternLoginInner() {
         headers,
         body: JSON.stringify({ phone: sanitize(phone), pin: newPin }),
       });
-      if (!data?.access_token) throw new Error("Could not set PIN");
+      if (!data?.access_token) throw new Error(t.errorSetPin);
       setInternSession(data.access_token, data.application);
-      router.push("/leadership-academy/dashboard");
-    } catch (err: any) {
-      setError(err?.message || "Failed to set PIN");
+      router.push(landingFor(data.application));
+    } catch {
+      setError(t.errorSetPin);
     } finally {
       setLoading(false);
     }
@@ -298,6 +249,7 @@ function InternLoginInner() {
                 <button
                   type="button"
                   onClick={() => setShowPin(!showPin)}
+                  aria-label={showPin ? t.hidePin : t.showPin}
                   className="h-12 px-4 rounded-xl border border-[#DDEEE4]"
                 >
                   {showPin ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -332,6 +284,7 @@ function InternLoginInner() {
                 value={phone}
                 onChange={(e) => setPhone(sanitize(e.target.value))}
                 className="mt-2 w-full h-12 rounded-xl border border-[#DDEEE4] px-4 font-semibold outline-none focus:border-[#16A34A]"
+                placeholder={t.mobilePh}
               />
             </div>
             <button
@@ -407,10 +360,10 @@ function InternLoginInner() {
         )}
 
         <div className="mt-8 flex flex-col gap-3 text-sm font-semibold">
-          <Link href="/leadership-academy/apply" className="text-[#0D5229] hover:underline">
+          <Link href="/internship/apply" className="text-[#0D5229] hover:underline">
             {t.apply}
           </Link>
-          <Link href="/leadership-academy" className="text-[#587E67] hover:underline">
+          <Link href="/internship" className="text-[#587E67] hover:underline">
             {t.backInternships}
           </Link>
         </div>
@@ -421,8 +374,13 @@ function InternLoginInner() {
 }
 
 export default function InternshipLoginPage() {
+  const { language } = useLanguage();
+  const t = getAcademyI18n(language).loginPage;
+
   return (
-    <Suspense fallback={<div className="p-16 text-center text-[#587E67] font-semibold">Loading…</div>}>
+    <Suspense
+      fallback={<div className="p-16 text-center text-[#587E67] font-semibold">{t.loading}</div>}
+    >
       <InternLoginInner />
     </Suspense>
   );

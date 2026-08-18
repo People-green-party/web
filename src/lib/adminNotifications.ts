@@ -148,7 +148,7 @@ export function notificationHref(n: AdminNotification): string {
   }
 
   if (action.includes("INTERNSHIP") || action.includes("LEADERSHIP") || entity.includes("ACADEMY")) {
-    return "/admin/leadership-academy";
+    return "/admin/internships";
   }
 
   if (action.includes("NEWS") || entity === "NEWSARTICLE") {

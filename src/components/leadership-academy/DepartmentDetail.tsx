@@ -37,7 +37,7 @@ export function DepartmentDetail({ department }: Props) {
       <section className="bg-white w-full flex justify-center pt-[40px] lg:pt-[70px] pb-[50px] lg:pb-[80px]">
         <div className="w-full max-w-[1320px] px-4 lg:px-8">
           <nav className="flex items-center gap-1.5 font-['Familjen_Grotesk'] text-[14px] font-medium text-[#587E67] mb-6">
-            <Link href="/leadership-academy" className="hover:text-[#04330B] transition-colors">
+            <Link href="/internship" className="hover:text-[#04330B] transition-colors">
               {d.breadcrumb}
             </Link>
             <ChevronRight size={14} />
@@ -75,13 +75,13 @@ export function DepartmentDetail({ department }: Props) {
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
-                  href={`/leadership-academy/apply?department=${department.slug}`}
+                  href={`/internship/apply?department=${department.slug}`}
                   className="inline-flex items-center gap-2 px-[32px] py-[12px] bg-[#04330B] hover:bg-[#0D5229] text-white rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors shadow-xl"
                 >
                   {d.apply} <ArrowRight size={18} />
                 </Link>
                 <Link
-                  href="/leadership-academy#departments"
+                  href="/internship#departments"
                   className="inline-flex items-center gap-2 px-[28px] py-[12px] border border-[#E4F2EA] text-[#04330B] hover:bg-[#EAF7EE] rounded-[8px] font-['Familjen_Grotesk'] font-semibold text-[16px] transition-colors"
                 >
                   {d.allDepartments}
@@ -359,7 +359,7 @@ export function DepartmentDetail({ department }: Props) {
           <FaqAccordion items={content.faqs} />
           <p className="mt-8 text-center">
             <Link
-              href="/leadership-academy/faq"
+              href="/internship/faq"
               className="font-['Familjen_Grotesk'] text-[14px] font-bold text-[#04330B] hover:text-[#0D5229]"
             >
               {d.allFaqs}
@@ -374,9 +374,9 @@ export function DepartmentDetail({ department }: Props) {
           <CtaBanner
             title={d.ctaTitle.replace("{name}", displayShort)}
             subtitle={d.ctaSubtitle}
-            primaryHref={`/leadership-academy/apply?department=${department.slug}`}
+            primaryHref={`/internship/apply?department=${department.slug}`}
             primaryLabel={d.apply}
-            secondaryHref="/leadership-academy"
+            secondaryHref="/internship"
             secondaryLabel={d.back}
             image={department.image}
           />

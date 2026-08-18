@@ -11,6 +11,11 @@
   --pgp-ui-font: var(--font-familjen-grotesk), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+/* A display utility must not out-rank an explicit hidden attribute. */
+[hidden] {
+  display: none !important;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -91,4 +96,54 @@ input,
 select,
 textarea {
   font-size: 16px;
+}
+
+/* Next Live Session photo dissolves into the mint panel beside it — stacked on
+   mobile (fade from the top), side by side from md up (fade from the left). */
+.portal-session-photo {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.55) 14%, #000 34%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.55) 14%, #000 34%);
+}
+
+@media (min-width: 768px) {
+  .portal-session-photo {
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.55) 16%, #000 42%);
+    mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.55) 16%, #000 42%);
+  }
+}
+
+/* Intern portal empty-state artwork: gentle drift so blank screens feel alive */
+@keyframes portalEmptyFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-7px) rotate(-1.2deg);
+  }
+}
+
+@keyframes portalEmptyFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.portal-empty-float {
+  animation:
+    portalEmptyFadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both,
+    portalEmptyFloat 6s ease-in-out 0.5s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-empty-float {
+    animation: none;
+  }
 }
