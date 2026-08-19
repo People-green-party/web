@@ -8,6 +8,7 @@ import {
   sessionPlatformLabel,
   upcomingLiveSessions,
 } from "@/components/internship/portal/types";
+import { internFetch } from "@/lib/internApi";
 import PortalEmptyState from "@/components/internship/portal/PortalEmptyState";
 
 const dayKey = (d: Date) =>
@@ -17,7 +18,9 @@ export default function InternClassesPage() {
   const { language } = useLanguage();
   const isHi = language === "hi";
   const locale = isHi ? "hi-IN" : "en-IN";
-  const { data, loading } = useInternPortal();
+  const { data, loading, refresh } = useInternPortal();
+  const [checkInBusy, setCheckInBusy] = useState<number | null>(null);
+  const [checkInMsg, setCheckInMsg] = useState("");
   const [cursor, setCursor] = useState(() => {
     const d = new Date();
     return new Date(d.getFullYear(), d.getMonth(), 1);
@@ -27,6 +30,32 @@ export default function InternClassesPage() {
   const live = upcomingLiveSessions(data);
   const recorded = data?.classes.recorded || [];
   const allLive = data?.classes.live || [];
+  const checkedIn = new Set(
+    (data?.attendance || [])
+      .filter((a) => a.present && a.class?.id)
+      .map((a) => a.class!.id),
+  );
+
+  const canCheckIn = (scheduledAt?: string | null) => {
+    if (!scheduledAt) return true;
+    const start = new Date(scheduledAt).getTime();
+    const now = Date.now();
+    return now >= start - 2 * 60 * 60 * 1000 && now <= start + 6 * 60 * 60 * 1000;
+  };
+
+  const checkIn = async (classId: number) => {
+    setCheckInBusy(classId);
+    setCheckInMsg("");
+    try {
+      await internFetch(`internship/me/classes/${classId}/check-in`, { method: "POST" });
+      setCheckInMsg(isHi ? "उपस्थिति दर्ज हो गई" : "Checked in");
+      await refresh();
+    } catch (e: any) {
+      setCheckInMsg(e?.message || (isHi ? "चेक-इन असफल" : "Check-in failed"));
+    } finally {
+      setCheckInBusy(null);
+    }
+  };
 
   const sessionsByDay = useMemo(() => {
     const map = new Map<string, typeof allLive>();
@@ -78,6 +107,9 @@ export default function InternClassesPage() {
         <p className="mt-1 text-[13.5px] font-medium text-[#6B8F7A]">
           {isHi ? "लाइव सत्र, कैलेंडर और रिकॉर्डेड लाइब्रेरी।" : "Live sessions, calendar, and recorded library."}
         </p>
+        {checkInMsg ? (
+          <p className="mt-2 text-[13px] font-semibold text-[#0B5A2A]">{checkInMsg}</p>
+        ) : null}
       </div>
 
       <section className="rounded-2xl border border-[#DCEBE2] bg-white p-4 sm:p-5 shadow-sm">
@@ -200,6 +232,7 @@ export default function InternClassesPage() {
                         </span>
                       ) : null}
                       {platform ? <span>{platform}</span> : null}
+                    {s.venue ? <span>{s.venue}</span> : null}
                     </div>
                     {s.url ? (
                       <a
@@ -210,6 +243,26 @@ export default function InternClassesPage() {
                       >
                         {isHi ? "सत्र जॉइन करें" : "Join Session"} <ExternalLink size={12} />
                       </a>
+                    ) : null}
+                    {checkedIn.has(s.id) ? (
+                      <p className="mt-2 text-[12px] font-bold text-[#0B5A2A]">
+                        {isHi ? "चेक-इन हो चुका है" : "Checked in"}
+                      </p>
+                    ) : canCheckIn(s.scheduledAt) ? (
+                      <button
+                        type="button"
+                        onClick={() => checkIn(s.id)}
+                        disabled={checkInBusy === s.id}
+                        className="mt-2 h-8 px-3 rounded-lg bg-[#04330B] text-white text-[12px] font-bold disabled:opacity-50"
+                      >
+                        {checkInBusy === s.id
+                          ? isHi
+                            ? "दर्ज हो रहा है…"
+                            : "Checking in…"
+                          : isHi
+                            ? "उपस्थिति दर्ज करें"
+                            : "Check in"}
+                      </button>
                     ) : null}
                   </li>
                 );
@@ -257,6 +310,7 @@ export default function InternClassesPage() {
                       </>
                     ) : null}
                     {platform ? <span>{platform}</span> : null}
+                    {c.venue ? <span>{c.venue}</span> : null}
                   </div>
                   {c.url ? (
                     <a
@@ -268,6 +322,32 @@ export default function InternClassesPage() {
                       {isHi ? "सत्र जॉइन करें" : "Join Session"} <ExternalLink size={12} />
                     </a>
                   ) : null}
+                  {checkedIn.has(c.id) ? (
+                    <p className="mt-3 text-[12px] font-bold text-[#0B5A2A]">
+                      {isHi ? "चेक-इन हो चुका है" : "Checked in"}
+                    </p>
+                  ) : canCheckIn(c.scheduledAt) ? (
+                    <button
+                      type="button"
+                      onClick={() => checkIn(c.id)}
+                      disabled={checkInBusy === c.id}
+                      className="mt-3 h-9 px-3 rounded-lg bg-[#04330B] text-white text-[13px] font-bold disabled:opacity-50"
+                    >
+                      {checkInBusy === c.id
+                        ? isHi
+                          ? "दर्ज हो रहा है…"
+                          : "Checking in…"
+                        : isHi
+                          ? "उपस्थिति दर्ज करें"
+                          : "Check in"}
+                    </button>
+                  ) : (
+                    <p className="mt-3 text-[12px] font-medium text-[#6B8F7A]">
+                      {isHi
+                        ? "चेक-इन सत्र से 2 घंटे पहले खुलता है।"
+                        : "Check-in opens two hours before the session."}
+                    </p>
+                  )}
                 </article>
               );
             })}

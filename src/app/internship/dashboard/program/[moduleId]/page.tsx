@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, CheckCircle2, Circle, ExternalLink, Lock } from "lucide-react";
@@ -11,13 +11,16 @@ import {
   sortedModules,
 } from "@/components/internship/portal/types";
 import PortalEmptyState from "@/components/internship/portal/PortalEmptyState";
+import { internFetch } from "@/lib/internApi";
 
 export default function InternModulePage() {
   const { language } = useLanguage();
   const isHi = language === "hi";
   const params = useParams<{ moduleId: string }>();
   const moduleId = Number(params?.moduleId);
-  const { data, loading } = useInternPortal();
+  const { data, loading, refresh } = useInternPortal();
+  const [completeBusy, setCompleteBusy] = useState(false);
+  const [completeMsg, setCompleteMsg] = useState("");
 
   const modules = useMemo(() => sortedModules(data), [data]);
   const mod = modules.find((m) => m.id === moduleId);
@@ -146,6 +149,57 @@ export default function InternModulePage() {
           </span>
           <ExternalLink size={16} className="text-[#0B5A2A] shrink-0" />
         </a>
+      ) : null}
+
+      {!state.done ? (
+        <div className="rounded-2xl border border-[#DCEBE2] bg-white p-5 shadow-sm">
+          {mod.taskTotal > 0 && mod.taskCompleted < mod.taskTotal ? (
+            <p className="text-[13px] font-medium text-[#4F6B5C]">
+              {isHi
+                ? "इस मॉड्यूल को पूरा करने से पहले सौंपे गए कार्य जमा करें।"
+                : "Finish the assigned tasks before marking this module complete."}
+            </p>
+          ) : (
+            <>
+              <p className="text-[13px] font-medium text-[#4F6B5C]">
+                {isHi
+                  ? "सामग्री पढ़ लेने के बाद इस चरण को पूरा चिह्नित करें — अगला मॉड्यूल तभी खुलेगा।"
+                  : "Mark this step complete after you have read it. The next module unlocks after that."}
+              </p>
+              {completeMsg ? (
+                <p className="mt-2 text-[13px] font-semibold text-[#0B5A2A]">{completeMsg}</p>
+              ) : null}
+              <button
+                type="button"
+                disabled={completeBusy}
+                onClick={async () => {
+                  setCompleteBusy(true);
+                  setCompleteMsg("");
+                  try {
+                    await internFetch(`internship/me/modules/${mod.id}/complete`, {
+                      method: "POST",
+                    });
+                    setCompleteMsg(isHi ? "मॉड्यूल पूरा हुआ" : "Module marked complete");
+                    await refresh();
+                  } catch (e: any) {
+                    setCompleteMsg(e?.message || (isHi ? "असफल" : "Could not complete"));
+                  } finally {
+                    setCompleteBusy(false);
+                  }
+                }}
+                className="mt-3 h-10 px-4 rounded-xl bg-[#04330B] text-white text-[13px] font-bold disabled:opacity-50"
+              >
+                {completeBusy
+                  ? isHi
+                    ? "दर्ज हो रहा है…"
+                    : "Saving…"
+                  : isHi
+                    ? "पूरा चिह्नित करें"
+                    : "Mark complete"}
+              </button>
+            </>
+          )}
+        </div>
       ) : null}
 
       <div className="rounded-2xl border border-[#DCEBE2] bg-white p-6 shadow-sm">

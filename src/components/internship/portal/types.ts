@@ -61,12 +61,14 @@ export type InternDash = {
       title: string;
       description?: string | null;
       url?: string | null;
+      venue?: string | null;
     }[];
     live: {
       id: number;
       title: string;
       description?: string | null;
       url?: string | null;
+      venue?: string | null;
       scheduledAt?: string | null;
     }[];
   };

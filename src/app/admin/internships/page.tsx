@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { BookOpen, ClipboardCheck, FileText, Layers, Loader2, Megaphone, Pencil, Search, Trash2, UserRound, UserMinus, Users, Video, X } from "lucide-react";
 import { adminFetch, getAdminToken } from "@/lib/adminApi";
 import { DEPARTMENTS } from "@/data/internship/departments";
+import { ADMIN_INTERNSHIP_I18N } from "@/data/internship/admin-i18n";
+import { useLanguage } from "@/components/LanguageContext";
 
 type Application = {
   id: number;
@@ -46,6 +48,7 @@ type InternClass = {
   type: string;
   description?: string | null;
   url?: string | null;
+  venue?: string | null;
   department?: string | null;
   scheduledAt?: string | null;
 };
@@ -240,6 +243,8 @@ function fmtDate(iso?: string | null) {
 
 export default function AdminInternshipPage() {
   const router = useRouter();
+  const { language } = useLanguage();
+  const t = ADMIN_INTERNSHIP_I18N[language === "hi" ? "hi" : "en"];
   const [tab, setTab] = useState<Tab>("applications");
   const [items, setItems] = useState<Application[]>([]);
   const [classes, setClasses] = useState<InternClass[]>([]);
@@ -287,6 +292,7 @@ export default function AdminInternshipPage() {
     title: "",
     type: "recorded",
     url: "",
+    venue: "",
     description: "",
     department: "",
     scheduledAt: "",
@@ -637,6 +643,7 @@ export default function AdminInternshipPage() {
         },
         { name: "description", label: "Description", kind: "textarea" },
         { name: "url", label: "Link", kind: "url", placeholder: "https://…" },
+        { name: "venue", label: "Venue / address", kind: "text", placeholder: "Campus / hall / address" },
         DEPT_FIELD,
         { name: "scheduledAt", label: "Scheduled at", kind: "datetime" },
       ],
@@ -645,6 +652,7 @@ export default function AdminInternshipPage() {
         type: c.type,
         description: c.description || "",
         url: c.url || "",
+        venue: c.venue || "",
         department: c.department || "",
         scheduledAt: toLocalInput(c.scheduledAt),
       },
@@ -819,9 +827,10 @@ export default function AdminInternshipPage() {
             ...classForm,
             department: classForm.department || undefined,
             scheduledAt: classForm.scheduledAt || undefined,
+            venue: classForm.venue || undefined,
           }),
         });
-        setClassForm({ title: "", type: "recorded", url: "", description: "", department: "", scheduledAt: "" });
+        setClassForm({ title: "", type: "recorded", url: "", venue: "", description: "", department: "", scheduledAt: "" });
         showToast("Class created");
         await load();
       } catch (err: any) {
@@ -1283,32 +1292,32 @@ export default function AdminInternshipPage() {
   const statusCount = (status: string) => Number(appStats.byStatus?.[status] || 0);
 
   const tabs: { key: Tab; label: string; count: number; icon: React.ReactNode }[] = [
-    { key: "applications", label: "Applications", count: appStats.total, icon: <Users size={14} /> },
-    { key: "classes", label: "Classes", count: classes.length, icon: <Video size={14} /> },
+    { key: "applications", label: t.tabs.applications, count: appStats.total, icon: <Users size={14} /> },
+    { key: "classes", label: t.tabs.classes, count: classes.length, icon: <Video size={14} /> },
     {
       key: "tasks",
-      label: "Tasks",
+      label: t.tabs.tasks,
       count: tasks.length,
       icon: <ClipboardCheck size={14} />,
     },
     {
       key: "attendance",
-      label: "Attendance",
+      label: t.tabs.attendance,
       count: attendanceTotal,
       icon: <FileText size={14} />,
     },
-    { key: "mentors", label: "Mentors", count: mentors.length, icon: <UserRound size={14} /> },
+    { key: "mentors", label: t.tabs.mentors, count: mentors.length, icon: <UserRound size={14} /> },
     {
       key: "announcements",
-      label: "Announcements",
+      label: t.tabs.announcements,
       count: announcements.length,
       icon: <Megaphone size={14} />,
     },
-    { key: "resources", label: "Resources", count: resources.length, icon: <BookOpen size={14} /> },
-    { key: "modules", label: "Modules", count: modules.length, icon: <Layers size={14} /> },
+    { key: "resources", label: t.tabs.resources, count: resources.length, icon: <BookOpen size={14} /> },
+    { key: "modules", label: t.tabs.modules, count: modules.length, icon: <Layers size={14} /> },
     {
       key: "help",
-      label: "Help Desk",
+      label: t.tabs.help,
       count: helpTickets.filter((h) => h.status !== "resolved").length,
       icon: <Megaphone size={14} />,
     },
@@ -1318,9 +1327,9 @@ export default function AdminInternshipPage() {
     <div className="w-full max-w-full min-w-0 space-y-5 font-['Familjen_Grotesk']">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
-          <h2 className="text-xl sm:text-2xl font-black text-[#04330B]">Internships Admin</h2>
+          <h2 className="text-xl sm:text-2xl font-black text-[#04330B]">{t.title}</h2>
           <p className="text-sm text-[#587E67] font-medium mt-1">
-            Review applications → accept interns → assign classes/tasks → mark attendance → issue certificates.
+            {t.subtitle}
           </p>
         </div>
         <button
@@ -1328,51 +1337,51 @@ export default function AdminInternshipPage() {
           onClick={() => load()}
           className="shrink-0 h-10 px-4 rounded-xl border border-[#B9D3C4] text-sm font-bold text-[#04330B] hover:bg-[#F8FBF9]"
         >
-          Refresh
+          {t.refresh}
         </button>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4">
-          <p className="text-[11px] font-bold uppercase text-[#587E67]">Pending apps</p>
+          <p className="text-[11px] font-bold uppercase text-[#587E67]">{t.pendingApps}</p>
           <p className="mt-1 text-2xl font-black text-[#0D5229]">
             {statusCount("pending")}
           </p>
         </div>
         <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4">
-          <p className="text-[11px] font-bold uppercase text-[#587E67]">Accepted interns</p>
+          <p className="text-[11px] font-bold uppercase text-[#587E67]">{t.acceptedInterns}</p>
           <p className="mt-1 text-2xl font-black text-[#0D5229]">{statusCount("accepted")}</p>
         </div>
         <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4">
-          <p className="text-[11px] font-bold uppercase text-[#587E67]">Proofs to review</p>
+          <p className="text-[11px] font-bold uppercase text-[#587E67]">{t.proofsToReview}</p>
           <p className="mt-1 text-2xl font-black text-amber-700">{pendingReviewCount}</p>
         </div>
         <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4">
-          <p className="text-[11px] font-bold uppercase text-[#587E67]">Classes live</p>
+          <p className="text-[11px] font-bold uppercase text-[#587E67]">{t.classesLive}</p>
           <p className="mt-1 text-2xl font-black text-[#0D5229]">{classes.length}</p>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {tabs.map((t) => (
+        {tabs.map((tabItem) => (
           <button
-            key={t.key}
+            key={tabItem.key}
             type="button"
-            onClick={() => setTab(t.key)}
+            onClick={() => setTab(tabItem.key as Tab)}
             className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-colors ${
-              tab === t.key
+              tab === tabItem.key
                 ? "bg-[#04330B] text-white border-[#04330B]"
                 : "bg-white border-[#DDEEE4] text-[#04330B] hover:bg-[#F8FBF9]"
             }`}
           >
-            {t.icon}
-            {t.label}
+            {tabItem.icon}
+            {tabItem.label}
             <span
               className={`ml-0.5 px-1.5 py-0.5 rounded-md text-[10px] ${
-                tab === t.key ? "bg-white/20" : "bg-[#F1FBF6] text-[#0D5229]"
+                tab === tabItem.key ? "bg-white/20" : "bg-[#F1FBF6] text-[#0D5229]"
               }`}
             >
-              {t.count}
+              {tabItem.count}
             </span>
           </button>
         ))}
@@ -1395,10 +1404,10 @@ export default function AdminInternshipPage() {
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { key: "All", label: "Total", count: appStats.total },
+              { key: "All", label: t.status.All, count: appStats.total },
               ...STATUSES.map((s) => ({
                 key: s,
-                label: STATUS_LABEL[s],
+                label: t.status[s],
                 count: statusCount(s),
               })),
             ].map((card) => (
@@ -1505,11 +1514,9 @@ export default function AdminInternshipPage() {
                     draggable={false}
                   />
                 </div>
-                <p className="mt-4 text-[#04330B] font-bold">No applications found.</p>
+                <p className="mt-4 text-[#04330B] font-bold">{t.empty}</p>
                 <p className="mt-1 text-sm font-semibold text-[#587E67]">
-                  {filter === "All"
-                    ? "Try clearing the filters or search."
-                    : `None ${STATUS_LABEL[filter]?.toLowerCase() || filter} — click Total to see everyone.`}
+                  {filter === "All" ? t.emptyHint : t.emptyHintFilter}
                 </p>
               </div>
             ) : (
@@ -1696,6 +1703,12 @@ export default function AdminInternshipPage() {
               className="w-full h-10 rounded-xl border border-[#DDEEE4] px-3 text-sm"
             />
             <input
+              placeholder="Venue / address (offline or hybrid)"
+              value={classForm.venue}
+              onChange={(e) => setClassForm({ ...classForm, venue: e.target.value })}
+              className="w-full h-10 rounded-xl border border-[#DDEEE4] px-3 text-sm"
+            />
+            <input
               type="datetime-local"
               value={classForm.scheduledAt}
               onChange={(e) => setClassForm({ ...classForm, scheduledAt: e.target.value })}
@@ -1731,6 +1744,7 @@ export default function AdminInternshipPage() {
                     <p className="text-xs text-[#587E67] mt-0.5">
                       {c.department ? deptName(c.department) : "All departments"}
                       {c.scheduledAt ? ` · ${fmtDate(c.scheduledAt)}` : ""}
+                      {c.venue ? ` · ${c.venue}` : ""}
                     </p>
                     {c.url && (
                       <a
@@ -2998,6 +3012,28 @@ export default function AdminInternshipPage() {
                       {busy === `cert-${report.application.id}`
                         ? "Saving…"
                         : "Save certificate link"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        run("cert-generate", async () => {
+                          try {
+                            await adminFetch(
+                              `internship/applications/${report.application.id}/certificate/generate`,
+                              { method: "POST" },
+                            );
+                            showToast("Certificate PDF generated");
+                            await openReport(report.application.id);
+                            await load();
+                          } catch (err: any) {
+                            showToast(err.message || "Generate failed");
+                          }
+                        })
+                      }
+                      disabled={busy === "cert-generate"}
+                      className="block text-[11px] font-bold text-[#04330B] hover:underline disabled:opacity-50"
+                    >
+                      {busy === "cert-generate" ? "Generating…" : "Generate PDF certificate"}
                     </button>
                   </div>
                 ) : null}
