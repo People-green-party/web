@@ -143,6 +143,7 @@ export const DEPT_LABELS: Record<"en" | "hi", Record<string, string>> = {
   en: {
     "research-policy": "Research & Policy",
     "digital-growth-media": "Digital Growth & Media",
+    "media-communications": "Digital Growth & Media",
     "community-outreach": "Community Outreach",
     "membership-campus-outreach": "Membership & Campus Outreach",
     "fundraising-partnerships": "Fundraising & Partnerships",
@@ -151,6 +152,7 @@ export const DEPT_LABELS: Record<"en" | "hi", Record<string, string>> = {
   hi: {
     "research-policy": "रिसर्च और पॉलिसी",
     "digital-growth-media": "डिजिटल ग्रोथ और मीडिया",
+    "media-communications": "डिजिटल ग्रोथ और मीडिया",
     "community-outreach": "कम्युनिटी आउटरीच",
     "membership-campus-outreach": "मेंबरशिप और कैंपस आउटरीच",
     "fundraising-partnerships": "फंडरेज़िंग और पार्टनरशिप",
