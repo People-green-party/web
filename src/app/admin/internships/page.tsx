@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BookOpen, ClipboardCheck, FileText, Layers, Loader2, Megaphone, Pencil, Search, Trash2, UserRound, UserMinus, Users, Video, X } from "lucide-react";
 import { adminFetch, getAdminToken } from "@/lib/adminApi";
@@ -213,8 +213,14 @@ const STATUS_LABEL: Record<string, string> = {
 
 type Tab = "applications" | "classes" | "tasks" | "attendance" | "mentors" | "announcements" | "resources" | "modules" | "help";
 
+/** Older applications still store this slug from before Digital Growth was renamed. */
+const DEPT_SLUG_ALIASES: Record<string, string> = {
+  "media-communications": "digital-growth-media",
+};
+
 function deptName(slug: string) {
-  return DEPARTMENTS.find((d) => d.slug === slug)?.shortName || slug || "All";
+  const mapped = DEPT_SLUG_ALIASES[slug] || slug;
+  return DEPARTMENTS.find((d) => d.slug === mapped)?.shortName || slug || "All";
 }
 
 function todayISO() {
@@ -265,7 +271,14 @@ export default function AdminInternshipPage() {
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [totalApps, setTotalApps] = useState(0);
+  const [appStats, setAppStats] = useState<{ total: number; byStatus: Record<string, number> }>({
+    total: 0,
+    byStatus: {},
+  });
+  const [listLoading, setListLoading] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const loadGen = useRef(0);
+  const hasLoadedOnce = useRef(false);
   const [assignmentTotal, setAssignmentTotal] = useState(0);
   const [attendanceTotal, setAttendanceTotal] = useState(0);
   const [helpTotal, setHelpTotal] = useState(0);
@@ -365,7 +378,10 @@ export default function AdminInternshipPage() {
   };
 
   const load = useCallback(async () => {
-    setLoading(true);
+    const gen = ++loadGen.current;
+    const firstPaint = !hasLoadedOnce.current;
+    if (firstPaint) setLoading(true);
+    else setListLoading(true);
     setError("");
     try {
       if (!getAdminToken()) {
@@ -410,11 +426,15 @@ export default function AdminInternshipPage() {
       if (deptFilter !== "All") query.set("department", deptFilter);
       if (debouncedSearch.trim()) query.set("search", debouncedSearch.trim());
 
-      const [apps, accepted, cls, tsk, asg, att, mnt, ann, res, mod, help] =
+      const [apps, stats, accepted, cls, tsk, asg, att, mnt, ann, res, mod, help] =
         await Promise.all([
-          adminFetch<{ items: Application[]; total: number; pageCount: number }>(
-            `internship/applications?${query}`,
-          ),
+          paged<Application>("Applications", `internship/applications?${query}`),
+          adminFetch<{ total: number; byStatus: Record<string, number> }>(
+            "internship/applications/stats",
+          ).catch(() => {
+            failed.push("Application stats");
+            return null;
+          }),
           paged<Application>(
             "Accepted interns",
             "internship/applications?status=accepted&pageSize=200",
@@ -430,9 +450,19 @@ export default function AdminInternshipPage() {
           paged<HelpTicket>("Help desk", "internship/help-tickets"),
         ]);
 
-      setItems(Array.isArray(apps?.items) ? apps.items : []);
-      setTotalApps(Number(apps?.total || 0));
-      setPageCount(Math.max(1, Number(apps?.pageCount || 1)));
+      if (gen !== loadGen.current) return;
+
+      if (!failed.includes("Applications")) {
+        setItems(apps.items);
+        setTotalApps(Number(apps.total || 0));
+        setPageCount(Math.max(1, Math.ceil(Number(apps.total || 0) / PAGE_SIZE)));
+      }
+      if (stats) {
+        setAppStats({
+          total: Number(stats.total || 0),
+          byStatus: stats.byStatus || {},
+        });
+      }
       setAcceptedInterns(accepted.items);
       setClasses(cls);
       setTasks(tsk);
@@ -446,15 +476,20 @@ export default function AdminInternshipPage() {
       setModules(mod);
       setHelpTickets(help.items);
       setHelpTotal(help.total);
+      hasLoadedOnce.current = true;
       setError(
         failed.length
           ? `Could not load: ${failed.join(", ")}. Those tabs are showing as empty — refresh to try again.`
           : "",
       );
     } catch (e: any) {
+      if (gen !== loadGen.current) return;
       setError(e.message || "Failed to load");
     } finally {
-      setLoading(false);
+      if (gen === loadGen.current) {
+        setLoading(false);
+        setListLoading(false);
+      }
     }
   }, [router, page, filter, deptFilter, debouncedSearch]);
 
@@ -468,10 +503,9 @@ export default function AdminInternshipPage() {
     return () => clearTimeout(t);
   }, [search]);
 
-  // A changed filter invalidates the page number.
   useEffect(() => {
     setPage(1);
-  }, [filter, deptFilter, debouncedSearch]);
+  }, [deptFilter, debouncedSearch]);
 
   const pendingReviewCount = useMemo(
     () => assignments.filter((a) => a.status === "submitted").length,
@@ -1246,19 +1280,21 @@ export default function AdminInternshipPage() {
     });
   };
 
+  const statusCount = (status: string) => Number(appStats.byStatus?.[status] || 0);
+
   const tabs: { key: Tab; label: string; count: number; icon: React.ReactNode }[] = [
-    { key: "applications", label: "Applications", count: items.length, icon: <Users size={14} /> },
+    { key: "applications", label: "Applications", count: appStats.total, icon: <Users size={14} /> },
     { key: "classes", label: "Classes", count: classes.length, icon: <Video size={14} /> },
     {
       key: "tasks",
       label: "Tasks",
-      count: pendingReviewCount,
+      count: tasks.length,
       icon: <ClipboardCheck size={14} />,
     },
     {
       key: "attendance",
       label: "Attendance",
-      count: attendance.length,
+      count: attendanceTotal,
       icon: <FileText size={14} />,
     },
     { key: "mentors", label: "Mentors", count: mentors.length, icon: <UserRound size={14} /> },
@@ -1300,12 +1336,12 @@ export default function AdminInternshipPage() {
         <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4">
           <p className="text-[11px] font-bold uppercase text-[#587E67]">Pending apps</p>
           <p className="mt-1 text-2xl font-black text-[#0D5229]">
-            {items.filter((a) => a.status === "pending").length}
+            {statusCount("pending")}
           </p>
         </div>
         <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4">
           <p className="text-[11px] font-bold uppercase text-[#587E67]">Accepted interns</p>
-          <p className="mt-1 text-2xl font-black text-[#0D5229]">{acceptedInterns.length}</p>
+          <p className="mt-1 text-2xl font-black text-[#0D5229]">{statusCount("accepted")}</p>
         </div>
         <div className="rounded-2xl border border-[#E4F2EA] bg-white p-4">
           <p className="text-[11px] font-bold uppercase text-[#587E67]">Proofs to review</p>
@@ -1359,17 +1395,20 @@ export default function AdminInternshipPage() {
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             {[
-              { key: "All", label: "Total", count: items.length },
+              { key: "All", label: "Total", count: appStats.total },
               ...STATUSES.map((s) => ({
                 key: s,
                 label: STATUS_LABEL[s],
-                count: items.filter((a) => a.status === s).length,
+                count: statusCount(s),
               })),
             ].map((card) => (
               <button
                 key={card.key}
                 type="button"
-                onClick={() => setFilter(card.key)}
+                onClick={() => {
+                  setPage(1);
+                  setFilter(card.key);
+                }}
                 className={`rounded-2xl border p-4 text-left ${
                   filter === card.key ? "border-[#16A34A] bg-[#EAF7EE]" : "border-[#E4F2EA] bg-white"
                 }`}
@@ -1446,6 +1485,11 @@ export default function AdminInternshipPage() {
           ) : null}
 
           <div className="rounded-2xl border border-[#E4F2EA] bg-white shadow-sm overflow-hidden">
+            {listLoading && !loading ? (
+              <div className="flex items-center gap-2 px-4 py-2 border-b border-[#E4F2EA] bg-[#F8FBF9] text-xs font-semibold text-[#587E67]">
+                <Loader2 className="animate-spin" size={13} /> Updating list…
+              </div>
+            ) : null}
             {loading ? (
               <div className="flex items-center justify-center py-20 text-[#587E67] gap-2 font-semibold">
                 <Loader2 className="animate-spin" size={18} /> Loading…
@@ -1463,7 +1507,9 @@ export default function AdminInternshipPage() {
                 </div>
                 <p className="mt-4 text-[#04330B] font-bold">No applications found.</p>
                 <p className="mt-1 text-sm font-semibold text-[#587E67]">
-                  Try clearing the filters or search.
+                  {filter === "All"
+                    ? "Try clearing the filters or search."
+                    : `None ${STATUS_LABEL[filter]?.toLowerCase() || filter} — click Total to see everyone.`}
                 </p>
               </div>
             ) : (
