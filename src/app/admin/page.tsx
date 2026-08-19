@@ -34,6 +34,13 @@ type InternshipApp = {
   city?: string;
 };
 
+type InternshipStats = {
+  total: number;
+  byStatus: Record<string, number>;
+  byDepartment: { department: string; count: number }[];
+  recent: InternshipApp[];
+};
+
 type Election = { id: number; status?: string; councilLevel?: string; position?: string };
 type AuditLog = { id: number; action?: string; entityType?: string; createdAt?: string };
 type Countish = { total?: number; items?: any[]; data?: any[] } | any[];
@@ -74,7 +81,12 @@ function actionQueueTotal(data: any): number {
 
 export default function AdminPage() {
   const [youth, setYouth] = useState<YouthStats>({});
-  const [apps, setApps] = useState<InternshipApp[]>([]);
+  const [internships, setInternships] = useState<InternshipStats>({
+    total: 0,
+    byStatus: {},
+    byDepartment: [],
+    recent: [],
+  });
   const [elections, setElections] = useState<Election[]>([]);
   const [audit, setAudit] = useState<AuditLog[]>([]);
   const [pendingSquads, setPendingSquads] = useState(0);
@@ -106,7 +118,7 @@ export default function AdminPage() {
         donationsPage,
       ] = await Promise.all([
         adminFetch<YouthStats>("admin/youth/dashboard").catch(() => ({})),
-        adminFetch<InternshipApp[]>("leadership-academy/applications").catch(() => []),
+        adminFetch<InternshipStats>("internship/applications/stats").catch(() => null),
         fetch(`${ADMIN_API}/elections`, { cache: "no-store" })
           .then((r) => (r.ok ? r.json() : []))
           .catch(() => []),
@@ -129,7 +141,14 @@ export default function AdminPage() {
       ]);
 
       setYouth(youthDash || {});
-      setApps(Array.isArray(applications) ? applications : []);
+      setInternships({
+        total: Number(applications?.total || 0),
+        byStatus: applications?.byStatus || {},
+        byDepartment: Array.isArray(applications?.byDepartment)
+          ? applications.byDepartment
+          : [],
+        recent: Array.isArray(applications?.recent) ? applications.recent : [],
+      });
       setElections(Array.isArray(electionList) ? electionList : []);
       setAudit(
         Array.isArray(auditLogs)
@@ -158,14 +177,16 @@ export default function AdminPage() {
   }, []);
 
   const internshipStats = useMemo(() => {
-    const total = apps.length;
-    const pending = apps.filter((a) => a.status === "pending").length;
-    const accepted = apps.filter((a) => a.status === "accepted").length;
-    const rejected = apps.filter((a) => a.status === "rejected").length;
-    const reviewed = apps.filter((a) => a.status === "reviewed").length;
-    const waitlisted = apps.filter((a) => a.status === "waitlisted").length;
-    return { total, pending, accepted, rejected, reviewed, waitlisted };
-  }, [apps]);
+    const s = internships.byStatus;
+    return {
+      total: internships.total,
+      pending: s.pending || 0,
+      accepted: s.accepted || 0,
+      rejected: s.rejected || 0,
+      reviewed: s.reviewed || 0,
+      waitlisted: s.waitlisted || 0,
+    };
+  }, [internships]);
 
   const openElections = useMemo(
     () =>
@@ -176,27 +197,15 @@ export default function AdminPage() {
     [elections]
   );
 
-  const recent = useMemo(
-    () =>
-      [...apps]
-        .sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt))
-        .slice(0, 6),
-    [apps]
-  );
+  const recent = internships.recent;
 
   const deptBars = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const a of apps) {
-      const key = a.department || "Unknown";
-      map.set(key, (map.get(key) || 0) + 1);
-    }
-    const rows = [...map.entries()]
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 6);
+    const rows = internships.byDepartment
+      .slice(0, 6)
+      .map((d) => ({ name: d.department, count: d.count }));
     const max = Math.max(1, ...rows.map((r) => r.count));
     return { rows, max };
-  }, [apps]);
+  }, [internships]);
 
   const donut = useMemo(() => {
     const parts = [
@@ -244,7 +253,7 @@ export default function AdminPage() {
       value: internshipStats.total,
       icon: GraduationCap,
       hint: `${internshipStats.pending} pending — view applications`,
-      href: "/admin/leadership-academy",
+      href: "/admin/internships",
     },
     {
       label: "Donations",

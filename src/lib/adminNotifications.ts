@@ -147,8 +147,16 @@ export function notificationHref(n: AdminNotification): string {
     return "/admin/users";
   }
 
-  if (action.includes("INTERNSHIP") || action.includes("LEADERSHIP") || entity.includes("ACADEMY")) {
-    return "/admin/leadership-academy";
+  // Every internship entity is named Intern*. ACADEMY and LEADERSHIP are the
+  // programme's former name and still appear on audit rows written before it
+  // was renamed.
+  if (
+    entity.startsWith("INTERN") ||
+    action.includes("INTERNSHIP") ||
+    action.includes("LEADERSHIP") ||
+    entity.includes("ACADEMY")
+  ) {
+    return "/admin/internships";
   }
 
   if (action.includes("NEWS") || entity === "NEWSARTICLE") {

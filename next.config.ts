@@ -27,6 +27,27 @@ const nextConfig: NextConfig = {
         destination: "/login",
         permanent: false,
       },
+      // Renamed Leadership Academy → Internship
+      {
+        source: "/leadership-academy",
+        destination: "/internship",
+        permanent: true,
+      },
+      {
+        source: "/leadership-academy/:path*",
+        destination: "/internship/:path*",
+        permanent: true,
+      },
+      {
+        source: "/admin/leadership-academy",
+        destination: "/admin/internships",
+        permanent: true,
+      },
+      {
+        source: "/admin/leadership-academy/:path*",
+        destination: "/admin/internships/:path*",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

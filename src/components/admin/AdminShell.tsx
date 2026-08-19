@@ -25,6 +25,7 @@ import {
   Building2,
 } from "lucide-react";
 import { adminFetch, clearAdminSession, getAdminScope, getAdminToken } from "@/lib/adminApi";
+import { useLanguage } from "@/components/LanguageContext";
 import {
   type AdminNotification,
   formatNotificationBody,
@@ -58,7 +59,7 @@ const NAV: NavSection[] = [
       { href: "/admin/users", label: "All Users", icon: Users },
       { href: "/admin/unions", label: "Unions", icon: Building2 },
       { href: "/admin/youth", label: "Jinda Youth", icon: BarChart3 },
-      { href: "/admin/leadership-academy", label: "Internships", icon: GraduationCap },
+      { href: "/admin/internships", label: "Internships", icon: GraduationCap },
       { href: "/admin/donations", label: "Donations", icon: HandCoins },
       { href: "/admin/news", label: "News CMS", icon: Newspaper },
     ],
@@ -94,12 +95,14 @@ function AdminSidebar({
   onLogout,
   onNavigate,
   showClose,
+  isHi,
 }: {
   pathname: string;
   scope: "view" | "edit";
   onLogout: () => void;
   onNavigate?: () => void;
   showClose?: boolean;
+  isHi?: boolean;
 }) {
   return (
     <aside className="flex h-full min-h-0 w-full flex-col bg-[#04330B] text-white">
@@ -148,7 +151,9 @@ function AdminSidebar({
                         }`}
                       >
                         <Icon size={17} className="shrink-0 opacity-90" />
-                        <span className="truncate">{item.label}</span>
+                        <span className="truncate">
+                          {item.href === "/admin/internships" && isHi ? "इंटर्नशिप" : item.label}
+                        </span>
                       </Link>
                     </li>
                   );
@@ -200,6 +205,8 @@ export function AdminShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { language, setLanguage } = useLanguage();
+  const isHi = language === "hi";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scope, setScope] = useState<"view" | "edit">("view");
   const [notifOpen, setNotifOpen] = useState(false);
@@ -293,7 +300,7 @@ export function AdminShell({
   return (
     <div className="fixed inset-0 z-40 flex bg-[#F3F6F4] text-[#04330B] font-['Familjen_Grotesk']">
       <div className="hidden lg:flex h-full w-[260px] shrink-0 flex-col">
-        <AdminSidebar pathname={pathname} scope={scope} onLogout={logout} />
+        <AdminSidebar pathname={pathname} scope={scope} onLogout={logout} isHi={isHi} />
       </div>
 
       {mobileOpen ? (
@@ -311,6 +318,7 @@ export function AdminShell({
               onLogout={logout}
               onNavigate={() => setMobileOpen(false)}
               showClose
+              isHi={isHi}
             />
           </div>
         </div>
@@ -330,13 +338,29 @@ export function AdminShell({
 
             <div className="min-w-0 flex-1 overflow-hidden">
               <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.12em] uppercase text-[#587E67] truncate">
-                PGP · Website Admin
+                {isHi ? "पीजीपी · वेबसाइट एडमिन" : "PGP · Website Admin"}
               </p>
-              <h1 className="text-base sm:text-lg lg:text-xl font-black truncate">{pageTitle}</h1>
+              <h1 className="text-base sm:text-lg lg:text-xl font-black truncate">
+                {pathname.startsWith("/admin/internships")
+                  ? isHi
+                    ? "इंटर्नशिप"
+                    : "Internships"
+                  : pageTitle}
+              </h1>
               {subtitle ? (
                 <p className="text-xs text-[#587E67] font-medium truncate">{subtitle}</p>
               ) : null}
             </div>
+
+            <button
+              type="button"
+              onClick={() => setLanguage(isHi ? "en" : "hi")}
+              className="h-10 px-2.5 rounded-xl border border-[#DDEEE4] text-xs font-black text-[#04330B] hover:bg-[#F8FBF9] shrink-0"
+              aria-label={isHi ? "Switch to English" : "हिंदी में बदलें"}
+              title={isHi ? "English" : "हिंदी"}
+            >
+              {isHi ? "EN" : "हिं"}
+            </button>
 
             <div className="relative shrink-0" ref={notifRef}>
               <button

@@ -37,10 +37,12 @@ export async function internFetch<T = any>(path: string, opts: RequestInit = {})
   const base = getApiBaseUrl();
   const url = path.startsWith("http") ? path : `${base}/${path.replace(/^\//, "")}`;
   const token = getInternToken();
+  const isFormData = typeof FormData !== "undefined" && opts.body instanceof FormData;
   const res = await fetch(url, {
     ...opts,
     headers: {
-      "Content-Type": "application/json",
+      // Let the browser set multipart boundary for FormData (proof-upload).
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(opts.headers || {}),
     },
