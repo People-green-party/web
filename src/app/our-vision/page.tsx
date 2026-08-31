@@ -61,37 +61,39 @@ export default function OurVisionPage() {
         </section>
 
         <div className="max-w-[1100px] mx-auto px-4 py-10 md:py-14 grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8 lg:gap-12">
-          {/* TOC */}
-          <aside className="lg:sticky lg:top-[110px] h-fit">
-            <p className="font-['Familjen_Grotesk'] text-[12px] font-bold tracking-[0.12em] uppercase text-[#587E67] mb-3">
-              {meta.tocTitle}
-            </p>
-            <nav className="flex flex-col gap-1.5 rounded-[14px] border border-[#D7EBDF] bg-white p-3">
-              <a
-                href="#intro"
-                className="rounded-[8px] px-3 py-2 text-[14px] font-['Familjen_Grotesk'] font-semibold text-[#04330B] hover:bg-[#F1FBF6]"
-              >
-                {isHi ? "परिचय" : "Introduction"}
-              </a>
-              <a
-                href="#gifts"
-                className="rounded-[8px] px-3 py-2 text-[14px] font-['Familjen_Grotesk'] font-semibold text-[#04330B] hover:bg-[#F1FBF6]"
-              >
-                {meta.giftsHeading}
-              </a>
-              {pgpVisionSections.map((section) => {
-                const title = isHi ? section.hi.title : section.en.title;
-                return (
-                  <a
-                    key={section.id}
-                    href={`#${section.id}`}
-                    className="rounded-[8px] px-3 py-2 text-[14px] font-['Familjen_Grotesk'] font-semibold text-[#04330B] hover:bg-[#F1FBF6]"
-                  >
-                    {title}
-                  </a>
-                );
-              })}
-            </nav>
+          {/* TOC — pinned; page content scrolls */}
+          <aside className="lg:relative">
+            <div className="lg:sticky lg:top-[102px] lg:self-start">
+              <p className="font-['Familjen_Grotesk'] text-[12px] font-bold tracking-[0.12em] uppercase text-[#587E67] mb-3">
+                {meta.tocTitle}
+              </p>
+              <nav className="flex flex-col gap-1 rounded-[14px] border border-[#D7EBDF] bg-white p-3">
+                <a
+                  href="#intro"
+                  className="rounded-[8px] px-3 py-2 text-[14px] font-['Familjen_Grotesk'] font-semibold text-[#04330B] hover:bg-[#F1FBF6]"
+                >
+                  {isHi ? "परिचय" : "Introduction"}
+                </a>
+                <a
+                  href="#gifts"
+                  className="rounded-[8px] px-3 py-2 text-[14px] font-['Familjen_Grotesk'] font-semibold text-[#04330B] hover:bg-[#F1FBF6]"
+                >
+                  {meta.giftsHeading}
+                </a>
+                {pgpVisionSections.map((section) => {
+                  const title = isHi ? section.hi.title : section.en.title;
+                  return (
+                    <a
+                      key={section.id}
+                      href={`#${section.id}`}
+                      className="rounded-[8px] px-3 py-2 text-[14px] font-['Familjen_Grotesk'] font-semibold text-[#04330B] hover:bg-[#F1FBF6]"
+                    >
+                      {title}
+                    </a>
+                  );
+                })}
+              </nav>
+            </div>
           </aside>
 
           {/* Content */}
@@ -99,7 +101,7 @@ export default function OurVisionPage() {
             <ScrollReveal animation="fade-up">
               <section
                 id="intro"
-                className="rounded-[16px] border border-[#D7EBDF] bg-white px-5 py-7 md:px-8 md:py-9"
+                className="rounded-[16px] border border-[#D7EBDF] bg-white px-5 py-7 md:px-8 md:py-9 scroll-mt-[110px]"
               >
                 {intro.map((p, i) => (
                   <p
@@ -115,7 +117,7 @@ export default function OurVisionPage() {
             <ScrollReveal animation="fade-up">
               <section
                 id="gifts"
-                className="rounded-[16px] border border-[#D7EBDF] bg-white px-5 py-7 md:px-8 md:py-9"
+                className="rounded-[16px] border border-[#D7EBDF] bg-white px-5 py-7 md:px-8 md:py-9 scroll-mt-[110px]"
               >
                 <h2 className="font-['Familjen_Grotesk'] font-semibold text-[26px] md:text-[32px] text-[#04330B] mb-3">
                   {meta.giftsHeading}

@@ -38,7 +38,7 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
       </head>
       <body className={`${familjenGrotesk.variable} antialiased font-sans`}>
-        <div className="min-h-screen min-w-0 flex flex-col overflow-x-hidden">
+        <div className="min-h-screen min-w-0 flex flex-col overflow-x-clip">
           <main className="flex-1 min-w-0">
             <LanguageProvider>
               {children}
