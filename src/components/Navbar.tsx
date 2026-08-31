@@ -57,7 +57,7 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
         { name: t.nav.news, href: '/news' },
         { name: t.nav.constitution, href: '/constitution' },
         { name: t.nav.union || 'Unions', href: '/union' },
-        { name: t.nav.youth || 'Jinda Youth', href: '/jinda-youth' },
+        { name: t.nav.youth || 'Zinda Youth', href: '/zinda-youth' },
         { name: t.nav.internship || 'Internships', href: '/internship' },
         { name: t.nav.weAreAravali, href: 'https://wearearavali.org/', target: '_blank' },
     ];
@@ -70,8 +70,8 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
     };
 
     return (
-        <nav className={`bg-white fixed top-0 z-50 w-full ${isDashboard ? 'border-b border-[#04330B]/5' : ''}`}>
-            <div className={`w-full relative ${isDashboard ? 'lg:h-[92px]' : 'lg:h-[90px]'} h-[70px] flex items-center justify-between gap-3 px-4 lg:px-6 xl:px-8 bg-white`}>
+        <nav className={`bg-white fixed top-0 left-0 right-0 z-50 w-full max-w-[100vw] ${isDashboard ? 'border-b border-[#04330B]/5' : ''}`}>
+            <div className={`w-full max-w-[100vw] relative ${isDashboard ? 'lg:h-[92px]' : 'lg:h-[90px]'} h-[70px] flex items-center justify-between gap-2 sm:gap-3 px-4 lg:px-6 xl:px-8 bg-white`}>
 
                 {/* Left Side: Logo */}
                 {/* For Dashboard, we want Dashboard/Election buttons centered. 
@@ -160,12 +160,14 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                         </div>
                     </div>
 
-                    <div
-                        className="flex lg:hidden relative w-[50px] h-[36px] rounded-[8px] border border-[#B9D3C4] items-center justify-center font-bold text-[#04330B] cursor-pointer text-sm"
+                    <button
+                        type="button"
+                        aria-label={language === 'en' ? 'Switch to Hindi' : 'Switch to English'}
+                        className="flex lg:hidden relative w-[50px] h-[36px] shrink-0 rounded-[8px] border border-[#B9D3C4] items-center justify-center font-bold text-[#04330B] cursor-pointer text-sm bg-white"
                         onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
                     >
                         {language === 'en' ? 'HI' : 'EN'}
-                    </div>
+                    </button>
 
                     {/* Profile Button with Dropdown */}
                     {showProfileButton && (
@@ -216,7 +218,9 @@ export const Navbar = ({ links: customLinks, showAuthButtons = true, showProfile
                     )}
 
                     <button
-                        className="lg:hidden p-2 text-gray-700 ml-auto"
+                        type="button"
+                        aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                        className="lg:hidden p-2 text-gray-700 shrink-0"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                     >
                         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}

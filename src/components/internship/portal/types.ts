@@ -11,10 +11,49 @@ export type InternModule = {
   department?: string | null;
   status: "not_started" | "in_progress" | "done";
   locked: boolean;
+  /** "sequence" = an earlier module is unfinished, "schedule" = it opens later. */
+  lockReason?: "sequence" | "schedule" | null;
+  unlockAfterDays?: number | null;
+  unlocksAt?: string | null;
   taskTotal: number;
   taskCompleted: number;
   progressPct: number;
   completedAt?: string | null;
+};
+
+/** Where the intern is in the paced programme calendar. */
+export type ProgrammeSchedule = {
+  startAt?: string | null;
+  endAt?: string | null;
+  dayNumber?: number | null;
+  totalDays: number;
+  workingDayNumber?: number | null;
+  workingDaysTotal?: number;
+  isSundayOff?: boolean;
+  unlockTime?: string;
+  rules?: {
+    sundayOff: boolean;
+    workingDays: string;
+    unlockTime: string;
+    noteEn: string;
+    noteHi: string;
+  };
+  todayTask?: {
+    title: string;
+    opensAt: string;
+    weekdayEn: string;
+  } | null;
+  nextOpen?: {
+    title: string;
+    opensAt: string;
+    weekdayEn: string;
+  } | null;
+  timeline?: {
+    title: string;
+    opensAt: string;
+    weekdayEn: string;
+    open: boolean;
+  }[];
 };
 
 export type CertificateStatus = {
@@ -29,6 +68,8 @@ export type CertificateStatus = {
       total: number;
       pct: number;
       required: number;
+      /** Floor on sessions actually attended; older API builds omit it. */
+      requiredClasses?: number;
       met: boolean;
     };
     modules: { done: number; total: number; met: boolean };
@@ -55,6 +96,7 @@ export type InternDash = {
     granted: boolean;
     status: string;
   };
+  schedule?: ProgrammeSchedule;
   classes: {
     recorded: {
       id: number;
@@ -77,12 +119,21 @@ export type InternDash = {
     status: string;
     proofUrl?: string | null;
     notes?: string | null;
+    submittedAt?: string | null;
+    completedAt?: string | null;
+    /** True when the parent module has not opened yet. */
+    locked?: boolean;
+    lockReason?: "sequence" | "schedule" | null;
+    opensAt?: string | null;
     task: {
       id: number;
       title: string;
       description?: string | null;
+      /** Already resolved against the intern's start date by the API. */
       dueAt?: string | null;
+      dueAfterDays?: number | null;
       moduleId?: number | null;
+      department?: string | null;
     };
   }[];
   attendance?: {
@@ -372,9 +423,161 @@ export function moduleUnlockState(mod: InternModule) {
     unlocked: !mod.locked,
     done,
     locked: mod.locked,
+    /** Waiting on the calendar rather than on unfinished work. */
+    scheduled: mod.locked && mod.lockReason === "schedule",
+    unlocksAt: mod.unlocksAt || null,
     current: !mod.locked && !done,
     inProgress: mod.status === "in_progress",
   };
+}
+
+/** Reads "Day 4 of 14" for the dashboard, or null before an intern has started. */
+export function programmeDay(data: InternDash | null) {
+  const schedule = data?.schedule;
+  if (!schedule?.startAt || !schedule.dayNumber) return null;
+  return { day: schedule.dayNumber, total: schedule.totalDays, endAt: schedule.endAt };
+}
+
+export function formatDayMonth(value: string | null | undefined, lang: "en" | "hi") {
+  if (!value) return "";
+  const at = new Date(value);
+  if (Number.isNaN(at.getTime())) return "";
+  return at.toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN", {
+    day: "numeric",
+    month: "short",
+  });
+}
+
+/** e.g. "Monday, 24 Aug · 9:00 AM IST" */
+export function formatUnlockWhen(value: string | null | undefined, lang: "en" | "hi") {
+  if (!value) return "";
+  const at = new Date(value);
+  if (Number.isNaN(at.getTime())) return "";
+  const locale = lang === "hi" ? "hi-IN" : "en-IN";
+  const day = at.toLocaleDateString(locale, {
+    weekday: "long",
+    day: "numeric",
+    month: "short",
+    timeZone: "Asia/Kolkata",
+  });
+  const time = at.toLocaleTimeString(locale, {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Kolkata",
+  });
+  return lang === "hi" ? `${day} · ${time} IST` : `${day} · ${time} IST`;
+}
+
+/** A task whose module has not opened yet cannot be submitted. */
+export function taskIsLocked(task: InternDash["tasks"][number]) {
+  return Boolean(task.locked);
+}
+
+export function currentModule(data: InternDash | null) {
+  return sortedModules(data).find((m) => !m.locked && m.status !== "done") || null;
+}
+
+/** Open incomplete tasks for today (unlocked, not done). */
+export function todaysOpenTasks(data: InternDash | null) {
+  return (data?.tasks || [])
+    .filter((t) => !taskIsLocked(t) && t.status !== "completed")
+    .sort((a, b) => (a.task.dueAfterDays ?? 0) - (b.task.dueAfterDays ?? 0));
+}
+
+export function upcomingLockedTasks(data: InternDash | null) {
+  return (data?.tasks || [])
+    .filter((t) => taskIsLocked(t) && t.status !== "completed")
+    .sort((a, b) => {
+      const ta = a.opensAt ? new Date(a.opensAt).getTime() : 0;
+      const tb = b.opensAt ? new Date(b.opensAt).getTime() : 0;
+      return ta - tb;
+    });
+}
+
+export function completedTasks(data: InternDash | null) {
+  return (data?.tasks || []).filter((t) => t.status === "completed");
+}
+
+/**
+ * Task/module copy is often EN then Hindi separated by a blank line.
+ * Show only the language the intern is using.
+ */
+export function pickLocaleText(
+  raw: string | null | undefined,
+  lang: "en" | "hi",
+): string {
+  const text = String(raw || "").trim();
+  if (!text) return "";
+  const parts = text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  if (parts.length < 2) return text;
+  const hasDevanagari = (s: string) => /[\u0900-\u097F]/.test(s);
+  const hi = parts.find(hasDevanagari);
+  const en = parts.find((p) => !hasDevanagari(p));
+  if (lang === "hi") return hi || en || text;
+  return en || hi || text;
+}
+
+/** Working-day label from dueAfterDays (0 → Day 1). */
+export function taskDayLabel(
+  dueAfterDays: number | null | undefined,
+  isHi: boolean,
+): string {
+  if (dueAfterDays === null || dueAfterDays === undefined) return "";
+  const n = dueAfterDays + 1;
+  return isHi ? `दिन ${n}` : `Day ${n}`;
+}
+
+export function taskKindLabel(
+  department: string | null | undefined,
+  internDept: string | undefined,
+  isHi: boolean,
+): { label: string; hint: string } {
+  if (!department) {
+    return {
+      label: isHi ? "सबके लिए" : "For everyone",
+      hint: isHi
+        ? "शुरुआत / अंत के साझा कदम — हर ट्रैक को ये करने हैं।"
+        : "Shared start/end steps — every track does these.",
+    };
+  }
+  return {
+    label: isHi ? "आपके ट्रैक का काम" : "Your track work",
+    hint: isHi
+      ? "आवेदन पर चुने विभाग का असली PGP काम — इसलिए यही टास्क मिले।"
+      : "Real PGP work for the department you chose at apply — that is why you see this.",
+  };
+}
+
+export function journeyTitle(title: string) {
+  return String(title || "").replace(/^\d+\.\s*/, "").trim();
+}
+
+/** Working-day index shown on the journey (Day 1 = first Mon–Sat). */
+export function journeyDayNumber(mod: InternModule) {
+  if (mod.unlockAfterDays !== null && mod.unlockAfterDays !== undefined) {
+    return mod.unlockAfterDays + 1;
+  }
+  return mod.sortOrder;
+}
+
+export type SessionMode = "online" | "offline" | "hybrid";
+
+export function sessionMode(session: {
+  url?: string | null;
+  venue?: string | null;
+}): SessionMode {
+  const online = Boolean(String(session.url || "").trim());
+  const offline = Boolean(String(session.venue || "").trim());
+  if (online && offline) return "hybrid";
+  if (offline) return "offline";
+  return "online";
+}
+
+export function sessionModeLabel(mode: SessionMode, isHi: boolean) {
+  if (mode === "hybrid") return isHi ? "हाइब्रिड" : "Hybrid";
+  if (mode === "offline") return isHi ? "ऑफलाइन" : "Offline";
+  return isHi ? "ऑनलाइन" : "Online";
 }
 
 export function moduleProgress(data: InternDash | null) {

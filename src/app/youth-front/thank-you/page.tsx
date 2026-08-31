@@ -11,8 +11,8 @@ export default function YouthFrontThankYouPage() {
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#DCFCE7]">
             <CheckCircle2 className="text-[#16A34A]" size={44} />
           </div>
-          <h1 className="mt-7 text-4xl lg:text-6xl font-black tracking-[-0.05em]">Welcome to JINDA</h1>
-          <p className="mt-4 text-lg font-semibold text-[#587E67]">You are now part of Jinda Youth.</p>
+          <h1 className="mt-7 text-4xl lg:text-6xl font-black tracking-[-0.05em]">Welcome to ZINDA</h1>
+          <p className="mt-4 text-lg font-semibold text-[#587E67]">You are now part of Zinda Youth.</p>
           <p className="mt-2 text-base font-semibold text-[#04330B]">Your account is ready — start your first missions.</p>
 
           <div className="mt-8 rounded-2xl bg-[#DCFCE7] p-6 text-left">
@@ -36,7 +36,7 @@ export default function YouthFrontThankYouPage() {
 
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/youth-front/my-dashboard" className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#04330B] px-7 py-4 font-black text-white">
-              Go to JINDA Dashboard
+              Go to ZINDA Dashboard
             </Link>
             <Link href="/youth-front/report-issue" className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#BBF7D0] bg-white px-7 py-4 font-black text-[#04330B]">
               <Users size={20} /> Report First Issue
@@ -47,7 +47,7 @@ export default function YouthFrontThankYouPage() {
           </div>
 
           <p className="mt-6 text-sm text-[#587E67]">
-            Check your JINDA dashboard for your referral link, XP history, and Squad status.
+            Check your ZINDA dashboard for your referral link, XP history, and Squad status.
           </p>
         </section>
       </main>

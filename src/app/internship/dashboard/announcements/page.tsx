@@ -25,10 +25,10 @@ export default function InternAnnouncementsPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-7 max-w-3xl">
+    <div className="w-full max-w-3xl p-4 sm:p-6 lg:p-8">
       <h1 className="text-[22px] font-bold text-[#04330B]">{isHi ? "घोषणाएँ" : "Announcements"}</h1>
       <p className="mt-1 text-[13.5px] font-medium text-[#6B8F7A]">
-        {isHi ? "प्रोग्राम अपडेट और महत्वपूर्ण सूचनाएँ।" : "Programme updates and important notices."}
+        {isHi ? "पिन की गई सूचना सबसे ऊपर।" : "Pinned notices stay at the top."}
       </p>
 
       <div className="mt-6 space-y-4">
@@ -55,8 +55,8 @@ export default function InternAnnouncementsPage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <h2 className="text-[16px] font-bold text-[#04330B]">{a.title}</h2>
                     {a.pinned ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-[#E8F5EC] px-2 py-0.5 text-[10px] font-bold text-[#0B5A2A]">
-                        <Pin size={10} /> {isHi ? "पिन" : "Pinned"}
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[#DC2626] px-2 py-0.5 text-[10px] font-bold text-white">
+                        <Pin size={10} /> {isHi ? "ज़रूरी" : "IMPORTANT"}
                       </span>
                     ) : null}
                   </div>

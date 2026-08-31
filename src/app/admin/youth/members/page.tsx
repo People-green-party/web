@@ -14,7 +14,7 @@ function RedirectInner() {
 
   return (
     <div className="p-8 text-center text-[#587E67] font-semibold font-['Familjen_Grotesk']">
-      Redirecting to Jinda Youth…
+      Redirecting to Zinda Youth…
     </div>
   );
 }

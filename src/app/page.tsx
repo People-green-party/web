@@ -449,7 +449,7 @@ const LandingPageContent = () => {
       {/* 3. OUR VISION - New Carousel Section */}
       <VisionCarousel language={language} />
 
-      {/* 3b. Unions · Jinda Youth · Internships */}
+      {/* 3b. Unions · Zinda Youth · Internships */}
       <HomeProgramsSection
         title={t.homePrograms.title}
         subtitle={t.homePrograms.subtitle}
@@ -468,7 +468,7 @@ const LandingPageContent = () => {
             title: t.homePrograms.items.youth.title,
             description: t.homePrograms.items.youth.description,
             cta: t.homePrograms.viewMore,
-            href: "/jinda-youth",
+            href: "/zinda-youth",
             image:
               language === "hi"
                 ? "/jinda_youth_hero_blend_hi.png"

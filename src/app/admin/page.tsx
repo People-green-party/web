@@ -242,7 +242,7 @@ export default function AdminPage() {
       href: "/admin/unions",
     },
     {
-      label: "Jinda Youth",
+      label: "Zinda Youth",
       value: youth.totalYouth ?? "—",
       icon: Flag,
       hint: "Click card → member details",
@@ -485,7 +485,7 @@ export default function AdminPage() {
       </div>
 
       <section className="rounded-2xl border border-[#E4F2EA] bg-white p-5 shadow-sm">
-        <h3 className="font-black text-[#04330B] mb-1">Jinda Youth pulse</h3>
+        <h3 className="font-black text-[#04330B] mb-1">Zinda Youth pulse</h3>
         <p className="text-xs text-[#587E67] font-medium mb-4">Live ops counters</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[

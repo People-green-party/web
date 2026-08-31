@@ -464,10 +464,10 @@ const JoinPageContent = () => {
     };
   }, []);
 
-  // Youth referrals should land on Jinda Youth join, not party Join Us
+  // Youth referrals should land on Zinda Youth join, not party Join Us
   useEffect(() => {
     const program = (searchParams.get('program') || '').toLowerCase();
-    if (program.includes('youth') || program.includes('jinda')) {
+    if (program.includes('youth') || program.includes('zinda') || program.includes('jinda')) {
       const ref = searchParams.get('ref');
       const q = ref ? `?ref=${encodeURIComponent(ref)}` : '';
       router.replace(`/youth-front/join${q}`);

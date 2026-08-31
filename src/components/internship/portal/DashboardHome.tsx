@@ -24,13 +24,20 @@ import {
 import { useLanguage } from "@/components/LanguageContext";
 import { useInternPortal } from "./InternPortalContext";
 import PortalEmptyState from "./PortalEmptyState";
+import WeekScheduleCard from "./WeekScheduleCard";
 import {
   attendanceProgress,
+  currentModule,
   deptLabel,
   firstName,
+  formatUnlockWhen,
   initialsFromName,
+  programmeDay,
   sessionPlatformLabel,
+  sortedModules,
+  taskIsLocked,
   taskProgress,
+  todaysOpenTasks,
   upcomingLiveSessions,
 } from "./types";
 
@@ -121,15 +128,20 @@ export function DashboardHome() {
   const hasCert = Boolean(app.certificateUrl);
   const certEligible = Boolean(data.summary?.certificateEligible);
 
-  const openTasks = data.tasks.filter((t) => t.status !== "completed");
-  const moduleItems = [
-    ...data.tasks
-      .filter((t) => t.status === "completed")
-      .slice(0, 2)
-      .map((t) => ({ title: t.task.title, state: "done" as const })),
-    ...openTasks.slice(0, 1).map((t) => ({ title: t.task.title, state: "current" as const })),
-    ...openTasks.slice(1, 3).map((t) => ({ title: t.task.title, state: "locked" as const })),
-  ];
+  const todayTasks = todaysOpenTasks(data);
+  const primaryToday = todayTasks[0] || null;
+  const day = programmeDay(data);
+  const current = currentModule(data);
+  const openTasks = todayTasks;
+  const moduleItems = sortedModules(data)
+    .slice(0, 5)
+    .map((m) => ({
+      title: m.title,
+      state: (m.status === "done" ? "done" : m.locked ? "locked" : "current") as
+        | "done"
+        | "locked"
+        | "current",
+    }));
 
   /**
    * Where a task stands beats how soon it is due: once it is submitted or sent
@@ -140,7 +152,7 @@ export function DashboardHome() {
       return { label: isHi ? "पूर्ण" : "Completed", cls: "bg-[#E8F5EC] text-[#0B5A2A]" };
     }
     if (status === "submitted") {
-      return { label: isHi ? "समीक्षा में" : "Under review", cls: "bg-[#E8F1FF] text-[#1D4ED8]" };
+      return { label: isHi ? "पूर्ण" : "Completed", cls: "bg-[#E8F5EC] text-[#0B5A2A]" };
     }
     if (status === "rejected") {
       return { label: isHi ? "फिर से करना है" : "Needs rework", cls: "bg-red-50 text-red-700" };
@@ -159,7 +171,7 @@ export function DashboardHome() {
   };
 
   return (
-    <div className="p-4 sm:p-5 lg:p-6">
+    <div className="mx-auto w-full max-w-6xl p-4 sm:p-5 lg:p-6 lg:px-8">
       {error ? (
         <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
           {error}
@@ -186,9 +198,21 @@ export function DashboardHome() {
                   {isHi ? `वापसी पर स्वागत है, ${name}! 👋` : `Welcome back, ${name}! 👋`}
                 </h1>
                 <p className="mt-1.5 text-[13px] sm:text-[14px] font-medium text-[#4F6B5C] leading-relaxed">
-                  {isHi
-                    ? "सीखते रहें, योगदान देते रहें — हरित और बेहतर भारत के लिए।"
-                    : "Keep learning, keep contributing for a Green & Better Bharat."}
+                  {data.schedule?.isSundayOff
+                    ? isHi
+                      ? "आज रविवार है — छुट्टी। सोमवार सुबह 9:00 IST पर अगला काम खुलेगा।"
+                      : "Sunday holiday today. Next work opens Monday at 9:00 AM IST."
+                    : data.schedule?.nextOpen?.opensAt
+                      ? isHi
+                        ? `सोम–शनि काम। अगला: ${data.schedule.nextOpen.title} — ${formatUnlockWhen(data.schedule.nextOpen.opensAt, "hi")}`
+                        : `Mon–Sat working days. Next: ${data.schedule.nextOpen.title} — ${formatUnlockWhen(data.schedule.nextOpen.opensAt, "en")}`
+                      : day
+                        ? isHi
+                          ? `आज कार्य-दिन ${data.schedule?.workingDayNumber ?? day.day} / ${data.schedule?.workingDaysTotal ?? 12}। केवल आज का मॉड्यूल/कार्य खुला है।`
+                          : `Working day ${data.schedule?.workingDayNumber ?? day.day} of ${data.schedule?.workingDaysTotal ?? 12}. Only today’s module and tasks are open.`
+                        : isHi
+                          ? "सीखते रहें, योगदान देते रहें — हरित और बेहतर भारत के लिए।"
+                          : "Keep learning, keep contributing for a Green & Better Bharat."}
                 </p>
               </div>
               <div className="relative shrink-0 rounded-[12px] border border-[#C9E6D4] bg-white/95 px-4 py-3 shadow-sm max-w-[220px]">
@@ -206,6 +230,23 @@ export function DashboardHome() {
               </div>
             </div>
           </div>
+
+          <WeekScheduleCard isHi={isHi} data={data} />
+
+          {primaryToday ? (
+            <Card className="p-4 sm:p-5 border-[#86EFAC] bg-[#F0FDF4]">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-[#166534]">
+                {isHi ? `आज का काम · ${track}` : `Today’s task · ${track}`}
+              </p>
+              <p className="mt-1 text-[16px] font-bold text-[#04330B]">{primaryToday.task.title}</p>
+              <Link
+                href="/internship/dashboard/tasks"
+                className="mt-3 inline-flex rounded-[10px] bg-[#04330B] px-4 py-2.5 text-[13px] font-bold text-white hover:bg-[#0B5A2A]"
+              >
+                {isHi ? "कार्य खोलें →" : "Open task →"}
+              </Link>
+            </Card>
+          ) : null}
 
           {/* Stats with icons like reference */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -436,10 +477,14 @@ export function DashboardHome() {
               </ul>
 
               <Link
-                href="/internship/dashboard/tasks"
+                href={
+                  current
+                    ? `/internship/dashboard/program/${current.id}`
+                    : "/internship/dashboard/program"
+                }
                 className="mt-4 inline-flex w-full items-center justify-center rounded-[10px] bg-[#04330B] px-4 py-2.5 text-[13px] font-bold text-white hover:bg-[#0B5A2A]"
               >
-                {isHi ? "सीखना जारी रखें →" : "Continue Learning →"}
+                {isHi ? "आज का मॉड्यूल खोलें →" : "Open today’s module →"}
               </Link>
             </Card>
 
@@ -463,8 +508,13 @@ export function DashboardHome() {
                     />
                   </li>
                 ) : (
-                  data.tasks.slice(0, 5).map((t) => {
-                    const badge = taskBadge(t.status, t.task.dueAt);
+                  [...openTasks, ...data.tasks.filter((t) => taskIsLocked(t) && t.status !== "completed")]
+                    .slice(0, 5)
+                    .map((t) => {
+                    const locked = taskIsLocked(t) && t.status !== "completed";
+                    const badge = locked
+                      ? { label: isHi ? "लॉक" : "Locked", cls: "bg-[#EEF2FF] text-[#4338CA]" }
+                      : taskBadge(t.status, t.task.dueAt);
                     const done = t.status === "completed";
                     return (
                       <li
@@ -481,7 +531,11 @@ export function DashboardHome() {
                         <div className="min-w-0 flex-1">
                           <p
                             className={`text-[13px] font-bold leading-snug ${
-                              done ? "text-[#6B8F7A] line-through" : "text-[#04330B]"
+                              done
+                                ? "text-[#6B8F7A] line-through"
+                                : locked
+                                  ? "text-[#94A3B8]"
+                                  : "text-[#04330B]"
                             }`}
                           >
                             {t.task.title}
@@ -501,8 +555,8 @@ export function DashboardHome() {
                 <Lightbulb size={14} className="mt-0.5 shrink-0" />
                 <span>
                   {isHi
-                    ? "टिप: समय पर प्रूफ जमा करें ताकि मेंटर समीक्षा जल्दी हो।"
-                    : "Tip: Submit proof on time so mentor review stays on schedule."}
+                    ? "टिप: केवल खुले कार्य जमा करें। बाद वाले कार्य दो हफ़्तों में अपने दिन खुलेंगे।"
+                    : "Tip: Submit only open tasks. Later work unlocks across the two weeks."}
                 </span>
               </div>
             </Card>

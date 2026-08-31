@@ -145,7 +145,7 @@ const SEGMENTS: { key: Segment; label: string }[] = [
   { key: "all", label: "All users" },
   { key: "party", label: "Party only" },
   { key: "union", label: "Union only" },
-  { key: "youth", label: "Jinda Youth" },
+  { key: "youth", label: "Zinda Youth" },
 ];
 
 function roleBadge(role: string) {
@@ -160,7 +160,7 @@ function portalTags(u: UserRow): string[] {
   if (u.localUnit) tags.push("Party");
   if (String(u.unionName || "").trim()) tags.push("Union");
   const tag = String(u.programTag || "").toLowerCase();
-  if (tag.includes("youth") || tag.includes("jinda")) tags.push("Youth");
+  if (tag.includes("youth") || tag.includes("zinda") || tag.includes("jinda")) tags.push("Youth");
   if (tags.length === 0) tags.push("Incomplete");
   return tags;
 }
@@ -370,7 +370,7 @@ export default function AdminUsersPage() {
     if (r.localUnit) tags.push("Party");
     if (String(r.unionName || "").trim()) tags.push("Union");
     const tag = String(r.programTag || "").toLowerCase();
-    if (tag.includes("youth") || tag.includes("jinda")) tags.push("Youth");
+    if (tag.includes("youth") || tag.includes("zinda") || tag.includes("jinda")) tags.push("Youth");
     return tags.length ? tags.join(" · ") : "—";
   };
 
@@ -460,7 +460,7 @@ export default function AdminUsersPage() {
               </h2>
               <p className="text-[#587E67] font-semibold mt-1 text-sm">
                 Full User table from the database. Total updates every time someone enrolls (Party,
-                Union, or Jinda Youth). Internships are on their own page.
+                Union, or Zinda Youth). Internships are on their own page.
               </p>
               <p className="text-[12px] text-amber-700 font-medium mt-2 max-w-2xl">
                 Use the filters below to narrow by portal. Incomplete joins (no name/location) are

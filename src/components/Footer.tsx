@@ -79,7 +79,7 @@ export const Footer = () => {
                                 { label: t.nav.news, href: "/news" },
                                 { label: t.nav.constitution, href: "/constitution" },
                                 { label: t.nav.union || "Unions", href: "/union" },
-                                { label: t.nav.youth || "Jinda Youth", href: "/jinda-youth" },
+                                { label: t.nav.youth || "Zinda Youth", href: "/zinda-youth" },
                                 { label: t.nav.internship || "Internships", href: "/internship" },
                                 { label: t.nav.join, href: "/join" },
                             ].map((link, i) => (

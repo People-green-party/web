@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -15,10 +15,8 @@ import {
   Route,
   UserRound,
   Users,
-  X,
 } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
-import { internFetch } from "@/lib/internApi";
 
 type NavItem = {
   href: string;
@@ -49,6 +47,7 @@ const LEARN: NavItem[] = [
   { href: "/internship/dashboard/resources", labelEn: "Resource Library", labelHi: "रिसोर्स लाइब्रेरी", icon: BookOpen },
   { href: "/internship/dashboard/mentors", labelEn: "Mentors", labelHi: "मेंटर", icon: Users },
   { href: "/internship/dashboard/announcements", labelEn: "Announcements", labelHi: "घोषणाएँ", icon: Megaphone },
+  { href: "/internship/dashboard/help", labelEn: "Help Desk", labelHi: "हेल्प डेस्क", icon: MessageCircle },
 ];
 
 function NavLink({
@@ -84,47 +83,14 @@ export function PortalSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { language } = useLanguage();
   const isHi = language === "hi";
-  const [helpOpen, setHelpOpen] = useState(false);
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [toast, setToast] = useState("");
 
   const active = (item: NavItem) => {
     if (item.exact) return pathname === item.href;
     return pathname === item.href || pathname.startsWith(`${item.href}/`);
   };
 
-  const submitHelp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!subject.trim() || !message.trim()) return;
-    setBusy(true);
-    try {
-      await internFetch("internship/me/help-tickets", {
-        method: "POST",
-        body: JSON.stringify({ subject: subject.trim(), message: message.trim() }),
-      });
-      setToast(isHi ? "आपका सवाल भेज दिया गया" : "Your question was sent");
-      setSubject("");
-      setMessage("");
-      setHelpOpen(false);
-      setTimeout(() => setToast(""), 2500);
-    } catch (err: any) {
-      setToast(err?.message || (isHi ? "भेजने में त्रुटि" : "Could not send"));
-      setTimeout(() => setToast(""), 2500);
-    } finally {
-      setBusy(false);
-    }
-  };
-
   return (
     <div className="flex h-full min-h-0 flex-col bg-[#04330B] text-white">
-      {toast ? (
-        <div className="mx-3 mt-3 rounded-xl bg-white/15 px-3 py-2 text-[12px] font-semibold text-[#86EFAC]">
-          {toast}
-        </div>
-      ) : null}
-
       <nav className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4">
         <div className="space-y-0.5">
           <NavLink item={DASHBOARD} active={active(DASHBOARD)} isHi={isHi} onNavigate={onNavigate} />
@@ -168,82 +134,16 @@ export function PortalSidebar({ onNavigate }: { onNavigate?: () => void }) {
               ? "कोई समस्या हो रही है? हम मदद के लिए यहाँ हैं।"
               : "Facing any issue? We're here to help."}
           </p>
-          <button
-            type="button"
-            onClick={() => setHelpOpen(true)}
+          <Link
+            href="/internship/dashboard/help"
+            onClick={onNavigate}
             className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-3 py-2.5 text-[12.5px] font-bold text-[#04330B] hover:bg-[#E8F5EC]"
           >
             <MessageCircle size={14} />
             {isHi ? "सवाल पूछें" : "Ask a question"}
-          </button>
+          </Link>
         </div>
       </div>
-
-      {helpOpen ? (
-        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/45 p-0 sm:p-4">
-          <button
-            type="button"
-            className="absolute inset-0"
-            aria-label="Close"
-            onClick={() => setHelpOpen(false)}
-          />
-          <form
-            onSubmit={submitHelp}
-            className="relative w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-white text-[#04330B] p-5 shadow-2xl"
-          >
-            <div className="flex items-center justify-between gap-2 mb-3">
-              <h3 className="text-[16px] font-bold">
-                {isHi ? "मदद अनुरोध" : "Help request"}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setHelpOpen(false)}
-                aria-label="Close help request"
-                className="h-8 w-8 rounded-lg border border-[#DCEBE2] flex items-center justify-center"
-              >
-                <X size={14} />
-              </button>
-            </div>
-            <p className="text-[12px] font-medium text-[#6B8F7A] mb-3">
-              {isHi
-                ? "एडमिन आपकी क्वेरी देखकर जवाब देगा।"
-                : "Admins will see your query and reply from the Internships panel."}
-            </p>
-            <label className="block mb-3">
-              <span className="text-[12px] font-semibold text-[#6B8F7A]">
-                {isHi ? "विषय" : "Subject"}
-              </span>
-              <input
-                required
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="mt-1 w-full h-11 rounded-xl border border-[#DCEBE2] px-3 text-sm font-medium outline-none focus:border-[#0B5A2A]"
-                placeholder={isHi ? "संक्षेप में लिखें" : "Short summary"}
-              />
-            </label>
-            <label className="block mb-4">
-              <span className="text-[12px] font-semibold text-[#6B8F7A]">
-                {isHi ? "विवरण" : "Details"}
-              </span>
-              <textarea
-                required
-                rows={4}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-[#DCEBE2] px-3 py-2.5 text-sm font-medium outline-none focus:border-[#0B5A2A] resize-y"
-                placeholder={isHi ? "अपनी समस्या बताएँ…" : "Describe your issue…"}
-              />
-            </label>
-            <button
-              type="submit"
-              disabled={busy}
-              className="w-full h-11 rounded-xl bg-[#04330B] text-white text-sm font-bold disabled:opacity-50"
-            >
-              {busy ? (isHi ? "भेजा जा रहा है…" : "Sending…") : isHi ? "भेजें" : "Submit"}
-            </button>
-          </form>
-        </div>
-      ) : null}
     </div>
   );
 }

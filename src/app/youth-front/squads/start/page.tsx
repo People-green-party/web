@@ -114,7 +114,7 @@ function StartSquadInner() {
 
   const whatsappShare = () => {
     const msg = encodeURIComponent(
-      `Join my JINDA Squad: ${result?.name}\n\nUse invite code: ${result?.inviteCode}\nOr join here: https://peoplesgreen.org/join-squad?code=${encodeURIComponent(result?.inviteCode || '')}`,
+      `Join my ZINDA Squad: ${result?.name}\n\nUse invite code: ${result?.inviteCode}\nOr join here: https://peoplesgreen.org/join-squad?code=${encodeURIComponent(result?.inviteCode || '')}`,
     );
     window.open(`https://wa.me/?text=${msg}`, "_blank");
   };

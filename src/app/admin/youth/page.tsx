@@ -232,7 +232,7 @@ function YouthMergedInner() {
             ? "Professionals"
             : memberType === "volunteer"
               ? "Volunteers"
-              : "All Jinda Youth";
+              : "All Zinda Youth";
 
   return (
     <div className="w-full max-w-full min-w-0 space-y-8 font-['Familjen_Grotesk'] text-[#04330B]">
@@ -242,7 +242,7 @@ function YouthMergedInner() {
             Peoples Green Party
           </p>
           <h2 className="mt-1 text-xl sm:text-2xl lg:text-3xl font-black tracking-tight">
-            Jinda Youth
+            Zinda Youth
           </h2>
           <p className="mt-1 text-sm text-[#587E67] font-medium">
             Dashboard overview first, then the full youth members list below. Click a membership card to filter the list.
@@ -254,7 +254,7 @@ function YouthMergedInner() {
         <section className="rounded-2xl border border-[#DDEEE4] bg-white p-6 shadow-sm text-center">
           <p className="font-bold text-[#04330B]">Admin session required</p>
           <p className="mt-2 text-sm text-[#587E67] font-medium">
-            Sign in at /admin/login to load live Jinda Youth data.
+            Sign in at /admin/login to load live Zinda Youth data.
           </p>
         </section>
       )}
@@ -501,7 +501,7 @@ export default function AdminYouthPage() {
   return (
     <Suspense
       fallback={
-        <div className="p-8 text-center text-[#587E67] font-semibold">Loading Jinda Youth…</div>
+        <div className="p-8 text-center text-[#587E67] font-semibold">Loading Zinda Youth…</div>
       }
     >
       <YouthMergedInner />

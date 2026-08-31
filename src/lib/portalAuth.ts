@@ -15,7 +15,7 @@ const PORTAL_KEYS: Record<Portal, string> = {
 
 export function detectPortalFromPath(pathname?: string | null): Portal {
   const p = String(pathname || "");
-  if (p.startsWith("/youth-front") || p.startsWith("/jinda-youth")) return "youth";
+  if (p.startsWith("/youth-front") || p.startsWith("/zinda-youth") || p.startsWith("/jinda-youth")) return "youth";
   if (p.startsWith("/union")) return "union";
   return "party";
 }

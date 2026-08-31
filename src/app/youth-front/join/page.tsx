@@ -12,8 +12,8 @@ import { setPortalToken } from "../../../lib/portalAuth";
 const translations = {
   hi: {
     wizard: {
-      step1Title: "अपनी JINDA प्रोफाइल बनाएं",
-      step1Subtitle: "अपनी JINDA आईडी प्राप्त करें, मिशन अनलॉक करें, XP अर्जित करें और एक स्क्वाड में शामिल हों।",
+      step1Title: "अपनी ZINDA प्रोफाइल बनाएं",
+      step1Subtitle: "अपनी ZINDA आईडी प्राप्त करें, मिशन अनलॉक करें, XP अर्जित करें और एक स्क्वाड में शामिल हों।",
       firstName: "पहला नाम",
       firstNamePlaceholder: "पहला नाम",
       lastName: "अंतिम नाम",
@@ -33,7 +33,7 @@ const translations = {
       btnVerifying: "सत्यापित कर रहे हैं...",
       btnBack: "← वापस",
 
-      step3Title: "अपनी JINDA प्रोफाइल बनाएं",
+      step3Title: "अपनी ZINDA प्रोफाइल बनाएं",
       step3Subtitle: "हमें अपने बारे में बताएं कि आप कौन हैं और कैसे योगदान देना चाहते हैं।",
       ageGroup: "आयु वर्ग",
       selectAgeGroup: "आयु वर्ग चुनें",
@@ -63,11 +63,11 @@ const translations = {
       optionalWhatsapp: "WhatsApp नंबर (वैकल्पिक)",
       skills: "कौशल (वैकल्पिक)",
       consentTitle: "संचार सहमति",
-      consentText: "मैं अपडेट, कार्यों, कार्यक्रमों और मुद्दों के फॉलो-अप के लिए फोन, व्हाट्सएप, एसएमएस या ईमेल पर Jinda Youth से संचार प्राप्त करने के लिए सहमत हूं। आप किसी भी समय ऑप्ट आउट कर सकते हैं।",
+      consentText: "मैं अपडेट, कार्यों, कार्यक्रमों और मुद्दों के फॉलो-अप के लिए फोन, व्हाट्सएप, एसएमएस या ईमेल पर Zinda Youth से संचार प्राप्त करने के लिए सहमत हूं। आप किसी भी समय ऑप्ट आउट कर सकते हैं।",
       conductTitle: "आचार संहिता",
       conductText: "मैं आचार संहिता स्वीकार करता हूं: कोई हिंसा, अभद्र भाषा, फर्जी खबरें, उत्पीड़न, धमकी, जातिगत दुर्व्यवहार, सांप्रदायिक लक्ष्यीकरण या डॉक्सिंग नहीं। उल्लंघन के परिणामस्वरूप हटाने सहित अनुशासनात्मक कार्रवाई होगी।",
-      btnRegister: "मेरी JINDA आईडी बनाएं",
-      btnRegistering: "JINDA आईडी बनाई जा रही है..."
+      btnRegister: "मेरी ZINDA आईडी बनाएं",
+      btnRegistering: "ZINDA आईडी बनाई जा रही है..."
     },
     options: {
       age_16_17: "16-17 नागरिक स्वयंसेवक / सहयोगी",
@@ -107,15 +107,15 @@ const translations = {
       otpFailed: "OTP सत्यापन विफल रहा",
       devOtpHint: "Dev mode: Use OTP 123456",
       invalidOtp: "अमान्य OTP। देव मोड में 123456 का उपयोग करें।",
-      alreadyRegistered: "यह नंबर पहले से Jinda Youth में रजिस्टर है। कृपया Youth Login से लॉगिन करें।",
+      alreadyRegistered: "यह नंबर पहले से Zinda Youth में रजिस्टर है। कृपया Youth Login से लॉगिन करें।",
       invalidMobile: "कृपया सही 10 अंकों का मोबाइल नंबर डालें।",
       invalidPin: "लॉगिन पिन 4 से 6 अंकों का होना चाहिए।",
     }
   },
   en: {
     wizard: {
-      step1Title: "Create Your JINDA Profile",
-      step1Subtitle: "Get your JINDA ID, unlock missions, earn XP and join a Squad.",
+      step1Title: "Create Your ZINDA Profile",
+      step1Subtitle: "Get your ZINDA ID, unlock missions, earn XP and join a Squad.",
       firstName: "First Name",
       firstNamePlaceholder: "First name",
       lastName: "Last Name",
@@ -135,7 +135,7 @@ const translations = {
       btnVerifying: "Verifying...",
       btnBack: "← Back",
 
-      step3Title: "Create Your JINDA Profile",
+      step3Title: "Create Your ZINDA Profile",
       step3Subtitle: "Tell us who you are and how you want to contribute.",
       ageGroup: "Age Group",
       selectAgeGroup: "Select age group",
@@ -165,11 +165,11 @@ const translations = {
       optionalWhatsapp: "WhatsApp Number (Optional)",
       skills: "Skills (Optional)",
       consentTitle: "Communication Consent",
-      consentText: "I agree to receive communication from Jinda Youth on phone, WhatsApp, SMS, or email for updates, tasks, events, and issue follow-ups. You can opt out anytime.",
+      consentText: "I agree to receive communication from Zinda Youth on phone, WhatsApp, SMS, or email for updates, tasks, events, and issue follow-ups. You can opt out anytime.",
       conductTitle: "Code of Conduct",
       conductText: "I accept the code of conduct: no violence, hate speech, fake news, harassment, threats, caste abuse, communal targeting, or doxxing. Violations will result in disciplinary action including removal.",
-      btnRegister: "Create My JINDA ID",
-      btnRegistering: "Creating JINDA ID..."
+      btnRegister: "Create My ZINDA ID",
+      btnRegistering: "Creating ZINDA ID..."
     },
     options: {
       age_16_17: "16-17 Civic Volunteer / Associate",
@@ -209,7 +209,7 @@ const translations = {
       otpFailed: "OTP verification failed",
       devOtpHint: "Dev mode: Use OTP 123456",
       invalidOtp: "Invalid OTP. Use 123456 in dev mode.",
-      alreadyRegistered: "This number is already a Jinda Youth account. Please use Youth Login.",
+      alreadyRegistered: "This number is already a Zinda Youth account. Please use Youth Login.",
       invalidMobile: "Please enter a valid 10-digit mobile number.",
       invalidPin: "Login PIN must be 4-6 digits.",
     }
@@ -297,7 +297,7 @@ function YouthJoinPageInner() {
       const { fetchApi } = await import('../../../lib/api');
       const phoneNumber = `+91${mobileDigits}`;
 
-      // Portal-aware check: same phone can be Party/Union and still join Jinda Youth
+      // Portal-aware check: same phone can be Party/Union and still join Zinda Youth
       const check = await fetchApi('users/check-phone', {
         method: 'POST',
         body: JSON.stringify({ phone: phoneNumber }),
@@ -397,8 +397,8 @@ function YouthJoinPageInner() {
     }
     if (!formData.district.trim()) {
       setError(language === 'hi'
-        ? 'JINDA ID के लिए कृपया अपना जिला दर्ज करें।'
-        : 'Please enter your district for JINDA ID generation.');
+        ? 'ZINDA ID के लिए कृपया अपना जिला दर्ज करें।'
+        : 'Please enter your district for ZINDA ID generation.');
       setLoading(false);
       return;
     }
@@ -437,7 +437,7 @@ function YouthJoinPageInner() {
         phone: phoneNumber,
         pin: formData.pin,
         referralCode: formData.referralCode || undefined,
-        programTag: 'Jinda Youth',
+        programTag: 'Zinda Youth',
         campaignSource: 'CockroachCampusMovement',
         youthAgeGroup: formData.youthAgeGroup,
         memberType: formData.memberType || undefined,
@@ -473,7 +473,7 @@ function YouthJoinPageInner() {
             JSON.stringify({
               id: userData.id,
               name: userData.name,
-              programTag: userData.programTag || 'Jinda Youth',
+              programTag: userData.programTag || 'Zinda Youth',
             }),
           );
         } catch {

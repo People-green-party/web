@@ -103,7 +103,7 @@ function LoginScreenInner() {
 
         // Don't dump people into the wrong portal via ?next=
         const tag = String(data.user?.programTag || '').toLowerCase();
-        const isYouth = tag.includes('jinda') || tag.includes('youth');
+        const isYouth = tag.includes('zinda') || tag.includes('jinda') || tag.includes('youth');
         const isUnion = !!data.user?.unionName;
         let dest =
           nextPath && nextPath.startsWith('/') && !nextPath.startsWith('//')

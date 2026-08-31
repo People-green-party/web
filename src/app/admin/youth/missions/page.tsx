@@ -24,7 +24,7 @@ type Submission = {
   memberId: number;
   memberName: string;
   memberPhone: string;
-  jindaId: string;
+  zindaId: string;
   district: string;
   missionTitle: string;
   missionType: string;
@@ -257,9 +257,9 @@ export default function AdminMissionsPage() {
                         <span className="font-bold text-[#04330B]">
                           {s.memberName || `Member #${s.memberId}`}
                         </span>
-                        {s.jindaId ? (
+                        {s.zindaId ? (
                           <span className="text-[10px] font-mono bg-[#DCFCE7] text-[#16A34A] px-2 py-0.5 rounded-full">
-                            {s.jindaId}
+                            {s.zindaId}
                           </span>
                         ) : null}
                         {s.district ? (
