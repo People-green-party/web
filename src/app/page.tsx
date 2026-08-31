@@ -469,10 +469,7 @@ const LandingPageContent = () => {
             description: t.homePrograms.items.youth.description,
             cta: t.homePrograms.viewMore,
             href: "/zinda-youth",
-            image:
-              language === "hi"
-                ? "/jinda_youth_hero_blend_hi.png"
-                : "/jinda_youth_hero_blend.png",
+            image: "/zinda-youth/hero-logo-hi.png",
             imageAlt: t.homePrograms.items.youth.title,
             tone: "dark",
             objectFit: "contain",

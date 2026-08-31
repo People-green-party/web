@@ -49,18 +49,28 @@ export function HomeProgramsSection({ title, subtitle, cards }: Props) {
               >
                 <div
                   className={`relative aspect-[5/4] w-full overflow-hidden ${
-                    card.tone === "dark" ? "bg-[#041E14]" : "bg-[#EAF7EE]"
+                    card.tone === "dark" ? "bg-[#032115]" : "bg-[#EAF7EE]"
                   }`}
                 >
-                  <Image
-                    src={card.image}
-                    alt={card.imageAlt}
-                    fill
-                    className={`transition-transform duration-500 group-hover:scale-[1.03] ${
-                      card.objectFit === "contain" ? "object-contain p-4 sm:p-6" : "object-cover"
-                    }`}
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
+                  <div
+                    className={
+                      card.objectFit === "contain"
+                        ? "absolute inset-[18px] sm:inset-6"
+                        : "absolute inset-0"
+                    }
+                  >
+                    <Image
+                      src={card.image}
+                      alt={card.imageAlt}
+                      fill
+                      className={`h-full w-full max-w-none ${
+                        card.objectFit === "contain"
+                          ? "object-contain object-center"
+                          : "object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
+                      }`}
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  </div>
                 </div>
                 <div className="flex flex-1 flex-col gap-3 p-5 sm:p-6">
                   <h3 className="font-['Familjen_Grotesk'] font-semibold text-[22px] lg:text-[24px] leading-tight tracking-[-0.3px] text-[#04330B]">
