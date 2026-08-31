@@ -65,8 +65,8 @@ export const internshipI18n = {
           blurb: "Meet mentors, understand the rules of the road, and learn how the two-week programme works.",
         },
         {
-          title: "Department Allocation",
-          blurb: "Share your preferences and get placed into the department that fits your strengths.",
+          title: "Your Track Confirmed",
+          blurb: "The department you choose at apply is your track for the full two weeks — daily PGP work in that field only.",
         },
         {
           title: "Project Based Training",
@@ -180,10 +180,10 @@ export const internshipI18n = {
         { num: "03", title: "Orientation", desc: "Get introduced to the internship." },
         {
           num: "04",
-          title: "Department Allocation",
-          desc: "Your department is assigned after orientation.",
+          title: "Your Track",
+          desc: "The department you select is your track for both weeks.",
         },
-        { num: "05", title: "Programme Begins", desc: "Start working on real projects." },
+        { num: "05", title: "Programme Begins", desc: "Mon–Sat daily track tasks at 09:00 IST." },
       ],
       journeyHighlights: [
         "Real Projects",
@@ -211,13 +211,13 @@ export const internshipI18n = {
       intakeModes: "Offline or Hybrid",
       intakeBody: "Exact dates shared after shortlisting.",
       nextTitle: "What Happens Next?",
-      nextNote: "Final department allocation happens after orientation.",
+      nextNote: "The track you select on the form is your department for the whole internship.",
       nextSteps: [
         "Application Submitted",
         "Application Review",
         "Shortlisting",
         "Orientation",
-        "Department Allocation",
+        "Track Confirmed",
         "Programme Begins",
       ],
       experienceTitle: "What You'll Experience",
@@ -244,7 +244,7 @@ export const internshipI18n = {
       applyFaqs: [
         {
           q: "How long is the programme?",
-          a: "The core programme runs for two weeks. Exact daily schedules are shared after department allocation and depend on Offline or Hybrid mode.",
+          a: "The core programme runs for two weeks (Mon–Sat working days, Sunday off). Daily track tasks open at 09:00 IST. Offline or Hybrid changes where you meet, not which track you are in.",
         },
         {
           q: "Is the programme offline or hybrid?",
@@ -256,7 +256,7 @@ export const internshipI18n = {
         },
         {
           q: "When will my department be assigned?",
-          a: "You share preferences during registration. Final allocation balances your preference, available seats and programme needs after orientation.",
+          a: "You choose your track on the application form. That department is your track for the full two weeks. Switches are rare and only if seats/mentors allow.",
         },
         {
           q: "Will I receive a certificate?",
@@ -367,7 +367,7 @@ export const internshipI18n = {
       },
       {
         q: "How long is the programme?",
-        a: "The core programme runs for two weeks. Exact daily schedules are shared after department allocation and depend on Offline or Hybrid mode.",
+        a: "The core programme runs for two weeks (Mon–Sat working days, Sunday off). Daily track tasks open at 09:00 IST.",
       },
       {
         q: "What is the difference between Offline and Hybrid?",
@@ -379,7 +379,7 @@ export const internshipI18n = {
       },
       {
         q: "How are departments allocated?",
-        a: "You share preferences during registration. Final allocation balances your preference, available seats and programme needs after orientation.",
+        a: "You choose your track on the application form. That is your department for the full two weeks. Switches are rare and only if seats and mentors allow.",
       },
       {
         q: "Will I get a certificate?",
@@ -399,7 +399,7 @@ export const internshipI18n = {
       },
       {
         q: "Can I switch departments after joining?",
-        a: "Switches are limited and only considered in the first allocation window, subject to seat availability and mentor approval.",
+        a: "Rarely. Your apply-form track is intended to stay fixed. Ask Help only in the first days if there is a genuine misfit and a seat exists.",
       },
     ],
     deptPage: {
@@ -540,8 +540,8 @@ export const internshipI18n = {
           blurb: "मेंटर्स से मिलें, नियम समझें, और दो-सप्ताह का कार्यक्रम कैसे चलता है जानें।",
         },
         {
-          title: "विभाग आवंटन",
-          blurb: "अपनी प्राथमिकताएँ बताएँ और अपनी क्षमता के अनुसार विभाग में जगह पाएँ।",
+          title: "आपका ट्रैक तय",
+          blurb: "आवेदन पर चुना विभाग पूरे दो हफ़्ते आपका ट्रैक है — रोज़ उसी क्षेत्र का PGP काम।",
         },
         {
           title: "प्रोजेक्ट आधारित प्रशिक्षण",
@@ -654,10 +654,10 @@ export const internshipI18n = {
         { num: "03", title: "ओरिएंटेशन", desc: "इंटर्नशिप से परिचय।" },
         {
           num: "04",
-          title: "विभाग आवंटन",
-          desc: "ओरिएंटेशन के बाद आपका विभाग निर्धारित होता है।",
+          title: "आपका ट्रैक",
+          desc: "फॉर्म पर चुना विभाग पूरे दो हफ़्ते आपका ट्रैक रहेगा।",
         },
-        { num: "05", title: "कार्यक्रम शुरू", desc: "वास्तविक परियोजनाओं पर काम शुरू करें।" },
+        { num: "05", title: "कार्यक्रम शुरू", desc: "सोम–शनि रोज़ 09:00 IST पर ट्रैक कार्य।" },
       ],
       journeyHighlights: [
         "वास्तविक परियोजनाएँ",
@@ -685,13 +685,13 @@ export const internshipI18n = {
       intakeModes: "ऑफलाइन या हाइब्रिड",
       intakeBody: "सटीक तिथियाँ शॉर्टलिस्ट के बाद साझा होंगी।",
       nextTitle: "आगे क्या होता है?",
-      nextNote: "अंतिम विभाग आवंटन ओरिएंटेशन के बाद होता है।",
+      nextNote: "फॉर्म पर चुना ट्रैक ही पूरी इंटर्नशिप का आपका विभाग है।",
       nextSteps: [
         "आवेदन जमा",
         "आवेदन समीक्षा",
         "शॉर्टलिस्टिंग",
         "ओरिएंटेशन",
-        "विभाग आवंटन",
+        "ट्रैक पुष्टि",
         "कार्यक्रम शुरू",
       ],
       experienceTitle: "आप क्या अनुभव करेंगे",
@@ -718,7 +718,7 @@ export const internshipI18n = {
       applyFaqs: [
         {
           q: "कार्यक्रम कितने समय का है?",
-          a: "मुख्य कार्यक्रम दो सप्ताह का है। दैनिक शेड्यूल विभाग आवंटन के बाद साझा किया जाता है और ऑफलाइन या हाइब्रिड मोड पर निर्भर करता है।",
+          a: "मुख्य कार्यक्रम दो सप्ताह का है (सोम–शनि काम, रविवार छुट्टी)। रोज़ का ट्रैक कार्य 09:00 IST पर खुलता है।",
         },
         {
           q: "क्या कार्यक्रम ऑफलाइन है या हाइब्रिड?",
@@ -730,7 +730,7 @@ export const internshipI18n = {
         },
         {
           q: "मेरा विभाग कब निर्धारित होगा?",
-          a: "पंजीकरण के दौरान आप अपनी प्राथमिकताएँ बताते हैं। अंतिम आवंटन ओरिएंटेशन के बाद आपकी पसंद, उपलब्ध सीटें और कार्यक्रम की जरूरत के आधार पर होता है।",
+          a: "आवेदन फॉर्म पर आप ट्रैक चुनते हैं। वही विभाग पूरे दो हफ़्ते आपका ट्रैक रहता है।",
         },
         {
           q: "क्या मुझे प्रमाणपत्र मिलेगा?",
@@ -841,7 +841,7 @@ export const internshipI18n = {
       },
       {
         q: "कार्यक्रम कितने समय का है?",
-        a: "मुख्य कार्यक्रम दो सप्ताह का है। दैनिक शेड्यूल विभाग आवंटन के बाद साझा किया जाता है और ऑफलाइन या हाइब्रिड मोड पर निर्भर करता है।",
+        a: "मुख्य कार्यक्रम दो सप्ताह का है (सोम–शनि काम, रविवार छुट्टी)। रोज़ का ट्रैक कार्य 09:00 IST पर खुलता है।",
       },
       {
         q: "ऑफलाइन और हाइब्रिड में क्या अंतर है?",

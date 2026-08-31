@@ -48,6 +48,11 @@ const nextConfig: NextConfig = {
         destination: "/admin/internships/:path*",
         permanent: true,
       },
+      {
+        source: "/jinda-youth",
+        destination: "/zinda-youth",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

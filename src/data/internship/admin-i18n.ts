@@ -2,12 +2,12 @@ export const ADMIN_INTERNSHIP_I18N = {
   en: {
     title: "Internships Admin",
     subtitle:
-      "Review applications → accept interns → assign classes/tasks → mark attendance → issue certificates.",
+      "View-only desk: Accept or Reject applications. The 14-day programme, tasks, classes and certificates run automatically.",
     refresh: "Refresh",
     pendingApps: "Pending apps",
     acceptedInterns: "Accepted interns",
-    proofsToReview: "Proofs to review",
-    classesLive: "Classes live",
+    proofsToReview: "Proofs submitted",
+    classesLive: "Live classes",
     tabs: {
       applications: "Applications",
       classes: "Classes",
@@ -34,11 +34,11 @@ export const ADMIN_INTERNSHIP_I18N = {
   hi: {
     title: "इंटर्नशिप एडमिन",
     subtitle:
-      "आवेदन देखें → इंटर्न स्वीकार करें → कक्षा/कार्य दें → उपस्थिति लगाएँ → प्रमाणपत्र जारी करें।",
+      "सिर्फ़ देखें: आवेदन Accept या Reject करें। 14 दिन का प्रोग्राम, कार्य, कक्षाएँ और प्रमाणपत्र अपने आप चलते हैं।",
     refresh: "रिफ्रेश",
     pendingApps: "लंबित आवेदन",
     acceptedInterns: "स्वीकृत इंटर्न",
-    proofsToReview: "समीक्षा के लिए प्रूफ",
+    proofsToReview: "जमा प्रूफ़",
     classesLive: "लाइव कक्षाएँ",
     tabs: {
       applications: "आवेदन",
@@ -49,18 +49,18 @@ export const ADMIN_INTERNSHIP_I18N = {
       announcements: "घोषणाएँ",
       resources: "संसाधन",
       modules: "मॉड्यूल",
-      help: "सहायता",
+      help: "सहायता डेस्क",
     },
     status: {
       All: "कुल",
-      pending: "नए",
+      pending: "नया",
       reviewed: "समीक्षा में",
       accepted: "स्वीकृत",
       rejected: "अस्वीकृत",
       waitlisted: "वेटलिस्ट",
     },
     empty: "कोई आवेदन नहीं मिला।",
-    emptyHint: "फ़िल्टर या खोज हटाकर देखें।",
+    emptyHint: "फ़िल्टर या खोज साफ़ करके देखें।",
     emptyHintFilter: "इस स्थिति में कोई नहीं — कुल पर क्लिक करें।",
   },
 } as const;

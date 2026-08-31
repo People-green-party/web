@@ -14,25 +14,8 @@ const RANK_MAP: Record<string, { label: string; icon: string; color: string; nex
   ActiveMember:        { label: 'Active',       icon: '🔥',  color: '#EF4444', next: 'Defender',    xpNeeded: 300  },
   CampusCadre:         { label: 'Defender',     icon: '🛡',  color: '#3B82F6', next: 'Organizer',   xpNeeded: 600  },
   CampusOrganiser:     { label: 'Organizer',    icon: '🚀',  color: '#8B5CF6', next: 'Squad Leader',xpNeeded: 1200 },
-  DistrictYouthLeader: { label: 'Squad Leader', icon: '👑',  color: '#D97706', next: 'State Fellow', xpNeeded: 2500 },
+  DistrictYouthLeader: { label: 'Squad Leader', icon: '👑',  color: '#D97706', next: 'Influencer',  xpNeeded: 2500 },
   StateYouthFellow:    { label: 'State Fellow', icon: '🌍',  color: '#047857', next: 'Max',         xpNeeded: 9999 },
-};
-
-const ISSUE_STATUS_LABEL: Record<string, string> = {
-  Submitted: 'Submitted',
-  NeedMoreProof: 'Need more proof',
-  DuplicateMerged: 'Merged as duplicate',
-  AutoVerified: 'Verified',
-  HumanVerified: 'Verified by team',
-  Assigned: 'Assigned to team',
-  ComplaintSent: 'Sent to authority',
-  PublicCampaignCandidate: 'Campaign candidate',
-  Published: 'Published',
-  FollowUpPending: 'Follow-up pending',
-  Resolved: 'Resolved',
-  Escalated: 'Escalated',
-  Rejected: 'Rejected',
-  Archived: 'Archived',
 };
 
 const XP_THRESHOLDS = [0, 50, 150, 300, 600, 1200, 2500];
@@ -55,7 +38,7 @@ function getPrevThreshold(xp: number): number {
 const MISSION_STATUS_LABEL: Record<string, { label: string; color: string }> = {
   assigned:  { label: 'Not started', color: 'text-[#9CA3AF]' },
   inprogress:{ label: 'In progress', color: 'text-[#F59E0B]' },
-  submitted: { label: 'Under review', color: 'text-[#3B82F6]' },
+  submitted: { label: 'Submitted',   color: 'text-[#3B82F6]' },
   completed: { label: 'Done ✓',      color: 'text-[#16A34A]' },
   approved:  { label: 'Approved ✓',  color: 'text-[#16A34A]' },
   rejected:  { label: 'Rejected',    color: 'text-[#EF4444]' },
@@ -78,9 +61,6 @@ export default function MyDashboardPage() {
   const [proofUrl, setProofUrl] = useState('');
   const [proofSubmitting, setProofSubmitting] = useState(false);
   const [proofSuccess, setProofSuccess] = useState(false);
-  const [proofError, setProofError] = useState('');
-  const [whatsappPendingId, setWhatsappPendingId] = useState<number | null>(null);
-  const [actionError, setActionError] = useState('');
 
   useEffect(() => {
     fetchDashboard();
@@ -91,28 +71,14 @@ export default function MyDashboardPage() {
       // Trigger auto-completion check first (fire-and-forget)
       fetchApi('youth/my-missions/check', { method: 'POST' }).catch(() => {});
 
-      let profileError = '';
       const [profileData, issuesData, referralsData, missionsData, badgesData, squadData] = await Promise.all([
-        fetchApi('youth/me/profile').catch((e: any) => {
-          profileError = String(e?.message || '');
-          return null;
-        }),
+        fetchApi('youth/me/profile').catch(() => null),
         fetchApi('youth/my-issues').catch(() => []),
         fetchApi('youth/my-referrals').catch(() => []),
         fetchApi('youth/my-missions').catch(() => []),
         fetchApi('youth/my-badges').catch(() => []),
         fetchApi('youth/my-squad').catch(() => null),
       ]);
-
-      if (
-        !profileData &&
-        (profileError.toLowerCase().includes('jinda youth') ||
-          profileError.toLowerCase().includes('not registered as'))
-      ) {
-        router.replace('/youth-front/join');
-        return;
-      }
-
       if (profileData) setProfile(profileData);
       if (issuesData) setIssues(issuesData);
       if (referralsData) setReferrals(referralsData);
@@ -126,74 +92,48 @@ export default function MyDashboardPage() {
     }
   };
 
-  const youthReferralLink = profile?.member?.referralCode
-    ? `https://peoplesgreen.org/youth-front/join?ref=${profile.member.referralCode}`
-    : '';
-
   const copyReferralLink = () => {
-    if (!youthReferralLink) return;
-    navigator.clipboard.writeText(youthReferralLink);
+    const link = profile?.member?.referralCode
+      ? `https://peoplesgreen.org/join?ref=${profile.member.referralCode}&program=youth-front`
+      : '';
+    if (!link) return;
+    navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const openWhatsappInvite = (userMissionId: number) => {
+  const handleJoinWhatsapp = async (userMissionId: number) => {
     const inviteUrl =
       process.env.NEXT_PUBLIC_YOUTH_WHATSAPP_INVITE ||
       "https://wa.me/919521627701?text=" +
-        encodeURIComponent("Hi, I want to join the Jinda Youth WhatsApp community.");
+        encodeURIComponent("Hi, I want to join the PGP Youth Front WhatsApp community.");
     window.open(inviteUrl, "_blank");
-    setWhatsappPendingId(userMissionId);
-    setActionError('');
-  };
-
-  const confirmWhatsappJoined = () => {
-    if (!whatsappPendingId) return;
-    // Honest proof required — do not self-attest with the invite URL
-    setProofModal({
-      userMissionId: whatsappPendingId,
-      title: 'WhatsApp community joined',
-      completionKey: 'onboarding_join_whatsapp',
-    });
-    setProofUrl('');
-    setProofSuccess(false);
-    setProofError('');
-    setWhatsappPendingId(null);
+    try {
+      await fetchApi(`youth/my-missions/${userMissionId}/proof`, {
+        method: "POST",
+        body: JSON.stringify({ proofUrl: inviteUrl }),
+      });
+      fetchDashboard();
+    } catch (e) {
+      console.error("Failed to mark WhatsApp mission as completed", e);
+    }
   };
 
   const handleSubmitProof = async () => {
     if (!proofModal || !proofUrl.trim()) return;
-    const trimmed = proofUrl.trim();
-    const inviteUrl =
-      process.env.NEXT_PUBLIC_YOUTH_WHATSAPP_INVITE ||
-      "https://wa.me/919521627701?text=" +
-        encodeURIComponent("Hi, I want to join the Jinda Youth WhatsApp community.");
-    // Block cheating: invite / wa.me link is not proof of joining
-    if (
-      proofModal.completionKey === 'onboarding_join_whatsapp' &&
-      (trimmed === inviteUrl ||
-        /wa\.me\//i.test(trimmed) ||
-        /chat\.whatsapp\.com\//i.test(trimmed) ||
-        /api\.whatsapp\.com\//i.test(trimmed))
-    ) {
-      setProofError('Paste a screenshot link (Drive/Imgur), not the WhatsApp invite URL.');
-      return;
-    }
     setProofSubmitting(true);
-    setProofError('');
     try {
       await fetchApi(`youth/my-missions/${proofModal.userMissionId}/proof`, {
         method: 'POST',
-        body: JSON.stringify({ proofUrl: trimmed }),
+        body: JSON.stringify({ proofUrl: proofUrl.trim() }),
       });
       setProofSuccess(true);
       setTimeout(() => {
         setProofModal(null);
-        setProofError('');
         fetchDashboard();
       }, 1800);
-    } catch (e: any) {
-      setProofError(e?.message || 'Failed to submit proof. Check the link and try again.');
+    } catch (e) {
+      console.error('Failed to submit proof', e);
     } finally {
       setProofSubmitting(false);
     }
@@ -205,7 +145,7 @@ export default function MyDashboardPage() {
   const prevXp = getPrevThreshold(xp);
   const xpProgress = nextXp === prevXp ? 100 : Math.round(((xp - prevXp) / (nextXp - prevXp)) * 100);
   const firstName = (() => { const n = profile?.member?.name || profile?.name; return n ? n.split(' ')[0] : 'Member'; })();
-  const jindaId = profile?.jindaId || '—';
+  const zindaId = profile?.zindaId || profile?.jindaId || '—';
   const streak = profile?.currentStreak || 0;
   const bestStreak = profile?.bestStreak || 0;
   const hasSquad = !!squad;
@@ -216,7 +156,7 @@ export default function MyDashboardPage() {
       <div className="min-h-screen bg-[#F0FBF4] text-[#04330B] font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px]">
         <Navbar />
         <main className="mx-auto max-w-5xl px-5 lg:px-8 py-14">
-          <div className="text-center text-[#587E67] font-semibold">Loading your JINDA profile...</div>
+          <div className="text-center text-[#587E67] font-semibold">Loading your ZINDA profile...</div>
         </main>
       </div>
     );
@@ -252,7 +192,7 @@ export default function MyDashboardPage() {
                   <div className="flex items-center gap-3 mb-5">
                     <div className="h-10 w-10 rounded-full bg-[#E8F5E9] flex items-center justify-center shrink-0 text-xl">🏟️</div>
                     <div>
-                      <h3 className="font-black text-[#04330b] text-base leading-tight">Attend a local JINDA meetup</h3>
+                      <h3 className="font-black text-[#04330b] text-base leading-tight">Attend a local ZINDA meetup</h3>
                       <p className="text-xs text-[#587E67] mt-0.5">Choose how you want to prove your attendance</p>
                     </div>
                   </div>
@@ -263,11 +203,11 @@ export default function MyDashboardPage() {
                       🔑 Option A — Event Check-in Code
                     </p>
                     <p className="text-[11px] text-[#587E67] mb-3 leading-relaxed">
-                      JINDA organizers share a <strong>unique 6-digit code</strong> at every meetup (on a slide or verbally). Enter it here.
+                      ZINDA organizers share a <strong>unique 6-digit code</strong> at every meetup (on a slide or verbally). Enter it here.
                     </p>
                     <input
                       type="text"
-                      placeholder="e.g.  JINDA-2706"
+                      placeholder="e.g.  ZINDA-2706"
                       value={proofUrl.startsWith('code:') ? proofUrl.replace('code:', '') : ''}
                       onChange={(e) => setProofUrl(e.target.value ? `code:${e.target.value.toUpperCase()}` : '')}
                       maxLength={12}
@@ -304,9 +244,6 @@ export default function MyDashboardPage() {
                     )}
                   </div>
 
-                  {proofError && (
-                    <p className="mb-3 text-xs font-semibold text-[#DC2626] bg-[#FEE2E2] rounded-xl px-3 py-2">{proofError}</p>
-                  )}
                   <button
                     onClick={handleSubmitProof}
                     disabled={!proofUrl.trim() || proofSubmitting}
@@ -329,7 +266,6 @@ export default function MyDashboardPage() {
                       <p className="text-xs text-[#587E67] mt-0.5">
                         {proofModal?.completionKey === 'campaign_joining_story' && 'Share a photo/video link (Google Drive, Instagram, etc.)'}
                         {proofModal?.completionKey === 'campaign_meme_upload' && 'Share your meme link (Instagram, Twitter, Drive, etc.)'}
-                        {proofModal?.completionKey === 'onboarding_join_whatsapp' && 'Upload a screenshot of the WhatsApp group chat, then paste the shareable link'}
                       </p>
                     </div>
                   </div>
@@ -340,9 +276,7 @@ export default function MyDashboardPage() {
                       <li className="flex items-start gap-2"><span className="font-bold text-[#04330b] shrink-0">1.</span>
                         {proofModal?.completionKey === 'campaign_meme_upload'
                           ? 'Post your meme on social media or upload to Google Drive'
-                          : proofModal?.completionKey === 'onboarding_join_whatsapp'
-                            ? 'Screenshot the WhatsApp community chat (after you join) and upload to Drive/Imgur'
-                            : 'Record/write your joining story (photo or video)'}
+                          : 'Record/write your joining story (photo or video)'}
                       </li>
                       <li className="flex items-start gap-2"><span className="font-bold text-[#04330b] shrink-0">2.</span>Copy the public / shareable link</li>
                       <li className="flex items-start gap-2"><span className="font-bold text-[#04330b] shrink-0">3.</span>Paste it below and hit Submit</li>
@@ -364,9 +298,6 @@ export default function MyDashboardPage() {
                     </a>
                   )}
 
-                  {proofError && (
-                    <p className="mt-3 text-xs font-semibold text-[#DC2626] bg-[#FEE2E2] rounded-xl px-3 py-2">{proofError}</p>
-                  )}
                   <button
                     onClick={handleSubmitProof}
                     disabled={!proofUrl.trim() || proofSubmitting}
@@ -383,20 +314,14 @@ export default function MyDashboardPage() {
         )}
 
         <main className="mx-auto max-w-5xl px-5 lg:px-8 py-10">
-          {actionError && (
-            <div className="mb-4 rounded-2xl bg-[#FEE2E2] text-[#DC2626] px-4 py-3 text-sm font-semibold flex items-start gap-2">
-              <AlertCircle size={16} className="mt-0.5 shrink-0" />
-              <span>{actionError}</span>
-            </div>
-          )}
 
-          {/* ── JINDA Identity Card (WelcomeHero) ── */}
+          {/* ── ZINDA Identity Card (WelcomeHero) ── */}
           <section className="bg-[#04330b] text-white p-8 rounded-[40px] relative overflow-hidden mb-8 shadow-xl">
             <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full -translate-y-16 translate-x-16" />
             <div className="relative z-10">
-              <p className="text-xs font-black uppercase tracking-widest text-[#86EFAC] opacity-80 mb-2">JINDA • YOUTH</p>
+              <p className="text-xs font-black uppercase tracking-widest text-[#86EFAC] opacity-80 mb-2">ZINDA • YOUTH</p>
               <h1 className="text-4xl lg:text-5xl font-black mb-1 tracking-tight">Welcome, {firstName}</h1>
-              <p className="text-xs opacity-60 font-mono mb-8">ID: {jindaId}</p>
+              <p className="text-xs opacity-60 font-mono mb-8">ID: {zindaId}</p>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 {[
@@ -480,11 +405,7 @@ export default function MyDashboardPage() {
                                   <button onClick={copyReferralLink} className="px-4 py-1.5 bg-[#04330b] hover:bg-[#16A34A] text-white rounded-full text-xs font-bold transition-colors">{copied ? '✓' : 'Copy'}</button>
                                 )}
                                 {!done && !submitted && m.completionKey === 'onboarding_join_whatsapp' && (
-                                  whatsappPendingId === m.userMissionId ? (
-                                    <button onClick={confirmWhatsappJoined} className="px-4 py-1.5 bg-[#16A34A] hover:bg-[#04330b] text-white rounded-full text-xs font-bold transition-colors">Submit proof</button>
-                                  ) : (
-                                    <button onClick={() => openWhatsappInvite(m.userMissionId)} className="px-4 py-1.5 bg-[#04330b] hover:bg-[#16A34A] text-white rounded-full text-xs font-bold transition-colors">Open WA</button>
-                                  )
+                                  <button onClick={() => handleJoinWhatsapp(m.userMissionId)} className="px-4 py-1.5 bg-[#04330b] hover:bg-[#16A34A] text-white rounded-full text-xs font-bold transition-colors">Join</button>
                                 )}
                                 {!done && !submitted && m.completionKey === 'onboarding_join_squad' && (
                                   <button onClick={() => router.push('/youth-front/squads')} className="px-4 py-1.5 bg-[#04330b] hover:bg-[#16A34A] text-white rounded-full text-xs font-bold transition-colors">Go</button>
@@ -497,8 +418,8 @@ export default function MyDashboardPage() {
                                     <Upload size={11} /> Upload
                                   </button>
                                 )}
-                                {submitted && (
-                                  <span className="text-[10px] font-bold text-[#3B82F6] bg-blue-50 px-2.5 py-1 rounded-full">Under review</span>
+                                {submitted && ['campaign_joining_story', 'campaign_meme_upload', 'campaign_attend_meetup'].includes(m.completionKey) && (
+                                  <span className="text-[10px] font-bold text-[#3B82F6] bg-blue-50 px-2.5 py-1 rounded-full">Under Review</span>
                                 )}
                               </div>
                             </div>
@@ -571,13 +492,13 @@ export default function MyDashboardPage() {
                           <div className="h-full bg-yellow-500 rounded-full" style={{ width: `${Math.min(100, (squad.memberCount / 10) * 100)}%` }} />
                         </div>
                         <p className="text-[#854D0E]/80 font-semibold leading-relaxed">
-                          Your Squad is forming. Invite {Math.max(0, 10 - squad.memberCount)} more members — it auto-activates within 48h if admin hasn&apos;t reviewed yet.
+                          Your Squad is forming. Invite {Math.max(0, 10 - squad.memberCount)} more verified members to activate.
                         </p>
                       </div>
                       {squad.inviteCode && (
                         <button
                           onClick={() => {
-                            navigator.clipboard.writeText(`https://peoplesgreen.org/join-squad?code=${encodeURIComponent(squad.inviteCode)}`);
+                            navigator.clipboard.writeText(`https://peoplesgreen.org/join-squad?code=${squad.inviteCode}`);
                             setSquadCodeCopied(true);
                             setTimeout(() => setSquadCodeCopied(false), 2000);
                           }}
@@ -618,7 +539,7 @@ export default function MyDashboardPage() {
 
                 </div>
 
-                {/* ── Your JINDA Invite Link Card ── */}
+                {/* ── Your ZINDA Invite Link Card ── */}
                 <div className="bg-white p-6 rounded-[40px] border border-gray-200/50 shadow-sm">
                   <h2 className="text-xl font-black mb-1 flex items-center gap-1.5 text-[#04330b]">🔗 Your Invite Link</h2>
                   <p className="text-xs text-[#587E67] mb-4">Earn XP for every verified recruit you bring into the movement.</p>
@@ -627,7 +548,9 @@ export default function MyDashboardPage() {
                     <input
                       type="text"
                       readOnly
-                      value={youthReferralLink || 'Loading...'}
+                      value={profile?.member?.referralCode
+                        ? `https://peoplesgreen.org/join?ref=${profile.member.referralCode}&program=youth-front`
+                        : 'Loading...'}
                       className="flex-1 bg-transparent px-3 text-xs font-semibold text-[#587E67] outline-none select-all"
                     />
                     <button
@@ -733,13 +656,11 @@ export default function MyDashboardPage() {
                           <div className="text-[10px] text-[#587E67] mt-0.5">{issue.category} · {issue.district || '—'}</div>
                         </div>
                         <span className={`shrink-0 px-2 py-0.5 rounded-full text-[9px] font-bold ${
-                          issue.status === 'HumanVerified' || issue.status === 'AutoVerified' || issue.status === 'Resolved'
-                            ? 'bg-[#DCFCE7] text-[#16A34A]'
-                            : issue.status === 'Rejected'
-                              ? 'bg-[#FEE2E2] text-[#DC2626]'
-                              : 'bg-[#FEF3C7] text-[#D97706]'
+                          issue.status === 'HumanVerified' ? 'bg-[#DCFCE7] text-[#16A34A]' :
+                          issue.status === 'Rejected' ? 'bg-[#FEE2E2] text-[#DC2626]' :
+                          'bg-[#FEF3C7] text-[#D97706]'
                         }`}>
-                          {ISSUE_STATUS_LABEL[issue.status] || issue.status}
+                          {issue.status}
                         </span>
                       </div>
                     ))}

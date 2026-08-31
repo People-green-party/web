@@ -17,7 +17,7 @@ export const translations = {
             news: "News & Press",
             press: "Press & Media",
             union: "Unions",
-            youth: "Jinda Youth",
+            youth: "Zinda Youth",
             internship: "Internships",
             vision: "Vision"
         },
@@ -271,9 +271,9 @@ export const translations = {
                         "PGP Union Network empowers unorganized workers to organise, protect their rights, and build collective strength.",
                 },
                 youth: {
-                    title: "Jinda Youth",
+                    title: "Zinda Youth",
                     description:
-                        "Don't just watch politics — build it. Join India's Jinda Youth movement to shape policy and create real impact.",
+                        "Don't just watch politics — build it. Join India's Zinda Youth movement to shape policy and create real impact.",
                 },
                 internships: {
                     title: "Internships",

@@ -7,6 +7,7 @@ import { ArrowLeft, CheckCircle2, Circle, ExternalLink, Lock } from "lucide-reac
 import { useLanguage } from "@/components/LanguageContext";
 import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
 import {
+  formatUnlockWhen,
   moduleUnlockState,
   sortedModules,
 } from "@/components/internship/portal/types";
@@ -24,6 +25,9 @@ export default function InternModulePage() {
 
   const modules = useMemo(() => sortedModules(data), [data]);
   const mod = modules.find((m) => m.id === moduleId);
+  const nextScheduled = modules.find(
+    (m) => m.sortOrder > (mod?.sortOrder || 0) && m.unlocksAt,
+  );
 
   const moduleTasks = useMemo(
     () => (data?.tasks || []).filter((t) => t.task.moduleId === moduleId),
@@ -50,7 +54,7 @@ export default function InternModulePage() {
 
   if (!mod) {
     return (
-      <div className="p-4 sm:p-6 lg:p-7 max-w-3xl space-y-5">
+      <div className="mx-auto w-full max-w-3xl space-y-5 p-4 sm:p-6 lg:p-7">
         {back}
         <PortalEmptyState
           art="sprout"
@@ -69,15 +73,19 @@ export default function InternModulePage() {
 
   if (state.locked) {
     return (
-      <div className="p-4 sm:p-6 lg:p-7 max-w-3xl space-y-5">
+      <div className="mx-auto w-full max-w-3xl space-y-5 p-4 sm:p-6 lg:p-7">
         {back}
         <div className="rounded-2xl border border-[#EAF2EC] bg-[#F8FBF9] p-6 text-center">
           <Lock size={22} className="mx-auto text-[#94A3B8]" />
           <h1 className="mt-3 text-[18px] font-bold text-[#04330B]">{mod.title}</h1>
           <p className="mt-2 text-[13px] font-medium text-[#4F6B5C]">
-            {isHi
-              ? "यह मॉड्यूल तब खुलेगा जब आप इससे पहले वाले मॉड्यूल पूरे कर लेंगे।"
-              : "This module opens once you finish the ones before it."}
+            {state.scheduled && state.unlocksAt
+              ? isHi
+                ? `यह मॉड्यूल ${formatUnlockWhen(state.unlocksAt, "hi")} को खुलेगा। रविवार छुट्टी है — सोम–शनि सुबह 9:00 IST पर नया काम खुलता है।`
+                : `This module opens ${formatUnlockWhen(state.unlocksAt, "en")}. Sunday is off — new work opens Mon–Sat at 9:00 AM IST.`
+              : isHi
+                ? "यह मॉड्यूल तब खुलेगा जब आप इससे पहले वाले मॉड्यूल पूरे कर लेंगे।"
+                : "This module opens once you finish the ones before it."}
           </p>
         </div>
       </div>
@@ -85,7 +93,7 @@ export default function InternModulePage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-7 max-w-3xl space-y-5">
+    <div className="mx-auto w-full max-w-3xl space-y-5 p-4 sm:p-6 lg:p-7">
       {back}
 
       <div className="rounded-2xl border border-[#DCEBE2] bg-white p-6 shadow-sm">
@@ -163,9 +171,15 @@ export default function InternModulePage() {
             <>
               <p className="text-[13px] font-medium text-[#4F6B5C]">
                 {isHi
-                  ? "सामग्री पढ़ लेने के बाद इस चरण को पूरा चिह्नित करें — अगला मॉड्यूल तभी खुलेगा।"
-                  : "Mark this step complete after you have read it. The next module unlocks after that."}
+                  ? "सामग्री पढ़ लेने के बाद इस चरण को पूरा चिह्नित करें। अगला मॉड्यूल अपने दिन सुबह 9:00 IST पर खुलेगा (रविवार छुट्टी)।"
+                  : "Mark this step complete after you have read it. The next module opens on its day at 9:00 AM IST (Sunday off)."}
               </p>
+              {nextScheduled?.unlocksAt ? (
+                <p className="mt-2 text-[12.5px] font-bold text-[#0B5A2A]">
+                  {isHi ? "अगला: " : "Next: "}
+                  {nextScheduled.title} — {formatUnlockWhen(nextScheduled.unlocksAt, isHi ? "hi" : "en")}
+                </p>
+              ) : null}
               {completeMsg ? (
                 <p className="mt-2 text-[13px] font-semibold text-[#0B5A2A]">{completeMsg}</p>
               ) : null}

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default function YouthFrontRedirect() {
-  redirect('/jinda-youth');
+  redirect('/zinda-youth');
 }

@@ -22,12 +22,12 @@ export default function InternMentorsPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-7 max-w-3xl">
-      <h1 className="text-[22px] font-bold text-[#04330B]">{isHi ? "मेंटर" : "Mentors"}</h1>
+    <div className="w-full max-w-3xl p-4 sm:p-6 lg:p-8">
+      <h1 className="text-[22px] font-bold text-[#04330B]">{isHi ? "मेरा मेंटर" : "My Mentor"}</h1>
       <p className="mt-1 text-[13.5px] font-medium text-[#6B8F7A]">
         {isHi
-          ? "आपके असाइन किए गए मेंटर और संपर्क विकल्प।"
-          : "Your assigned mentors and ways to reach them."}
+          ? "मेंटर प्रोग्राम नहीं चलाते — गाइड और संपर्क के लिए यहाँ हैं।"
+          : "Mentors do not run the programme — they are here to guide and be reached."}
       </p>
 
       <div className="mt-6 space-y-4">

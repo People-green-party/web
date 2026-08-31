@@ -180,7 +180,7 @@ export default function AdminActionQueuePage() {
         <div>
           <h2 className="text-2xl font-black text-[#04330B]">Action Queue</h2>
           <p className="text-sm text-[#587E67] font-medium">
-            Review Jinda Youth issues that need PGP ops attention.
+            Review Zinda Youth issues that need PGP ops attention.
           </p>
         </div>
         <span

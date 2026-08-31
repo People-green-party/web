@@ -1,31 +1,40 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Award, CheckCircle2, Circle, ExternalLink } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
 import { useInternPortal } from "@/components/internship/portal/InternPortalContext";
-import { taskProgress } from "@/components/internship/portal/types";
+import {
+  pickLocaleText,
+  taskDayLabel,
+  taskProgress,
+} from "@/components/internship/portal/types";
 
 export default function InternCertificatePage() {
   const { language } = useLanguage();
   const isHi = language === "hi";
+  const lang = isHi ? "hi" : "en";
   const { data, loading } = useInternPortal();
   const tasks = taskProgress(data);
   const url = data?.application.certificateUrl;
   const cert = data?.summary?.certificate;
   const eligible = Boolean(cert?.eligible ?? data?.summary?.certificateEligible);
+  const remaining = (data?.tasks || []).filter(
+    (t) => t.status !== "completed" && t.status !== "submitted",
+  );
 
   if (loading && !data) {
     return <div className="p-8 text-[#6B8F7A] font-semibold">{isHi ? "लोड हो रहा है…" : "Loading…"}</div>;
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-7 max-w-2xl">
+    <div className="w-full max-w-4xl p-4 sm:p-6 lg:p-8">
       <h1 className="text-[22px] font-bold text-[#04330B]">{isHi ? "प्रमाणपत्र" : "Certificate"}</h1>
       <p className="mt-1 text-[13.5px] font-medium text-[#6B8F7A]">
         {isHi
-          ? "प्रोग्राम पूरा होने पर प्रमाणपत्र यहाँ उपलब्ध होगा।"
-          : "Your certificate will appear here after programme completion."}
+          ? "नीचे साफ़ दिखेगा क्या बाकी है। सब पूरा होते ही प्रमाणपत्र अपने आप यहाँ आ जाता है।"
+          : "You will see exactly what is left. When everything is done, the certificate appears here automatically."}
       </p>
 
       <div className="mt-6 rounded-2xl border border-[#DCEBE2] bg-white p-6 shadow-sm">
@@ -49,47 +58,26 @@ export default function InternCertificatePage() {
           </>
         ) : eligible ? (
           <>
-            <div className="mt-4 h-24 w-24 portal-empty-float">
-              <img
-                src="/internship/portal/empty/empty-certificate.png"
-                alt=""
-                aria-hidden
-                className="h-full w-full object-contain select-none"
-                draggable={false}
-              />
-            </div>
             <p className="mt-3 text-[18px] font-bold text-[#04330B]">
-              {isHi ? "पात्र — प्रमाणपत्र जारी होने की प्रतीक्षा" : "Eligible — waiting for certificate issue"}
+              {isHi ? "पात्र — प्रमाणपत्र बन रहा है" : "Eligible — certificate is being prepared"}
             </p>
             <p className="mt-2 text-[13px] font-medium text-[#4F6B5C]">
               {isHi
-                ? "आपने आवश्यकताएँ पूरी कर ली हैं। एडमिन प्रमाणपत्र जारी होने पर यह यहाँ दिखेगा।"
-                : "You have completed the requirements. Your certificate will appear here once admin issues it."}
+                ? "आवश्यकताएँ पूरी हो चुकी हैं। पेज रिफ्रेश करके देखें।"
+                : "Requirements are met. Refresh this page in a moment."}
             </p>
-            <div className="mt-4 h-2 rounded-full bg-[#E8F5EC] overflow-hidden">
-              <div className="h-full rounded-full bg-[#16A34A]" style={{ width: "100%" }} />
-            </div>
           </>
         ) : (
           <>
-            <div className="mt-4 h-24 w-24 portal-empty-float">
-              <img
-                src="/internship/portal/empty/empty-certificate.png"
-                alt=""
-                aria-hidden
-                className="h-full w-full object-contain select-none opacity-90"
-                draggable={false}
-              />
-            </div>
             <p className="mt-3 text-[18px] font-bold text-[#04330B]">
-              {isHi ? "प्रगति में" : "In Progress"}
+              {isHi ? "अभी डाउनलोड नहीं हो सकता" : "Download is locked"}
             </p>
             <p className="mt-2 text-[13px] font-medium text-[#4F6B5C]">
               {isHi
-                ? "प्रमाणपत्र के लिए नीचे दी गई सभी शर्तें पूरी करनी होंगी।"
-                : "You need to meet all of the requirements below."}
+                ? "जो शर्त अधूरी है वही रोक रही है। नीचे सूची देखें।"
+                : "Whatever is still open below is blocking the certificate."}
             </p>
-            <div className="mt-4 h-2 rounded-full bg-[#E8F5EC] overflow-hidden">
+            <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#E8F5EC]">
               <div className="h-full rounded-full bg-[#16A34A]" style={{ width: `${tasks.pct}%` }} />
             </div>
           </>
@@ -106,10 +94,10 @@ export default function InternCertificatePage() {
               met={cert.requirements.attendance.met}
               label={
                 isHi
-                  ? `उपस्थिति (कम से कम ${cert.requirements.attendance.required}%)`
-                  : `Attendance (at least ${cert.requirements.attendance.required}%)`
+                  ? `उपस्थिति (कम से कम ${cert.requirements.attendance.requiredClasses ?? 3} कक्षा + ${cert.requirements.attendance.required}%)`
+                  : `Attendance (at least ${cert.requirements.attendance.requiredClasses ?? 3} classes + ${cert.requirements.attendance.required}%)`
               }
-              value={`${cert.requirements.attendance.pct}%`}
+              value={`${cert.requirements.attendance.present}/${cert.requirements.attendance.total || cert.requirements.attendance.requiredClasses || 3} · ${cert.requirements.attendance.pct}%`}
             />
             <RequirementRow
               met={cert.requirements.modules.met}
@@ -117,6 +105,35 @@ export default function InternCertificatePage() {
               value={`${cert.requirements.modules.done}/${cert.requirements.modules.total}`}
             />
           </ul>
+        ) : null}
+
+        {!url && remaining.length > 0 ? (
+          <div className="mt-6 border-t border-[#EAF2EC] pt-5">
+            <p className="text-[13px] font-bold text-[#04330B]">
+              {isHi
+                ? `ये ${remaining.length} कार्य अभी बाकी हैं — इन्हें पूरा करो तब प्रमाणपत्र मिलेगा`
+                : `These ${remaining.length} tasks are still left — finish them to get the certificate`}
+            </p>
+            <ul className="mt-3 space-y-2">
+              {remaining.map((item) => (
+                <li key={item.assignmentId} className="flex items-start gap-2 text-[13px]">
+                  <Circle size={14} className="mt-0.5 shrink-0 text-[#D97706]" />
+                  <span className="font-semibold text-[#04330B]">
+                    {taskDayLabel(item.task.dueAfterDays, isHi)
+                      ? `${taskDayLabel(item.task.dueAfterDays, isHi)} · `
+                      : ""}
+                    {pickLocaleText(item.task.title, lang)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/internship/dashboard/tasks"
+              className="mt-4 inline-flex rounded-xl bg-[#04330B] px-4 py-2.5 text-[13px] font-bold text-white"
+            >
+              {isHi ? "मेरे कार्य पर जाएँ" : "Go to My Tasks"}
+            </Link>
+          </div>
         ) : null}
       </div>
     </div>
@@ -135,14 +152,12 @@ function RequirementRow({
   return (
     <li className="flex items-center gap-2.5">
       {met ? (
-        <CheckCircle2 size={17} className="text-[#16A34A] shrink-0" />
+        <CheckCircle2 size={17} className="shrink-0 text-[#16A34A]" />
       ) : (
-        <Circle size={17} className="text-[#94A3B8] shrink-0" />
+        <Circle size={17} className="shrink-0 text-[#94A3B8]" />
       )}
       <span className="flex-1 text-[13px] font-semibold text-[#04330B]">{label}</span>
-      <span
-        className={`text-[12.5px] font-bold ${met ? "text-[#16A34A]" : "text-[#6B8F7A]"}`}
-      >
+      <span className={`text-[12.5px] font-bold ${met ? "text-[#16A34A]" : "text-[#B45309]"}`}>
         {value}
       </span>
     </li>

@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
-export default function JindaYouthLoginRedirect() {
+export default function ZindaYouthLoginRedirect() {
   redirect('/youth-front/login');
 }

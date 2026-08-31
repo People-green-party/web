@@ -28,7 +28,7 @@ export default function PortalLoadGuard({ children }: { children: React.ReactNod
 
   if (error && !data) {
     return (
-      <div className="p-4 sm:p-6 lg:p-7 max-w-2xl">
+      <div className="mx-auto w-full max-w-2xl p-4 sm:p-6 lg:p-7">
         <div className="rounded-2xl border border-[#F3D6D6] bg-[#FDF7F7] p-6 text-center">
           <AlertTriangle size={22} className="mx-auto text-[#B4443F]" />
           <h1 className="mt-3 text-[17px] font-bold text-[#04330B]">

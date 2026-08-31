@@ -12,25 +12,25 @@ type Mode = "login" | "otp_request" | "otp_verify" | "set_new_pin";
 
 const COPY = {
   en: {
-    brand: "Jinda Youth",
+    brand: "Zinda Youth",
     back: "Back",
-    titleLogin: "Jinda Youth Login",
+    titleLogin: "Zinda Youth Login",
     titleForgot: "Forgot PIN / Set PIN",
     titleOtp: "Verify OTP",
     titleSetPin: "Set New PIN",
-    subLogin: "Login with the mobile number and PIN from your Jinda Youth registration",
+    subLogin: "Login with the mobile number and PIN from your Zinda Youth registration",
     subForgot: "No PIN yet, or forgot it? Enter your mobile number — we'll send OTP so you can set a new PIN",
     subOtp: (p: string) => `Code sent to +91 ${p}`,
-    subSetPin: "Create a new 4–6 digit login PIN for Jinda Youth",
+    subSetPin: "Create a new 4–6 digit login PIN for Zinda Youth",
     mobile: "Mobile Number",
     mobilePh: "Enter 10-digit number",
-    mobilePhYouth: "Jinda Youth mobile number",
+    mobilePhYouth: "Zinda Youth mobile number",
     pin: "Login PIN",
     pinPh: "Enter 4-6 digit PIN",
     forgot: "Forgot PIN? / First-time set PIN",
     login: "Login",
     loggingIn: "Logging in...",
-    join: "Not a member? Join Jinda Youth",
+    join: "Not a member? Join Zinda Youth",
     sendOtp: "Send OTP",
     sending: "Sending…",
     otp: "OTP",
@@ -157,7 +157,7 @@ function YouthLoginInner() {
       if (!data.access_token) throw new Error("Login failed");
 
       const tag = String(data.user?.programTag || "").toLowerCase();
-      const isYouth = tag.includes("jinda") || tag.includes("youth");
+      const isYouth = tag.includes("zinda") || tag.includes("jinda") || tag.includes("youth");
       if (!isYouth) {
         try {
           const { clearPortalToken } = await import("../../../lib/portalAuth");
@@ -167,7 +167,7 @@ function YouthLoginInner() {
           /* ignore */
         }
         setError(
-          "This is not a Jinda Youth account. Join Jinda Youth first, or use Party / Union login for those portals.",
+          "This is not a Zinda Youth account. Join Zinda Youth first, or use Party / Union login for those portals.",
         );
         return;
       }
@@ -204,7 +204,7 @@ function YouthLoginInner() {
         body: JSON.stringify({ phone: phoneNumber }),
       });
       if (!check?.exists || !check?.canLoginYouth) {
-        setError("This number is not registered as Jinda Youth. Please join first.");
+        setError("This number is not registered as Zinda Youth. Please join first.");
         return;
       }
 
@@ -264,7 +264,7 @@ function YouthLoginInner() {
           return;
         }
         setMode("set_new_pin");
-        setInfo("OTP verified. Set your new Jinda Youth PIN.");
+        setInfo("OTP verified. Set your new Zinda Youth PIN.");
         return;
       }
 
@@ -277,7 +277,7 @@ function YouthLoginInner() {
 
       if (typeof window !== "undefined") clearPortalToken("youth");
       setMode("set_new_pin");
-      setInfo("OTP verified. Set your new Jinda Youth PIN.");
+      setInfo("OTP verified. Set your new Zinda Youth PIN.");
     } catch (err: any) {
       setError(err.message || "Invalid OTP");
     } finally {

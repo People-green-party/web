@@ -58,6 +58,7 @@ type InternTask = {
   title: string;
   description?: string | null;
   dueAt?: string | null;
+  dueAfterDays?: number | null;
   department?: string | null;
   moduleId?: number | null;
   _count?: { assignments: number };
@@ -123,6 +124,7 @@ type ModuleRow = {
   content?: string | null;
   resourceUrl?: string | null;
   sortOrder: number;
+  unlockAfterDays?: number | null;
   department?: string | null;
 };
 
@@ -138,7 +140,16 @@ type RosterEntry = {
 type EditField = {
   name: string;
   label: string;
-  kind: "text" | "textarea" | "url" | "select" | "datetime" | "number" | "checkbox";
+  kind:
+    | "text"
+    | "textarea"
+    | "url"
+    | "select"
+    | "datetime"
+    | "number"
+    /** Whole days from an intern's start date; blank clears the schedule. */
+    | "dayOffset"
+    | "checkbox";
   options?: { value: string; label: string }[];
   required?: boolean;
   placeholder?: string;
@@ -301,6 +312,7 @@ export default function AdminInternshipPage() {
     title: "",
     description: "",
     dueAt: "",
+    dueAfterDays: "",
     department: "",
     moduleId: "",
     assignToAllAccepted: true,
@@ -351,6 +363,7 @@ export default function AdminInternshipPage() {
     content: "",
     resourceUrl: "",
     sortOrder: "0",
+    unlockAfterDays: "",
     department: "",
   });
 
@@ -678,13 +691,19 @@ export default function AdminInternshipPage() {
               .map((m) => ({ value: String(m.id), label: `#${m.sortOrder} · ${m.title}` })),
           ],
         },
-        { name: "dueAt", label: "Due at", kind: "datetime" },
+        {
+          name: "dueAfterDays",
+          label: "Due on day (from intern's start)",
+          kind: "dayOffset",
+        },
+        { name: "dueAt", label: "Or a fixed due date", kind: "datetime" },
       ],
       values: {
         title: t.title,
         description: t.description || "",
         department: t.department || "",
         moduleId: t.moduleId ? String(t.moduleId) : "",
+        dueAfterDays: t.dueAfterDays ?? "",
         dueAt: toLocalInput(t.dueAt),
       },
     });
@@ -781,6 +800,11 @@ export default function AdminInternshipPage() {
         { name: "content", label: "Module content", kind: "textarea" },
         { name: "resourceUrl", label: "Resource link", kind: "url" },
         { name: "sortOrder", label: "Sort order", kind: "number" },
+        {
+          name: "unlockAfterDays",
+          label: "Opens on day (from intern's start)",
+          kind: "dayOffset",
+        },
         DEPT_FIELD,
       ],
       values: {
@@ -789,6 +813,7 @@ export default function AdminInternshipPage() {
         content: m.content || "",
         resourceUrl: m.resourceUrl || "",
         sortOrder: m.sortOrder,
+        unlockAfterDays: m.unlockAfterDays ?? "",
         department: m.department || "",
       },
     });
@@ -879,6 +904,8 @@ export default function AdminInternshipPage() {
             ...taskForm,
             department: taskForm.department || undefined,
             dueAt: taskForm.dueAt || undefined,
+            dueAfterDays:
+              taskForm.dueAfterDays === "" ? undefined : Number(taskForm.dueAfterDays),
             moduleId: taskForm.moduleId ? Number(taskForm.moduleId) : undefined,
           }),
         });
@@ -886,6 +913,7 @@ export default function AdminInternshipPage() {
           title: "",
           description: "",
           dueAt: "",
+          dueAfterDays: "",
           department: "",
           moduleId: "",
           assignToAllAccepted: true,
@@ -1257,6 +1285,10 @@ export default function AdminInternshipPage() {
             content: moduleForm.content || undefined,
             resourceUrl: moduleForm.resourceUrl || undefined,
             sortOrder: Number(moduleForm.sortOrder) || 0,
+            unlockAfterDays:
+              moduleForm.unlockAfterDays === ""
+                ? undefined
+                : Number(moduleForm.unlockAfterDays),
             department: moduleForm.department || undefined,
           }),
         });
@@ -1266,6 +1298,7 @@ export default function AdminInternshipPage() {
           content: "",
           resourceUrl: "",
           sortOrder: "0",
+          unlockAfterDays: "",
           department: "",
         });
         showToast("Module created");
@@ -1339,6 +1372,24 @@ export default function AdminInternshipPage() {
         >
           {t.refresh}
         </button>
+      </div>
+
+      <div className="rounded-2xl border border-[#BBF7D0] bg-[#F0FDF4] px-4 py-3.5 text-[13px] font-medium text-[#14532D] leading-relaxed">
+        {language === "hi" ? (
+          <>
+            <span className="font-bold">आपका काम सिर्फ़ एक है:</span> नए आवेदनों को
+            Accept या Reject करें। बाकी — 14 दिन के मॉड्यूल, असली कार्य, लाइव कक्षाएँ,
+            उपस्थिति और प्रमाणपत्र — सिस्टम खुद चलाता है। रोज़ task add करने की ज़रूरत
+            नहीं।
+          </>
+        ) : (
+          <>
+            <span className="font-bold">Your only job:</span> Accept or Reject new
+            applications. Everything else — the 14-day modules, real tasks, live
+            classes, attendance and certificates — runs by itself. You do not need
+            to add tasks every day.
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -2701,6 +2752,13 @@ export default function AdminInternshipPage() {
               onChange={(e) => setModuleForm({ ...moduleForm, sortOrder: e.target.value })}
               className="w-full h-10 rounded-xl border border-[#DDEEE4] px-3 text-sm"
             />
+            <input
+              type="number"
+              placeholder="Unlock after day (0–14)"
+              value={moduleForm.unlockAfterDays}
+              onChange={(e) => setModuleForm({ ...moduleForm, unlockAfterDays: e.target.value })}
+              className="w-full h-10 rounded-xl border border-[#DDEEE4] px-3 text-sm"
+            />
             <select
               value={moduleForm.department}
               onChange={(e) => setModuleForm({ ...moduleForm, department: e.target.value })}
@@ -3216,6 +3274,10 @@ function EditDialog({
       if (f.kind === "datetime") payload[f.name] = fromLocalInput(String(raw || ""));
       else if (f.kind === "checkbox") payload[f.name] = !!raw;
       else if (f.kind === "number") payload[f.name] = Number(raw) || 0;
+      // Day 0 is a real answer here, so an empty box has to mean null rather
+      // than falling through to zero the way a plain number field does.
+      else if (f.kind === "dayOffset")
+        payload[f.name] = String(raw ?? "").trim() === "" ? null : Number(raw);
       else payload[f.name] = String(raw ?? "").trim();
     }
 
@@ -3296,7 +3358,7 @@ function EditDialog({
                 type={
                   f.kind === "datetime"
                     ? "datetime-local"
-                    : f.kind === "number"
+                    : f.kind === "number" || f.kind === "dayOffset"
                       ? "number"
                       : f.kind === "url"
                         ? "url"
