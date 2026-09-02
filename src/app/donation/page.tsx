@@ -506,7 +506,7 @@ const DonationPageContent = () => {
 
       {/* Main Content: Text + Form */}
       <section className="w-full flex justify-center py-[40px] lg:py-[80px]">
-        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col-reverse lg:flex-row gap-[48px] lg:gap-[64px] items-stretch lg:items-end justify-between">
+        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col-reverse lg:flex-row gap-[48px] lg:gap-[64px] items-stretch lg:items-start justify-between">
 
           {/* LEFT: Text Section */}
           <div className="w-full lg:w-[50%] flex flex-col gap-[20px]">
