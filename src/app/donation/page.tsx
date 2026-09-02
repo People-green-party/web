@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { jsPDF } from "jspdf";
 import {
-  ChevronDown,
   Check,
 } from 'lucide-react';
 import { useLanguage } from "../../components/LanguageContext";
@@ -10,6 +10,64 @@ import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { fetchApi } from "../../lib/api";
 import { FormFieldLabel, RequiredMark } from "../../components/FormFieldLabel";
+
+type RazorpayPaymentResponse = {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+};
+
+type RazorpayOptions = {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  prefill: { name: string; contact: string; email?: string };
+  theme: { color: string };
+  handler: (response: RazorpayPaymentResponse) => void | Promise<void>;
+  modal?: { ondismiss: () => void };
+};
+
+type DonationReceipt = {
+  donationId: number;
+  paymentId: string;
+  orderId: string;
+  fullName: string;
+  amount: number;
+  paidAt: string;
+  pan?: string;
+  receiptToken?: string;
+};
+
+type PaymentOutcome = "idle" | "cancelled" | "failed" | "pending-verification" | "success";
+
+const RECEIPT_STORAGE_KEY = "pgp-latest-donation-receipt";
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: RazorpayOptions) => { open: () => void };
+  }
+}
+
+function loadRazorpayCheckout() {
+  return new Promise<void>((resolve, reject) => {
+    if (window.Razorpay) return resolve();
+    const existing = document.querySelector<HTMLScriptElement>('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Unable to load secure checkout.")), { once: true });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Unable to load secure checkout."));
+    document.body.appendChild(script);
+  });
+}
 
 // --- 1. Translation Data ---
 
@@ -31,25 +89,51 @@ const translations = {
       p7: "Fight with us. Fight for Bringing the Change."
     },
     form: {
-      title: "Donation Interest Form",
-      subtitle: "Share your pledge — our team will contact you for the secure payment process",
-      notice: "Online payment gateway is not live yet. Submitting this form does not charge your account. It is a pledge / callback request only.",
-      existingMember: "If you are existing member?",
-      placeholders: {
-        name: "Name",
-        mobile: "Mobile Number",
-        email: "Email",
-        amount: "Pledge amount (₹)",
-        country: "Country",
-        state: "State",
-        city: "City",
-        pincode: "Pincode",
-        address: "Address",
-        pan: "PAN Card Number (Mandatory)",
-        occupation: "Occupation / Profession"
-      },
-      declaration: "I hereby declare that I am an Indian citizen and this donation interest is made through my own legitimate funds. I am aware of the legal provisions regarding political donations.",
-      submit: "Submit pledge request"
+      title: "Donate to PGP",
+      subtitle: "Your contribution helps us build a stronger movement.",
+      citizen: "Are you an Indian citizen?",
+      yes: "Yes",
+      no: "No",
+      name: "Full Name",
+      mobile: "Mobile Number",
+      amount: "Donation Amount",
+      other: "Other",
+      otherAmount: "Enter another amount (₹)",
+      mobileHint: "10-digit mobile number",
+      address: "Address",
+      state: "State",
+      city: "City",
+      pincode: "PIN Code",
+      pinHint: "6-digit PIN",
+      nonCitizen: "Only Indian citizens can make political donations.",
+      taxDocumentation: "I need tax deduction documentation",
+      pan: "PAN",
+      panHint: "ABCDE1234F",
+      panReason: "PAN is required for contributions above ₹20,000 or when tax documentation is requested.",
+      declaration: "I confirm that I am an Indian citizen and the information provided by me is correct.",
+      submit: "Continue to Donate →",
+      retry: "Try Payment Again →",
+      opening: "Opening payment…",
+      receiptTitle: "Donation confirmed",
+      receiptNumber: "Receipt number",
+      downloadReceipt: "Download Receipt (PDF)",
+      privacyTitle: "Privacy & data use",
+      privacyText: "We use the information entered here only to process the donation, issue a receipt, maintain legally required records and contact you about this payment. Card, bank and UPI credentials are handled by Razorpay and are not stored by PGP.",
+      refundTitle: "Cancellation & refund information",
+      refundText: "Donations are normally final. For a duplicate, mistaken or unauthorised payment, contact partypeoplesgreen@gmail.com with the payment ID. Eligible requests will be reviewed according to applicable law and payment-provider rules.",
+      taxNote: "Eligible non-cash political contributions may qualify for deduction under Section 80GGC. Eligibility depends on the donor's circumstances; this is not tax advice.",
+      messages: {
+        declaration: "Please accept the declaration to continue.",
+        required: "Please complete all required fields.",
+        phone: "Please enter a valid 10-digit mobile number.",
+        amount: "Donation amount must be a whole number of at least ₹1.",
+        pincode: "Please enter a valid 6-digit PIN code.",
+        pan: "Please enter a valid PAN, for example ABCDE1234F.",
+        success: "Thank you! Your donation has been confirmed.",
+        cancelled: "The payment window closed before confirmation. If your account was debited, do not retry; contact us with the bank reference. Otherwise, you can try again.",
+        startFailed: "Unable to start payment. Please try again.",
+        pendingVerification: "Your payment was completed, but confirmation is pending. Please do not pay again; contact us with the payment ID shown below."
+      }
     },
     campaigns: {
       title: "Fund for democracy"
@@ -72,25 +156,51 @@ const translations = {
       p7: "हमारे साथ लड़ें। बदलाव लाने के लिए लड़ें।"
     },
     form: {
-      title: "दान रुचि फॉर्म",
-      subtitle: "अपना वचन दर्ज करें — सुरक्षित भुगतान प्रक्रिया के लिए हमारी टीम संपर्क करेगी",
-      notice: "ऑनलाइन भुगतान अभी लाइव नहीं है। यह फॉर्म जमा करने से आपके खाते से पैसे नहीं कटेंगे। यह केवल वचन / कॉलबैक अनुरोध है।",
-      existingMember: "क्या आप मौजूदा सदस्य हैं?",
-      placeholders: {
-        name: "नाम",
-        mobile: "मोबाइल नंबर",
-        email: "ईमेल",
-        amount: "वचन राशि (₹)",
-        country: "देश",
-        state: "राज्य",
-        city: "शहर",
-        pincode: "पिनकोड",
-        address: "पता",
-        pan: "पैन कार्ड नंबर (अनिवार्य)",
-        occupation: "व्यवसाय / पेशा"
-      },
-      declaration: "मैं इसके द्वारा घोषणा करता हूँ कि मैं एक भारतीय नागरिक हूँ और यह दान रुचि मेरे अपने वैध धन के माध्यम से की गई है। मैं राजनीतिक दान के संबंध में कानूनी प्रावधानों से अवगत हूँ।",
-      submit: "वचन अनुरोध जमा करें"
+      title: "PGP को दान करें",
+      subtitle: "आपका योगदान हमें एक मजबूत आंदोलन बनाने में मदद करता है।",
+      citizen: "क्या आप भारतीय नागरिक हैं?",
+      yes: "हाँ",
+      no: "नहीं",
+      name: "पूरा नाम",
+      mobile: "मोबाइल नंबर",
+      amount: "दान राशि",
+      other: "अन्य",
+      otherAmount: "अन्य राशि दर्ज करें (₹)",
+      mobileHint: "10 अंकों का मोबाइल नंबर",
+      address: "पता",
+      state: "राज्य",
+      city: "शहर",
+      pincode: "पिन कोड",
+      pinHint: "6 अंकों का पिन",
+      nonCitizen: "केवल भारतीय नागरिक ही राजनीतिक दान कर सकते हैं।",
+      taxDocumentation: "मुझे कर कटौती के लिए दस्तावेज चाहिए",
+      pan: "PAN",
+      panHint: "ABCDE1234F",
+      panReason: "₹20,000 से अधिक दान या कर दस्तावेज के लिए PAN आवश्यक है।",
+      declaration: "मैं पुष्टि करता/करती हूँ कि मैं भारतीय नागरिक हूँ और मेरे द्वारा दी गई जानकारी सही है।",
+      submit: "दान के लिए आगे बढ़ें →",
+      retry: "भुगतान फिर से करें →",
+      opening: "भुगतान खोला जा रहा है…",
+      receiptTitle: "दान की पुष्टि हो गई",
+      receiptNumber: "रसीद संख्या",
+      downloadReceipt: "रसीद PDF डाउनलोड करें",
+      privacyTitle: "गोपनीयता और डेटा का उपयोग",
+      privacyText: "यहाँ दी गई जानकारी का उपयोग केवल दान प्रोसेस करने, रसीद देने, कानूनी रिकॉर्ड रखने और इस भुगतान के संबंध में संपर्क करने के लिए होता है। कार्ड, बैंक और UPI जानकारी Razorpay संभालता है; PGP इसे संग्रहीत नहीं करता।",
+      refundTitle: "रद्दीकरण और रिफंड जानकारी",
+      refundText: "दान सामान्यतः अंतिम होता है। दोहरे, गलती से हुए या अनधिकृत भुगतान के लिए payment ID के साथ partypeoplesgreen@gmail.com पर संपर्क करें। पात्र अनुरोधों की लागू कानून और भुगतान प्रदाता के नियमों के अनुसार समीक्षा की जाएगी।",
+      taxNote: "पात्र गैर-नकद राजनीतिक दान धारा 80GGC के तहत कटौती के लिए पात्र हो सकते हैं। पात्रता दाता की परिस्थितियों पर निर्भर करती है; यह कर सलाह नहीं है।",
+      messages: {
+        declaration: "कृपया आगे बढ़ने के लिए घोषणा स्वीकार करें।",
+        required: "कृपया सभी आवश्यक जानकारी भरें।",
+        phone: "कृपया 10 अंकों का सही मोबाइल नंबर दर्ज करें।",
+        amount: "दान राशि कम से कम ₹1 की पूर्ण संख्या होनी चाहिए।",
+        pincode: "कृपया 6 अंकों का सही पिन कोड दर्ज करें।",
+        pan: "कृपया सही PAN दर्ज करें, जैसे ABCDE1234F।",
+        success: "धन्यवाद! आपके दान की पुष्टि हो गई है।",
+        cancelled: "पुष्टि से पहले भुगतान विंडो बंद हो गई। यदि खाते से राशि कटी है तो दोबारा भुगतान न करें; bank reference के साथ हमसे संपर्क करें। अन्यथा आप फिर से प्रयास कर सकते हैं।",
+        startFailed: "भुगतान शुरू नहीं हो सका। कृपया फिर से प्रयास करें।",
+        pendingVerification: "आपका भुगतान पूरा हो गया, लेकिन पुष्टि लंबित है। कृपया दोबारा भुगतान न करें; नीचे दी गई payment ID के साथ हमसे संपर्क करें।"
+      }
     },
     campaigns: {
       title: "लोकतंत्र के लिए फंड"
@@ -138,90 +248,254 @@ const DonationPageContent = () => {
   const { language } = useLanguage();
   const t = translations[language as keyof typeof translations] || translations.en;
 
-  const [isExistingMember, setIsExistingMember] = useState(false);
   const [isDeclared, setIsDeclared] = useState(false);
+  const [wantsTaxDocumentation, setWantsTaxDocumentation] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [paymentOutcome, setPaymentOutcome] = useState<PaymentOutcome>("idle");
+  const [receipt, setReceipt] = useState<DonationReceipt | null>(null);
+  const [pendingPaymentId, setPendingPaymentId] = useState("");
   const [form, setForm] = useState({
+    citizen: "" as "" | "yes" | "no",
     fullName: "",
     phone: "",
-    email: "",
-    amount: "",
     pan: "",
-    occupation: "",
-    country: "India",
-    state: "Rajasthan",
-    city: "Jaipur",
-    pincode: "",
+    amount: "",
     address: "",
+    state: "",
+    city: "",
+    pincode: "",
   });
 
   const setField = (key: keyof typeof form, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
+  const panRequired = Number(form.amount) > 20000 || wantsTaxDocumentation;
+
+  useEffect(() => {
+    let active = true;
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(RECEIPT_STORAGE_KEY) || "null") as {
+        donationId?: number;
+        receiptToken?: string;
+      } | null;
+      if (!saved?.donationId || !saved.receiptToken) {
+        window.localStorage.removeItem(RECEIPT_STORAGE_KEY);
+        return;
+      }
+      fetchApi(`donations/${saved.donationId}/receipt`, {
+        method: "POST",
+        body: JSON.stringify({ token: saved.receiptToken }),
+        cache: "no-store",
+      })
+        .then((restored) => {
+          const candidate = restored as Partial<DonationReceipt>;
+          if (
+            active &&
+            Number.isSafeInteger(candidate.donationId) &&
+            Number.isFinite(candidate.amount) &&
+            candidate.paymentId &&
+            candidate.orderId
+          ) {
+            setReceipt(candidate as DonationReceipt);
+          } else {
+            window.localStorage.removeItem(RECEIPT_STORAGE_KEY);
+          }
+        })
+        .catch(() => window.localStorage.removeItem(RECEIPT_STORAGE_KEY));
+    } catch {
+      window.localStorage.removeItem(RECEIPT_STORAGE_KEY);
+    }
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const downloadReceipt = () => {
+    if (!receipt || !Number.isFinite(Number(receipt.amount))) return;
+    const receiptAmount = Number(receipt.amount);
+    const pdf = new jsPDF({ unit: "mm", format: "a4" });
+    pdf.setTextColor(4, 51, 11);
+    pdf.setFontSize(20);
+    pdf.text("Peoples Green Party", 20, 24);
+    pdf.setFontSize(15);
+    pdf.text("Donation Receipt", 20, 35);
+    pdf.setDrawColor(197, 220, 207);
+    pdf.line(20, 41, 190, 41);
+    pdf.setTextColor(40, 55, 44);
+    pdf.setFontSize(11);
+    const rows = [
+      ["Receipt number", `PGP-${receipt.donationId}`],
+      ["Donation date", new Date(receipt.paidAt).toLocaleString("en-IN")],
+      ["Donor name", receipt.fullName],
+      ["Amount", `INR ${receiptAmount.toLocaleString("en-IN")}`],
+      ["Payment ID", receipt.paymentId],
+      ["Order ID", receipt.orderId],
+      ...(receipt.pan ? [["PAN", receipt.pan]] : []),
+      ["Payment status", "Confirmed"],
+    ];
+    rows.forEach(([label, value], index) => {
+      const y = 53 + index * 10;
+      pdf.setFont("helvetica", "bold");
+      pdf.text(`${label}:`, 20, y);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(String(value), 62, y);
+    });
+    pdf.setFontSize(9);
+    pdf.setTextColor(88, 126, 103);
+    const note = "This receipt acknowledges a verified non-cash political contribution. Tax-deduction eligibility depends on the donor's circumstances.";
+    pdf.text(pdf.splitTextToSize(note, 170), 20, 145);
+    pdf.text("Peoples Green Party, Ham Badlenge Bhawan, 02 Mission Compound, Ajmer Puliya, Jaipur, Rajasthan", 20, 172, { maxWidth: 170 });
+    pdf.text("Contact: partypeoplesgreen@gmail.com", 20, 184);
+    pdf.save(`PGP-donation-receipt-${receipt.donationId}.pdf`);
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitMsg(null);
+    setPaymentOutcome("idle");
+    setPendingPaymentId("");
     if (!isDeclared) {
-      setSubmitMsg({ type: "err", text: "Please accept the declaration to continue." });
+      setSubmitMsg({ type: "err", text: t.form.messages.declaration });
       return;
     }
-    const amount = parseInt(form.amount, 10);
+    if (form.citizen !== "yes") {
+      setSubmitMsg({ type: "err", text: t.form.nonCitizen });
+      return;
+    }
+    const amount = Number(form.amount);
     const phoneDigits = form.phone.replace(/\D/g, "").slice(-10);
-    const pan = form.pan.trim().toUpperCase();
-    if (!form.fullName.trim() || !phoneDigits || !amount) {
-      setSubmitMsg({ type: "err", text: "Name, mobile and amount are required." });
+    if (
+      !form.fullName.trim() || !phoneDigits || !amount || !form.address.trim() ||
+      !form.state.trim() || !form.city.trim() || !form.pincode.trim()
+    ) {
+      setSubmitMsg({ type: "err", text: t.form.messages.required });
+      return;
+    }
+    if (!Number.isSafeInteger(amount) || amount < 1) {
+      setSubmitMsg({ type: "err", text: t.form.messages.amount });
       return;
     }
     if (phoneDigits.length !== 10) {
-      setSubmitMsg({ type: "err", text: "Please enter a valid 10-digit mobile number." });
+      setSubmitMsg({ type: "err", text: t.form.messages.phone });
       return;
     }
-    if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
-      setSubmitMsg({ type: "err", text: "Please enter a valid PAN (e.g. ABCDE1234F)." });
+    if (!/^\d{6}$/.test(form.pincode)) {
+      setSubmitMsg({ type: "err", text: t.form.messages.pincode });
+      return;
+    }
+    const normalizedPan = form.pan.trim().toUpperCase();
+    if (panRequired && !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(normalizedPan)) {
+      setSubmitMsg({ type: "err", text: t.form.messages.pan });
       return;
     }
     setSubmitting(true);
     try {
-      await fetchApi("donations", {
+      const order = await fetchApi("donations/razorpay/order", {
         method: "POST",
         body: JSON.stringify({
           fullName: form.fullName.trim(),
           phone: phoneDigits,
-          email: form.email.trim() || undefined,
+          pan: panRequired ? normalizedPan : undefined,
           amount,
-          pan,
-          occupation: form.occupation.trim() || undefined,
-          country: form.country || undefined,
-          state: form.state || undefined,
-          city: form.city || undefined,
-          pincode: form.pincode.trim() || undefined,
-          address: form.address.trim() || undefined,
-          isExistingMember,
+          country: "India",
+          address: form.address.trim(),
+          state: form.state.trim(),
+          city: form.city.trim(),
+          pincode: form.pincode,
         }),
+      }) as {
+        donationId: number;
+        orderId: string;
+        keyId: string;
+        amount: number;
+        currency: string;
+      };
+      await loadRazorpayCheckout();
+      if (!window.Razorpay) throw new Error("Unable to load secure checkout.");
+
+      const checkout = new window.Razorpay({
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Peoples Green Party",
+        description: "Donation",
+        order_id: order.orderId,
+        prefill: {
+          name: form.fullName.trim(),
+          contact: phoneDigits,
+        },
+        theme: { color: "#04330B" },
+        modal: {
+          ondismiss: () => {
+            setPaymentOutcome("cancelled");
+            setSubmitMsg({ type: "err", text: t.form.messages.cancelled });
+            setSubmitting(false);
+          },
+        },
+        handler: async (payment) => {
+          try {
+            const verification = await fetchApi("donations/razorpay/verify", {
+              method: "POST",
+              body: JSON.stringify({
+                razorpayPaymentId: payment.razorpay_payment_id,
+                razorpayOrderId: payment.razorpay_order_id,
+                razorpaySignature: payment.razorpay_signature,
+              }),
+            }) as Partial<DonationReceipt> & { verified?: boolean; donationId?: number };
+            if (!verification.verified || !Number.isSafeInteger(verification.donationId)) {
+              throw new Error("Payment verification response was incomplete");
+            }
+            const completedReceipt: DonationReceipt = {
+              donationId: Number(verification.donationId),
+              paymentId: verification.paymentId || payment.razorpay_payment_id,
+              orderId: verification.orderId || payment.razorpay_order_id,
+              fullName: verification.fullName || form.fullName.trim(),
+              amount: Number.isFinite(Number(verification.amount)) ? Number(verification.amount) : amount,
+              paidAt: verification.paidAt || new Date().toISOString(),
+              pan: verification.pan || (panRequired ? normalizedPan : undefined),
+              receiptToken: verification.receiptToken,
+            };
+            setReceipt(completedReceipt);
+            if (completedReceipt.receiptToken) {
+              window.localStorage.setItem(
+                RECEIPT_STORAGE_KEY,
+                JSON.stringify({
+                  donationId: completedReceipt.donationId,
+                  receiptToken: completedReceipt.receiptToken,
+                }),
+              );
+            } else {
+              window.localStorage.removeItem(RECEIPT_STORAGE_KEY);
+            }
+            setPaymentOutcome("success");
+            setSubmitMsg({ type: "ok", text: t.form.messages.success });
+            setForm({
+              citizen: "",
+              fullName: "",
+              phone: "",
+              pan: "",
+              amount: "",
+              address: "",
+              state: "",
+              city: "",
+              pincode: "",
+            });
+            setIsDeclared(false);
+            setWantsTaxDocumentation(false);
+          } catch {
+            setPendingPaymentId(payment.razorpay_payment_id);
+            setPaymentOutcome("pending-verification");
+            setSubmitMsg({ type: "err", text: t.form.messages.pendingVerification });
+          } finally {
+            setSubmitting(false);
+          }
+        },
       });
-      setSubmitMsg({
-        type: "ok",
-        text: "Thank you! Your pledge request was received. No payment was taken — our team will contact you for the secure donation process.",
-      });
-      setForm({
-        fullName: "",
-        phone: "",
-        email: "",
-        amount: "",
-        pan: "",
-        occupation: "",
-        country: "India",
-        state: "Rajasthan",
-        city: "Jaipur",
-        pincode: "",
-        address: "",
-      });
-      setIsDeclared(false);
-      setIsExistingMember(false);
-    } catch (err: any) {
-      setSubmitMsg({ type: "err", text: err?.message || "Submission failed. Please try again." });
-    } finally {
+      checkout.open();
+    } catch {
+      setPaymentOutcome("failed");
+      setSubmitMsg({ type: "err", text: t.form.messages.startFailed });
       setSubmitting(false);
     }
   };
@@ -232,18 +506,14 @@ const DonationPageContent = () => {
 
       {/* Main Content: Text + Form */}
       <section className="w-full flex justify-center py-[40px] lg:py-[80px]">
-        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col-reverse lg:flex-row gap-[48px] lg:gap-[64px] items-start justify-between">
+        <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col-reverse lg:flex-row gap-[48px] lg:gap-[64px] items-stretch lg:items-end justify-between">
 
           {/* LEFT: Text Section */}
-          <div className="w-full lg:w-[53%] flex flex-col gap-[20px]">
-            <h1 className="font-['Familjen_Grotesk'] font-bold text-[36px] md:text-[48px] lg:text-[73px] leading-[1.15] text-[#04330B] tracking-[-0.5px]">
-              {t.hero.titleLines[0]}
-              <br className="hidden lg:inline" />
-              {" "}
-              {t.hero.titleLines[1]}
-              <br className="hidden lg:inline" />
-              {" "}
-              {t.hero.titleLines[2]}
+          <div className="w-full lg:w-[50%] flex flex-col gap-[20px]">
+            <h1 className="font-['Familjen_Grotesk'] font-bold text-[clamp(28px,5.4vw,73px)] leading-[1.15] text-[#04330B] tracking-[-0.5px]">
+              {t.hero.titleLines.map((line) => (
+                <span key={line} className="block whitespace-nowrap">{line}</span>
+              ))}
             </h1>
 
             <p className="font-['Familjen_Grotesk'] font-bold text-[16px] lg:text-[20px] text-[#04330B] leading-[1.4]">
@@ -262,7 +532,7 @@ const DonationPageContent = () => {
           </div>
 
           {/* RIGHT: Donation Form with Premium Effects */}
-          <div className="w-full lg:w-[43%] lg:max-w-[500px] shrink-0 bg-white rounded-[16px] p-[24px] lg:p-[32px] shadow-[0px_20px_60px_rgba(0,0,0,0.08)] border border-[#EFF5F1] flex flex-col justify-center relative">
+          <div className="w-full lg:w-[46%] lg:max-w-[560px] shrink-0 bg-white rounded-[16px] p-[24px] lg:p-[32px] shadow-[0px_20px_60px_rgba(0,0,0,0.08)] border border-[#EFF5F1] flex flex-col justify-center relative">
 
             <div className="relative z-10">
               <h2 className="text-center font-['Familjen_Grotesk'] font-bold text-[32px] text-[#04330B] mb-[8px]">
@@ -271,190 +541,108 @@ const DonationPageContent = () => {
               <p className="text-center font-['Familjen_Grotesk'] font-semibold text-[16px] text-[#587E67] mb-[12px]">
                 {t.form.subtitle}
               </p>
-              <p className="text-center font-['Familjen_Grotesk'] font-medium text-[13px] leading-snug text-[#854D0E] bg-[#FEFCE8] border border-yellow-200 rounded-[10px] px-3 py-2 mb-[24px]">
-                {t.form.notice}
-              </p>
             </div>
 
-            <form onSubmit={onSubmit} className="flex flex-col gap-[24px] relative z-10">
-
-              {/* Existing Member Checkbox */}
-              <div
-                className="flex items-center gap-[12px] cursor-pointer group"
-                onClick={() => setIsExistingMember(!isExistingMember)}
-              >
-                <div className={`
-                  w-[20px] h-[20px] rounded-full border-[2px] flex items-center justify-center transition-all shrink-0
-                  ${isExistingMember ? 'bg-[#587E67] border-[#587E67]' : 'border-[#587E67] bg-white'}
-                `}>
-                  {isExistingMember && <Check size={14} className="text-white" strokeWidth={3} />}
+            <form onSubmit={onSubmit} className="flex flex-col gap-[18px] relative z-10">
+              {receipt ? (
+                <div className="rounded-[12px] border border-emerald-200 bg-emerald-50 p-4 text-emerald-900" role="status">
+                  <p className="font-bold text-lg">{t.form.receiptTitle}</p>
+                  <p className="mt-1 text-sm">{t.form.receiptNumber}: PGP-{receipt.donationId}</p>
+                  <p className="text-sm">INR {Number(receipt.amount || 0).toLocaleString("en-IN")} · {receipt.paymentId || "Payment confirmed"}</p>
+                  <button type="button" onClick={downloadReceipt} className="mt-3 rounded-[8px] bg-[#04330B] px-4 py-2 text-sm font-bold text-white hover:bg-[#064e11]">
+                    {t.form.downloadReceipt}
+                  </button>
                 </div>
-                <label className="font-['Familjen_Grotesk'] font-semibold text-[16px] text-[#587E67] cursor-pointer select-none">
-                  {t.form.existingMember}
-                </label>
+              ) : null}
+
+              <fieldset className="flex flex-col gap-2">
+                <legend className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">
+                  {t.form.citizen}<RequiredMark />
+                </legend>
+                <div className="flex gap-6">
+                  {(["yes", "no"] as const).map((choice) => (
+                    <label key={choice} className="flex items-center gap-2 cursor-pointer text-[15px] font-medium text-[#2D3A31]">
+                      <input
+                        type="radio"
+                        name="citizen"
+                        value={choice}
+                        checked={form.citizen === choice}
+                        onChange={() => setField("citizen", choice)}
+                        className="size-4 accent-[#04330B]"
+                      />
+                      {choice === "yes" ? t.form.yes : t.form.no}
+                    </label>
+                  ))}
+                </div>
+                {form.citizen === "no" ? <p className="text-sm font-semibold text-red-700">{t.form.nonCitizen}</p> : null}
+              </fieldset>
+
+              <div className="flex flex-col gap-2">
+                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.name}</FormFieldLabel>
+                <input required type="text" autoComplete="name" value={form.fullName} onChange={(e) => setField("fullName", e.target.value)} placeholder={t.form.name} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
               </div>
 
-              <div className="flex flex-col gap-[8px]">
-                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">
-                  {t.form.placeholders.name}
-                </FormFieldLabel>
-                <input
-                  type="text"
-                  value={form.fullName}
-                  onChange={(e) => setField("fullName", e.target.value)}
-                  placeholder={t.form.placeholders.name}
-                  className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
-                />
-              </div>
-
-              <div>
-                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B] mb-2">
-                  {t.form.placeholders.mobile}
-                </FormFieldLabel>
-                <div className="flex gap-[16px]">
-                  <div className="w-[100px] h-[56px] relative">
-                    <select className="w-full h-full rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate">
-                      <option>+91</option>
-                    </select>
-                    <ChevronDown className="absolute right-[12px] top-[16px] text-[#587E67] pointer-events-none" size={24} />
-                  </div>
-                  <div className="flex-1">
-                    <input
-                      type="tel"
-                      value={form.phone}
-                      onChange={(e) => setField("phone", e.target.value)}
-                      placeholder={t.form.placeholders.mobile}
-                      className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
-                    />
-                  </div>
+              <div className="flex flex-col gap-2">
+                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.mobile}</FormFieldLabel>
+                <div className="flex gap-2">
+                  <div className="w-[68px] h-[52px] rounded-[8px] border border-[#C5DCCF] flex items-center justify-center font-semibold text-[#587E67] bg-[#F9FBF9]">+91</div>
+                  <input required type="tel" autoComplete="tel-national" value={form.phone} onChange={(e) => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder={t.form.mobileHint} inputMode="numeric" maxLength={10} className="min-w-0 flex-1 h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
                 </div>
               </div>
 
-              <div className="flex flex-col gap-[8px]">
-                <FormFieldLabel className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">
-                  {t.form.placeholders.email}
-                </FormFieldLabel>
-                <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setField("email", e.target.value)}
-                  placeholder={t.form.placeholders.email}
-                  className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
-                />
+              <div className="flex flex-col gap-2">
+                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.amount}</FormFieldLabel>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[500, 1000, 2000].map((value) => (
+                    <button key={value} type="button" onClick={() => setField("amount", String(value))} className={`h-[46px] rounded-[8px] border font-bold transition-colors ${form.amount === String(value) ? "border-[#04330B] bg-[#04330B] text-white" : "border-[#C5DCCF] text-[#04330B] hover:bg-[#F0F7F2]"}`}>
+                      ₹ {value.toLocaleString("en-IN")}
+                    </button>
+                  ))}
+                  <button type="button" onClick={() => setField("amount", "")} className={`h-[46px] rounded-[8px] border font-bold transition-colors ${form.amount !== "" && !["500", "1000", "2000"].includes(form.amount) ? "border-[#04330B] bg-[#04330B] text-white" : "border-[#C5DCCF] text-[#04330B] hover:bg-[#F0F7F2]"}`}>{t.form.other}</button>
+                </div>
+                <input required type="number" min="1" step="1" inputMode="numeric" value={form.amount} onChange={(e) => setField("amount", /^\d*$/.test(e.target.value) ? e.target.value : form.amount)} placeholder={t.form.otherAmount} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
               </div>
 
-              <div className="flex gap-[16px]">
-                <div className="flex-1">
-                  <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B] mb-2">
-                    {t.form.placeholders.amount}
-                  </FormFieldLabel>
-                  <input
-                    type="number"
-                    value={form.amount}
-                    onChange={(e) => setField("amount", e.target.value)}
-                    placeholder={t.form.placeholders.amount}
-                    className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
-                  />
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" checked={wantsTaxDocumentation} onChange={(e) => setWantsTaxDocumentation(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-[#04330B]" />
+                <span className="text-[14px] font-medium text-[#2D3A31]">{t.form.taxDocumentation}</span>
+              </label>
+
+              {panRequired ? (
+                <div className="flex flex-col gap-2">
+                  <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.pan}</FormFieldLabel>
+                  <input required type="text" autoCapitalize="characters" value={form.pan} onChange={(e) => setField("pan", e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10))} placeholder={t.form.panHint} maxLength={10} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium uppercase tracking-wide text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
+                  <p className="text-xs leading-relaxed text-[#587E67]">{t.form.panReason}</p>
                 </div>
-                <div className="flex-1">
-                  <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B] mb-2">
-                    PAN
-                  </FormFieldLabel>
-                  <input
-                    type="text"
-                    value={form.pan}
-                    onChange={(e) => setField("pan", e.target.value)}
-                    placeholder={t.form.placeholders.pan}
-                    className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors uppercase"
-                  />
-                </div>
+              ) : null}
+
+              <div className="flex flex-col gap-2">
+                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.address}</FormFieldLabel>
+                <textarea required autoComplete="street-address" rows={3} value={form.address} onChange={(e) => setField("address", e.target.value)} placeholder={t.form.address} className="w-full rounded-[8px] border border-[#C5DCCF] px-4 py-3 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B] resize-y" />
               </div>
 
-              {/* Occupation */}
-              <div className="flex flex-col gap-[8px]">
-                <input
-                  type="text"
-                  value={form.occupation}
-                  onChange={(e) => setField("occupation", e.target.value)}
-                  placeholder={t.form.placeholders.occupation}
-                  className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
-                />
-              </div>
-
-              {/* Country & State */}
-              <div className="flex gap-[16px]">
-                <div className="flex-1 relative">
-                  <select
-                    value={form.country}
-                    onChange={(e) => setField("country", e.target.value)}
-                    className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate"
-                  >
-                    <option value="India">India</option>
-                  </select>
-                  <ChevronDown className="absolute right-[12px] top-[16px] text-[#587E67] pointer-events-none" size={24} />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-2">
+                  <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.state}</FormFieldLabel>
+                  <input required autoComplete="address-level1" type="text" value={form.state} onChange={(e) => setField("state", e.target.value)} placeholder={t.form.state} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
                 </div>
-                <div className="flex-1 relative">
-                  <select
-                    value={form.state}
-                    onChange={(e) => setField("state", e.target.value)}
-                    className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate"
-                  >
-                    <option value="Rajasthan">Rajasthan</option>
-                  </select>
-                  <ChevronDown className="absolute right-[12px] top-[16px] text-[#587E67] pointer-events-none" size={24} />
+                <div className="flex flex-col gap-2">
+                  <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.city}</FormFieldLabel>
+                  <input required autoComplete="address-level2" type="text" value={form.city} onChange={(e) => setField("city", e.target.value)} placeholder={t.form.city} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
                 </div>
               </div>
 
-              {/* City & Pincode */}
-              <div className="flex gap-[16px]">
-                <div className="flex-1 relative">
-                  <select
-                    value={form.city}
-                    onChange={(e) => setField("city", e.target.value)}
-                    className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] pr-10 text-[16px] font-medium text-[#587E67] appearance-none bg-white focus:outline-none focus:border-[#04330B] truncate"
-                  >
-                    <option value="Jaipur">Jaipur</option>
-                  </select>
-                  <ChevronDown className="absolute right-[12px] top-[16px] text-[#587E67] pointer-events-none" size={24} />
-                </div>
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    value={form.pincode}
-                    onChange={(e) => setField("pincode", e.target.value)}
-                    placeholder={t.form.placeholders.pincode}
-                    className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
-                  />
-                </div>
+              <div className="flex flex-col gap-2 sm:max-w-[50%]">
+                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.pincode}</FormFieldLabel>
+                <input required autoComplete="postal-code" type="text" inputMode="numeric" value={form.pincode} onChange={(e) => setField("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder={t.form.pinHint} maxLength={6} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
               </div>
 
-              {/* Address */}
-              <div className="flex flex-col gap-[8px]">
-                <input
-                  type="text"
-                  value={form.address}
-                  onChange={(e) => setField("address", e.target.value)}
-                  placeholder={t.form.placeholders.address}
-                  className="w-full h-[56px] rounded-[8px] border border-[#C5DCCF] px-[16px] font-['Familjen_Grotesk'] font-medium text-[16px] text-[#04330B] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors"
-                />
-              </div>
-
-              {/* Legal Declaration Checkbox */}
-              <div
-                className="flex items-start gap-[12px] cursor-pointer group mt-[8px]"
-                onClick={() => setIsDeclared(!isDeclared)}
-              >
-                <div className={`
-                  w-[20px] h-[20px] rounded-[4px] border-[2px] flex items-center justify-center transition-all shrink-0 mt-[2px]
-                  ${isDeclared ? 'bg-[#BE1E2D] border-[#BE1E2D]' : 'border-[#C5DCCF] bg-white'}
-                `}>
-                  {isDeclared && <Check size={14} className="text-white" strokeWidth={3} />}
-                </div>
-                <label className="font-['Familjen_Grotesk'] font-medium text-[13px] leading-[1.4] text-[#587E67] cursor-pointer select-none">
-                  {t.form.declaration}
-                  <RequiredMark />
-                </label>
-              </div>
+              <label className="flex items-start gap-3 cursor-pointer mt-1">
+                <input type="checkbox" checked={isDeclared} onChange={(e) => setIsDeclared(e.target.checked)} className="mt-0.5 size-5 shrink-0 accent-[#BE1E2D]" />
+                <span className="font-['Familjen_Grotesk'] font-medium text-[13px] leading-[1.45] text-[#587E67]">
+                  {t.form.declaration}<RequiredMark />
+                </span>
+              </label>
 
               {submitMsg ? (
                 <p
@@ -465,6 +653,7 @@ const DonationPageContent = () => {
                   }`}
                 >
                   {submitMsg.text}
+                  {pendingPaymentId ? <span className="mt-1 block break-all font-mono text-xs">Payment ID: {pendingPaymentId}</span> : null}
                 </p>
               ) : null}
 
@@ -473,12 +662,24 @@ const DonationPageContent = () => {
                 type="submit"
                 className={`
                   w-full h-[60px] rounded-[12px] font-['Familjen_Grotesk'] font-bold text-[18px] text-white transition-all shadow-lg
-                  ${isDeclared && !submitting ? 'bg-[#04330B] hover:bg-[#064e11] hover:scale-[1.02]' : 'bg-gray-400 cursor-not-allowed'}
+                  ${isDeclared && form.citizen === "yes" && paymentOutcome !== "pending-verification" && !submitting ? 'bg-[#04330B] hover:bg-[#064e11] hover:scale-[1.02]' : 'bg-gray-400 cursor-not-allowed'}
                 `}
-                disabled={!isDeclared || submitting}
+                disabled={!isDeclared || form.citizen !== "yes" || paymentOutcome === "pending-verification" || submitting}
               >
-                {submitting ? "Submitting…" : t.form.submit}
+                {submitting ? t.form.opening : paymentOutcome === "failed" || paymentOutcome === "cancelled" ? t.form.retry : t.form.submit}
               </button>
+
+              <div id="donation-policies" className="border-t border-[#E3EEE6] pt-3 text-xs leading-relaxed text-[#587E67]">
+                <details className="py-1">
+                  <summary className="cursor-pointer font-bold text-[#04330B]">{t.form.privacyTitle}</summary>
+                  <p className="pt-2">{t.form.privacyText}</p>
+                </details>
+                <details className="py-1">
+                  <summary className="cursor-pointer font-bold text-[#04330B]">{t.form.refundTitle}</summary>
+                  <p className="pt-2">{t.form.refundText}</p>
+                </details>
+                <p className="mt-2">{t.form.taxNote}</p>
+              </div>
 
             </form>
           </div>
