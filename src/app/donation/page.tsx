@@ -11,6 +11,49 @@ import { Footer } from "../../components/Footer";
 import { fetchApi } from "../../lib/api";
 import { FormFieldLabel, RequiredMark } from "../../components/FormFieldLabel";
 
+type RazorpayPaymentResponse = {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+};
+
+type RazorpayOptions = {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  prefill: { name: string; contact: string; email?: string };
+  theme: { color: string };
+  handler: (response: RazorpayPaymentResponse) => void | Promise<void>;
+  modal?: { ondismiss: () => void };
+};
+
+declare global {
+  interface Window {
+    Razorpay?: new (options: RazorpayOptions) => { open: () => void };
+  }
+}
+
+function loadRazorpayCheckout() {
+  return new Promise<void>((resolve, reject) => {
+    if (window.Razorpay) return resolve();
+    const existing = document.querySelector<HTMLScriptElement>('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener("error", () => reject(new Error("Unable to load secure checkout.")), { once: true });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Unable to load secure checkout."));
+    document.body.appendChild(script);
+  });
+}
+
 // --- 1. Translation Data ---
 
 const translations = {
@@ -31,9 +74,9 @@ const translations = {
       p7: "Fight with us. Fight for Bringing the Change."
     },
     form: {
-      title: "Donation Interest Form",
-      subtitle: "Share your pledge — our team will contact you for the secure payment process",
-      notice: "Online payment gateway is not live yet. Submitting this form does not charge your account. It is a pledge / callback request only.",
+      title: "Make a Donation",
+      subtitle: "Your contribution helps strengthen democracy",
+      notice: "Payments are processed securely by Razorpay. Your card and UPI details are never stored by Peoples Green Party.",
       existingMember: "If you are existing member?",
       placeholders: {
         name: "Name",
@@ -49,7 +92,7 @@ const translations = {
         occupation: "Occupation / Profession"
       },
       declaration: "I hereby declare that I am an Indian citizen and this donation interest is made through my own legitimate funds. I am aware of the legal provisions regarding political donations.",
-      submit: "Submit pledge request"
+      submit: "Proceed to secure payment"
     },
     campaigns: {
       title: "Fund for democracy"
@@ -72,9 +115,9 @@ const translations = {
       p7: "हमारे साथ लड़ें। बदलाव लाने के लिए लड़ें।"
     },
     form: {
-      title: "दान रुचि फॉर्म",
-      subtitle: "अपना वचन दर्ज करें — सुरक्षित भुगतान प्रक्रिया के लिए हमारी टीम संपर्क करेगी",
-      notice: "ऑनलाइन भुगतान अभी लाइव नहीं है। यह फॉर्म जमा करने से आपके खाते से पैसे नहीं कटेंगे। यह केवल वचन / कॉलबैक अनुरोध है।",
+      title: "दान करें",
+      subtitle: "आपका योगदान लोकतंत्र को मजबूत बनाने में मदद करता है",
+      notice: "भुगतान Razorpay द्वारा सुरक्षित रूप से प्रोसेस किया जाता है। आपके कार्ड और UPI की जानकारी Peoples Green Party के पास संग्रहित नहीं होती।",
       existingMember: "क्या आप मौजूदा सदस्य हैं?",
       placeholders: {
         name: "नाम",
@@ -90,7 +133,7 @@ const translations = {
         occupation: "व्यवसाय / पेशा"
       },
       declaration: "मैं इसके द्वारा घोषणा करता हूँ कि मैं एक भारतीय नागरिक हूँ और यह दान रुचि मेरे अपने वैध धन के माध्यम से की गई है। मैं राजनीतिक दान के संबंध में कानूनी प्रावधानों से अवगत हूँ।",
-      submit: "वचन अनुरोध जमा करें"
+      submit: "सुरक्षित भुगतान के लिए आगे बढ़ें"
     },
     campaigns: {
       title: "लोकतंत्र के लिए फंड"
@@ -183,7 +226,7 @@ const DonationPageContent = () => {
     }
     setSubmitting(true);
     try {
-      await fetchApi("donations", {
+      const order = await fetchApi("donations/razorpay/order", {
         method: "POST",
         body: JSON.stringify({
           fullName: form.fullName.trim(),
@@ -199,29 +242,59 @@ const DonationPageContent = () => {
           address: form.address.trim() || undefined,
           isExistingMember,
         }),
+      }) as {
+        donationId: number;
+        orderId: string;
+        keyId: string;
+        amount: number;
+        currency: string;
+      };
+      await loadRazorpayCheckout();
+      if (!window.Razorpay) throw new Error("Unable to load secure checkout.");
+
+      const checkout = new window.Razorpay({
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Peoples Green Party",
+        description: "Donation",
+        order_id: order.orderId,
+        prefill: {
+          name: form.fullName.trim(),
+          contact: phoneDigits,
+          email: form.email.trim() || undefined,
+        },
+        theme: { color: "#04330B" },
+        modal: {
+          ondismiss: () => setSubmitting(false),
+        },
+        handler: async (payment) => {
+          try {
+            await fetchApi("donations/razorpay/verify", {
+              method: "POST",
+              body: JSON.stringify({
+                razorpayPaymentId: payment.razorpay_payment_id,
+                razorpayOrderId: payment.razorpay_order_id,
+                razorpaySignature: payment.razorpay_signature,
+              }),
+            });
+            setSubmitMsg({ type: "ok", text: "Thank you! Your donation has been received successfully." });
+            setForm({
+              fullName: "", phone: "", email: "", amount: "", pan: "", occupation: "",
+              country: "India", state: "Rajasthan", city: "Jaipur", pincode: "", address: "",
+            });
+            setIsDeclared(false);
+            setIsExistingMember(false);
+          } catch (err: any) {
+            setSubmitMsg({ type: "err", text: err?.message || "Payment completed, but verification failed. Please contact us with your payment ID." });
+          } finally {
+            setSubmitting(false);
+          }
+        },
       });
-      setSubmitMsg({
-        type: "ok",
-        text: "Thank you! Your pledge request was received. No payment was taken — our team will contact you for the secure donation process.",
-      });
-      setForm({
-        fullName: "",
-        phone: "",
-        email: "",
-        amount: "",
-        pan: "",
-        occupation: "",
-        country: "India",
-        state: "Rajasthan",
-        city: "Jaipur",
-        pincode: "",
-        address: "",
-      });
-      setIsDeclared(false);
-      setIsExistingMember(false);
+      checkout.open();
     } catch (err: any) {
-      setSubmitMsg({ type: "err", text: err?.message || "Submission failed. Please try again." });
-    } finally {
+      setSubmitMsg({ type: "err", text: err?.message || "Unable to start payment. Please try again." });
       setSubmitting(false);
     }
   };
@@ -477,7 +550,7 @@ const DonationPageContent = () => {
                 `}
                 disabled={!isDeclared || submitting}
               >
-                {submitting ? "Submitting…" : t.form.submit}
+                {submitting ? "Opening payment…" : t.form.submit}
               </button>
 
             </form>
