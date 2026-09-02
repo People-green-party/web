@@ -38,7 +38,7 @@ type DonationReceipt = {
   amount: number;
   paidAt: string;
   pan?: string;
-  receiptToken: string;
+  receiptToken?: string;
 };
 
 type PaymentOutcome = "idle" | "cancelled" | "failed" | "pending-verification" | "success";
@@ -279,14 +279,28 @@ const DonationPageContent = () => {
         donationId?: number;
         receiptToken?: string;
       } | null;
-      if (!saved?.donationId || !saved.receiptToken) return;
+      if (!saved?.donationId || !saved.receiptToken) {
+        window.localStorage.removeItem(RECEIPT_STORAGE_KEY);
+        return;
+      }
       fetchApi(`donations/${saved.donationId}/receipt`, {
         method: "POST",
         body: JSON.stringify({ token: saved.receiptToken }),
         cache: "no-store",
       })
         .then((restored) => {
-          if (active) setReceipt(restored as DonationReceipt);
+          const candidate = restored as Partial<DonationReceipt>;
+          if (
+            active &&
+            Number.isSafeInteger(candidate.donationId) &&
+            Number.isFinite(candidate.amount) &&
+            candidate.paymentId &&
+            candidate.orderId
+          ) {
+            setReceipt(candidate as DonationReceipt);
+          } else {
+            window.localStorage.removeItem(RECEIPT_STORAGE_KEY);
+          }
         })
         .catch(() => window.localStorage.removeItem(RECEIPT_STORAGE_KEY));
     } catch {
@@ -298,7 +312,8 @@ const DonationPageContent = () => {
   }, []);
 
   const downloadReceipt = () => {
-    if (!receipt) return;
+    if (!receipt || !Number.isFinite(Number(receipt.amount))) return;
+    const receiptAmount = Number(receipt.amount);
     const pdf = new jsPDF({ unit: "mm", format: "a4" });
     pdf.setTextColor(4, 51, 11);
     pdf.setFontSize(20);
@@ -313,7 +328,7 @@ const DonationPageContent = () => {
       ["Receipt number", `PGP-${receipt.donationId}`],
       ["Donation date", new Date(receipt.paidAt).toLocaleString("en-IN")],
       ["Donor name", receipt.fullName],
-      ["Amount", `INR ${receipt.amount.toLocaleString("en-IN")}`],
+      ["Amount", `INR ${receiptAmount.toLocaleString("en-IN")}`],
       ["Payment ID", receipt.paymentId],
       ["Order ID", receipt.orderId],
       ...(receipt.pan ? [["PAN", receipt.pan]] : []),
@@ -427,15 +442,32 @@ const DonationPageContent = () => {
                 razorpayOrderId: payment.razorpay_order_id,
                 razorpaySignature: payment.razorpay_signature,
               }),
-            }) as DonationReceipt;
-            setReceipt(verification);
-            window.localStorage.setItem(
-              RECEIPT_STORAGE_KEY,
-              JSON.stringify({
-                donationId: verification.donationId,
-                receiptToken: verification.receiptToken,
-              }),
-            );
+            }) as Partial<DonationReceipt> & { verified?: boolean; donationId?: number };
+            if (!verification.verified || !Number.isSafeInteger(verification.donationId)) {
+              throw new Error("Payment verification response was incomplete");
+            }
+            const completedReceipt: DonationReceipt = {
+              donationId: Number(verification.donationId),
+              paymentId: verification.paymentId || payment.razorpay_payment_id,
+              orderId: verification.orderId || payment.razorpay_order_id,
+              fullName: verification.fullName || form.fullName.trim(),
+              amount: Number.isFinite(Number(verification.amount)) ? Number(verification.amount) : amount,
+              paidAt: verification.paidAt || new Date().toISOString(),
+              pan: verification.pan || (panRequired ? normalizedPan : undefined),
+              receiptToken: verification.receiptToken,
+            };
+            setReceipt(completedReceipt);
+            if (completedReceipt.receiptToken) {
+              window.localStorage.setItem(
+                RECEIPT_STORAGE_KEY,
+                JSON.stringify({
+                  donationId: completedReceipt.donationId,
+                  receiptToken: completedReceipt.receiptToken,
+                }),
+              );
+            } else {
+              window.localStorage.removeItem(RECEIPT_STORAGE_KEY);
+            }
             setPaymentOutcome("success");
             setSubmitMsg({ type: "ok", text: t.form.messages.success });
             setForm({
@@ -516,7 +548,7 @@ const DonationPageContent = () => {
                 <div className="rounded-[12px] border border-emerald-200 bg-emerald-50 p-4 text-emerald-900" role="status">
                   <p className="font-bold text-lg">{t.form.receiptTitle}</p>
                   <p className="mt-1 text-sm">{t.form.receiptNumber}: PGP-{receipt.donationId}</p>
-                  <p className="text-sm">INR {receipt.amount.toLocaleString("en-IN")} · {receipt.paymentId}</p>
+                  <p className="text-sm">INR {Number(receipt.amount || 0).toLocaleString("en-IN")} · {receipt.paymentId || "Payment confirmed"}</p>
                   <button type="button" onClick={downloadReceipt} className="mt-3 rounded-[8px] bg-[#04330B] px-4 py-2 text-sm font-bold text-white hover:bg-[#064e11]">
                     {t.form.downloadReceipt}
                   </button>
