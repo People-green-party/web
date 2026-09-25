@@ -51,9 +51,6 @@ const translations = {
       schoolCollegePlaceholder: "संस्था का नाम दर्ज करें",
       courseClass: "कोर्स / कक्षा / वर्तमान भूमिका (वैकल्पिक)",
       courseClassPlaceholder: "जैसे: बी.टेक, बीए द्वितीय वर्ष, कक्षा 12",
-      pinLabel: "लॉगिन पिन बनाएं (4-6 अंक)",
-      pinPlaceholder: "4-6 अंकों का पिन बनाएं",
-      pinHint: "अपने खाते में लॉगिन करने के लिए इस पिन का उपयोग करें",
       district: "जिला",
       ward: "वार्ड",
       village: "गांव",
@@ -109,7 +106,6 @@ const translations = {
       invalidOtp: "अमान्य OTP। देव मोड में 123456 का उपयोग करें।",
       alreadyRegistered: "यह नंबर पहले से Zinda Youth में रजिस्टर है। कृपया Youth Login से लॉगिन करें।",
       invalidMobile: "कृपया सही 10 अंकों का मोबाइल नंबर डालें।",
-      invalidPin: "लॉगिन पिन 4 से 6 अंकों का होना चाहिए।",
     }
   },
   en: {
@@ -153,9 +149,6 @@ const translations = {
       schoolCollegePlaceholder: "Enter institution name",
       courseClass: "Course / Class / Current Role (Optional)",
       courseClassPlaceholder: "e.g., B.Tech, BA 2nd Year, Class 12",
-      pinLabel: "Create Login PIN (4-6 digits)",
-      pinPlaceholder: "Create 4-6 digit PIN",
-      pinHint: "Use this PIN to login to your account",
       district: "District",
       ward: "Ward",
       village: "Village",
@@ -211,7 +204,6 @@ const translations = {
       invalidOtp: "Invalid OTP. Use 123456 in dev mode.",
       alreadyRegistered: "This number is already a Zinda Youth account. Please use Youth Login.",
       invalidMobile: "Please enter a valid 10-digit mobile number.",
-      invalidPin: "Login PIN must be 4-6 digits.",
     }
   }
 };
@@ -236,13 +228,12 @@ function YouthJoinPageInner() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showPin, setShowPin] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     mobile: '',
     otp: '',
-    pin: '',
     referralCode: '',
     youthAgeGroup: '',
     gender: '',
@@ -278,12 +269,6 @@ function YouthJoinPageInner() {
       setLoading(false);
       return;
     }
-    if (!/^\d{4,6}$/.test(formData.pin || '')) {
-      setError(t.errors.invalidPin || 'Login PIN must be 4-6 digits');
-      setLoading(false);
-      return;
-    }
-
     const { isAuthDevMode } = await import('../../../lib/authDevMode');
     if (isAuthDevMode()) {
       setStep(2);
@@ -311,6 +296,7 @@ function YouthJoinPageInner() {
 
       const { error } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
+        options: { shouldCreateUser: true },
       });
 
       if (error) {
@@ -435,7 +421,6 @@ function YouthJoinPageInner() {
       const userProfileData = {
         name: fullName,
         phone: phoneNumber,
-        pin: formData.pin,
         referralCode: formData.referralCode || undefined,
         programTag: 'Zinda Youth',
         campaignSource: 'CockroachCampusMovement',
@@ -464,10 +449,26 @@ function YouthJoinPageInner() {
         body: JSON.stringify(userProfileData),
       });
 
-      // Keep the new member signed in so thank-you → dashboard works
-      if (userData?.access_token) {
+      const otpLoginHeaders: Record<string, string> = {};
+      const { isAuthDevMode } = await import('../../../lib/authDevMode');
+      if (!isAuthDevMode()) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const verifiedToken = sessionData.session?.access_token;
+        if (!verifiedToken) {
+          throw new Error('Your verified OTP session expired. Please request a new OTP.');
+        }
+        otpLoginHeaders.Authorization = `Bearer ${verifiedToken}`;
+      }
+      const loginData = await fetchApi('users/login-otp', {
+        method: 'POST',
+        headers: otpLoginHeaders,
+        body: JSON.stringify({ phone: phoneNumber }),
+      });
+
+      // Keep the new member signed in so thank-you → dashboard works.
+      if (loginData?.access_token) {
         try {
-          setPortalToken('youth', userData.access_token);
+          setPortalToken('youth', loginData.access_token);
           localStorage.setItem(
             'user_info',
             JSON.stringify({
@@ -516,11 +517,42 @@ function YouthJoinPageInner() {
     }
   };
 
+  const registrationSteps = [
+    { number: 1, label: language === 'hi' ? 'अपनी जानकारी दें' : 'Your information' },
+    { number: 2, label: language === 'hi' ? 'OTP सत्यापन' : 'OTP verification' },
+    { number: 3, label: language === 'hi' ? 'ZINDA प्रोफाइल' : 'ZINDA profile' },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#F5FBF7] text-[#04330B] font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px]">
+    <div className="min-h-screen bg-[#F7FCF9] text-[#04330B] font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px]">
       <Navbar />
-      <main className="mx-auto max-w-2xl px-5 lg:px-8 py-14">
-        <div className="rounded-[36px] border border-[#BBF7D0] bg-white p-8 lg:p-12 shadow-[0px_20px_60px_rgba(0,0,0,0.08)]">
+      <main className="mx-auto w-full max-w-[1200px] px-4 py-10 lg:px-8 lg:py-14">
+        <div className="mx-auto max-w-[880px] text-center">
+          <p className="text-xs font-black uppercase tracking-[.24em] text-[#16A34A]">ZINDA YOUTH</p>
+          <h1 className="mt-3 text-[30px] font-bold leading-tight tracking-[-.03em] text-[#04330B] lg:text-[44px]">{t.wizard.step1Title}</h1>
+          <p className="mx-auto mt-3 max-w-[680px] font-semibold leading-6 text-[#587E67]">{t.wizard.step1Subtitle}</p>
+        </div>
+
+        <section className="mt-10 flex w-full flex-col overflow-hidden rounded-[28px] border border-[#E4F2EA] bg-white shadow-[0px_20px_60px_rgba(0,0,0,0.08)] lg:flex-row">
+          <aside className="flex w-full flex-col justify-between bg-[#04330B] p-7 text-white lg:w-[360px] lg:p-10">
+            <div className="space-y-5">
+              {registrationSteps.map((item) => (
+                <div key={item.number} className={`flex items-center gap-3 ${step === item.number ? 'opacity-100' : 'opacity-55'}`}>
+                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-black ${step === item.number ? 'bg-[#10B981] text-[#04330B]' : 'bg-white/20 text-white'}`}>{item.number}</span>
+                  <span className="font-bold">{item.label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-9 border-t border-white/15 pt-7">
+              <div className="inline-flex rounded-xl bg-white p-3">
+                <img src="/PGPlogo.svg" alt="PGP" className="w-[105px]" />
+              </div>
+              <p className="mt-4 text-sm font-semibold leading-6 text-white/70">{language === 'hi' ? 'युवा सोच। हरित कल। बदलाव में अपनी भूमिका निभाएँ।' : 'Youth ideas. Green future. Build your role in the change.'}</p>
+            </div>
+          </aside>
+
+          <div className="flex-1 p-6 sm:p-9 lg:p-12">
+            <div className="mx-auto max-w-[680px]">
           {/* Step 1: Mobile & OTP */}
           {step === 1 && (
             <>
@@ -587,36 +619,6 @@ function YouthJoinPageInner() {
                 </div>
 
                 <div>
-                  <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">
-                    {t.wizard.pinLabel}
-                  </FormFieldLabel>
-                  <div className="flex gap-2">
-                    <input
-                      type={showPin ? 'text' : 'password'}
-                      required
-                      minLength={4}
-                      maxLength={6}
-                      pattern="[0-9]*"
-                      value={formData.pin}
-                      onChange={(e) =>
-                        setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '') })
-                      }
-                      className="flex-1 h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
-                      placeholder={t.wizard.pinPlaceholder}
-                      inputMode="numeric"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPin(!showPin)}
-                      className="h-[46px] px-4 rounded-[10px] border border-[#DDEEE4] bg-white text-[#04330B] hover:bg-[#F5FBF7]"
-                    >
-                      {showPin ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                  <p className="mt-1 text-xs text-[#587E67]">{t.wizard.pinHint}</p>
-                </div>
-
-                <div>
                   <label className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.referralCode}</label>
                   <input
                     type="text"
@@ -643,7 +645,7 @@ function YouthJoinPageInner() {
             <>
               <h1 className="text-3xl lg:text-4xl font-black tracking-[-0.05em]">{t.wizard.step2Title}</h1>
               <p className="mt-3 text-[#587E67] font-semibold">
-                {t.wizard.step2Subtitle} {formData.mobile}
+                {t.wizard.step2Subtitle} +91 {formData.mobile.slice(0, 5)} {formData.mobile.slice(5)}
               </p>
 
               {error && (
@@ -658,7 +660,7 @@ function YouthJoinPageInner() {
                   <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.otpLabel}</FormFieldLabel>
                   <div className="flex gap-2">
                     <input
-                      type={showPin ? 'text' : 'password'}
+                      type={showOtp ? 'text' : 'password'}
                       required
                       maxLength={6}
                       value={formData.otp}
@@ -668,10 +670,10 @@ function YouthJoinPageInner() {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowPin(!showPin)}
+                      onClick={() => setShowOtp(!showOtp)}
                       className="h-[46px] px-4 rounded-[10px] border border-[#DDEEE4] bg-white text-[#04330B] hover:bg-[#F5FBF7]"
                     >
-                      {showPin ? <EyeOff size={20} /> : <Eye size={20} />}
+                      {showOtp ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                   </div>
                 </div>
@@ -810,31 +812,6 @@ function YouthJoinPageInner() {
                   />
                 </div>
 
-                <div>
-                  <FormFieldLabel required className="block text-sm font-bold text-[#04330B] mb-2">{t.wizard.pinLabel}</FormFieldLabel>
-                  <div className="flex gap-2">
-                    <input
-                      type={showPin ? 'text' : 'password'}
-                      required
-                      minLength={4}
-                      maxLength={6}
-                      pattern="[0-9]*"
-                      value={formData.pin}
-                      onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '') })}
-                      className="flex-1 h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none focus:border-[#16A34A]"
-                      placeholder={t.wizard.pinPlaceholder}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPin(!showPin)}
-                      className="h-[46px] px-4 rounded-[10px] border border-[#DDEEE4] bg-white text-[#04330B] hover:bg-[#F5FBF7]"
-                    >
-                      {showPin ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                  <p className="mt-1 text-xs text-[#587E67]">{t.wizard.pinHint}</p>
-                </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-bold text-[#04330B] mb-2">
@@ -966,7 +943,9 @@ function YouthJoinPageInner() {
               </form>
             </>
           )}
-        </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );

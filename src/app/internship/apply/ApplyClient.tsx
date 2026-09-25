@@ -40,7 +40,6 @@ export default function InternshipApplyPage() {
     department: "",
     mode: "offline",
     motivation: "",
-    pin: "",
   });
 
   useEffect(() => {
@@ -68,12 +67,6 @@ export default function InternshipApplyPage() {
       setSubmitting(false);
       return;
     }
-    if (!/^\d{4,6}$/.test(form.pin)) {
-      setError(a.errorPin);
-      setSubmitting(false);
-      return;
-    }
-
     try {
       const res = await fetchApi("internship/applications", {
         method: "POST",
@@ -86,7 +79,6 @@ export default function InternshipApplyPage() {
           department: form.department,
           mode: form.mode,
           motivation: form.motivation.trim(),
-          pin: form.pin,
         }),
       });
 
@@ -359,25 +351,6 @@ export default function InternshipApplyPage() {
                           className="w-full rounded-[10px] border border-[#DDEEE4] px-4 py-3 font-semibold text-[#04330B] outline-none bg-white resize-y disabled:opacity-60"
                           placeholder={a.fields.motivation}
                         />
-                      </div>
-
-                      <div>
-                        <FormFieldLabel required>{a.fields.pin}</FormFieldLabel>
-                        <input
-                          type="password"
-                          name="pin"
-                          required
-                          minLength={4}
-                          maxLength={6}
-                          pattern="[0-9]*"
-                          inputMode="numeric"
-                          disabled={submitting}
-                          value={form.pin}
-                          onChange={onChange}
-                          className={inputClass}
-                          placeholder={a.fields.pinPlaceholder}
-                        />
-                        <p className="mt-1 text-xs text-[#587E67] font-medium">{a.pinHint}</p>
                       </div>
 
                       <button

@@ -1,14 +1,11 @@
 'use client';
 
-import React, { useRef } from 'react';
-import {
-  ArrowRight,
-  ArrowLeft,
-} from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLanguage } from "../../components/LanguageContext";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import ScrollReveal from '../../components/ScrollReveal';
+import { SITE_DETAILS } from '../../lib/siteDetails';
 
 // --- Local Translations for About Page Content ---
 const translations = {
@@ -143,16 +140,27 @@ const AboutPageContent = () => {
   const t = translations[language as 'en' | 'hi'];
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isVisionPaused, setIsVisionPaused] = useState(false);
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 400;
-      scrollContainerRef.current.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!container || isVisionPaused || prefersReducedMotion) return;
+
+    const intervalId = window.setInterval(() => {
+      const firstCard = container.firstElementChild?.firstElementChild as HTMLElement | null;
+      const scrollAmount = (firstCard?.offsetWidth ?? 377) + 24;
+      const reachedEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 12;
+
+      container.scrollTo({
+        left: reachedEnd ? 0 : container.scrollLeft + scrollAmount,
+        behavior: 'smooth',
       });
-    }
-  };
+    }, 3500);
+
+    return () => window.clearInterval(intervalId);
+  }, [isVisionPaused, language]);
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-800 flex flex-col items-center pt-[70px] lg:pt-[92px]">
@@ -170,7 +178,7 @@ const AboutPageContent = () => {
             {/* Text Section */}
             <div className="flex flex-col gap-[16px] h-auto lg:h-[208px]">
               <ScrollReveal animation="fade-up" duration={800}>
-                <h1 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B] whitespace-pre-line">
+                <h1 className={`font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[52px] xl:text-[60px] leading-[1.1] lg:leading-[68px] tracking-[-0.3px] text-[#04330B] whitespace-pre-line ${language === 'en' ? 'lg:whitespace-nowrap' : ''}`}>
                   {t.hero.title}
                 </h1>
               </ScrollReveal>
@@ -203,7 +211,11 @@ const AboutPageContent = () => {
               </p>
             </div>
 
-            <button className="w-[154px] h-[46px] rounded-[8px] border border-[#0D5229] flex items-center justify-center gap-[12px] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] hover:bg-green-50 transition-colors shrink-0 mt-8 lg:mt-0">
+            <button
+              type="button"
+              onClick={() => document.getElementById('eight-principles')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="w-[154px] h-[46px] rounded-[8px] border border-[#0D5229] flex items-center justify-center gap-[12px] text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] hover:bg-green-50 transition-colors shrink-0 mt-8 lg:mt-0"
+            >
               {t.hero.readMore}
             </button>
 
@@ -212,11 +224,11 @@ const AboutPageContent = () => {
         </div>
 
         {/* --- Eight Principles Section --- */}
-        <div className="w-full mt-[80px] lg:mt-[120px] flex flex-col gap-[64px]">
+        <div id="eight-principles" className="w-full mt-[80px] lg:mt-[120px] scroll-mt-[110px] flex flex-col gap-[64px]">
 
           <div className="flex flex-col gap-[16px] w-full max-w-[960px]">
             <ScrollReveal animation="fade-up" duration={800}>
-              <h2 className="font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B]">
+              <h2 className={`font-['Familjen_Grotesk'] font-semibold text-[40px] lg:text-[56px] xl:text-[64px] leading-[1.1] lg:leading-[72px] tracking-[-0.3px] text-[#04330B] ${language === 'en' ? 'lg:whitespace-nowrap' : ''}`}>
                 {t.principles.title}
               </h2>
             </ScrollReveal>
@@ -275,9 +287,14 @@ const AboutPageContent = () => {
           </div>
 
           <div
-            className="w-full lg:overflow-x-hidden pb-4 no-scrollbar"
+            className="w-full overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             ref={scrollContainerRef}
-            style={{ overflowX: 'auto', scrollSnapType: 'x mandatory' }}
+            style={{ scrollSnapType: 'x mandatory' }}
+            onMouseEnter={() => setIsVisionPaused(true)}
+            onMouseLeave={() => setIsVisionPaused(false)}
+            onFocusCapture={() => setIsVisionPaused(true)}
+            onBlurCapture={() => setIsVisionPaused(false)}
+            aria-label={language === 'hi' ? 'हमारे विजन के मुख्य बिंदु' : 'Our vision highlights'}
           >
             <div className="flex flex-row gap-[24px]">
               {t.vision.cards.map((card: any, i: number) => (
@@ -298,22 +315,37 @@ const AboutPageContent = () => {
             </p>
           </div>
 
-          <div className="hidden lg:flex mt-[24px] justify-center gap-[12px]">
-            <button
-              onClick={() => scroll('left')}
-              className="w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] flex items-center justify-center text-[#0D5229] hover:bg-green-50 transition-colors cursor-pointer"
-            >
-              <ArrowLeft size={24} strokeWidth={1.5} />
-            </button>
-            <button
-              onClick={() => scroll('right')}
-              className="w-[46px] h-[46px] rounded-[8px] border border-[#B9D3C4] flex items-center justify-center text-[#0D5229] hover:bg-green-50 transition-colors cursor-pointer"
-            >
-              <ArrowRight size={24} strokeWidth={1.5} />
-            </button>
-          </div>
-
         </div>
+
+        <ScrollReveal animation="fade-up" duration={800} className="mt-[80px] lg:mt-[120px]">
+          <section className="rounded-[16px] border border-[#B9D3C4] bg-[#F5FBF7] p-6 sm:p-8 lg:p-10">
+            <p className="text-sm font-bold uppercase tracking-[0.14em] text-[#587E67]">
+              {language === 'hi' ? 'संगठन की जानकारी' : 'Organization information'}
+            </p>
+            <h2 className="mt-3 font-['Familjen_Grotesk'] text-[30px] font-bold leading-tight text-[#04330B] lg:text-[40px]">
+              {SITE_DETAILS.legalName}
+            </h2>
+            <p className="mt-4 max-w-3xl text-[16px] font-medium leading-7 text-[#587E67]">
+              {language === 'hi'
+                ? 'यह आधिकारिक वेबसाइट पार्टी की सार्वजनिक जानकारी, गतिविधियों और स्वैच्छिक ऑनलाइन योगदान सुविधा के लिए है। ऑनलाइन योगदान किसी वस्तु या सेवा की खरीद नहीं है।'
+                : 'This official website provides public information about the party, its activities and its voluntary online contribution facility. An online contribution is not a purchase of goods or services.'}
+            </p>
+            <dl className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div>
+                <dt className="text-sm font-bold uppercase tracking-wide text-[#587E67]">{language === 'hi' ? 'ईमेल' : 'Email'}</dt>
+                <dd className="mt-1 break-all font-semibold text-[#04330B]"><a href={`mailto:${SITE_DETAILS.email}`}>{SITE_DETAILS.email}</a></dd>
+              </div>
+              <div>
+                <dt className="text-sm font-bold uppercase tracking-wide text-[#587E67]">{language === 'hi' ? 'फोन' : 'Phone'}</dt>
+                <dd className="mt-1 font-semibold text-[#04330B]"><a href={`tel:+91${SITE_DETAILS.phone}`}>+91 {SITE_DETAILS.phone}</a></dd>
+              </div>
+              <div className="sm:col-span-2 lg:col-span-1">
+                <dt className="text-sm font-bold uppercase tracking-wide text-[#587E67]">{language === 'hi' ? 'कार्यालय' : 'Office'}</dt>
+                <dd className="mt-1 font-semibold text-[#04330B]">{language === 'hi' ? SITE_DETAILS.addressHi : SITE_DETAILS.address}</dd>
+              </div>
+            </dl>
+          </section>
+        </ScrollReveal>
       </main>
 
       {/* Shared Footer */}

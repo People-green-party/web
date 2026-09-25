@@ -381,6 +381,7 @@ const UnionJoinPageContent = () => {
 
       const { error } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
+        options: { shouldCreateUser: true },
       });
 
       if (error) {

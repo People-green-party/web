@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from '../../lib/supabaseClient';
 import { getTranslation } from './location_utils';
 import { useLanguage } from '../../components/LanguageContext';
-import { Phone, Eye, EyeOff } from 'lucide-react';
+import { Phone } from 'lucide-react';
 import { Navbar } from '../../components/Navbar';
 import { FormFieldLabel } from '../../components/FormFieldLabel';
 import html2canvas from 'html2canvas';
@@ -313,7 +313,6 @@ const JoinPageContent = () => {
     firstName: '',
     lastName: '',
     mobile: '',
-    pin: '',
     referralCode: '',
     loksabhaId: '',
     vidhansabhaId: '',
@@ -337,7 +336,6 @@ const JoinPageContent = () => {
     agreeResponsibility: false
   });
   const [showReferralInput, setShowReferralInput] = useState(false);
-  const [showPin, setShowPin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState('');
   const [otpError, setOtpError] = useState('');
@@ -369,8 +367,6 @@ const JoinPageContent = () => {
     if (!formData.lastName.trim()) return 'Please enter your last name.';
     const mobile = formData.mobile.replace(/\D/g, '');
     if (mobile.length < 10) return 'Please enter a valid 10-digit mobile number.';
-    const pin = formData.pin.replace(/\D/g, '');
-    if (pin.length < 4 || pin.length > 6) return 'Please create a 4–6 digit login PIN.';
     if (!formData.loksabhaId) return 'Please select your Loksabha.';
     if (!formData.vidhansabhaId) return 'Please select your Vidhansabha.';
     if (!formData.localUnitId) return 'Please select your Local Unit.';
@@ -379,7 +375,6 @@ const JoinPageContent = () => {
     formData.firstName,
     formData.lastName,
     formData.mobile,
-    formData.pin,
     formData.loksabhaId,
     formData.vidhansabhaId,
     formData.localUnitId,
@@ -482,7 +477,6 @@ const JoinPageContent = () => {
       firstName: '',
       lastName: '',
       mobile: '',
-      pin: '',
       referralCode: urlRefCode, // Set from URL
       loksabhaId: '',
       vidhansabhaId: '',
@@ -687,7 +681,6 @@ const JoinPageContent = () => {
         name: fullName,
         phone: phoneNumber,
         password: randomPassword,
-        pin: formData.pin,
         address: 'India',
         localUnitId: parseInt(formData.localUnitId, 10),
         referralCode: formData.referralCode || undefined,
@@ -701,13 +694,24 @@ const JoinPageContent = () => {
 
       console.log('Registration successful:', userData);
 
-      const loginRes = await fetchApi('users/login-pin', {
+      const { isAuthDevMode } = await import('../../lib/authDevMode');
+      const otpLoginHeaders: Record<string, string> = {};
+      if (!isAuthDevMode()) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const verifiedToken = sessionData.session?.access_token;
+        if (!verifiedToken) {
+          throw new Error('Your verified OTP session expired. Please request a new OTP.');
+        }
+        otpLoginHeaders.Authorization = `Bearer ${verifiedToken}`;
+      }
+
+      const loginRes = await fetchApi('users/login-otp', {
         method: 'POST',
-        body: JSON.stringify({ phone: phoneNumber, pin: formData.pin }),
+        headers: otpLoginHeaders,
+        body: JSON.stringify({ phone: phoneNumber }),
       });
 
       if (typeof window !== 'undefined') {
-        const { isAuthDevMode } = await import('../../lib/authDevMode');
         if (isAuthDevMode() && userData?.id) {
           window.localStorage.setItem('devUserId', String(userData.id));
         }
@@ -903,6 +907,7 @@ const JoinPageContent = () => {
 
       const { error } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
+        options: { shouldCreateUser: true },
       });
 
       if (error) {
@@ -1088,25 +1093,6 @@ const JoinPageContent = () => {
                       </div>
                     </div>
 
-                    <div className="relative">
-                      <FormFieldLabel required>Login PIN</FormFieldLabel>
-                      <input
-                        type={showPin ? "text" : "password"}
-                        value={formData.pin}
-                        onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '').slice(0, 6) })}
-                        inputMode="numeric"
-                        className="w-full h-[46px] rounded-[10px] border border-[#DDEEE4] px-4 font-semibold text-[#04330B] outline-none"
-                        placeholder="Create Login PIN"
-                        autoComplete="off"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPin(!showPin)}
-                        className="absolute right-3 top-[38px] text-[#587E67] hover:text-[#04330B] transition-colors"
-                      >
-                        {showPin ? <EyeOff size={18} /> : <Eye size={18} />}
-                      </button>
-                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

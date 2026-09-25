@@ -1,515 +1,118 @@
-'use client';
+"use client";
 
-import React, { Suspense, useState, useEffect } from 'react';
-import { ChevronLeft, X, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '../../lib/supabaseClient';
-import { fetchApi } from '../../lib/api';
-import { FormFieldLabel } from '../../components/FormFieldLabel';
-import { clearPortalToken, setPortalToken } from '../../lib/portalAuth';
+import React, { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useLanguage } from "../../components/LanguageContext";
+import { PortalLoginScreen } from "../../components/PortalLoginScreen";
+import { fetchApi } from "../../lib/api";
+import { setPortalToken } from "../../lib/portalAuth";
+import { completeOtpLogin } from "../../lib/completeOtpLogin";
 
-function LoginScreenInner() {
-  const searchParams = useSearchParams();
-  const nextPath = searchParams?.get('next') || '';
-  const modeParam = searchParams?.get('mode');
-  const [phone, setPhone] = useState('');
-  const [pin, setPin] = useState('');
-  const [otp, setOtp] = useState('');
-  const [showPin, setShowPin] = useState(false);
-  const [showOtp, setShowOtp] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  // Modes: 'login' (Phone+PIN), 'otp_request' (Forgot PIN), 'otp_verify' (Verify OTP), 'set_new_pin' (Set New PIN)
-  const [mode, setMode] = useState<'login' | 'otp_request' | 'otp_verify' | 'set_new_pin'>(
-    modeParam === 'otp_request' ? 'otp_request' : 'login',
-  );
-
-  const [newPin, setNewPin] = useState('');
-  const [confirmNewPin, setConfirmNewPin] = useState('');
-  const [showNewPin, setShowNewPin] = useState(false);
-  const [resendTimer, setResendTimer] = useState(0); // Countdown in seconds
-
+function PartyOtpLogin() {
+  const { language } = useLanguage();
+  const isHi = language === "hi";
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const nextPath = searchParams.get("next") || "";
+  const [step, setStep] = useState<"phone" | "otp">("phone");
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
+  const [resendTimer, setResendTimer] = useState(0);
+  const [otpSimulated, setOtpSimulated] = useState(false);
 
-  // Countdown timer for resend OTP
   useEffect(() => {
-    if (resendTimer > 0) {
-      const interval = setInterval(() => {
-        setResendTimer((prev) => prev - 1);
-      }, 1000);
-      return () => clearInterval(interval);
-    }
+    if (resendTimer <= 0) return;
+    const timer = window.setInterval(() => setResendTimer((value) => value - 1), 1000);
+    return () => window.clearInterval(timer);
   }, [resendTimer]);
 
-  const sanitizePhoneInput = (value: string) => {
-    const digitsOnly = String(value || '').replace(/\D/g, '');
-    return digitsOnly.slice(0, 10);
-  };
+  const sanitize = (value: string) => value.replace(/\D/g, "").slice(0, 10);
 
-  const validateIndianMobile = (value: string): string | null => {
-    const v = sanitizePhoneInput(value);
-    if (!v) return 'Phone number is required';
-    if (v.length !== 10) return 'Phone number must be exactly 10 digits';
-    if (v.startsWith('0')) return 'Phone number cannot start with 0';
-    return null;
-  };
-
-  // Helper to extract clean error message
-  const cleanError = (msg: string) => {
-    if (!msg) return '';
-    // Remove "API error calling ... : <status> " prefix
-    return msg.replace(/^API error calling .*?:\s*\d+\s+/, '');
-  };
-
-  const handleBack = () => {
-    if (mode === 'login') {
-      router.back();
-    } else {
-      setMode('login');
-      setError('');
-    }
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const phoneErr = validateIndianMobile(phone);
-    if (phoneErr) {
-      setError(phoneErr);
+  const sendOtp = async (event?: React.FormEvent) => {
+    event?.preventDefault();
+    setError("");
+    setInfo("");
+    const cleanPhone = sanitize(phone);
+    if (cleanPhone.length !== 10) {
+      setError(isHi ? "कृपया 10 अंकों का सही मोबाइल नंबर दर्ज करें।" : "Please enter a valid 10-digit mobile number.");
       return;
     }
-    if (!pin) {
-      setError('PIN is required');
-      return;
-    }
-
     setLoading(true);
-    setError('');
-
     try {
-      const cleanedPhone = sanitizePhoneInput(phone);
-      const phoneNumber = `+91${cleanedPhone}`;
-
-      const data = await fetchApi('users/login-pin', {
-        method: 'POST',
-        body: JSON.stringify({ phone: phoneNumber, pin }),
-      });
-
-      if (data.access_token) {
-        setPortalToken('party', data.access_token);
-        if (data.user) {
-          localStorage.setItem('user_info', JSON.stringify(data.user));
-        }
-
-        // Don't dump people into the wrong portal via ?next=
-        const tag = String(data.user?.programTag || '').toLowerCase();
-        const isYouth = tag.includes('zinda') || tag.includes('jinda') || tag.includes('youth');
-        const isUnion = !!data.user?.unionName;
-        let dest =
-          nextPath && nextPath.startsWith('/') && !nextPath.startsWith('//')
-            ? nextPath
-            : '/dashboard';
-
-        if (dest.startsWith('/youth-front') && !isYouth) {
-          dest = '/dashboard';
-        }
-        if (dest.startsWith('/union') && !isUnion) {
-          dest = '/dashboard';
-        }
-
-        router.push(dest);
-      } else {
-        throw new Error('No access token received');
-      }
-    } catch (err: any) {
-      console.error('Login error:', err);
-      setError(cleanError(err.message || 'Login failed. Please check your PIN.'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const phoneErr = validateIndianMobile(phone);
-    if (phoneErr) {
-      setError(phoneErr);
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const cleanedPhone = sanitizePhoneInput(phone);
-      const phoneNumber = `+91${cleanedPhone}`;
-
-      const check = await fetchApi('users/check-phone', {
-        method: 'POST',
-        body: JSON.stringify({ phone: phoneNumber }),
-      });
-
+      const phoneNumber = `+91${cleanPhone}`;
+      const check = await fetchApi("users/check-phone", { method: "POST", body: JSON.stringify({ phone: phoneNumber }) });
       if (!check?.exists) {
-        setError('No account found for this mobile number. Please join first, then try login.');
+        setError(isHi ? "यह मोबाइल नंबर पंजीकृत नहीं है। कृपया पहले हमसे जुड़ें।" : "This mobile number is not registered. Please join first.");
         return;
       }
-
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: phoneNumber,
-      });
-
-      if (error) throw error;
-
-      setMode('otp_verify');
-      setResendTimer(60);
-    } catch (err: any) {
-      const { isAuthDevMode } = await import('../../lib/authDevMode');
-      if (isAuthDevMode() && err.message && (
-        err.message.includes('Unsupported phone provider') ||
-        err.message.includes('Signups not allowed')
-      )) {
-        console.warn('Dev simulation: OTP sent (123456):', err.message);
-        alert('Development Mode: Your OTP is 123456');
-        setMode('otp_verify');
+      const { isAuthDevMode } = await import("../../lib/authDevMode");
+      if (isAuthDevMode()) {
+        setOtpSimulated(true);
+        setStep("otp");
         setResendTimer(60);
-      } else if (err.message && (
-        err.message.includes('Unsupported phone provider') ||
-        err.message.includes('Signups not allowed')
-      )) {
-        setError('SMS login is temporarily unavailable. Please try again later.');
-      } else {
-        setError(cleanError(err.message || 'Failed to send OTP. Please try again.'));
+        setInfo(isHi ? "डेवलपमेंट OTP: 123456" : "Development OTP: 123456");
+        return;
       }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const phoneErr = validateIndianMobile(phone);
-    if (phoneErr) {
-      setError(phoneErr);
-      return;
-    }
-    if (!otp) {
-      setError('Please enter the OTP');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const cleanedPhone = sanitizePhoneInput(phone);
-      const phoneNumber = `+91${cleanedPhone}`;
-
-      const { data, error } = await supabase.auth.verifyOtp({
+      const { supabase } = await import("../../lib/supabaseClient");
+      const { error: otpError } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
-        token: otp,
-        type: 'sms',
+        options: { shouldCreateUser: true },
       });
-
-      if (error) {
-        const { isAuthDevMode } = await import('../../lib/authDevMode');
-        if (isAuthDevMode() && otp === '123456') {
-          console.log('Dev simulation: OTP verified');
-        } else {
-          throw error;
-        }
-      }
-
-      // OTP Verified - now let user set new PIN
-      // Clear any old custom token so fetchApi uses the fresh Supabase session
-      if (typeof window !== 'undefined') {
-        clearPortalToken('party');
-      }
-      setMode('set_new_pin');
+      if (otpError) throw otpError;
+      setStep("otp");
+      setResendTimer(60);
+      setInfo(isHi ? `OTP आपके पंजीकृत मोबाइल नंबर +91 ${cleanPhone.slice(0, 5)} ${cleanPhone.slice(5)} पर भेज दिया गया है।` : `OTP has been sent to your registered mobile number +91 ${cleanPhone.slice(0, 5)} ${cleanPhone.slice(5)}.`);
     } catch (err: any) {
-      setError(cleanError(err.message || 'Invalid OTP. Please try again.'));
+      setError(err?.message || (isHi ? "OTP भेजा नहीं जा सका।" : "Could not send OTP."));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSetNewPin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newPin || !confirmNewPin) {
-      setError('Please enter and confirm your new PIN');
+  const verifyOtp = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError("");
+    if (!/^\d{6}$/.test(otp)) {
+      setError(isHi ? "कृपया 6 अंकों का OTP दर्ज करें।" : "Please enter the 6-digit OTP.");
       return;
     }
-    if (newPin !== confirmNewPin) {
-      setError('PINs do not match');
-      return;
-    }
-    if (newPin.length < 4 || newPin.length > 6) {
-      setError('PIN must be 4-6 digits');
-      return;
-    }
-
     setLoading(true);
-    setError('');
-
     try {
-      // User is authenticated via Supabase (from OTP verify), so this call should work if API supports Supabase auth or we have a way to identify user
-      // Note: We need an endpoint to update PIN. Assuming 'users/me' with PATCH can handle it or we add one.
-      // We'll update the 'me' endpoint to accept PIN updates.
-
-      // Use dedicated endpoint that verifies token and links user by phone
-      let headers = {};
-
-      // Local auth-dev only: PIN reset without Supabase session
-      if (typeof window !== 'undefined') {
-        const { isAuthDevMode } = await import('../../lib/authDevMode');
-        const { supabase } = await import('../../lib/supabaseClient');
-        const { data } = await supabase.auth.getSession();
-        if (!data.session && isAuthDevMode()) {
-          const phoneNumber = `+91${sanitizePhoneInput(phone)}`;
-          headers = { 'Authorization': `Bearer dev-token:${phoneNumber}` };
-        }
+      const phoneNumber = `+91${sanitize(phone)}`;
+      const { isAuthDevMode } = await import("../../lib/authDevMode");
+      let result: any;
+      if (otpSimulated && isAuthDevMode()) {
+        if (otp !== "123456") throw new Error(isHi ? "OTP गलत है।" : "Invalid OTP.");
+        result = await fetchApi("users/login-otp", {
+          method: "POST",
+          body: JSON.stringify({ phone: phoneNumber }),
+        });
+      } else {
+        const { supabase } = await import("../../lib/supabaseClient");
+        const { data, error: verifyError } = await supabase.auth.verifyOtp({ phone: phoneNumber, token: otp, type: "sms" });
+        if (verifyError) throw verifyError;
+        const token = data.session?.access_token;
+        if (!token) throw new Error(isHi ? "OTP सत्र नहीं मिला।" : "OTP session was not created.");
+        result = await completeOtpLogin(phoneNumber, token);
       }
-
-      await fetchApi('users/set-pin-with-token', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ pin: newPin }),
-      });
-
-      // After setting PIN, go back to login or dashboard?
-      // Let's go to dashboard as they are technically logged in via Supabase now.
-      // Or force them to login with new PIN to ensure the custom token flow is used.
-
-      setMode('login');
-      setPin('');
-      setError(''); // Clear error on success
-      // Consider showing a success message instead of error state, but for now just clear error.
-      // Ideally we should use a toast or a temporary success state.
-      alert('PIN updated successfully. Please login with your new PIN.');
-
-      // Optionally logout from Supabase to force PIN login flow
-      await supabase.auth.signOut();
-
+      if (!result?.access_token) throw new Error(isHi ? "लॉगिन नहीं हो सका।" : "Login could not be completed.");
+      setPortalToken("party", result.access_token);
+      if (result.user) window.localStorage.setItem("user_info", JSON.stringify(result.user));
+      const destination = nextPath.startsWith("/") && !nextPath.startsWith("//") ? nextPath : "/dashboard";
+      router.push(destination);
     } catch (err: any) {
-      setError(cleanError(err.message || 'Failed to update PIN.'));
+      setError(err?.message || (isHi ? "OTP सत्यापन विफल रहा।" : "OTP verification failed."));
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center font-sans p-4">
-      <div className="w-full max-w-[470px] min-h-[400px] bg-white rounded-[16px] p-[24px] sm:p-[36px] flex flex-col gap-[36px] shadow-2xl relative transition-all duration-300">
-        <div className="w-full h-[24px] flex justify-between items-center shrink-0">
-          <button
-            onClick={handleBack}
-            className="text-gray-700 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <button
-            onClick={() => router.push('/')}
-            className="text-gray-700 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center"
-          >
-            <X size={24} />
-          </button>
-        </div>
-
-        <div className="w-full flex flex-col gap-[32px] flex-1">
-          <div className="w-full flex flex-col items-center gap-[8px]">
-            <h1 className="w-full font-['Familjen_Grotesk'] font-semibold text-[28px] sm:text-[32px] leading-[38px] tracking-[-0.3px] text-center text-[#04330B]">
-              {mode === 'login' && 'Log In'}
-              {mode === 'otp_request' && 'Reset PIN'}
-              {mode === 'otp_verify' && 'Verify OTP'}
-              {mode === 'set_new_pin' && 'Set New PIN'}
-            </h1>
-            <p className="w-full text-center font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67]">
-              {mode === 'login' && 'Enter your phone number and PIN'}
-              {mode === 'otp_request' && 'Enter your phone number to receive OTP'}
-              {mode === 'otp_verify' && `Enter OTP sent to ${phone}`}
-              {mode === 'set_new_pin' && 'Create a new PIN for your account'}
-            </p>
-          </div>
-
-          <form
-            className="w-full flex flex-col gap-[32px] sm:gap-[40px]"
-            onSubmit={
-              mode === 'login' ? handleLogin :
-                mode === 'otp_request' ? handleSendOtp :
-                  mode === 'otp_verify' ? handleVerifyOtp :
-                    handleSetNewPin
-            }
-          >
-            <div className="w-full flex flex-col gap-[12px]">
-
-              {/* Phone Input */}
-              {(mode === 'login' || mode === 'otp_request') && (
-                <div className="flex flex-col">
-                  <FormFieldLabel required>Phone Number</FormFieldLabel>
-                  <input
-                    type="tel"
-                    placeholder="Phone Number"
-                    value={phone}
-                    onChange={(e) => {
-                      const next = sanitizePhoneInput(e.target.value);
-                      if (next.length === 1 && next.startsWith('0')) {
-                        setError('Phone number cannot start with 0');
-                        return;
-                      }
-                      setPhone(next);
-                      if (error) setError('');
-                    }}
-                    className="w-full h-[46px] rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
-                    inputMode="numeric"
-                    pattern="[1-9][0-9]{9}"
-                    maxLength={10}
-                    autoComplete="tel-national"
-                  />
-                </div>
-              )}
-
-              {/* PIN Input (Login Mode) */}
-              {mode === 'login' && (
-                <div className="flex flex-col">
-                  <FormFieldLabel required>PIN</FormFieldLabel>
-                  <div className="relative w-full h-[46px]">
-                    <input
-                      type={showPin ? "text" : "password"}
-                      placeholder="PIN"
-                      value={pin}
-                      onChange={(e) => setPin(e.target.value)}
-                      className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
-                      maxLength={6}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPin(!showPin)}
-                      className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
-                    >
-                      {showPin ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                  <div className="flex justify-end mt-2">
-                    <button
-                      type="button"
-                      onClick={() => setMode('otp_request')}
-                      className="text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] hover:underline"
-                    >
-                      Forgot PIN?
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* OTP Input */}
-              {mode === 'otp_verify' && (
-                <div className="flex flex-col">
-                  <FormFieldLabel required>OTP</FormFieldLabel>
-                  <div className="relative w-full h-[46px]">
-                    <input
-                      type={showOtp ? "text" : "password"}
-                      placeholder="Enter OTP"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowOtp(!showOtp)}
-                      className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
-                    >
-                      {showOtp ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                  <div className="flex justify-end mt-2">
-                    <button
-                      type="button"
-                      onClick={handleSendOtp}
-                      disabled={resendTimer > 0 || loading}
-                      className="text-[#0D5229] font-['Familjen_Grotesk'] font-semibold text-[14px] hover:underline disabled:opacity-40 disabled:text-gray-400"
-                    >
-                      {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Resend OTP'}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* New PIN Input */}
-              {mode === 'set_new_pin' && (
-                <>
-                  <div className="flex flex-col gap-4">
-                    <div>
-                      <FormFieldLabel required>New PIN</FormFieldLabel>
-                      <div className="relative w-full h-[46px]">
-                        <input
-                          type={showNewPin ? "text" : "password"}
-                          placeholder="New PIN (4-6 digits)"
-                          value={newPin}
-                          onChange={(e) => setNewPin(e.target.value)}
-                          className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
-                          maxLength={6}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowNewPin(!showNewPin)}
-                          className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[#587E67] hover:text-[#04330B] transition-colors"
-                        >
-                          {showNewPin ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div>
-                      <FormFieldLabel required>Confirm New PIN</FormFieldLabel>
-                      <div className="relative w-full h-[46px]">
-                        <input
-                          type={showNewPin ? "text" : "password"}
-                          placeholder="Confirm New PIN"
-                          value={confirmNewPin}
-                          onChange={(e) => setConfirmNewPin(e.target.value)}
-                          className="w-full h-full rounded-[8px] border border-[#E4F2EA] px-[16px] py-[12px] font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] placeholder-[#587E67] focus:outline-none focus:border-[#04330B] transition-colors bg-white"
-                          maxLength={6}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {error && (
-                <div className="mt-2 w-full p-3 rounded-lg bg-red-50 border border-red-200 flex items-start gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                  <AlertCircle className="w-5 h-5 text-[#EC4521] shrink-0 mt-0.5" />
-                  <p className="font-['Familjen_Grotesk'] font-medium text-[14px] leading-[20px] tracking-[-0.2px] text-[#C93514]">
-                    {error}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="mt-[2px] w-full h-[46px] rounded-[8px] bg-[#0D5229] disabled:bg-gray-400 flex items-center justify-center gap-[10px] hover:bg-[#0a4220] transition-colors shrink-0"
-            >
-              <span className="font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-white">
-                {loading ? 'Processing...' : (
-                  mode === 'login' ? 'Log In' :
-                    mode === 'otp_request' ? 'Send OTP' :
-                      mode === 'otp_verify' ? 'Verify' :
-                        'Set PIN'
-                )}
-              </span>
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
+  return <PortalLoginScreen variant="member" language={language} step={step} phone={phone} otp={otp} loading={loading} error={error} info={info} sendLabel={isHi ? "OTP भेजें" : "Send OTP"} sendingLabel={isHi ? "भेज रहे हैं…" : "Sending…"} verifyLabel={isHi ? "OTP सत्यापित करें और लॉगिन करें" : "Verify OTP & Login"} verifyingLabel={isHi ? "सत्यापित कर रहे हैं…" : "Verifying…"} onPhoneChange={(value) => setPhone(sanitize(value))} onOtpChange={(value) => setOtp(value.replace(/\D/g, "").slice(0, 6))} onSend={sendOtp} onVerify={verifyOtp} onChangeNumber={() => { setStep("phone"); setOtp(""); setError(""); setInfo(""); }} joinHref="/join" resendLabel={resendTimer > 0 ? (isHi ? `${resendTimer} सेकंड में OTP दोबारा भेजें` : `Resend OTP in ${resendTimer}s`) : (isHi ? "OTP दोबारा भेजें" : "Resend OTP")} onResend={() => sendOtp()} resendDisabled={resendTimer > 0} />;
 }
 
-export default function LoginScreen() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-white" />}>
-      <LoginScreenInner />
-    </Suspense>
-  );
+export default function LoginPage() {
+  return <Suspense fallback={null}><PartyOtpLogin /></Suspense>;
 }

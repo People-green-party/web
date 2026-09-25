@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { supabase } from '../../../lib/supabaseClient';
 import { useLanguage } from '../../../components/LanguageContext';
-import { Phone, AlertCircle, CheckCircle, ArrowLeft } from 'lucide-react';
-import { Navbar } from '../../../components/Navbar';
 import { fetchApi } from '../../../lib/api';
 import { setPortalToken } from '../../../lib/portalAuth';
+import { PortalLoginScreen } from '../../../components/PortalLoginScreen';
+import { completeOtpLogin } from '../../../lib/completeOtpLogin';
 
 // --- Translations ---
 const translations = {
@@ -63,7 +63,6 @@ const UnionLoginPageContent = () => {
   const { language } = useLanguage();
   const t = translations[language as keyof typeof translations] || translations.hi;
   const router = useRouter();
-  const searchParams = useSearchParams();
   
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
@@ -135,6 +134,7 @@ const UnionLoginPageContent = () => {
       // Send OTP via Supabase
       const { error: otpError } = await supabase.auth.signInWithOtp({
         phone: phoneNumber,
+        options: { shouldCreateUser: true },
       });
 
       if (otpError) {
@@ -201,7 +201,7 @@ const UnionLoginPageContent = () => {
         return;
       }
 
-      const { error: verifyError } = await supabase.auth.verifyOtp({
+      const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
         phone: phoneNumber,
         token: otp,
         type: 'sms',
@@ -211,6 +211,11 @@ const UnionLoginPageContent = () => {
         throw verifyError;
       }
 
+      const accessToken = verifyData.session?.access_token;
+      if (!accessToken) throw new Error('OTP session was not created');
+      const loginRes = await completeOtpLogin(phoneNumber, accessToken);
+      if (!loginRes?.access_token) throw new Error('Login could not be completed');
+      setPortalToken('union', loginRes.access_token);
       router.push('/union/dashboard');
     } catch (err: any) {
       console.error('Verify OTP error:', err);
@@ -220,191 +225,7 @@ const UnionLoginPageContent = () => {
     }
   };
 
-  const handleBack = () => {
-    if (step === 'otp') {
-      setStep('phone');
-      setOtp('');
-      setError('');
-    } else {
-      router.push('/');
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-[#F0FDF4] text-gray-800 flex flex-col items-center font-['Familjen_Grotesk'] pt-[70px] lg:pt-[92px]">
-      <Navbar />
-      
-      <main className="w-full max-w-[600px] px-4 lg:px-8 mt-10 mb-12">
-        {/* Back Button */}
-        <button
-          onClick={handleBack}
-          className="flex items-center gap-2 text-[#04330B] font-semibold mb-6 hover:opacity-70"
-        >
-          <ArrowLeft size={20} />
-          <span>{t.loginPage.back}</span>
-        </button>
-
-        {/* Main Card */}
-        <div className="bg-white rounded-[28px] border border-[#BBF7D0] shadow-[0px_20px_60px_rgba(0,0,0,0.08)] p-8 lg:p-12">
-          
-          {step === 'phone' ? (
-            <>
-              {/* Phone Step */}
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#04330B] to-[#0B5A2A] flex items-center justify-center mx-auto mb-4">
-                  <Phone className="text-white" size={28} />
-                </div>
-                <h1 className="text-2xl font-bold text-[#04330B] mb-2">{t.loginPage.title}</h1>
-                <p className="text-gray-600">{t.loginPage.subtitle}</p>
-              </div>
-
-              {/* Phone Input */}
-              <div className="space-y-4">
-                <label className="block text-sm font-semibold text-[#04330B]">
-                  {t.loginPage.mobile}
-                  <span className="text-[#D93025] font-bold ml-0.5" aria-hidden="true">*</span>
-                </label>
-                <div className="grid grid-cols-[70px_1fr] gap-3">
-                  <div className="h-[56px] rounded-[12px] border border-[#BBF7D0] px-3 flex items-center justify-center font-bold text-[#04330B] bg-white text-lg">
-                    +91
-                  </div>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => {
-                      setPhone(sanitizePhoneInput(e.target.value));
-                      setError('');
-                    }}
-                    inputMode="numeric"
-                    className="h-[56px] rounded-[12px] border border-[#BBF7D0] px-4 font-bold text-[#04330B] outline-none text-lg"
-                    placeholder={t.loginPage.mobile}
-                    autoComplete="off"
-                    autoFocus
-                  />
-                </div>
-
-                {/* Error Message */}
-                {error && (
-                  <div className="flex items-center gap-2 text-red-500 text-sm font-semibold bg-red-50 p-3 rounded-xl">
-                    <AlertCircle size={16} />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                {/* Send OTP Button */}
-                <button
-                  onClick={handleSendOtp}
-                  disabled={loading || phone.length < 10}
-                  className="w-full h-[56px] rounded-[12px] bg-gradient-to-r from-[#04330B] to-[#0B5A2A] text-white font-bold text-lg disabled:opacity-60 flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                      <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
-                      {t.loginPage.sending}
-                    </>
-                  ) : (
-                    t.loginPage.sendOtp
-                  )}
-                </button>
-
-                {/* Join Now Link */}
-                <div className="text-center pt-4 border-t border-gray-100">
-                  <p className="text-gray-600 mb-2">{t.loginPage.notRegistered}</p>
-                  <button
-                    onClick={() => router.push('/union/join')}
-                    className="text-[#04330B] font-bold hover:underline"
-                  >
-                    {t.loginPage.joinNow} →
-                  </button>
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              {/* OTP Step */}
-              <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#04330B] to-[#0B5A2A] flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="text-white" size={28} />
-                </div>
-                <h1 className="text-2xl font-bold text-[#04330B] mb-2">{t.loginPage.otpTitle}</h1>
-                <p className="text-gray-600">
-                  {t.loginPage.otpSubtitle} <span className="font-bold">+91{sanitizePhoneInput(phone)}</span>
-                </p>
-                {otpSimulated && (
-                  <p className="text-sm text-amber-600 mt-2 font-semibold">Dev mode: Use OTP 123456</p>
-                )}
-              </div>
-
-              {/* OTP Input */}
-              <div className="space-y-4">
-                <label className="block text-sm font-semibold text-[#04330B]">
-                  OTP
-                  <span className="text-[#D93025] font-bold ml-0.5" aria-hidden="true">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={otp}
-                  onChange={(e) => {
-                    setOtp(e.target.value.replace(/\D/g, '').slice(0, 6));
-                    setError('');
-                  }}
-                  inputMode="numeric"
-                  className="w-full h-[56px] rounded-[12px] border border-[#BBF7D0] px-4 font-bold text-[#04330B] outline-none text-center text-2xl tracking-[0.5em]"
-                  placeholder="000000"
-                  autoComplete="one-time-code"
-                  autoFocus
-                />
-
-                {/* Error Message */}
-                {error && (
-                  <div className="flex items-center gap-2 text-red-500 text-sm font-semibold bg-red-50 p-3 rounded-xl">
-                    <AlertCircle size={16} />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                {/* Verify Button */}
-                <button
-                  onClick={handleVerifyOtp}
-                  disabled={loading || otp.length !== 6}
-                  className="w-full h-[56px] rounded-[12px] bg-gradient-to-r from-[#04330B] to-[#0B5A2A] text-white font-bold text-lg disabled:opacity-60 flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                      <span className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
-                      {t.loginPage.verifying}
-                    </>
-                  ) : (
-                    t.loginPage.verify
-                  )}
-                </button>
-
-                {/* Resend OTP */}
-                <button
-                  onClick={handleSendOtp}
-                  disabled={resendTimer > 0 || loading}
-                  className="w-full h-[48px] rounded-[12px] border border-[#04330B] text-[#04330B] font-semibold disabled:opacity-40 disabled:border-gray-300 disabled:text-gray-400"
-                >
-                  {resendTimer > 0 
-                    ? t.loginPage.resendIn.replace('{seconds}', String(resendTimer))
-                    : t.loginPage.resend
-                  }
-                </button>
-
-                {/* Change Number */}
-                <button
-                  onClick={() => setStep('phone')}
-                  className="w-full text-center text-[#04330B] font-semibold hover:underline"
-                >
-                  ← {t.loginPage.back}
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </main>
-    </div>
-  );
+  return <PortalLoginScreen variant="union" language={language} step={step} phone={phone} otp={otp} loading={loading} error={error} info={otpSimulated ? "Dev mode: Use OTP 123456" : undefined} sendLabel={t.loginPage.sendOtp} sendingLabel={t.loginPage.sending} verifyLabel={t.loginPage.verify} verifyingLabel={t.loginPage.verifying} onPhoneChange={(value) => { setPhone(sanitizePhoneInput(value)); setError(''); }} onOtpChange={(value) => { setOtp(value.replace(/\D/g, '').slice(0, 6)); setError(''); }} onSend={(event) => { event.preventDefault(); void handleSendOtp(); }} onVerify={(event) => { event.preventDefault(); void handleVerifyOtp(); }} onChangeNumber={() => { setStep('phone'); setOtp(''); setError(''); }} joinHref="/union/join" resendLabel={resendTimer > 0 ? t.loginPage.resendIn.replace('{seconds}', String(resendTimer)) : t.loginPage.resend} onResend={() => { void handleSendOtp(); }} resendDisabled={resendTimer > 0} />;
 };
 
 export default function UnionLoginPage() {

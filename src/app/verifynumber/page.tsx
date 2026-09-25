@@ -12,11 +12,11 @@ function VerifyOtpContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
-    const [phoneNumber, setPhoneNumber] = useState('9876512345');
-    const [isEditing, setIsEditing] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [isEditing, setIsEditing] = useState(true);
     const [tempNumber, setTempNumber] = useState('');
     const [isError, setIsError] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(60);
+    const [timeLeft, setTimeLeft] = useState(0);
     const [isSuccess, setIsSuccess] = useState(false);
     const [showSignUp, setShowSignUp] = useState(false);
 
@@ -25,6 +25,14 @@ function VerifyOtpContent() {
     useEffect(() => {
         if (searchParams.get('mode') === 'signup') {
             setShowSignUp(true);
+            return;
+        }
+
+        const requestedPhone = (searchParams.get('phone') || '').replace(/\D/g, '').slice(-10);
+        if (requestedPhone.length === 10) {
+            setPhoneNumber(requestedPhone);
+            setTempNumber(requestedPhone);
+            setIsEditing(false);
         }
     }, [searchParams]);
 
@@ -41,26 +49,30 @@ function VerifyOtpContent() {
     };
 
     const sendOtp = async (number: string) => {
-        const formattedNumber = `+91${number}`;
+        const cleanNumber = number.replace(/\D/g, '').slice(-10);
+        if (cleanNumber.length !== 10) {
+            alert('Please enter a valid 10-digit number');
+            return false;
+        }
+
+        const formattedNumber = `+91${cleanNumber}`;
         try {
             const { error } = await supabase.auth.signInWithOtp({
                 phone: formattedNumber,
+                options: { shouldCreateUser: true },
             });
 
             if (error) {
-                console.warn('Supabase Auth Error (falling back to simulation):', error.message);
                 throw error;
             }
 
-            console.log(`OTP sent to ${formattedNumber}`);
             alert('OTP sent successfully!');
             return true;
         } catch (err: any) {
-            console.error('OTP Send Failed.', err.message || err);
             const { isAuthDevMode } = await import('../../lib/authDevMode');
             if (isAuthDevMode()) {
                 alert('Dev mode: Simulating OTP sent. Use OTP: 123456');
-                return false;
+                return true;
             }
             alert(err.message || 'Failed to send OTP. Please try again later.');
             return false;
@@ -73,7 +85,8 @@ function VerifyOtpContent() {
             return;
         }
 
-        await sendOtp(tempNumber);
+        const sent = await sendOtp(tempNumber);
+        if (!sent) return;
 
         // Update State
         setPhoneNumber(tempNumber);
@@ -84,7 +97,8 @@ function VerifyOtpContent() {
     };
 
     const handleResend = async () => {
-        await sendOtp(phoneNumber);
+        const sent = await sendOtp(phoneNumber);
+        if (!sent) return;
         setOtp(['', '', '', '', '', '']);
         setIsError(false);
         setTimeLeft(60);
@@ -265,7 +279,7 @@ function VerifyOtpContent() {
                         Didn’t Receive OTP?{' '}
                         <button
                             onClick={handleResend}
-                            disabled={timeLeft > 0}
+                            disabled={timeLeft > 0 || phoneNumber.length !== 10}
                             className={`hover:underline ${timeLeft > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-[#0F392B]'}`}
                         >
                             Resend {timeLeft > 0 && `in 00:${timeLeft < 10 ? `0${timeLeft}` : timeLeft}`}

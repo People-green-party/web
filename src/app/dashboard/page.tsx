@@ -19,6 +19,11 @@ import { RequireAuth } from '../components/RequireAuth';
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { getAuthHeader } from '../../lib/supabaseClient';
+import {
+    DonationReceipt,
+    RECEIPT_STORAGE_KEY,
+    downloadDonationReceipt,
+} from '../../lib/donationReceipt';
 
 // --- Types ---
 interface DashboardUserSummary {
@@ -357,6 +362,7 @@ export default function DemoDashboard() {
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
     const [isBecomingLeader, setIsBecomingLeader] = useState(false);
+    const [latestDonationReceipt, setLatestDonationReceipt] = useState<DonationReceipt | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const appointmentRef = useRef<HTMLDivElement>(null);
 
@@ -434,6 +440,43 @@ export default function DemoDashboard() {
 
         return () => {
             cancelled = true;
+        };
+    }, []);
+
+    useEffect(() => {
+        let active = true;
+        try {
+            const saved = JSON.parse(window.localStorage.getItem(RECEIPT_STORAGE_KEY) || 'null') as {
+                donationId?: number;
+                receiptToken?: string;
+            } | null;
+            if (!saved?.donationId || !saved.receiptToken) return;
+
+            fetchApi(`donations/${saved.donationId}/receipt`, {
+                method: 'POST',
+                body: JSON.stringify({ token: saved.receiptToken }),
+                cache: 'no-store',
+            })
+                .then((result) => {
+                    const candidate = result as Partial<DonationReceipt>;
+                    if (
+                        active &&
+                        Number.isSafeInteger(candidate.donationId) &&
+                        Number.isFinite(Number(candidate.amount)) &&
+                        candidate.paymentId &&
+                        candidate.orderId
+                    ) {
+                        setLatestDonationReceipt(candidate as DonationReceipt);
+                    }
+                })
+                .catch(() => {
+                    if (active) setLatestDonationReceipt(null);
+                });
+        } catch {
+            setLatestDonationReceipt(null);
+        }
+        return () => {
+            active = false;
         };
     }, []);
 
@@ -563,6 +606,31 @@ export default function DemoDashboard() {
                             </div>
                         </div>
                     </section>
+
+                    {latestDonationReceipt ? (
+                        <section className="mb-8 flex flex-col gap-5 rounded-[2rem] border border-[#04330B]/10 bg-[#F5FBF7] p-6 shadow-[0_12px_35px_rgba(4,51,11,0.06)] sm:flex-row sm:items-center sm:justify-between sm:p-8">
+                            <div className="min-w-0">
+                                <p className="text-xs font-black uppercase tracking-[0.16em] text-[#587E67]">
+                                    {language === 'hi' ? 'नवीनतम योगदान' : 'Latest contribution'}
+                                </p>
+                                <h2 className="mt-2 text-2xl font-black text-[#04330B]">
+                                    {language === 'hi' ? 'आपकी भुगतान रसीद' : 'Your payment receipt'}
+                                </h2>
+                                <p className="mt-2 text-sm font-medium leading-6 text-[#587E67]">
+                                    {language === 'hi' ? 'रसीद संख्या' : 'Receipt number'}: PGP-{latestDonationReceipt.donationId}
+                                    {' · '}INR {Number(latestDonationReceipt.amount).toLocaleString('en-IN')}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => downloadDonationReceipt(latestDonationReceipt)}
+                                className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#04330B] px-6 font-bold text-white transition-all hover:bg-[#064e11]"
+                            >
+                                <Download size={19} aria-hidden="true" />
+                                {language === 'hi' ? 'रसीद PDF डाउनलोड करें' : 'Download Receipt PDF'}
+                            </button>
+                        </section>
+                    ) : null}
 
                     {/* Cards Grid */}
                     {isUnionWorker ? (
