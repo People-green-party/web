@@ -250,8 +250,8 @@ export const translations = {
             additional: "Additional Links",
             contact: "Contact Us",
             address: "Ham Badlenge Bhawan, 02 Mission Compound, Ajmer Puliya, Jaipur, Rajasthan",
-            audit: "Audit Report and Information About Donation",
-            eci: "ECI Disclosure",
+            audit: "Audit Reports and Information About Party Donations",
+            eci: "Election Commission of India (ECI) Disclosures",
             criminal: "Declaration about criminal antecedents of candidates set up by the party"
         },
         heroTagline: "Now the people's front will defeat the dishonest",
@@ -548,8 +548,8 @@ export const translations = {
             additional: "अतिरिक्त लिंक",
             contact: "संपर्क करें",
             address: "हम बदलेंगे भवन, 02 मिशन कंपाउंड, अजमेर पुलिया, जयपुर, राजस्थान",
-            audit: "ऑडिट रिपोर्ट और दान के बारे में जानकारी",
-            eci: "ECI प्रकटीकरण",
+            audit: "ऑडिट रिपोर्ट और पार्टी को दिए गए दान की जानकारी",
+            eci: "भारत निर्वाचन आयोग (ECI) प्रकटीकरण",
             criminal: "उम्मीदवारों के आपराधिक पूर्ववृत्त के बारे में घोषणा"
         },
         heroTagline: "अब जनता का मोर्चा पराजित करेगा बेईमानों को",

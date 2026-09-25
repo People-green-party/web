@@ -194,6 +194,7 @@ export const VerifyMobileModal = ({ onVerify, onCancel, initialPhone }: VerifyMo
         try {
             const { error } = await supabase.auth.signInWithOtp({
                 phone: formattedNumber,
+                options: { shouldCreateUser: true },
             });
 
             if (error) {

@@ -52,7 +52,7 @@ const translations = {
     cta: {
       titlePre: "The nation needs",
       titleHighlight: "Zinda Youth who act",
-      subtitle: "Your skills. Your voice. Your time. No shortcuts. No politics. Just purpose & impact.",
+      subtitle: "Your skills. Y oice. Your time. No shortcuts. No politics. Just purpose & impact.",
       btnJoin: "Join Zinda Youth",
       btnLogin: "Login",
     },

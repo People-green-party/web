@@ -1,5 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const jsonHeaders = { "Content-Type": "application/json" };
+
+function jsonResponse(body: Record<string, unknown>, status: number) {
+  return new Response(JSON.stringify(body), { status, headers: jsonHeaders });
+}
+
 serve(async (req) => {
   try {
     // 1. Parse the payload from Supabase Auth
@@ -10,34 +16,45 @@ serve(async (req) => {
     const otp = payload.sms?.otp || payload.otp || '';
 
     if (!phone || !otp) {
-      return new Response(JSON.stringify({ error: "Missing phone or OTP" }), { status: 400 });
+      return jsonResponse({ error: "Missing phone or OTP" }, 400);
     }
 
     // 2. Format the message EXACTLY as approved in your DLT portal
     const message = `${otp} is your verification code for People's Green Party.`;
 
     // 3. Get the API password from secure environment variables
-    const password = Deno.env.get("INDIAIT_PASSWORD");
+    const smsUser = Deno.env.get("SMS_USER") || "pgpparty";
+    const password = Deno.env.get("SMS_PASS") || Deno.env.get("INDIAIT_PASSWORD");
     if (!password) {
-      console.error("Missing INDIAIT_PASSWORD — set it in Supabase Edge Function secrets");
-      return new Response(
-        JSON.stringify({ error: "SMS provider not configured (missing INDIAIT_PASSWORD)" }),
-        { status: 500, headers: { "Content-Type": "application/json" } },
-      );
+      console.error("SMS provider credentials are not configured");
+      return jsonResponse({ error: "SMS provider is not configured" }, 500);
     }
 
-    // Normalize phone for IndiaIT (digits only; keep country code if present)
-    const mobiles = String(phone).replace(/\D/g, "");
-    if (mobiles.length < 10) {
-      return new Response(JSON.stringify({ error: "Invalid phone" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+    // IndiaIT's HTTP API requires the national 10-digit mobile number.
+    const phoneDigits = String(phone).replace(/\D/g, "");
+    const mobiles = phoneDigits.slice(-10);
+    if (mobiles.length !== 10) {
+      return jsonResponse({ error: "Invalid phone" }, 400);
+    }
+
+    // Keep the URL configurable so IndiaIT can provide a replacement endpoint
+    // without requiring another source-code change.
+    const gatewayUrl = Deno.env.get("INDIAIT_SMS_URL") ||
+      "http://indiaitinfo.com/sendsms.jsp";
+    let url: URL;
+    try {
+      url = new URL(gatewayUrl);
+    } catch {
+      console.error("SMS gateway URL is invalid");
+      return jsonResponse({ error: "SMS provider is not configured" }, 500);
+    }
+    if (!/^https?:$/.test(url.protocol)) {
+      console.error("SMS gateway URL uses an unsupported protocol");
+      return jsonResponse({ error: "SMS provider is not configured" }, 500);
     }
 
     // 4. Construct the URL using safe URL parameters
-    const url = new URL("http://sms.indiaitinfotech.com/sendsms.jsp");
-    url.searchParams.append("user", "pgpparty");
+    url.searchParams.append("user", smsUser);
     url.searchParams.append("password", password);
     url.searchParams.append("senderid", "IPGPTY");
     url.searchParams.append("mobiles", mobiles);
@@ -49,41 +66,37 @@ serve(async (req) => {
     // 5. Send the Request to India IT Infotech
     const response = await fetch(url.toString(), {
       method: "GET",
+      redirect: "follow",
+      signal: AbortSignal.timeout(15_000),
     });
 
     const resultText = await response.text();
 
     if (!response.ok) {
-      console.error("SMS Gateway Error HTTP Status:", response.status, resultText);
-      return new Response(
-        JSON.stringify({ error: `Gateway returned status ${response.status}`, detail: resultText.slice(0, 200) }),
-        { status: 502, headers: { "Content-Type": "application/json" } },
+      console.error("SMS gateway HTTP error:", response.status);
+      return jsonResponse({ error: "SMS gateway is unavailable" }, 502);
+    }
+
+    // A parked/redirect page can return HTTP 200 without submitting an SMS.
+    // Treat HTML and known provider errors as failures instead of reporting a false success.
+    const isHtml = /<!doctype\s+html|<html[\s>]|window\.location/i.test(resultText);
+    const isProviderError = /<status>\s*error\s*<\/status>|InvalidUseridPassword|\berror\b/i.test(resultText);
+    const isAccepted = /\bsent\b|\bsuccess\b|<status>\s*(?:ok|success)\s*<\/status>/i.test(resultText);
+    if (isHtml || isProviderError || !isAccepted) {
+      console.error("SMS gateway rejected or did not accept the request");
+      return jsonResponse(
+        { error: "SMS could not be sent. Please contact support or try again later." },
+        502,
       );
     }
 
-    // IndiaIT often returns XML with <status>error</status> even on HTTP 200
-    if (/<status>\s*error\s*<\/status>/i.test(resultText) || /InvalidUseridPassword/i.test(resultText)) {
-      console.error("SMS Gateway business error:", resultText);
-      return new Response(
-        JSON.stringify({ error: "SMS gateway rejected the request", detail: resultText.slice(0, 300) }),
-        { status: 502, headers: { "Content-Type": "application/json" } },
-      );
-    }
-
-    // IndiaITInfotech returns CSV-like string on success (e.g., "sent,000,success...")
-    console.log(`Successfully sent OTP to ${mobiles}. Gateway response:`, resultText);
+    console.log("SMS gateway accepted the OTP request");
 
     // 6. Tell Supabase the SMS was sent successfully
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { "Content-Type": "application/json" },
-      status: 200,
-    });
+    return jsonResponse({ success: true }, 200);
 
   } catch (error) {
-    console.error("Edge Function Exception:", error.message);
-    return new Response(JSON.stringify({ error: error.message }), {
-      headers: { "Content-Type": "application/json" },
-      status: 500,
-    });
+    console.error("SMS hook failed:", error instanceof Error ? error.name : "unknown error");
+    return jsonResponse({ error: "SMS delivery failed" }, 502);
   }
 });

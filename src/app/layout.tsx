@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Familjen_Grotesk } from "next/font/google";
+import { Caveat, Familjen_Grotesk } from "next/font/google";
 import "./globals.css";
 
 import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
@@ -13,9 +13,16 @@ const familjenGrotesk = Familjen_Grotesk({
   preload: true,
 });
 
+const caveat = Caveat({
+  variable: "--font-handwritten",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "PGP",
-  description: "Peoples Green Party",
+  title: "Indian Peoples Green Party",
+  description: "Official website of Indian Peoples Green Party.",
   icons: {
     icon: "/icon.svg",
   },
@@ -37,7 +44,7 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="format-detection" content="telephone=no" />
       </head>
-      <body className={`${familjenGrotesk.variable} antialiased font-sans`}>
+      <body className={`${familjenGrotesk.variable} ${caveat.variable} antialiased font-sans`}>
         <div className="min-h-screen min-w-0 flex flex-col overflow-x-clip">
           <main className="flex-1 min-w-0">
             <LanguageProvider>
