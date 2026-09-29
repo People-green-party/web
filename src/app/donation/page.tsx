@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useLanguage } from "../../components/LanguageContext";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
-import { fetchApi } from "../../lib/api";
+import { ApiRequestError, fetchApi } from "../../lib/api";
 import { getAuthHeader } from "../../lib/supabaseClient";
 import { DonationReceipt, RECEIPT_STORAGE_KEY } from "../../lib/donationReceipt";
 import { FormFieldLabel, RequiredMark } from "../../components/FormFieldLabel";
@@ -465,26 +465,50 @@ const DonationPageContent = () => {
     }
     setSubmitting(true);
     try {
-      const order = await fetchApi("donations/razorpay/order", {
-        method: "POST",
-        body: JSON.stringify({
-          fullName: form.fullName.trim(),
-          phone: phoneDigits,
-          pan: panRequired ? normalizedPan : undefined,
-          amount,
-          country: "India",
-          address: form.address.trim(),
-          state: form.state.trim(),
-          city: form.city.trim(),
-          pincode: form.pincode,
-        }),
-      }) as {
+      const legacyDonationPayload = {
+        fullName: form.fullName.trim(),
+        phone: phoneDigits,
+        pan: panRequired ? normalizedPan : undefined,
+        amount,
+        country: "India",
+        address: form.address.trim(),
+        state: form.state.trim(),
+        city: form.city.trim(),
+        pincode: form.pincode,
+      };
+      const donationPayload = {
+        ...legacyDonationPayload,
+        isIndianCitizen: true,
+        declarationAccepted: isDeclared,
+        policiesAccepted: acceptedPolicies,
+        policyVersion: "2026-09-29",
+      };
+      const createOrder = (
+        payload: typeof donationPayload | typeof legacyDonationPayload,
+        suppressErrorLog = false,
+      ) =>
+        fetchApi("donations/razorpay/order", {
+          method: "POST",
+          body: JSON.stringify(payload),
+          suppressErrorLog,
+        }) as Promise<{
         donationId: number;
         orderId: string;
         keyId: string;
         amount: number;
         currency: string;
-      };
+      }>;
+
+      let order;
+      try {
+        order = await createOrder(donationPayload, true);
+      } catch (error) {
+        // During a rolling deploy, the previous API rejects the newly added
+        // consent fields as non-whitelisted. Validation runs before a donation
+        // is created, so this one-time compatibility retry cannot duplicate it.
+        if (!(error instanceof ApiRequestError) || error.status !== 400) throw error;
+        order = await createOrder(legacyDonationPayload);
+      }
       await loadRazorpayCheckout();
       if (!window.Razorpay) throw new Error("Unable to load secure checkout.");
 

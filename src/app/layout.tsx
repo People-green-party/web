@@ -21,10 +21,37 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Indian Peoples Green Party",
-  description: "Official website of Indian Peoples Green Party.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://peoplesgreen.org"
+  ),
+  title: {
+    default: "Indian Peoples Green Party",
+    template: "%s | Indian Peoples Green Party",
+  },
+  description:
+    "Official website of the Indian Peoples Green Party: its vision, public activities, membership, programmes and voluntary contributions.",
+  applicationName: "Indian Peoples Green Party",
+  manifest: "/manifest.json",
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Indian Peoples Green Party",
+    title: "Indian Peoples Green Party",
+    description:
+      "Official website of the Indian Peoples Green Party: its vision, public activities, membership and programmes.",
+    images: [{ url: "/PGPlogo.svg", alt: "Indian Peoples Green Party logo" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "Indian Peoples Green Party",
+    description:
+      "Official website of the Indian Peoples Green Party: its vision, public activities, membership and programmes.",
+    images: ["/PGPlogo.svg"],
+  },
   icons: {
     icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/PGPlogo.svg",
   },
 };
 
@@ -37,7 +64,7 @@ export default function RootLayout({
     <html lang="hi" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <link rel="apple-touch-icon" href="/icon512_rounded.png" />
+        <link rel="apple-touch-icon" href="/PGPlogo.svg" />
         <meta name="theme-color" content="#16a34a" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

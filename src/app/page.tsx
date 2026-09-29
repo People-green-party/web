@@ -426,7 +426,9 @@ const LandingPageContent = () => {
                     </div>
                     {/* Optional: Explore Indicator */}
                     <div className="h-0 overflow-hidden group-hover:h-[18px] transition-all duration-300 opacity-0 group-hover:opacity-100 flex items-center justify-center mt-0 group-hover:mt-1 shrink-0">
-                      <span className="text-[10px] font-bold text-[#E85C2F] uppercase tracking-wider">Explore</span>
+                      <span className="text-[10px] font-bold text-[#E85C2F] uppercase tracking-wider">
+                        {language === 'hi' ? 'और जानें' : 'Explore'}
+                      </span>
                     </div>
                   </div>
                 </Link>
@@ -794,14 +796,11 @@ const LandingPageContent = () => {
                   <div className="absolute inset-0 p-6 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
                     <div className="flex justify-between items-end">
                       <div>
-                        <p className="text-[#EAF7EE] text-xs font-bold uppercase tracking-wider mb-1">PGP Event</p>
+                        <p className="text-[#EAF7EE] text-xs font-bold uppercase tracking-wider mb-1">
+                          {language === 'hi' ? 'पीजीपी कार्यक्रम' : 'PGP Event'}
+                        </p>
                         <h4 className="text-white font-['Familjen_Grotesk'] font-semibold text-lg leading-tight">
-                          {index === 0 ? (language === 'hi' ? 'इवेंट हाइलाइट 1' : 'Event Highlight 1')
-                            : index === 1 ? (language === 'hi' ? 'इवेंट हाइलाइट 2' : 'Event Highlight 2')
-                              : index === 2 ? (language === 'hi' ? 'इवेंट हाइलाइट 3' : 'Event Highlight 3')
-                                : index === 3 ? (language === 'hi' ? 'इवेंट हाइलाइट 4' : 'Event Highlight 4')
-                                  : index === 4 ? (language === 'hi' ? 'इवेंट हाइलाइट 5' : 'Event Highlight 5')
-                                    : index === 5 ? (language === 'hi' ? 'इवेंट हाइलाइट 6' : 'Event Highlight 6')
+                          {index <= 5 ? `${language === 'hi' ? 'पार्टी कार्यक्रम' : 'Party Event'} ${index + 1}`
                                       : index === 6 ? (language === 'hi' ? 'भ्रष्टाचार के खिलाफ प्रदर्शन' : 'Protest Against Corruption')
                                         : index === 7 ? (language === 'hi' ? 'सम्मान समारोह' : 'Trophy Ceremony')
                                           : index === 8 ? (language === 'hi' ? 'प्रेस वार्ता' : 'Press Conference')

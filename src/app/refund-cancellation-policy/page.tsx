@@ -4,7 +4,7 @@ import { PolicyPage, PolicySection, policyListClass } from "../../components/Pol
 import { SITE_DETAILS } from "../../lib/siteDetails";
 
 export const metadata: Metadata = {
-  title: "Refund & Cancellation Policy | Indian Peoples Green Party",
+  title: "Refund & Cancellation Policy",
   description: "How Indian Peoples Green Party reviews duplicate, mistaken, failed or disputed contribution transactions.",
 };
 

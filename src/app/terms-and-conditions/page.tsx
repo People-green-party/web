@@ -4,7 +4,7 @@ import { PolicyPage, PolicySection, policyListClass } from "../../components/Pol
 import { SITE_DETAILS } from "../../lib/siteDetails";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | Indian Peoples Green Party",
+  title: "Terms & Conditions",
   description: "Terms governing use of the Indian Peoples Green Party website and voluntary contribution process.",
 };
 
@@ -17,6 +17,10 @@ export default function TermsPage() {
     >
       <PolicySection title={<L en="Website use" hi="वेबसाइट का उपयोग" />}>
         <L en={<p>Use this website lawfully and do not attempt to disrupt it, impersonate another person, submit fraudulent information or interfere with a payment or verification process. Website material is provided for public information and may be corrected or updated when necessary.</p>} hi={<p>इस वेबसाइट का उपयोग वैधानिक रूप से करें। इसे बाधित करने, किसी अन्य व्यक्ति का रूप धारण करने, झूठी जानकारी देने या भुगतान अथवा सत्यापन प्रक्रिया में हस्तक्षेप करने का प्रयास न करें। वेबसाइट की सामग्री सार्वजनिक जानकारी के लिए दी गई है और आवश्यकता होने पर सुधारी या अपडेट की जा सकती है।</p>} />
+      </PolicySection>
+
+      <PolicySection title={<L en="Accounts, applications and programmes" hi="अकाउंट, आवेदन और कार्यक्रम" />}>
+        <L en={<ul className={policyListClass}><li>Users must provide accurate information and use only a mobile number or account they are authorised to use.</li><li>Membership, union, youth and internship applications may be reviewed, corrected, accepted or declined under the applicable programme criteria.</li><li>An application, login or portal status does not by itself promise selection, employment, payment, a political position or any other benefit.</li><li>Users must keep one-time passwords and account access private and notify us if misuse is suspected.</li></ul>} hi={<ul className={policyListClass}><li>उपयोगकर्ता को सही जानकारी देनी होगी और केवल वही मोबाइल नंबर या अकाउंट उपयोग करना होगा जिसके उपयोग के लिए वह अधिकृत है।</li><li>सदस्यता, यूनियन, युवा और इंटर्नशिप आवेदनों की संबंधित कार्यक्रम मानदंडों के अनुसार समीक्षा, सुधार, स्वीकृति या अस्वीकृति की जा सकती है।</li><li>आवेदन, लॉगिन या पोर्टल स्थिति अपने आप चयन, रोजगार, भुगतान, राजनीतिक पद या किसी अन्य लाभ का वादा नहीं करती।</li><li>उपयोगकर्ता वन-टाइम पासवर्ड और अकाउंट एक्सेस गोपनीय रखें तथा दुरुपयोग का संदेह होने पर हमें सूचित करें।</li></ul>} />
       </PolicySection>
 
       <PolicySection title={<L en="Voluntary contributions" hi="स्वैच्छिक योगदान" />}>
