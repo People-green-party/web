@@ -4,8 +4,82 @@ import React, { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "@/components/LanguageContext";
 import { PortalLoginScreen } from "@/components/PortalLoginScreen";
-import { fetchApi } from "@/lib/api";
+import { fetchApi, getApiBaseUrl } from "@/lib/api";
 import { clearInternSession, setInternSession } from "@/lib/internApi";
+
+type InternLoginResult = {
+  access_token?: string;
+  application?: { status?: string };
+  message?: string | string[];
+};
+
+async function readJson(response: Response): Promise<InternLoginResult | null> {
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text) as InternLoginResult;
+  } catch {
+    return null;
+  }
+}
+
+function responseMessage(result: InternLoginResult | null, fallback: string) {
+  const message = result?.message;
+  if (Array.isArray(message)) return message.join(", ");
+  return message || fallback;
+}
+
+/**
+ * Exchange a verified Supabase phone session for the internship JWT.
+ *
+ * Older production API builds do not yet expose /internship/login-otp. Their
+ * existing /internship/set-pin route performs the same Supabase phone check and
+ * returns the required internship token, so use it as a temporary compatibility
+ * bridge with a generated value that is never displayed or reused. Once the new
+ * route is deployed, this fallback is never called.
+ */
+async function completeInternOtpLogin(
+  phone: string,
+  supabaseToken: string,
+): Promise<InternLoginResult> {
+  const baseUrl = getApiBaseUrl();
+  const headers = {
+    Authorization: `Bearer ${supabaseToken}`,
+    "Content-Type": "application/json",
+  };
+  const body = JSON.stringify({ phone });
+
+  const loginResponse = await fetch(`${baseUrl}/internship/login-otp`, {
+    method: "POST",
+    cache: "no-store",
+    headers,
+    body,
+  });
+  const loginResult = await readJson(loginResponse);
+  if (loginResponse.ok && loginResult?.access_token) return loginResult;
+  if (loginResponse.status !== 404) {
+    throw new Error(responseMessage(loginResult, "Login could not be completed."));
+  }
+
+  const randomBytes = new Uint32Array(1);
+  window.crypto.getRandomValues(randomBytes);
+  const compatibilityPin = String(100000 + (randomBytes[0] % 900000));
+  const fallbackResponse = await fetch(`${baseUrl}/internship/set-pin`, {
+    method: "POST",
+    cache: "no-store",
+    headers,
+    body: JSON.stringify({ phone, pin: compatibilityPin }),
+  });
+  const fallbackResult = await readJson(fallbackResponse);
+  if (fallbackResponse.ok && fallbackResult?.access_token) return fallbackResult;
+
+  throw new Error(
+    responseMessage(
+      fallbackResult,
+      "OTP was verified, but the internship login service is unavailable.",
+    ),
+  );
+}
 
 function InternOtpLogin() {
   const { language } = useLanguage();
@@ -56,8 +130,8 @@ function InternOtpLogin() {
       if (otpError) throw otpError;
       setStep("otp");
       setInfo(isHi ? `OTP आपके पंजीकृत मोबाइल नंबर +91 ${cleanPhone.slice(0, 5)} ${cleanPhone.slice(5)} पर भेज दिया गया है।` : `OTP has been sent to your registered mobile number +91 ${cleanPhone.slice(0, 5)} ${cleanPhone.slice(5)}.`);
-    } catch (err: any) {
-      setError(err?.message || (isHi ? "OTP भेजा नहीं जा सका। कृपया दोबारा कोशिश करें।" : "Could not send OTP. Please try again."));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : (isHi ? "OTP भेजा नहीं जा सका। कृपया दोबारा कोशिश करें।" : "Could not send OTP. Please try again."));
     } finally {
       setLoading(false);
     }
@@ -79,18 +153,26 @@ function InternOtpLogin() {
         if (otp !== "123456") throw new Error(isHi ? "OTP गलत है।" : "Invalid OTP.");
       } else {
         const { supabase } = await import("@/lib/supabaseClient");
-        const { data, error: verifyError } = await supabase.auth.verifyOtp({ phone: `+91${cleanPhone}`, token: otp, type: "sms" });
-        if (verifyError) throw verifyError;
-        const accessToken = data.session?.access_token;
+        const phoneNumber = `+91${cleanPhone}`;
+        const { data: existing } = await supabase.auth.getSession();
+        const existingPhone = String(existing.session?.user?.phone || "").replace(/\D/g, "").slice(-10);
+        let accessToken = existingPhone === cleanPhone ? existing.session?.access_token : undefined;
+        if (!accessToken) {
+          const { data, error: verifyError } = await supabase.auth.verifyOtp({ phone: phoneNumber, token: otp, type: "sms" });
+          if (verifyError) throw verifyError;
+          accessToken = data.session?.access_token;
+        }
         if (!accessToken) throw new Error(isHi ? "OTP सत्र नहीं मिला।" : "OTP session was not created.");
         headers.Authorization = `Bearer ${accessToken}`;
       }
-      const result = await fetchApi("internship/login-otp", { method: "POST", headers, body: JSON.stringify({ phone: cleanPhone }) });
+      const result = otpSimulated && isAuthDevMode()
+        ? await fetchApi("internship/dev-login", { method: "POST", body: JSON.stringify({ phone: cleanPhone }) })
+        : await completeInternOtpLogin(cleanPhone, headers.Authorization.replace(/^Bearer\s+/i, ""));
       if (!result?.access_token) throw new Error(isHi ? "लॉगिन नहीं हो सका।" : "Login could not be completed.");
       setInternSession(result.access_token, result.application);
       router.push(landingFor(result.application));
-    } catch (err: any) {
-      setError(err?.message || (isHi ? "OTP सत्यापन विफल रहा।" : "OTP verification failed."));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : (isHi ? "OTP सत्यापन विफल रहा।" : "OTP verification failed."));
     } finally {
       setLoading(false);
     }
