@@ -4,19 +4,15 @@ import { DepartmentDetail } from "@/components/internship/DepartmentDetail";
 import { DEPARTMENTS, getDepartment } from "@/data/internship/departments";
 
 type Props = {
-  params: Promise<{ slug: string }> | { slug: string };
+  params: Promise<{ slug: string }>;
 };
-
-async function resolveParams(params: Props["params"]) {
-  return Promise.resolve(params);
-}
 
 export async function generateStaticParams() {
   return DEPARTMENTS.map((d) => ({ slug: d.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await resolveParams(params);
+  const { slug } = await params;
   const dept = getDepartment(slug);
   if (!dept) {
     return { title: "Department | PGP Internship" };
@@ -33,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function DepartmentPage({ params }: Props) {
-  const { slug } = await resolveParams(params);
+  const { slug } = await params;
   const dept = getDepartment(slug);
   if (!dept) notFound();
   return <DepartmentDetail department={dept} />;

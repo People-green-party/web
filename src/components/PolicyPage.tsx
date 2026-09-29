@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
+import { LocalizedContent as L } from "./LocalizedContent";
 
 type PolicyPageProps = {
   eyebrow: ReactNode;
@@ -25,6 +26,9 @@ export function PolicyPage({ eyebrow, title, intro, children }: PolicyPageProps)
             </h1>
             <p className="mt-5 max-w-3xl text-base font-medium leading-7 text-[#587E67] lg:text-lg">
               {intro}
+            </p>
+            <p className="mt-4 text-sm font-semibold text-[#587E67]">
+              <L en="Last updated: 29 September 2026" hi="अंतिम अपडेट: 29 सितंबर 2026" />
             </p>
           </div>
         </section>

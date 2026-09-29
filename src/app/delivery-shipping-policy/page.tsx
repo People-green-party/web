@@ -4,7 +4,7 @@ import { PolicyPage, PolicySection } from "../../components/PolicyPage";
 import { SITE_DETAILS } from "../../lib/siteDetails";
 
 export const metadata: Metadata = {
-  title: "Delivery & Shipping Policy | Indian Peoples Green Party",
+  title: "Delivery & Shipping Policy",
   description: "Delivery information for voluntary online contributions to Indian Peoples Green Party.",
 };
 

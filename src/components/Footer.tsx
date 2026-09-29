@@ -4,13 +4,15 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-    MapPin, Phone, Mail, Youtube, Facebook, Instagram, X
+    MapPin, Phone, Mail, Youtube, Facebook, Instagram, X, type LucideIcon
 } from 'lucide-react';
 import { useLanguage } from "./LanguageContext";
 import ScrollReveal from './ScrollReveal';
 import { SITE_DETAILS } from "../lib/siteDetails";
 
-const SocialIcon = ({ Icon, href }: { Icon: any, href: string }) => (
+type DisclosureType = "audit" | "eci" | "criminal";
+
+const SocialIcon = ({ Icon, href }: { Icon: LucideIcon, href: string }) => (
     <a href={href} target="_blank" rel="noopener noreferrer" className="w-[48px] h-[48px] rounded-[8px] border border-[#E4F2EA] bg-white p-[12px] flex items-center justify-center text-[#04330B] hover:bg-[#EAF7EE] transition-colors cursor-pointer">
         <Icon size={24} strokeWidth={1.5} />
     </a>
@@ -21,14 +23,35 @@ export const Footer = () => {
     const address = language === "hi" ? SITE_DETAILS.addressHi : SITE_DETAILS.address;
     const addressLines = language === "hi" ? SITE_DETAILS.addressLinesHi : SITE_DETAILS.addressLines;
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [docTitle, setDocTitle] = useState("Select Document Year");
+    const [disclosureType, setDisclosureType] = useState<DisclosureType>("audit");
     const pathname = usePathname();
     const router = useRouter();
 
-    const openDocModal = (title: string) => {
-        setDocTitle(title);
+    const openDocModal = (type: DisclosureType) => {
+        setDisclosureType(type);
         setIsModalOpen(true);
     };
+
+    const disclosureCopy = {
+        audit: {
+            title: language === "hi" ? "लेखापरीक्षित वार्षिक खाते" : "Audited Annual Accounts",
+            description: language === "hi"
+                ? "उपलब्ध वर्ष चुनें। 2019 का दस्तावेज़ अभी उपलब्ध नहीं है।"
+                : "Select an available year. The 2019 document is not currently available.",
+        },
+        eci: {
+            title: language === "hi" ? "भारत निर्वाचन आयोग के प्रकटीकरण" : "Election Commission of India Disclosures",
+            description: language === "hi"
+                ? "सत्यापित पार्टी दस्तावेज़ प्राप्त होने के बाद यहाँ प्रकाशित किए जाएंगे। तब तक आधिकारिक निर्वाचन आयोग पोर्टल पर उपलब्ध रिकॉर्ड देखें।"
+                : "Verified party documents will be published here after they are received. Until then, consult the official Election Commission portal for available records.",
+        },
+        criminal: {
+            title: language === "hi" ? "उम्मीदवारों के आपराधिक पूर्ववृत्त की घोषणा" : "Candidate Criminal Antecedent Declarations",
+            description: language === "hi"
+                ? "जहाँ लागू हो, अधिकृत पार्टी कार्यालय से सत्यापित उम्मीदवार-विशिष्ट घोषणाएँ मिलने के बाद यहाँ प्रकाशित की जाएंगी।"
+                : "Where applicable, verified candidate-specific declarations will be published here after receipt from the authorised party office.",
+        },
+    }[disclosureType];
 
     const handleLogoClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -109,14 +132,14 @@ export const Footer = () => {
 
                     <div className="grid w-full items-start gap-2 xl:auto-rows-[64px] xl:gap-0">
                         {[
-                            { label: t.footer.audit, title: "Audit reports and donation information — select year" },
-                            { label: t.footer.eci, title: "Election Commission disclosures — select year" },
-                            { label: t.footer.criminal, title: "Criminal cases disclosure — select year" },
+                            { label: t.footer.audit, type: "audit" as const },
+                            { label: t.footer.eci, type: "eci" as const },
+                            { label: t.footer.criminal, type: "criminal" as const },
                         ].map((item, i) => (
                             <button
                                 key={i}
                                 type="button"
-                                onClick={() => openDocModal(item.title)}
+                                onClick={() => openDocModal(item.type)}
                                 className="flex h-fit w-fit items-start p-0 text-left font-['Familjen_Grotesk'] font-semibold text-[16px] leading-[22px] tracking-[-0.3px] text-[#587E67] hover:text-[#04330B] transition-colors"
                             >
                                 {item.label}
@@ -217,23 +240,39 @@ export const Footer = () => {
                         </button>
 
                         <h3 id="document-modal-title" className="font-['Familjen_Grotesk'] font-semibold text-[24px] text-[#04330B] mb-6 text-center">
-                            {docTitle}
+                            {disclosureCopy.title}
                         </h3>
+                        <p className="mb-6 text-center text-[15px] leading-6 text-[#587E67]">
+                            {disclosureCopy.description}
+                        </p>
 
-                        <div className="grid grid-cols-3 gap-4">
-                            {['2016', '2017', '2018', '2020', '2021', '2022', '2023', '2024', '2025'].map((year) => (
-                                <a
-                                    key={year}
-                                    href={`/${year}.pdf`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center justify-center py-3 rounded-[8px] bg-[#E4F2EA] text-[#04330B] font-semibold text-[16px] hover:bg-[#04330B] hover:text-white transition-colors"
-                                    onClick={() => setIsModalOpen(false)}
-                                >
-                                    {year}
-                                </a>
-                            ))}
-                        </div>
+                        {disclosureType === "audit" ? (
+                            <div className="grid grid-cols-3 gap-4">
+                                {['2016', '2017', '2018', '2020', '2021', '2022', '2023', '2024', '2025'].map((year) => (
+                                    <a
+                                        key={year}
+                                        href={`/${year}.pdf`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center justify-center py-3 rounded-[8px] bg-[#E4F2EA] text-[#04330B] font-semibold text-[16px] hover:bg-[#04330B] hover:text-white transition-colors"
+                                    >
+                                        {year}
+                                    </a>
+                                ))}
+                                <span className="flex items-center justify-center rounded-[8px] border border-dashed border-[#B8CCBF] py-3 text-[14px] font-semibold text-[#587E67]" title={language === "hi" ? "दस्तावेज़ उपलब्ध नहीं" : "Document unavailable"}>
+                                    2019 — {language === "hi" ? "अनुपलब्ध" : "N/A"}
+                                </span>
+                            </div>
+                        ) : disclosureType === "eci" ? (
+                            <a
+                                href="https://www.eci.gov.in/candidate-politicalparty"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex w-full items-center justify-center rounded-[8px] bg-[#04330B] px-4 py-3 text-center font-semibold text-white transition-colors hover:bg-[#0D5229]"
+                            >
+                                {language === "hi" ? "आधिकारिक ECI पोर्टल खोलें" : "Open the official ECI portal"}
+                            </a>
+                        ) : null}
                     </div>
                 </div>
             )}

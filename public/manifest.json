@@ -1,14 +1,14 @@
 {
-  "name": "People's Green Party",
+  "name": "Indian Peoples Green Party",
   "short_name": "PGP",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#16a34a",
-  "description": "Membership and internal elections platform for People's Green Party.",
+  "theme_color": "#04330b",
+  "description": "Official website of the Indian Peoples Green Party.",
+  "scope": "/",
+  "lang": "hi",
   "icons": [
-    { "src": "/globe.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/window.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/file.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable any" }
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]
 }

@@ -10,7 +10,7 @@ function normalizeApiBaseUrl(baseUrl: string) {
 }
 
 export function getApiBaseUrl() {
-    let baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
     return normalizeApiBaseUrl(baseUrl);
 }
 
@@ -19,7 +19,21 @@ type FetchApiOptions = RequestInit & {
     skipAuth?: boolean;
     /** Client-side TTL cache for GET responses (ms). 0 = disabled. */
     cacheTtlMs?: number;
+    /** Avoid logging an expected compatibility probe; errors are still thrown. */
+    suppressErrorLog?: boolean;
 };
+
+export class ApiRequestError extends Error {
+    status: number;
+    data: unknown;
+
+    constructor(message: string, status: number, data: unknown) {
+        super(message);
+        this.name = 'ApiRequestError';
+        this.status = status;
+        this.data = data;
+    }
+}
 
 const memoryCache = new Map<string, { expires: number; data: unknown }>();
 
@@ -147,7 +161,14 @@ export async function fetchApi(endpoint: string, options: FetchApiOptions = {}) 
         }
     }
 
-    const { skipAuth: _s, cacheTtlMs: _c, ...fetchInit } = options;
+    const {
+        skipAuth: _skipAuthOption,
+        cacheTtlMs: _cacheTtlOption,
+        suppressErrorLog = false,
+        ...fetchInit
+    } = options;
+    void _skipAuthOption;
+    void _cacheTtlOption;
     const defaultHeaders = {
         'Content-Type': 'application/json',
         ...authHeader,
@@ -170,11 +191,24 @@ export async function fetchApi(endpoint: string, options: FetchApiOptions = {}) 
         })() : null;
 
         if (!response.ok) {
-            const errorMsg = (data as any)?.message || (data as any)?.error || (typeof data === 'string' ? data : '') || `API error: ${response.status}`;
+            const errorData = data && typeof data === 'object'
+                ? data as Record<string, unknown>
+                : null;
+            const messageValue = errorData?.message;
+            const errorValue = errorData?.error;
+            const errorMsg =
+                typeof messageValue === 'string' ||
+                (Array.isArray(messageValue) && messageValue.every((item) => typeof item === 'string'))
+                    ? messageValue as string | string[]
+                    : typeof errorValue === 'string'
+                        ? errorValue
+                        : typeof data === 'string' && data
+                            ? data
+                            : `API error: ${response.status}`;
             const friendly = toFriendlyMessage(errorMsg, response.status, endpoint);
 
             // Only log non-401 errors (401 is expected for unauthenticated users on public pages)
-            if (response.status !== 401) {
+            if (response.status !== 401 && !suppressErrorLog) {
                 console.error(`[API Error] ${response.status} ${response.statusText}`, {
                     url,
                     endpoint,
@@ -183,7 +217,7 @@ export async function fetchApi(endpoint: string, options: FetchApiOptions = {}) 
                 });
             }
 
-            throw new Error(friendly);
+            throw new ApiRequestError(friendly, response.status, data);
         }
 
         if (cacheTtlMs > 0 && method === 'GET') {
@@ -191,8 +225,10 @@ export async function fetchApi(endpoint: string, options: FetchApiOptions = {}) 
         }
 
         return data;
-    } catch (error: any) {
-        const msg = String(error?.message || '').trim();
+    } catch (error: unknown) {
+        if (error instanceof ApiRequestError) throw error;
+
+        const msg = error instanceof Error ? error.message.trim() : '';
         // If our API Guard blocked it, just throw clean error (don't log network failure)
         if (msg === "No active session found. Please log in.") {
             throw new Error(msg);

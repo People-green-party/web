@@ -250,7 +250,7 @@ export const translations = {
             additional: "Additional Links",
             contact: "Contact Us",
             address: "Ham Badlenge Bhawan, 02 Mission Compound, Ajmer Puliya, Jaipur, Rajasthan",
-            audit: "Audit Reports and Information About Party Donations",
+            audit: "Audited Annual Accounts",
             eci: "Election Commission of India (ECI) Disclosures",
             criminal: "Declaration about criminal antecedents of candidates set up by the party"
         },
@@ -548,7 +548,7 @@ export const translations = {
             additional: "अतिरिक्त लिंक",
             contact: "संपर्क करें",
             address: "हम बदलेंगे भवन, 02 मिशन कंपाउंड, अजमेर पुलिया, जयपुर, राजस्थान",
-            audit: "ऑडिट रिपोर्ट और पार्टी को दिए गए दान की जानकारी",
+            audit: "लेखापरीक्षित वार्षिक खाते",
             eci: "भारत निर्वाचन आयोग (ECI) प्रकटीकरण",
             criminal: "उम्मीदवारों के आपराधिक पूर्ववृत्त के बारे में घोषणा"
         },

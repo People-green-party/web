@@ -560,7 +560,7 @@ export default function DemoDashboard() {
                             <div className="relative shrink-0">
                                 <div className="w-40 h-40 rounded-full border-[6px] border-white p-1.5 bg-white shadow-xl flex items-center justify-center overflow-hidden">
                                     {summary?.user?.photoUrl ? (
-                                        <img className="w-full h-full object-cover rounded-full" src={summary.user.photoUrl.startsWith('http') ? summary.user.photoUrl : `${getApiBaseUrl().replace(/\/v1\/?$/, '')}${summary.user.photoUrl}`} />
+                                        <img alt={`${summary.user.name || 'Member'} profile`} className="w-full h-full object-cover rounded-full" src={summary.user.photoUrl.startsWith('http') ? summary.user.photoUrl : `${getApiBaseUrl().replace(/\/v1\/?$/, '')}${summary.user.photoUrl}`} />
                                     ) : (
                                         <div className="w-full h-full bg-slate-50 flex items-center justify-center"><User size={48} className="text-slate-200" /></div>
                                     )}
@@ -777,7 +777,7 @@ export default function DemoDashboard() {
                                                 <div className="flex items-center gap-4 w-full min-w-0">
                                                     <div className="w-12 h-12 rounded-full bg-[#B9D3C4]/20 overflow-hidden shrink-0 border border-[#04330B]/5">
                                                         {m.photoUrl ? (
-                                                            <img src={m.photoUrl.startsWith('http') ? m.photoUrl : `${getApiBaseUrl().replace(/\/v1\/?$/, '')}${m.photoUrl}`} className="w-full h-full object-cover" />
+                                                            <img alt={`${m.name || 'Member'} profile`} src={m.photoUrl.startsWith('http') ? m.photoUrl : `${getApiBaseUrl().replace(/\/v1\/?$/, '')}${m.photoUrl}`} className="w-full h-full object-cover" />
                                                         ) : (
                                                             <div className="w-full h-full flex items-center justify-center text-[#04330B]/40"><User size={20} /></div>
                                                         )}

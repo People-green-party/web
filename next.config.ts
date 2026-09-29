@@ -1,10 +1,23 @@
 import type { NextConfig } from "next";
 import path from "path";
-import withPWAInit from "next-pwa";
+import withPWAInit from "@ducanh2912/next-pwa";
 
 const withPWA = withPWAInit({
   dest: "public",
   disable: process.env.NODE_ENV === "development",
+  // Registration is handled by ServiceWorkerRegister so that local builds can
+  // reliably unregister old workers and clear stale caches.
+  register: false,
+  // Keep the install small. Large media and statutory PDFs remain available
+  // online and may be cached at runtime, but must not be downloaded on install.
+  publicExcludes: [
+    "!**/*.pdf",
+    "!**/*.PDF",
+    "!**/*.{svg,SVG,png,PNG,jpg,JPG,jpeg,JPEG,gif,GIF,webp,WEBP,avif,AVIF,mp4,MP4,mov,MOV}",
+  ],
+  workboxOptions: {
+    cleanupOutdatedCaches: true,
+  },
 });
 
 const nextConfig: NextConfig = {
@@ -18,6 +31,22 @@ const nextConfig: NextConfig = {
   },
   images: {
     qualities: [75, 90],
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(self), microphone=(), geolocation=()",
+          },
+        ],
+      },
+    ];
   },
   async redirects() {
     return [

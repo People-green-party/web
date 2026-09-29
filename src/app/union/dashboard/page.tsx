@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Navbar } from '../../../components/Navbar';
 import { Footer } from '../../../components/Footer';
@@ -121,7 +121,6 @@ function resolvePhotoUrl(url: string | null | undefined) {
 type CachedProfile = {
   address?: string | null;
   vehicleNumber?: string | null;
-  governmentId?: string | null;
   name?: string | null;
   photoUrl?: string | null;
 };
@@ -208,7 +207,7 @@ export default function UnionDashboardPage() {
   const [photoBroken, setPhotoBroken] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const loadSummary = async (retryCount = 0, preserve?: Partial<UnionUser>) => {
+  const loadSummary = useCallback(async (retryCount = 0, preserve?: Partial<UnionUser>) => {
     try {
       const auth = await getAuthHeader();
 
@@ -246,7 +245,6 @@ export default function UnionDashboardPage() {
         governmentId:
           incoming.governmentId ??
           preserve?.governmentId ??
-          cached?.governmentId ??
           null,
         photoUrl:
           preserve && Object.prototype.hasOwnProperty.call(preserve, 'photoUrl')
@@ -259,7 +257,6 @@ export default function UnionDashboardPage() {
         name: user.name,
         address: user.address,
         vehicleNumber: user.vehicleNumber,
-        governmentId: user.governmentId,
         photoUrl: user.photoUrl,
       });
 
@@ -267,15 +264,15 @@ export default function UnionDashboardPage() {
       setPhotoBroken(false);
       setError(null);
       setLoading(false);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(`Dashboard Load Error:`, e);
       window.location.replace(`/union/login?next=${encodeURIComponent('/union/dashboard')}`);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadSummary();
-  }, []);
+  }, [loadSummary]);
 
   useEffect(() => {
     setPhotoBroken(false);
@@ -316,9 +313,9 @@ export default function UnionDashboardPage() {
       });
       setSaveOk(true);
       setTimeout(() => setSaveOk(false), 2500);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      alert(err?.message || t.uploadFail);
+      alert(err instanceof Error ? err.message : t.uploadFail);
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -407,7 +404,6 @@ export default function UnionDashboardPage() {
           name: next.name,
           address: next.address,
           vehicleNumber: next.vehicleNumber,
-          governmentId: next.governmentId,
           photoUrl: next.photoUrl,
         });
         return { user: next };
@@ -416,8 +412,8 @@ export default function UnionDashboardPage() {
       setSaveOk(true);
       setTimeout(() => setSaveOk(false), 3000);
       await loadSummary(0, preserved);
-    } catch (err: any) {
-      setEditError(err.message || t.updateError);
+    } catch (err: unknown) {
+      setEditError(err instanceof Error ? err.message : t.updateError);
     } finally {
       setSaving(false);
     }
