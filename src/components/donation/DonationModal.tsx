@@ -501,7 +501,7 @@ export function DonationModal({
               {dedicationData && (
                 <div className="flex justify-between pt-1 border-t border-[#DCEBE2] text-[#0B5A2A] font-semibold">
                   <span>{isHi ? "समर्पित नाम" : "Dedicated to"}:</span>
-                  <span>{dedicationData.dedicatedName} ({dedicationData.plantCount} {isHi ? "पौधे" : "Plants"})</span>
+                  <span>{dedicationData.dedicatedName} ({dedicationData.plantCount} {isHi ? "पेड़" : "Plants"})</span>
                 </div>
               )}
             </div>
@@ -582,7 +582,7 @@ export function DonationModal({
               </h2>
               {dedicationName ? (
                 <p className="text-xs text-[#0B5A2A] font-semibold mt-1">
-                  🌿 {isHi ? "समर्पण" : "Dedication"}: {dedicationName} · {plantCount} {isHi ? "पौधे" : "Plant(s)"} ({dedicationOccasion})
+                  🌿 {isHi ? "समर्पण" : "Dedication"}: {dedicationName} · {plantCount} {isHi ? "पेड़" : "Plant(s)"} ({dedicationOccasion})
                 </p>
               ) : (
                 <p className="text-xs text-[#587E67] mt-1">
@@ -648,7 +648,7 @@ export function DonationModal({
                         {isHi ? "पीपुल्स ग्रीन फंड (राजनीतिक संगठन)" : "People's Green Fund (Political Organisation)"}
                       </option>
                       <option value="green-fund">
-                        {isHi ? "ग्रीन फंड (महान हरित दीवार मिशन)" : "Green Fund (Great Green Wall Mission)"}
+                        {isHi ? "ग्रीन फंड (Great Green Wall Mission)" : "Green Fund (Great Green Wall Mission)"}
                       </option>
                       <option value="democracy-fund">
                         {isHi ? "लोकतंत्र फंड (संवैधानिक अधिकार)" : "Democracy Fund (Constitutional Rights)"}

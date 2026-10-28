@@ -98,7 +98,7 @@ export default function GreenFundPage() {
             {isHi ? "सभी कोष देखें" : "Back to Three Funds"}
           </Link>
           <span className="font-semibold text-[#587E67] hidden sm:inline">
-            {isHi ? "महान हरित दीवार मिशन · अरावली" : "Great Green Wall Mission · Aravalli"}
+            {isHi ? "Great Green Wall Mission · अरावली" : "Great Green Wall Mission · Aravalli"}
           </span>
         </div>
       </div>
@@ -119,19 +119,19 @@ export default function GreenFundPage() {
                   {isHi ? "ग्रीन फंड" : "GREEN FUND"}
                 </h1>
                 <p className="mt-2 text-emerald-400 font-['Familjen_Grotesk'] text-[18px] sm:text-[20px] font-bold">
-                  {isHi ? "महान हरित दीवार मिशन" : "The Great Green Wall Mission"}
+                  "Great Green Wall Mission"
                 </p>
               </div>
 
               <p className="font-['Familjen_Grotesk'] text-[18px] sm:text-[20px] font-semibold text-white/90 leading-snug">
                 {isHi
-                  ? "एक करोड़ पौधे। दीर्घकालीन हरित पुनर्स्थापन अभियान।"
+                  ? "एक करोड़ पेड़। दीर्घकालीन हरित पुनर्स्थापन अभियान।"
                   : "One Crore Plants. A Long-Term Restoration Mission."}
               </p>
 
               <p className="text-white/75 text-[15px] leading-relaxed max-w-lg">
                 {isHi
-                  ? "महान हरित दीवार मिशन अरावली पर्वतमाला और उससे जुड़े शुष्क एवं संवेदनशील भूभागों में प्रस्तावित पर्यावरणीय पुनर्स्थापन की पहल है।"
+                  ? "Great Green Wall Mission अरावली पर्वतमाला और उससे जुड़े शुष्क एवं संवेदनशील भूभागों में प्रस्तावित पर्यावरणीय पुनर्स्थापन की पहल है।"
                   : "The Great Green Wall Mission is a proposed ecological restoration initiative focused on vulnerable landscapes around the Aravalli range and adjoining semi-arid regions."}
               </p>
 
@@ -143,7 +143,7 @@ export default function GreenFundPage() {
                   className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-emerald-500 hover:bg-emerald-400 font-['Familjen_Grotesk'] text-[14.5px] font-bold text-white shadow-lg transition-all active:scale-[0.98]"
                 >
                   <TreePine size={17} />
-                  {isHi ? "पौधे का प्रायोजन करें" : "Sponsor a Plant"}
+                  {isHi ? "पेड़ का प्रायोजन करें" : "Sponsor a Plant"}
                 </button>
                 <button
                   type="button"
@@ -192,13 +192,13 @@ export default function GreenFundPage() {
               <div className="space-y-4">
                 <h2 className="font-['Familjen_Grotesk'] text-[28px] sm:text-[34px] font-bold text-[#04330B] leading-tight tracking-tight">
                   {isHi
-                    ? "एक करोड़ पौधे। दीर्घकालीन हरित पुनर्स्थापन अभियान।"
+                    ? "एक करोड़ पेड़। दीर्घकालीन हरित पुनर्स्थापन अभियान।"
                     : "One Crore Plants. A Long-Term Restoration Mission."}
                 </h2>
                 <div className="space-y-3 text-[15.5px] leading-[1.75] text-[#2D3A31]">
                   <p>
                     {isHi
-                      ? "महान हरित दीवार मिशन अरावली पर्वतमाला और उससे जुड़े शुष्क एवं संवेदनशील भूभागों में प्रस्तावित पर्यावरणीय पुनर्स्थापन की पहल है।"
+                      ? "Great Green Wall Mission अरावली पर्वतमाला और उससे जुड़े शुष्क एवं संवेदनशील भूभागों में प्रस्तावित पर्यावरणीय पुनर्स्थापन की पहल है।"
                       : "The Great Green Wall Mission is a proposed ecological restoration initiative focused on vulnerable landscapes around the Aravalli range and adjoining semi-arid regions."}
                   </p>
                   <p>
@@ -224,12 +224,12 @@ export default function GreenFundPage() {
                   {[
                     {
                       value: "1,00,00,000",
-                      label: isHi ? "पौधे — प्रथम चरण का लक्ष्य" : "Plants — Target for Phase One",
+                      label: isHi ? "पेड़ — प्रथम चरण का लक्ष्य" : "Plants — Target for Phase One",
                       icon: <TreePine size={16} className="text-emerald-700" />,
                     },
                     {
                       value: "₹1,500",
-                      label: isHi ? "प्रति पौधा — अनुमानित योगदान" : "Per Plant — Estimated contribution",
+                      label: isHi ? "प्रति पेड़ — अनुमानित योगदान" : "Per Plant — Estimated contribution",
                       icon: <Leaf size={16} className="text-emerald-700" />,
                     },
                     {
@@ -260,12 +260,12 @@ export default function GreenFundPage() {
                 </span>
                 <h2 className="font-['Familjen_Grotesk'] text-[24px] sm:text-[30px] font-bold text-[#04330B] leading-tight">
                   {isHi
-                    ? "अपने नाम पर पौधा। अपनों के नाम समर्पण।"
+                    ? "अपने नाम पर पेड़। अपनों के नाम समर्पण।"
                     : "Plant in Your Name. Dedicate to Someone Special."}
                 </h2>
                 <p className="text-[15px] leading-relaxed text-[#2D3A31]">
                   {isHi
-                    ? "अपने नाम पर एक पौधे के रोपण को प्रायोजित करें या किसी प्रियजन के नाम समर्पित करें। जन्मदिन, विवाह, सालगिरह, त्योहार अथवा किसी विशेष अवसर को पौधे के समर्पण के माध्यम से यादगार बनाया जा सकता है।"
+                    ? "अपने नाम पर एक पेड़ लगवाने को प्रायोजित करें या किसी प्रियजन के नाम समर्पित करें। जन्मदिन, विवाह, सालगिरह, त्योहार अथवा किसी विशेष अवसर को पेड़ के समर्पण के माध्यम से यादगार बनाया जा सकता है।"
                     : "Sponsor a plant in your name, or dedicate one to someone important in your life. Mark a birthday, wedding, anniversary, festival or other special occasion with a personalised plant dedication."}
                 </p>
 
@@ -275,7 +275,7 @@ export default function GreenFundPage() {
                       icon: <Award size={17} />,
                       title: isHi ? "डिजिटल समर्पण प्रमाणपत्र" : "Digital Dedication Certificate",
                       desc: isHi
-                        ? "सफल प्रायोजन के बाद एक डिजिटल समर्पण प्रमाणपत्र दिया जाएगा। पौधा लगाए जाने और उसका रिकॉर्ड तैयार होने पर प्रमाणपत्र को रोपण स्थल और पहचान संख्या से जोड़ा जा सकेगा।"
+                        ? "सफल प्रायोजन के बाद एक डिजिटल समर्पण प्रमाणपत्र दिया जाएगा। पेड़ लगाए जाने और उसका रिकॉर्ड तैयार होने पर प्रमाणपत्र को रोपण स्थल और पहचान संख्या से जोड़ा जा सकेगा।"
                         : "Each successful sponsorship will receive a digital dedication certificate. Once planting is completed and documented, the record can be linked to the plantation location and identification number.",
                     },
                     {
@@ -351,7 +351,7 @@ export default function GreenFundPage() {
                 icon: <BarChart3 size={15} />,
                 title: isHi ? "निगरानी एवं रिपोर्टिंग" : "Measure and Report",
                 desc: isHi
-                  ? "रोपण के रिकॉर्ड, जीवित पौधों की स्थिति, रखरखाव और परियोजना के खर्च का विवरण प्रकाशित करना।"
+                  ? "रोपण के रिकॉर्ड, जीवित पेड़ों की स्थिति, रखरखाव और परियोजना के खर्च का विवरण प्रकाशित करना।"
                   : "Publish plantation records, survival information, maintenance updates and project expenditure.",
               },
             ].map((step) => (
@@ -387,7 +387,7 @@ export default function GreenFundPage() {
             </h2>
             <p className="text-[13.5px] text-[#587E67] max-w-2xl mt-2 leading-relaxed">
               {isHi
-                ? "मिशन के डैशबोर्ड पर प्रायोजित पौधों, लगाए गए पौधों, सत्यापित जीवित पौधों और रखरखाव की जानकारी उपलब्ध कराई जाएगी।"
+                ? "मिशन के डैशबोर्ड पर प्रायोजित पेड़ों, लगाए गए पेड़ों, सत्यापित जीवित पेड़ों और रखरखाव की जानकारी उपलब्ध कराई जाएगी।"
                 : "The mission dashboard will report plants sponsored, plants planted, verified survival and maintenance progress, as data becomes available."}
             </p>
           </div>
@@ -416,17 +416,17 @@ export default function GreenFundPage() {
             {[
               {
                 icon: <TreePine size={19} className="text-emerald-700" />,
-                label: isHi ? "प्रायोजित पौधे" : "Plants Sponsored",
+                label: isHi ? "प्रायोजित पेड़" : "Plants Sponsored",
                 value: progress?.plantsSponsored ?? null,
               },
               {
                 icon: <MapPin size={19} className="text-[#587E67]" />,
-                label: isHi ? "लगाए गए पौधे" : "Plants Planted",
+                label: isHi ? "लगाए गए पेड़" : "Plants Planted",
                 value: progress?.plantsPlanted ?? null,
               },
               {
                 icon: <Leaf size={19} className="text-emerald-700" />,
-                label: isHi ? "सत्यापित जीवित पौधे" : "Verified Survival",
+                label: isHi ? "सत्यापित जीवित पेड़" : "Verified Survival",
                 value: progress?.verifiedSurvival ?? null,
               },
               {
@@ -473,7 +473,7 @@ export default function GreenFundPage() {
               className="inline-flex h-12 items-center justify-center gap-2 px-8 rounded-xl bg-[#04330B] font-['Familjen_Grotesk'] text-[15px] font-bold text-white shadow-md hover:bg-[#064e11] hover:scale-[1.02] transition-all"
             >
               <TreePine size={16} />
-              {isHi ? "पौधा प्रायोजित करें और प्रमाणपत्र पाएं →" : "Sponsor a Plant & Get Certificate →"}
+              {isHi ? "पेड़ प्रायोजित करें और प्रमाणपत्र पाएं →" : "Sponsor a Plant & Get Certificate →"}
             </button>
           </div>
         </div>

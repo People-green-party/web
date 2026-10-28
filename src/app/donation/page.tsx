@@ -71,12 +71,12 @@ const translations = {
     hero: {
       titleLines: [
         "Three Funds.",
-        "Three Missions."
+        "Many Missions."
       ],
       subTitle: "Explore the political, environmental and democratic accountability programmes of People's Green.",
       intro: "Indian Peoples Green Party is built on three core pillars: clean and accountable political governance, long-term ecological restoration, and the unyielding defence of constitutional rights. Your voluntary contributions are channelled through three dedicated funds:",
       fund1Title: "People's Green Fund",
-      fund1Desc: "Political organisation, public dialogue, and grassroots policy work focused on accountable governance without VIP privileges.",
+      fund1Desc: "Political organisation, public dialogue, and grassroots policy work focused on accountable governance.",
       fund2Title: "Green Fund",
       fund2Desc: "A proposed one-crore-plant restoration mission for vulnerable landscapes around the Aravalli range.",
       fund3Title: "Democracy Fund",
@@ -173,14 +173,14 @@ const translations = {
     hero: {
       titleLines: [
         "तीन कोष।",
-        "तीन उद्देश्य।"
+        "अनेक मिशन।"
       ],
       subTitle: "पीपुल्स ग्रीन के राजनीतिक, पर्यावरणीय और लोकतांत्रिक जवाबदेही कार्यक्रमों के बारे में जानें।",
       intro: "इंडियन पीपुल्स ग्रीन पार्टी तीन बुनियादी संकल्पों पर खड़ी है: स्वच्छ और जवाबदेह राजनीतिक व्यवस्था, दीर्घकालिक पर्यावरणीय पुनर्स्थापन, और संवैधानिक अधिकारों की रक्षा। पूर्ण पारदर्शिता सुनिश्चित करने के लिए आपका सहयोग तीन समर्पित कोषों में लगाया जाता है:",
       fund1Title: "पीपुल्स ग्रीन फंड (राजनीतिक कोष)",
       fund1Desc: "जवाबदेह शासन से जुड़े राजनीतिक संगठन, जनसंवाद और नीतिगत कार्यों के लिए।",
       fund2Title: "ग्रीन फंड (हरित पुनर्स्थापन मिशन)",
-      fund2Desc: "अरावली क्षेत्र के संवेदनशील भूभागों के लिए प्रस्तावित एक करोड़ पौधों का महान हरित दीवार मिशन।",
+      fund2Desc: "अरावली क्षेत्र के संवेदनशील भूभागों के लिए प्रस्तावित एक करोड़ पेड़ों का Great Green Wall Mission।",
       fund3Title: "लोकतंत्र फंड (संवैधानिक अधिकार)",
       fund3Desc: "समानता, भ्रष्टाचार और सार्वजनिक जवाबदेही से जुड़े कानूनी अध्ययन और नागरिक पहलों के लिए।",
       p1: "आपने इसे होते हुए देखा है। एक वीआईपी काफिला पूरी सड़क को ठप कर देता है जबकि सैकड़ों आम नागरिक बैठे इंतजार करते हैं — काम के लिए देर, स्कूल के लिए देर, अस्पताल के अपॉइंटमेंट के लिए देर। किसी को जवाबदेह नहीं ठहराया जाता। किसी से पूछताछ तक नहीं की जाती।",
@@ -622,7 +622,7 @@ const DonationPageContent = () => {
 
           {/* LEFT: Text Section */}
           <div className="min-w-0 w-full flex flex-col gap-[20px]">
-            <h1 className="font-['Familjen_Grotesk'] font-bold text-[clamp(42px,5.8vw,76px)] leading-[0.98] text-[#04330B] tracking-[-1.5px]">
+            <h1 className={`font-['Familjen_Grotesk'] font-bold leading-[0.98] text-[#04330B] ${language === "hi" ? "text-[clamp(20px,5.5vw,68px)] whitespace-nowrap tracking-[-0.5px]" : "text-[clamp(42px,5.8vw,76px)] tracking-[-1.5px]"}`}>
               {t.hero.titleLines.join(" ")}
             </h1>
 
@@ -714,7 +714,7 @@ const DonationPageContent = () => {
                     {language === "hi" ? "पीपुल्स ग्रीन फंड (राजनीतिक संगठन)" : "People's Green Fund (Political Organisation)"}
                   </option>
                   <option value="green-fund">
-                    {language === "hi" ? "ग्रीन फंड (महान हरित दीवार मिशन)" : "Green Fund (Great Green Wall Mission)"}
+                    {language === "hi" ? "ग्रीन फंड (Great Green Wall Mission)" : "Green Fund (Great Green Wall Mission)"}
                   </option>
                   <option value="democracy-fund">
                     {language === "hi" ? "लोकतंत्र फंड (संवैधानिक अधिकार व जवाबदेही)" : "Democracy Fund (Constitutional Rights & Accountability)"}

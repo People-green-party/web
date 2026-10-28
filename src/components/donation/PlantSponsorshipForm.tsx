@@ -40,7 +40,7 @@ export function PlantSponsorshipForm({ className = "" }: PlantSponsorshipFormPro
     } else {
       setPlantCount(0);
       setValidationError(
-        isHi ? "कृपया पौधों की पूरी संख्या दर्ज करें।" : "Enter a whole number of plants."
+        isHi ? "कृपया पेड़ों की पूरी संख्या दर्ज करें।" : "Enter a whole number of plants."
       );
     }
   };
@@ -49,7 +49,7 @@ export function PlantSponsorshipForm({ className = "" }: PlantSponsorshipFormPro
 
   const handleContinue = () => {
     if (plantCount < 1) {
-      setValidationError(isHi ? "कृपया कम से कम 1 पौधा चुनें।" : "Please select at least 1 plant.");
+      setValidationError(isHi ? "कृपया कम से कम 1 पेड़ चुनें।" : "Please select at least 1 plant.");
       return;
     }
     if (!dedicationName.trim()) {
@@ -74,17 +74,17 @@ export function PlantSponsorshipForm({ className = "" }: PlantSponsorshipFormPro
         <div className="pb-5 border-b border-[#E7EFEA]">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">
-              {isHi ? "महान हरित दीवार मिशन" : "Great Green Wall Mission"}
+              Great Green Wall Mission
             </span>
             <h3 className="font-['Familjen_Grotesk'] text-[24px] sm:text-[26px] font-bold text-[#04330B] mt-0.5">
-              {isHi ? "पौधे का प्रायोजन करें" : "Sponsor a Plant"}
+              {isHi ? "पेड़ का प्रायोजन करें" : "Sponsor a Plant"}
             </h3>
           </div>
         </div>
 
         <div className="flex items-center gap-2 py-4 text-[11px] sm:text-xs font-semibold text-[#587E67]" aria-label={isHi ? "भुगतान के चरण" : "Payment steps"}>
           <span className="inline-flex size-6 items-center justify-center rounded-full bg-[#04330B] text-white">1</span>
-          <span>{isHi ? "पौधे का प्रायोजन" : "Sponsor a Plant"}</span>
+          <span>{isHi ? "पेड़ का प्रायोजन" : "Sponsor a Plant"}</span>
           <span className="h-px flex-1 bg-[#DCEBE2]" />
           <span className="inline-flex size-6 items-center justify-center rounded-full border border-[#B8CCBF] bg-white text-[#587E67]">2</span>
           <span>{isHi ? "भुगतान" : "Make Payment"}</span>
@@ -93,7 +93,7 @@ export function PlantSponsorshipForm({ className = "" }: PlantSponsorshipFormPro
         {/* 6 Preset Options Grid */}
         <div className="mt-6">
           <label className="block text-[13px] font-semibold text-[#254B34] mb-3">
-            {isHi ? "पौधों की संख्या चुनें:" : "Select number of plants:"}
+            {isHi ? "पेड़ों की संख्या चुनें:" : "Select number of plants:"}
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {PLANT_PRESETS.map((preset) => {
@@ -112,7 +112,7 @@ export function PlantSponsorshipForm({ className = "" }: PlantSponsorshipFormPro
                   }`}
                 >
                   <span className="text-[14px] sm:text-[15px] font-bold text-[#173B27]">
-                    {preset.count} {isHi ? (preset.count === 1 ? "पौधा" : "पौधे") : preset.count === 1 ? "Plant" : "Plants"}
+                    {preset.count} {isHi ? "पेड़" : preset.count === 1 ? "Plant" : "Plants"}
                   </span>
                   <span className="text-[12px] sm:text-[13px] font-semibold text-[#587E67] mt-0.5">
                     ₹{preset.amount.toLocaleString("en-IN")}
@@ -126,7 +126,7 @@ export function PlantSponsorshipForm({ className = "" }: PlantSponsorshipFormPro
         {/* Custom number of plants */}
         <div className="mt-5">
           <label htmlFor="custom-plants" className="block text-[13px] font-semibold text-[#254B34] mb-2">
-            {isHi ? "पौधों की इच्छित संख्या" : "Custom number of plants"}
+            {isHi ? "पेड़ों की इच्छित संख्या" : "Custom number of plants"}
           </label>
           <div className="relative">
             <input
@@ -142,7 +142,7 @@ export function PlantSponsorshipForm({ className = "" }: PlantSponsorshipFormPro
               className="w-full h-[50px] rounded-[10px] border border-[#CFE0D5] bg-white px-4 pr-28 font-semibold text-[16px] text-[#173B27] placeholder-[#83988A] focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-all"
             />
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-emerald-800">
-              {isHi ? "पौधे" : "plants"}
+              {isHi ? "पेड़" : "plants"}
             </span>
           </div>
         </div>
@@ -219,13 +219,13 @@ export function PlantSponsorshipForm({ className = "" }: PlantSponsorshipFormPro
         {/* Sponsorship Summary */}
         <div className="mt-5 rounded-[14px] bg-[#F5F9F6] border border-[#E0ECE4] p-4 space-y-2">
           <div className="flex justify-between text-xs text-[#587E67]">
-            <span>{isHi ? "पौधों की संख्या" : "Plants selected"}:</span>
+            <span>{isHi ? "पेड़ों की संख्या" : "Plants selected"}:</span>
             <span className="font-bold text-[#173B27]">
-              {plantCount} {isHi ? (plantCount === 1 ? "पौधा" : "पौधे") : plantCount === 1 ? "Plant" : "Plants"}
+              {plantCount} {isHi ? "पेड़" : plantCount === 1 ? "Plant" : "Plants"}
             </span>
           </div>
           <div className="flex justify-between text-xs text-[#587E67]">
-            <span>{isHi ? "प्रति पौधा योगदान" : "Cost per plant"}:</span>
+            <span>{isHi ? "प्रति पेड़ योगदान" : "Cost per plant"}:</span>
             <span className="font-bold text-[#173B27]">₹{COST_PER_PLANT.toLocaleString("en-IN")}</span>
           </div>
           <div className="pt-2 border-t border-[#DCEBE2] flex justify-between items-baseline">
@@ -244,7 +244,7 @@ export function PlantSponsorshipForm({ className = "" }: PlantSponsorshipFormPro
         >
           <span>🌱</span>
           <span>
-            {isHi ? "पौधे प्रायोजित करने के लिए आगे बढ़ें →" : "Continue to Sponsor Plant(s) →"}
+            {isHi ? "पेड़ प्रायोजित करने के लिए आगे बढ़ें →" : "Continue to Sponsor Plant(s) →"}
           </span>
         </button>
 
