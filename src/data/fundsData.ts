@@ -1,0 +1,162 @@
+export type FundId = "peoples-green-fund" | "green-fund" | "democracy-fund";
+
+export type DedicationOccasion =
+  | "Birthday"
+  | "Wedding"
+  | "Anniversary"
+  | "Festival"
+  | "In Memory Of"
+  | "Other";
+
+export interface FundContent {
+  id: FundId;
+  slug: string;
+  category: { en: string; hi: string };
+  title: { en: string; hi: string };
+  shortDescription: { en: string; hi: string };
+  coverImage: string;
+  heroTagline: { en: string; hi: string };
+  heroHeading: { en: string; hi: string };
+  heroSubheading: { en: string; hi: string };
+  descriptionParagraphs: { en: string[]; hi: string[] };
+}
+
+export const OCCASIONS: { value: DedicationOccasion; label: { en: string; hi: string } }[] = [
+  { value: "Birthday", label: { en: "Birthday", hi: "जन्मदिन" } },
+  { value: "Wedding", label: { en: "Wedding", hi: "विवाह" } },
+  { value: "Anniversary", label: { en: "Anniversary", hi: "सालगिरह" } },
+  { value: "Festival", label: { en: "Festival", hi: "त्योहार" } },
+  { value: "In Memory Of", label: { en: "In Memory Of", hi: "स्मृति में" } },
+  { value: "Other", label: { en: "Other", hi: "अन्य" } },
+];
+
+export const PLANT_PRESETS = [
+  { count: 1, amount: 1500 },
+  { count: 2, amount: 3000 },
+  { count: 5, amount: 7500 },
+  { count: 10, amount: 15000 },
+  { count: 25, amount: 37500 },
+  { count: 50, amount: 75000 },
+];
+
+export const COST_PER_PLANT = 1500;
+
+export const FUNDS_DATA: Record<FundId, FundContent> = {
+  "peoples-green-fund": {
+    id: "peoples-green-fund",
+    slug: "peoples-green-fund",
+    category: {
+      en: "Political Fund",
+      hi: "राजनीतिक कोष",
+    },
+    title: {
+      en: "People's Green Fund",
+      hi: "पीपुल्स ग्रीन फंड",
+    },
+    shortDescription: {
+      en: "Political organisation, public dialogue and policy work focused on accountable governance.",
+      hi: "जवाबदेह शासन से जुड़े राजनीतिक संगठन, जनसंवाद और नीतिगत कार्यों के लिए।",
+    },
+    coverImage: "/funds/peoples-green-fund-rally.jpeg",
+    heroTagline: {
+      en: "Political Organisation & Public Accountability",
+      hi: "राजनीतिक संगठन एवं सार्वजनिक जवाबदेही",
+    },
+    heroHeading: {
+      en: "PEOPLE'S GREEN FUND",
+      hi: "पीपुल्स ग्रीन फंड",
+    },
+    heroSubheading: {
+      en: "An Alternative Political Voice",
+      hi: "एक वैकल्पिक राजनीतिक आवाज़",
+    },
+    descriptionParagraphs: {
+      en: [
+        "The People's Green Fund supports the political and organisational activities of the Indian Peoples Green Party.",
+      ],
+      hi: [
+        "पीपुल्स ग्रीन फंड इंडियन पीपुल्स ग्रीन पार्टी की राजनीतिक और संगठनात्मक गतिविधियों में सहयोग करता है।",
+      ],
+    },
+  },
+
+  "green-fund": {
+    id: "green-fund",
+    slug: "green-fund",
+    category: {
+      en: "Great Green Wall Mission",
+      hi: "महान हरित दीवार मिशन",
+    },
+    title: {
+      en: "Green Fund",
+      hi: "ग्रीन फंड",
+    },
+    shortDescription: {
+      en: "A proposed one-crore-plant restoration mission for vulnerable landscapes around the Aravalli region.",
+      hi: "अरावली क्षेत्र के संवेदनशील भूभागों के लिए प्रस्तावित एक करोड़ पौधों का पुनर्स्थापन मिशन।",
+    },
+    coverImage: "/funds/green-fund-aravalli-restoration.jpg",
+    heroTagline: {
+      en: "The Great Green Wall Mission",
+      hi: "महान हरित दीवार मिशन",
+    },
+    heroHeading: {
+      en: "GREEN FUND",
+      hi: "ग्रीन फंड",
+    },
+    heroSubheading: {
+      en: "One Crore Plants. A Long-Term Restoration Mission.",
+      hi: "एक करोड़ पौधे। दीर्घकालीन हरित पुनर्स्थापन अभियान।",
+    },
+    descriptionParagraphs: {
+      en: [
+        "The Great Green Wall Mission is a proposed ecological restoration initiative focused on vulnerable landscapes around the Aravalli range and adjoining semi-arid regions.",
+        "The Aravalli landscape plays an important ecological role in western and northwestern India. Land degradation, loss of vegetation and desertification risks require scientifically planned restoration and long-term care.",
+        "The mission proposes site-specific plantations and ecological restoration, using suitable native species and maintenance practices."
+      ],
+      hi: [
+        "महान हरित दीवार मिशन अरावली पर्वतमाला और उससे जुड़े शुष्क एवं संवेदनशील भूभागों में प्रस्तावित पर्यावरणीय पुनर्स्थापन की पहल है।",
+        "अरावली का भूभाग पश्चिमी और उत्तर-पश्चिमी भारत के पर्यावरण में महत्वपूर्ण भूमिका निभाता है। भूमि क्षरण, वनस्पति में कमी और मरुस्थलीकरण के जोखिमों को देखते हुए वैज्ञानिक योजना तथा दीर्घकालीन देखभाल आवश्यक है।",
+        "इस मिशन में स्थानीय परिस्थितियों के अनुसार उपयुक्त देशी प्रजातियों का रोपण और पारिस्थितिक पुनर्स्थापन प्रस्तावित है।"
+      ],
+    },
+  },
+
+  "democracy-fund": {
+    id: "democracy-fund",
+    slug: "democracy-fund",
+    category: {
+      en: "Constitutional Rights & Accountability",
+      hi: "संवैधानिक अधिकार और जवाबदेही",
+    },
+    title: {
+      en: "Democracy Fund",
+      hi: "लोकतंत्र फंड",
+    },
+    shortDescription: {
+      en: "Legal research, civic initiatives and documented work on equality, corruption and public accountability.",
+      hi: "समानता, भ्रष्टाचार और सार्वजनिक जवाबदेही से जुड़े कानूनी अध्ययन और नागरिक पहलों के लिए।",
+    },
+    coverImage: "/funds/democracy-fund-people-flag.jpeg",
+    heroTagline: {
+      en: "Constitutional Rights & Accountability",
+      hi: "संवैधानिक अधिकार और जवाबदेही",
+    },
+    heroHeading: {
+      en: "DEMOCRACY FUND",
+      hi: "लोकतंत्र फंड",
+    },
+    heroSubheading: {
+      en: "Constitutional Rights & Accountability",
+      hi: "संवैधानिक अधिकार और जवाबदेही",
+    },
+    descriptionParagraphs: {
+      en: [
+        "Legal research, civic initiatives and documented work on equality, corruption and public accountability.",
+      ],
+      hi: [
+        "समानता, भ्रष्टाचार और सार्वजनिक जवाबदेही से जुड़े कानूनी अध्ययन और नागरिक पहलों के लिए।",
+      ],
+    },
+  },
+};
