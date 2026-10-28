@@ -85,7 +85,7 @@ export const FUNDS_DATA: Record<FundId, FundContent> = {
     slug: "green-fund",
     category: {
       en: "Great Green Wall Mission",
-      hi: "महान हरित दीवार मिशन",
+      hi: "Great Green Wall Mission",
     },
     title: {
       en: "Green Fund",
@@ -93,12 +93,12 @@ export const FUNDS_DATA: Record<FundId, FundContent> = {
     },
     shortDescription: {
       en: "A proposed one-crore-plant restoration mission for vulnerable landscapes around the Aravalli region.",
-      hi: "अरावली क्षेत्र के संवेदनशील भूभागों के लिए प्रस्तावित एक करोड़ पौधों का पुनर्स्थापन मिशन।",
+      hi: "अरावली क्षेत्र के संवेदनशील भूभागों के लिए प्रस्तावित एक करोड़ पेड़ों का पुनर्स्थापन मिशन।",
     },
     coverImage: "/funds/green-fund-aravalli-restoration.jpg",
     heroTagline: {
-      en: "The Great Green Wall Mission",
-      hi: "महान हरित दीवार मिशन",
+      en: "Great Green Wall Mission",
+      hi: "Great Green Wall Mission",
     },
     heroHeading: {
       en: "GREEN FUND",
@@ -106,7 +106,7 @@ export const FUNDS_DATA: Record<FundId, FundContent> = {
     },
     heroSubheading: {
       en: "One Crore Plants. A Long-Term Restoration Mission.",
-      hi: "एक करोड़ पौधे। दीर्घकालीन हरित पुनर्स्थापन अभियान।",
+      hi: "एक करोड़ पेड़। दीर्घकालीन हरित पुनर्स्थापन अभियान।",
     },
     descriptionParagraphs: {
       en: [
@@ -115,7 +115,7 @@ export const FUNDS_DATA: Record<FundId, FundContent> = {
         "The mission proposes site-specific plantations and ecological restoration, using suitable native species and maintenance practices."
       ],
       hi: [
-        "महान हरित दीवार मिशन अरावली पर्वतमाला और उससे जुड़े शुष्क एवं संवेदनशील भूभागों में प्रस्तावित पर्यावरणीय पुनर्स्थापन की पहल है।",
+        "Great Green Wall Mission अरावली पर्वतमाला और उससे जुड़े शुष्क एवं संवेदनशील भूभागों में प्रस्तावित पर्यावरणीय पुनर्स्थापन की पहल है।",
         "अरावली का भूभाग पश्चिमी और उत्तर-पश्चिमी भारत के पर्यावरण में महत्वपूर्ण भूमिका निभाता है। भूमि क्षरण, वनस्पति में कमी और मरुस्थलीकरण के जोखिमों को देखते हुए वैज्ञानिक योजना तथा दीर्घकालीन देखभाल आवश्यक है।",
         "इस मिशन में स्थानीय परिस्थितियों के अनुसार उपयुक्त देशी प्रजातियों का रोपण और पारिस्थितिक पुनर्स्थापन प्रस्तावित है।"
       ],
@@ -126,36 +126,38 @@ export const FUNDS_DATA: Record<FundId, FundContent> = {
     id: "democracy-fund",
     slug: "democracy-fund",
     category: {
-      en: "Constitutional Rights & Accountability",
-      hi: "संवैधानिक अधिकार और जवाबदेही",
+      en: "Constitutional Rights & Public Accountability",
+      hi: "संवैधानिक अधिकार एवं सार्वजनिक जवाबदेही",
     },
     title: {
       en: "Democracy Fund",
       hi: "लोकतंत्र फंड",
     },
     shortDescription: {
-      en: "Legal research, civic initiatives and documented work on equality, corruption and public accountability.",
-      hi: "समानता, भ्रष्टाचार और सार्वजनिक जवाबदेही से जुड़े कानूनी अध्ययन और नागरिक पहलों के लिए।",
+      en: "Public-interest legal research, constitutional rights initiatives, civic education and peaceful public activities focused on equality before the law and accountable governance.",
+      hi: "जनहित से जुड़े कानूनी अध्ययन, संवैधानिक अधिकारों, नागरिक जागरूकता तथा कानून के समक्ष समानता और जवाबदेह शासन से संबंधित शांतिपूर्ण सार्वजनिक गतिविधियों के लिए।",
     },
     coverImage: "/funds/democracy-fund-people-flag.jpeg",
     heroTagline: {
-      en: "Constitutional Rights & Accountability",
-      hi: "संवैधानिक अधिकार और जवाबदेही",
+      en: "Constitutional Rights & Public Accountability",
+      hi: "संवैधानिक अधिकार एवं सार्वजनिक जवाबदेही",
     },
     heroHeading: {
       en: "DEMOCRACY FUND",
       hi: "लोकतंत्र फंड",
     },
     heroSubheading: {
-      en: "Constitutional Rights & Accountability",
-      hi: "संवैधानिक अधिकार और जवाबदेही",
+      en: "Equality. Accountability. Constitutional Rights.",
+      hi: "समानता। जवाबदेही। संवैधानिक अधिकार।",
     },
     descriptionParagraphs: {
       en: [
-        "Legal research, civic initiatives and documented work on equality, corruption and public accountability.",
+        "The Democracy Fund supports public-interest legal research, constitutional rights initiatives, civic education and peaceful public activities focused on equality before the law and accountable governance.",
+        "The programme will document governance concerns, examine legal and administrative practices, and provide public information about the rights and remedies available to citizens.",
       ],
       hi: [
-        "समानता, भ्रष्टाचार और सार्वजनिक जवाबदेही से जुड़े कानूनी अध्ययन और नागरिक पहलों के लिए।",
+        "लोकतंत्र फंड का उद्देश्य जनहित से जुड़े कानूनी अध्ययन, संवैधानिक अधिकारों, नागरिक जागरूकता तथा कानून के समक्ष समानता और जवाबदेह शासन से संबंधित शांतिपूर्ण सार्वजनिक गतिविधियों को सहयोग देना है।",
+        "इस कार्यक्रम के अंतर्गत शासन संबंधी समस्याओं का दस्तावेज़ीकरण, कानूनों और प्रशासनिक व्यवस्थाओं का अध्ययन तथा नागरिकों के अधिकारों एवं उपलब्ध कानूनी उपायों की जानकारी प्रदान की जाएगी।",
       ],
     },
   },
