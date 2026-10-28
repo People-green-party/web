@@ -16,6 +16,8 @@ import {
   SITE_DETAILS,
 } from "../../lib/siteDetails";
 
+import { FundId, FUNDS_DATA } from "../../data/fundsData";
+
 type RazorpayPaymentResponse = {
   razorpay_payment_id: string;
   razorpay_order_id: string;
@@ -68,11 +70,17 @@ const translations = {
   en: {
     hero: {
       titleLines: [
-        "Fight for Bringing",
-        "the Change. Fight for",
-        "Democracy."
+        "Three Funds.",
+        "Three Missions."
       ],
-      subTitle: "Every Indian Deserves a System That Works For Them",
+      subTitle: "Explore the political, environmental and democratic accountability programmes of People's Green.",
+      intro: "Indian Peoples Green Party is built on three core pillars: clean and accountable political governance, long-term ecological restoration, and the unyielding defence of constitutional rights. Your voluntary contributions are channelled through three dedicated funds:",
+      fund1Title: "People's Green Fund",
+      fund1Desc: "Political organisation, public dialogue, and grassroots policy work focused on accountable governance without VIP privileges.",
+      fund2Title: "Green Fund",
+      fund2Desc: "A proposed one-crore-plant restoration mission for vulnerable landscapes around the Aravalli range.",
+      fund3Title: "Democracy Fund",
+      fund3Desc: "Legal research, civic initiatives, and documented work on equality, corruption, and public accountability.",
       p1: "You have watched it happen. A VIP convoy brings an entire road to a standstill while hundreds of ordinary citizens sit waiting — late for work, late for school, late for a hospital appointment. Nobody is held accountable. Nobody is even questioned.",
       p2: "You have read about it. A forest that communities depended on for generations, cleared overnight for a project that somehow bypassed every environmental safeguard that existed to prevent exactly this. The paperwork was approved. The trees are gone.",
       p3: "You have lived it. A road, a bridge, a civic facility promised to your neighbourhood — funded, announced, inaugurated — and then abandoned. The money was spent. The work was not done. And nothing happened to anyone responsible.",
@@ -80,6 +88,11 @@ const translations = {
       p5: "Peoples Green Party is changing that.",
       p6: "We are a political and civic movement rooted in Rajasthan, fighting for every Indian citizen’s constitutional right to equality, dignity, and a government that answers to the people who fund it.",
       p7: "Fight with us. Fight for Bringing the Change."
+    },
+    fundsSection: {
+      tag: "Programmes & Funds",
+      title: "Our Three Dedicated Funds",
+      subtitle: "Each fund has its own distinct mission, roadmap, and public accountability. Explore their detailed programmes below."
     },
     form: {
       title: "Contribute to Indian Peoples Green Party",
@@ -159,11 +172,17 @@ const translations = {
   hi: {
     hero: {
       titleLines: [
-        "बदलाव लाने के लिए",
-        "संघर्ष करें। लोकतंत्र के लिए",
-        "संघर्ष करें।"
+        "तीन कोष।",
+        "तीन उद्देश्य।"
       ],
-      subTitle: "हर भारतीय एक ऐसे सिस्टम का हकदार है जो उनके लिए काम करे",
+      subTitle: "पीपुल्स ग्रीन के राजनीतिक, पर्यावरणीय और लोकतांत्रिक जवाबदेही कार्यक्रमों के बारे में जानें।",
+      intro: "इंडियन पीपुल्स ग्रीन पार्टी तीन बुनियादी संकल्पों पर खड़ी है: स्वच्छ और जवाबदेह राजनीतिक व्यवस्था, दीर्घकालिक पर्यावरणीय पुनर्स्थापन, और संवैधानिक अधिकारों की रक्षा। पूर्ण पारदर्शिता सुनिश्चित करने के लिए आपका सहयोग तीन समर्पित कोषों में लगाया जाता है:",
+      fund1Title: "पीपुल्स ग्रीन फंड (राजनीतिक कोष)",
+      fund1Desc: "जवाबदेह शासन से जुड़े राजनीतिक संगठन, जनसंवाद और नीतिगत कार्यों के लिए।",
+      fund2Title: "ग्रीन फंड (हरित पुनर्स्थापन मिशन)",
+      fund2Desc: "अरावली क्षेत्र के संवेदनशील भूभागों के लिए प्रस्तावित एक करोड़ पौधों का महान हरित दीवार मिशन।",
+      fund3Title: "लोकतंत्र फंड (संवैधानिक अधिकार)",
+      fund3Desc: "समानता, भ्रष्टाचार और सार्वजनिक जवाबदेही से जुड़े कानूनी अध्ययन और नागरिक पहलों के लिए।",
       p1: "आपने इसे होते हुए देखा है। एक वीआईपी काफिला पूरी सड़क को ठप कर देता है जबकि सैकड़ों आम नागरिक बैठे इंतजार करते हैं — काम के लिए देर, स्कूल के लिए देर, अस्पताल के अपॉइंटमेंट के लिए देर। किसी को जवाबदेह नहीं ठहराया जाता। किसी से पूछताछ तक नहीं की जाती।",
       p2: "आपने इसके बारे में पढ़ा है। एक जंगल जिस पर पीढ़ियों से समुदाय निर्भर थे, रातों-रात एक ऐसी परियोजना के लिए साफ कर दिया गया जिसने किसी तरह हर उस पर्यावरणीय सुरक्षा उपाय को बायपास कर दिया जो इसे रोकने के लिए बनाया गया था। कागजी कार्रवाई मंजूर हो गई। पेड़ गायब हो गए।",
       p3: "आपने इसे जिया है। आपके पड़ोस में वादा की गई एक सड़क, एक पुल, एक नागरिक सुविधा — वित्त पोषित, घोषित, उद्घाटित — और फिर लावारिस छोड़ दी गई। पैसा खर्च हो गया। काम नहीं हुआ। और जिम्मेदार किसी भी व्यक्ति का कुछ नहीं बिगड़ा।",
@@ -171,6 +190,11 @@ const translations = {
       p5: "पीपल्स ग्रीन पार्टी इसे बदल रही है।",
       p6: "हम राजस्थान में निहित एक राजनीतिक और नागरिक आंदोलन हैं, जो हर भारतीय नागरिक के समानता, गरिमा के संवैधानिक अधिकार और एक ऐसी सरकार के लिए लड़ रहे हैं जो उन लोगों को जवाब देती है जो इसे वित्तपोषित करते हैं।",
       p7: "हमारे साथ लड़ें। बदलाव लाने के लिए लड़ें।"
+    },
+    fundsSection: {
+      tag: "कार्यक्रम एवं कोष",
+      title: "हमारे तीन समर्पित कोष",
+      subtitle: "प्रत्येक कोष की अपनी विशिष्ट कार्यप्रणाली, उद्देश्य और पारदर्शी रिपोर्टिंग है। विस्तार से जानने के लिए किसी भी कोष पर क्लिक करें।"
     },
     form: {
       title: "इंडियन पीपल्स ग्रीन पार्टी को योगदान दें",
@@ -249,38 +273,6 @@ const translations = {
   }
 };
 
-// --- Helper Component: Image with Fallback ---
-const ImageWithFallback = ({
-  src,
-  fallback,
-  alt,
-  className
-}: {
-  src: string;
-  fallback: string;
-  alt: string;
-  className?: string;
-}) => {
-  const [imgSrc, setImgSrc] = useState(src);
-
-  React.useEffect(() => {
-    setImgSrc(src);
-  }, [src]);
-
-  return (
-    <img
-      src={imgSrc}
-      alt={alt}
-      className={className}
-      onError={() => {
-        if (imgSrc !== fallback) {
-          setImgSrc(fallback);
-        }
-      }}
-    />
-  );
-};
-
 // --- 4. Main Page Component ---
 
 const DonationPageContent = () => {
@@ -301,6 +293,17 @@ const DonationPageContent = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authStatus, setAuthStatus] = useState<"checking" | "authenticated" | "guest">("checking");
   const [pendingPaymentId, setPendingPaymentId] = useState("");
+  const [selectedFund, setSelectedFund] = useState<FundId>("peoples-green-fund");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const f = params.get("fund");
+      if (f === "peoples-green-fund" || f === "green-fund" || f === "democracy-fund") {
+        setSelectedFund(f);
+      }
+    }
+  }, []);
   const [form, setForm] = useState({
     citizen: "" as "" | "yes" | "no",
     fullName: "",
@@ -465,7 +468,7 @@ const DonationPageContent = () => {
     }
     setSubmitting(true);
     try {
-      const legacyDonationPayload = {
+      const donorDetailsPayload = {
         fullName: form.fullName.trim(),
         phone: phoneDigits,
         pan: panRequired ? normalizedPan : undefined,
@@ -475,16 +478,24 @@ const DonationPageContent = () => {
         state: form.state.trim(),
         city: form.city.trim(),
         pincode: form.pincode,
+        fund: selectedFund,
       };
       const donationPayload = {
-        ...legacyDonationPayload,
+        ...donorDetailsPayload,
         isIndianCitizen: true,
         declarationAccepted: isDeclared,
         policiesAccepted: acceptedPolicies,
-        policyVersion: "2026-09-29",
+        policyVersion: "2026-10-28",
+      };
+      const compatibilityPayload = {
+        ...donorDetailsPayload,
+        isIndianCitizen: true,
+        declarationAccepted: isDeclared,
+        policiesAccepted: acceptedPolicies,
+        policyVersion: "2026-10-28",
       };
       const createOrder = (
-        payload: typeof donationPayload | typeof legacyDonationPayload,
+        payload: typeof donationPayload | typeof compatibilityPayload,
         suppressErrorLog = false,
       ) =>
         fetchApi("donations/razorpay/order", {
@@ -503,11 +514,10 @@ const DonationPageContent = () => {
       try {
         order = await createOrder(donationPayload, true);
       } catch (error) {
-        // During a rolling deploy, the previous API rejects the newly added
-        // consent fields as non-whitelisted. Validation runs before a donation
-        // is created, so this one-time compatibility retry cannot duplicate it.
+        // During a rolling deploy, the previous API may reject the consent fields.
+        // Retry without those fields while keeping the selected fund attached.
         if (!(error instanceof ApiRequestError) || error.status !== 400) throw error;
-        order = await createOrder(legacyDonationPayload);
+        order = await createOrder(compatibilityPayload);
       }
       await loadRazorpayCheckout();
       if (!window.Razorpay) throw new Error("Unable to load secure checkout.");
@@ -607,20 +617,37 @@ const DonationPageContent = () => {
       <Navbar />
 
       {/* Main Content: Text + Form */}
-      <section className="w-full flex justify-center py-[40px] lg:py-[80px]">
+      <section className="w-full flex justify-center py-[30px] lg:py-[60px]">
         <div className="mx-auto w-full max-w-[1320px] px-4 lg:px-8 flex flex-col-reverse gap-[48px] items-stretch lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(440px,560px)] lg:gap-[64px] lg:items-start">
 
           {/* LEFT: Text Section */}
           <div className="min-w-0 w-full flex flex-col gap-[20px]">
-            <h1 className="font-['Familjen_Grotesk'] font-bold text-[clamp(28px,4.2vw,60px)] leading-[1.15] text-[#04330B] tracking-[-0.5px]">
-              {t.hero.titleLines.map((line) => (
-                <span key={line} className="block lg:whitespace-nowrap">{line}</span>
-              ))}
+            <h1 className="font-['Familjen_Grotesk'] font-bold text-[clamp(42px,5.8vw,76px)] leading-[0.98] text-[#04330B] tracking-[-1.5px]">
+              {t.hero.titleLines.join(" ")}
             </h1>
 
-            <p className="font-['Familjen_Grotesk'] font-bold text-[16px] lg:text-[20px] text-[#04330B] leading-[1.4]">
+            <p className={`font-['Familjen_Grotesk'] font-bold text-[16px] lg:text-[18px] text-[#04330B] leading-[1.4]${language === 'hi' ? ' lg:whitespace-nowrap' : ''}`}>
               {t.hero.subTitle}
             </p>
+
+            {/* Three fund intro box */}
+            <div className="rounded-[14px] border border-[#DCEBE2] bg-[#F6FAF7] p-5 flex flex-col gap-[14px]">
+              <p className="text-[14px] lg:text-[15px] leading-[1.65] text-[#2D3A31]">{t.hero.intro}</p>
+              <div className="flex flex-col gap-[10px]">
+                {[
+                  { title: t.hero.fund1Title, desc: t.hero.fund1Desc, href: "/donation/peoples-green-fund" },
+                  { title: t.hero.fund2Title, desc: t.hero.fund2Desc, href: "/donation/green-fund" },
+                  { title: t.hero.fund3Title, desc: t.hero.fund3Desc, href: "/donation/democracy-fund" },
+                ].map((fund) => (
+                  <div key={fund.href} className="flex gap-3 items-start">
+                    <span className="mt-[3px] w-[8px] h-[8px] shrink-0 rounded-full bg-[#04330B]" aria-hidden="true" />
+                    <p className="text-[13px] lg:text-[14px] leading-[1.6] text-[#2D3A31]">
+                      <span className="font-bold text-[#04330B]">{fund.title}:</span>{" "}{fund.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             <div className="flex flex-col gap-[18px] font-sans text-[15px] lg:text-[17.5px] leading-[1.6] text-[#2D3A31]">
               <p>{t.hero.p1}</p>
@@ -674,6 +701,27 @@ const DonationPageContent = () => {
               ) : null}
 
               <div className={formStep === 1 ? "contents" : "hidden"}>
+              <div className="flex flex-col gap-2">
+                <FormFieldLabel className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">
+                  {language === "hi" ? "कोष का चयन करें" : "Select Fund Subdivision"}
+                </FormFieldLabel>
+                <select
+                  value={selectedFund}
+                  onChange={(e) => setSelectedFund(e.target.value as FundId)}
+                  className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-semibold text-[15px] text-[#04330B] bg-white focus:outline-none focus:border-[#04330B]"
+                >
+                  <option value="peoples-green-fund">
+                    {language === "hi" ? "पीपुल्स ग्रीन फंड (राजनीतिक संगठन)" : "People's Green Fund (Political Organisation)"}
+                  </option>
+                  <option value="green-fund">
+                    {language === "hi" ? "ग्रीन फंड (महान हरित दीवार मिशन)" : "Green Fund (Great Green Wall Mission)"}
+                  </option>
+                  <option value="democracy-fund">
+                    {language === "hi" ? "लोकतंत्र फंड (संवैधानिक अधिकार व जवाबदेही)" : "Democracy Fund (Constitutional Rights & Accountability)"}
+                  </option>
+                </select>
+              </div>
+
               <fieldset className="flex flex-col gap-2">
                 <legend className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">
                   {t.form.citizen}<RequiredMark />
@@ -872,41 +920,61 @@ const DonationPageContent = () => {
         </div>
       ) : null}
 
-      {/* Campaigns section */}
+      {/* Dedicated Funds Spotlight section */}
       <section className="w-full flex justify-center bg-[#F9FBF9] py-[64px] lg:py-[80px] border-t border-[#EFF5F1]">
         <div className="w-full max-w-[1320px] px-4 lg:px-8 flex flex-col items-center">
-          <h2 className="text-center font-['Familjen_Grotesk'] font-bold text-[28px] md:text-[36px] lg:text-[44px] text-[#04330B] mb-[40px] lg:mb-[48px]">
-            {t.campaigns.title}
+          <h2 className="text-center font-['Familjen_Grotesk'] font-bold text-[28px] md:text-[36px] lg:text-[44px] text-[#04330B] mb-[12px]">
+            {language === "hi" ? "हमारे तीन समर्पित कोष" : "Our Three Dedicated Funds"}
           </h2>
-          <div className="mb-[40px] lg:mb-[48px] w-full max-w-[920px] rounded-[14px] border border-[#DDEEE4] bg-white p-5 text-[14px] leading-6 text-[#2D3A31] shadow-[0px_10px_30px_rgba(0,0,0,0.03)] sm:p-6 sm:text-[15px]">
+          <p className="text-center text-sm md:text-base text-[#587E67] max-w-2xl mb-[40px] lg:mb-[48px]">
+            {language === "hi"
+              ? "प्रत्येक कोष की अपनी विशिष्ट कार्यप्रणाली, उद्देश्य और पारदर्शी रिपोर्टिंग है। विस्तार से जानने के लिए किसी भी कोष पर क्लिक करें।"
+              : "Each fund has its own distinct mission, roadmap, and public accountability. Click any fund to explore its dedicated page."}
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px] lg:gap-[32px] w-full">
+            {(["peoples-green-fund", "green-fund", "democracy-fund"] as FundId[]).map((fundKey) => {
+              const f = FUNDS_DATA[fundKey];
+              const isHi = language === "hi";
+
+              return (
+                <Link
+                  key={fundKey}
+                  href={`/donation/${f.slug}`}
+                  className="bg-white rounded-[18px] overflow-hidden shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-[#EFF5F1] group transition-all duration-300 hover:shadow-[0px_20px_40px_rgba(4,51,11,0.12)] hover:-translate-y-[4px] flex flex-col justify-between"
+                >
+                  <div className="aspect-[16/10] relative overflow-hidden bg-gray-50">
+                    <img
+                      src={f.coverImage}
+                      alt={isHi ? f.title.hi : f.title.en}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute top-3 left-3 bg-[#04330B]/85 backdrop-blur-sm text-emerald-300 text-[11px] font-bold px-2.5 py-1 rounded-full">
+                      {isHi ? f.category.hi : f.category.en}
+                    </div>
+                  </div>
+                  <div className="p-5 flex-1 flex flex-col justify-between gap-3">
+                    <div>
+                      <h3 className="font-['Familjen_Grotesk'] text-lg font-bold text-[#04330B]">
+                        {isHi ? f.title.hi : f.title.en}
+                      </h3>
+                      <p className="text-xs text-[#587E67] leading-relaxed mt-1 line-clamp-3">
+                        {isHi ? f.shortDescription.hi : f.shortDescription.en}
+                      </p>
+                    </div>
+                    <span className="text-xs font-bold text-[#0D5229] group-hover:underline flex items-center gap-1">
+                      {isHi ? "विस्तार से जानें →" : "Know more →"}
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="mt-[40px] lg:mt-[48px] w-full max-w-[920px] rounded-[14px] border border-[#DDEEE4] bg-white p-5 text-[14px] leading-6 text-[#2D3A31] shadow-[0px_10px_30px_rgba(0,0,0,0.03)] sm:p-6 sm:text-[15px]">
             <p><span className="font-bold text-[#04330B]">{t.form.organization}:</span> {SITE_DETAILS.legalName}</p>
             <p className="mt-2">{t.form.voluntaryNotice}</p>
             <p className="mt-2"><span className="font-bold text-[#04330B]">{t.form.paymentMethod}:</span> {t.form.paymentMethodText}</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px] lg:gap-[32px] w-full">
-            {[
-              { en: "/Donation/Accountable.jpeg", hi: "/Donation/Accountable(hindi).png", alt: "Accountable" },
-              { en: "/Donation/Democracy.jpeg", hi: "/Donation/Democracy(hindi).png", alt: "Democracy" },
-              { en: "/Donation/Envronment.jpeg", hi: "/Donation/Envronment(hindi).png", alt: "Environment" }
-            ].map((item, index) => {
-              const currentSrc = language === 'hi' ? item.hi : item.en;
-
-              return (
-                <div
-                  key={index}
-                  className="bg-white rounded-[16px] overflow-hidden shadow-[0px_10px_30px_rgba(0,0,0,0.04)] border border-[#EFF5F1] group transition-all duration-300 hover:shadow-[0px_20px_40px_rgba(4,51,11,0.1)] hover:-translate-y-[4px]"
-                >
-                  <div className="aspect-[959/512] relative overflow-hidden bg-gray-50">
-                    <ImageWithFallback
-                      src={currentSrc}
-                      fallback={item.en}
-                      alt={item.alt}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       </section>
