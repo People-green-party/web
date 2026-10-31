@@ -5,8 +5,18 @@ export type DedicationOccasion =
   | "Wedding"
   | "Anniversary"
   | "Festival"
+  | "New Baby"
+  | "Congratulations"
   | "In Memory Of"
+  | "Just Because"
   | "Other";
+
+export interface OccasionItem {
+  value: DedicationOccasion;
+  label: { en: string; hi: string };
+  tagline: { en: string; hi: string };
+  image?: string;
+}
 
 export interface FundContent {
   id: FundId;
@@ -21,13 +31,60 @@ export interface FundContent {
   descriptionParagraphs: { en: string[]; hi: string[] };
 }
 
-export const OCCASIONS: { value: DedicationOccasion; label: { en: string; hi: string } }[] = [
-  { value: "Birthday", label: { en: "Birthday", hi: "जन्मदिन" } },
-  { value: "Wedding", label: { en: "Wedding", hi: "विवाह" } },
-  { value: "Anniversary", label: { en: "Anniversary", hi: "सालगिरह" } },
-  { value: "Festival", label: { en: "Festival", hi: "त्योहार" } },
-  { value: "In Memory Of", label: { en: "In Memory Of", hi: "स्मृति में" } },
-  { value: "Other", label: { en: "Other", hi: "अन्य" } },
+export const OCCASIONS: OccasionItem[] = [
+  {
+    value: "Birthday",
+    label: { en: "Birthday", hi: "जन्मदिन" },
+    tagline: { en: "One more candle. One more tree.", hi: "एक और मोमबत्ती। एक और पौधा।" },
+    image: "/green-wall/birthday.jpg",
+  },
+  {
+    value: "Wedding",
+    label: { en: "Wedding", hi: "शादी" },
+    tagline: { en: "Two hearts. One greener future.", hi: "दो दिल। एक हरा कल।" },
+    image: "/green-wall/wedding.jpg",
+  },
+  {
+    value: "Anniversary",
+    label: { en: "Anniversary", hi: "सालगिरह" },
+    tagline: { en: "Love that keeps growing.", hi: "प्यार, जो हर साल बढ़े।" },
+    image: "/green-wall/anniversary.jpg",
+  },
+  {
+    value: "Festival",
+    label: { en: "Festival", hi: "त्योहार" },
+    tagline: { en: "Make the celebration grow beyond tonight.", hi: "जश्न एक दिन का। हरियाली बरसों की।" },
+    image: "/green-wall/festival.jpg",
+  },
+  {
+    value: "New Baby",
+    label: { en: "New Baby", hi: "नन्हे मेहमान का स्वागत" },
+    tagline: { en: "A new life. A greener world to grow into.", hi: "एक नई ज़िंदगी। उसके लिए एक हरी दुनिया।" },
+    image: "/green-wall/new-baby.jpg",
+  },
+  {
+    value: "Congratulations",
+    label: { en: "Congratulations", hi: "बधाई" },
+    tagline: { en: "A big moment deserves something lasting.", hi: "बड़ी खुशी के नाम कुछ ऐसा, जो बना रहे।" },
+    image: "/green-wall/congratulations.jpg",
+  },
+  {
+    value: "In Memory Of",
+    label: { en: "In Memory", hi: "स्मृति में" },
+    tagline: { en: "Let their memory grow.", hi: "यादें, जो हरियाली बनकर जीवित रहें।" },
+    image: "/green-wall/in-memory.jpg",
+  },
+  {
+    value: "Just Because",
+    label: { en: "Just Because", hi: "बस यूँ ही" },
+    tagline: { en: "No occasion needed. Earth is reason enough.", hi: "बहाने की क्या ज़रूरत? धरती ही काफ़ी है।" },
+    image: "/green-wall/just-because.jpg",
+  },
+  {
+    value: "Other",
+    label: { en: "Other", hi: "अन्य" },
+    tagline: { en: "Every tree leaves the world greener.", hi: "हर पौधा धरती को और हरा बनाता है।" },
+  },
 ];
 
 export const PLANT_PRESETS = [
@@ -85,39 +142,37 @@ export const FUNDS_DATA: Record<FundId, FundContent> = {
     slug: "green-fund",
     category: {
       en: "Great Green Wall Mission",
-      hi: "Great Green Wall Mission",
+      hi: "महान हरित दीवार मिशन",
     },
     title: {
-      en: "Green Fund",
-      hi: "ग्रीन फंड",
+      en: "The Great Green Wall",
+      hi: "महान हरित दीवार",
     },
     shortDescription: {
-      en: "A proposed one-crore-plant restoration mission for vulnerable landscapes around the Aravalli region.",
-      hi: "अरावली क्षेत्र के संवेदनशील भूभागों के लिए प्रस्तावित एक करोड़ पेड़ों का पुनर्स्थापन मिशन।",
+      en: "Not a wall of bricks. A wall of life. One crore native plants for vulnerable landscapes around the Aravallis.",
+      hi: "ईंटों की नहीं। ज़िंदगी की दीवार। अरावली के संवेदनशील भूभाग में एक करोड़ देशी पौधों का जीवन अभियान।",
     },
     coverImage: "/funds/green-fund-aravalli-restoration.jpg",
     heroTagline: {
-      en: "Great Green Wall Mission",
-      hi: "Great Green Wall Mission",
+      en: "GREAT GREEN WALL MISSION",
+      hi: "महान हरित दीवार मिशन",
     },
     heroHeading: {
-      en: "GREEN FUND",
-      hi: "ग्रीन फंड",
+      en: "THE GREAT GREEN WALL MISSION",
+      hi: "महान हरित दीवार मिशन",
     },
     heroSubheading: {
-      en: "One Crore Plants. A Long-Term Restoration Mission.",
-      hi: "एक करोड़ पेड़। दीर्घकालीन हरित पुनर्स्थापन अभियान।",
+      en: "Not a wall of bricks. A wall of life.",
+      hi: "ईंटों की नहीं। ज़िंदगी की दीवार।",
     },
     descriptionParagraphs: {
       en: [
-        "The Great Green Wall Mission is a proposed ecological restoration initiative focused on vulnerable landscapes around the Aravalli range and adjoining semi-arid regions.",
-        "The Aravalli landscape plays an important ecological role in western and northwestern India. Land degradation, loss of vegetation and desertification risks require scientifically planned restoration and long-term care.",
-        "The mission proposes site-specific plantations and ecological restoration, using suitable native species and maintenance practices."
+        "The Aravallis have stood for ages. Now the landscapes around them need a little help from us. We're working towards a living green barrier in vulnerable areas around the Aravalli landscape. Not with concrete. With native plants. Living roots. And the care it takes to keep them alive.",
+        "One crore plants is our dream for Phase One. Your one plant can be where it begins.",
       ],
       hi: [
-        "Great Green Wall Mission अरावली पर्वतमाला और उससे जुड़े शुष्क एवं संवेदनशील भूभागों में प्रस्तावित पर्यावरणीय पुनर्स्थापन की पहल है।",
-        "अरावली का भूभाग पश्चिमी और उत्तर-पश्चिमी भारत के पर्यावरण में महत्वपूर्ण भूमिका निभाता है। भूमि क्षरण, वनस्पति में कमी और मरुस्थलीकरण के जोखिमों को देखते हुए वैज्ञानिक योजना तथा दीर्घकालीन देखभाल आवश्यक है।",
-        "इस मिशन में स्थानीय परिस्थितियों के अनुसार उपयुक्त देशी प्रजातियों का रोपण और पारिस्थितिक पुनर्स्थापन प्रस्तावित है।"
+        "अरावली सदियों से खड़ी है। अब उसके आसपास के नाज़ुक इलाकों को हमारी ज़रूरत है। हम अरावली के संवेदनशील भूभाग में हरियाली की एक जीवित दीवार विकसित करने की दिशा में काम कर रहे हैं। सीमेंट से नहीं। देशी पौधों से। उनकी जड़ों से। और उन्हें जीवित रखने वाली लगातार देखभाल से।",
+        "पहले चरण का सपना है एक करोड़ पौधे। शुरुआत आपके एक पौधे से भी हो सकती है।",
       ],
     },
   },
