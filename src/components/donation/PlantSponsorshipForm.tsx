@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useLanguage } from "../LanguageContext";
 import { OCCASIONS, PLANT_PRESETS, COST_PER_PLANT, DedicationOccasion } from "../../data/fundsData";
 import { DonationModal } from "./DonationModal";
@@ -21,23 +21,18 @@ export function PlantSponsorshipForm({
 
   const [plantCount, setPlantCount] = useState<number>(1);
   const [customInput, setCustomInput] = useState<string>("1");
-  const [occasion, setOccasion] = useState<DedicationOccasion>(
+  const [localOccasion, setLocalOccasion] = useState<DedicationOccasion>(
     selectedOccasion || "Birthday"
   );
+  const occasion = selectedOccasion ?? localOccasion;
   const [dedicationName, setDedicationName] = useState<string>("");
   const [publicConsent, setPublicConsent] = useState<boolean>(false);
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (selectedOccasion) {
-      setOccasion(selectedOccasion);
-    }
-  }, [selectedOccasion]);
-
   const handleOccasionChange = (val: DedicationOccasion) => {
-    setOccasion(val);
+    setLocalOccasion(val);
     onOccasionChange?.(val);
   };
 
@@ -92,7 +87,7 @@ export function PlantSponsorshipForm({
         {/* Form Title */}
         <div className="pb-4 border-b border-[#E7EFEA]">
           <h3 className="font-['Familjen_Grotesk'] text-[22px] sm:text-[24px] font-bold text-[#04330B]">
-            {isHi ? "पौधों का प्रायोजन करें" : "Sponsor Your Plants"}
+            {isHi ? "पेड़ों का प्रायोजन करें" : "Sponsor Your Plants"}
           </h3>
         </div>
 
@@ -100,7 +95,7 @@ export function PlantSponsorshipForm({
         <div className="mt-4">
           <label className="block text-[13px] font-semibold text-[#254B34] mb-2.5">
             <span className="mr-1">💡</span>
-            {isHi ? "कितने पौधे?" : "How many plants?"}
+            {isHi ? "कितने पेड़?" : "How many plants?"}
           </label>
           <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
             {PLANT_PRESETS.map((preset) => {
@@ -119,7 +114,7 @@ export function PlantSponsorshipForm({
                   }`}
                 >
                   <span className="text-[13px] sm:text-[14px] font-bold text-[#04330B]">
-                    {preset.count} {isHi ? (preset.count === 1 ? "पौधा" : "पौधे") : preset.count === 1 ? "Plant" : "Plants"}
+                    {preset.count} {isHi ? "पेड़" : preset.count === 1 ? "Plant" : "Plants"}
                   </span>
                   <span className="text-[11px] sm:text-[11.5px] font-semibold text-[#587E67] mt-0.5">
                     ₹{preset.amount.toLocaleString("en-IN")}
@@ -133,7 +128,7 @@ export function PlantSponsorshipForm({
         {/* Custom number of plants */}
         <div className="mt-4">
           <label htmlFor="custom-plants" className="block text-[13px] font-semibold text-[#254B34] mb-1.5">
-            {isHi ? "अन्य संख्या में पौधे" : "Other number of plants"}
+            {isHi ? "अन्य संख्या में पेड़" : "Other number of plants"}
           </label>
           <div className="relative">
             <input
@@ -149,7 +144,7 @@ export function PlantSponsorshipForm({
               className="w-full h-[44px] rounded-[10px] border border-[#CFE0D5] bg-white px-3.5 pr-20 font-semibold text-[15px] text-[#173B27] placeholder-[#83988A] focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-all"
             />
             <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[#587E67]">
-              {isHi ? "पौधे" : "plants"}
+              {isHi ? "पेड़" : "plants"}
             </span>
           </div>
         </div>
@@ -230,13 +225,13 @@ export function PlantSponsorshipForm({
         {/* Sponsorship Summary */}
         <div className="mt-4 rounded-[12px] bg-[#F5F9F6] border border-[#E0ECE4] p-3 space-y-1.5">
           <div className="flex justify-between text-xs text-[#587E67]">
-            <span>{isHi ? "पौधों की संख्या" : "Plants selected"}:</span>
+            <span>{isHi ? "पेड़ों की संख्या" : "Plants selected"}:</span>
             <span className="font-bold text-[#173B27]">
-              {plantCount} {isHi ? (plantCount === 1 ? "पौधा" : "पौधे") : plantCount === 1 ? "Plant" : "Plants"}
+              {plantCount} {isHi ? "पेड़" : plantCount === 1 ? "Plant" : "Plants"}
             </span>
           </div>
           <div className="flex justify-between text-xs text-[#587E67]">
-            <span>{isHi ? "प्रति पौधा योगदान" : "Cost per plant"}:</span>
+            <span>{isHi ? "प्रति पेड़ योगदान" : "Cost per plant"}:</span>
             <span className="font-bold text-[#173B27]">₹{COST_PER_PLANT.toLocaleString("en-IN")}</span>
           </div>
           <div className="pt-1.5 border-t border-[#DCEBE2] flex justify-between items-baseline">
@@ -260,8 +255,8 @@ export function PlantSponsorshipForm({
 
         <p className="mt-2.5 text-center text-[11px] text-[#587E67]">
           {isHi
-            ? "डिजिटल समर्पण प्रमाणपत्र भुगतान के बाद तुरंत मिल जाएगा।"
-            : "Digital dedication certificate is generated immediately after payment."}
+            ? "भुगतान का सत्यापन पूरा होने के बाद डिजिटल समर्पण प्रमाणपत्र उपलब्ध होगा।"
+            : "Your digital dedication certificate is available after payment verification."}
         </p>
       </div>
 

@@ -1,68 +1,32 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { EMPTY_DONATION_FORM, parseDonationFormDraft } from "../../lib/donationFormDraft";
 import Link from "next/link";
 import { useLanguage } from "../../components/LanguageContext";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { ApiRequestError, fetchApi } from "../../lib/api";
-import { getAuthHeader } from "../../lib/supabaseClient";
 import { DonationReceipt, RECEIPT_STORAGE_KEY } from "../../lib/donationReceipt";
 import { FormFieldLabel, RequiredMark } from "../../components/FormFieldLabel";
+import { DonationPaymentNotice } from "../../components/donation/DonationPaymentNotice";
+import { useDonationPaymentConfig } from "../../components/donation/useDonationPaymentConfig";
+import { DonationAttemptNotice, useDonationAttemptGuard } from "../../components/donation/DonationAttemptGuard";
+import { donationAmountErrorMessage, getDonationPaymentAttempt, paymentInitiationUncertainMessage, validateDonationPaymentAmount, type DonationPaymentAttempt } from "../../lib/donationPayment";
+import { parseCcavenueOrder, saveCcavenueResultReference, submitCcavenueCheckout } from "../../lib/ccavenueCheckout";
 import {
   DONATION_PRESET_AMOUNTS,
-  MAX_DONATION_AMOUNT,
-  MIN_DONATION_AMOUNT,
   SITE_DETAILS,
 } from "../../lib/siteDetails";
 
 import { FundId, FUNDS_DATA } from "../../data/fundsData";
 
-type RazorpayPaymentResponse = {
-  razorpay_payment_id: string;
-  razorpay_order_id: string;
-  razorpay_signature: string;
-};
-
-type RazorpayOptions = {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  prefill: { name: string; contact: string; email?: string };
-  theme: { color: string };
-  handler: (response: RazorpayPaymentResponse) => void | Promise<void>;
-  modal?: { ondismiss: () => void };
-};
-
-type PaymentOutcome = "idle" | "cancelled" | "failed" | "pending-verification" | "success";
+type PaymentOutcome = "idle" | "cancelled" | "failed" | "pending-verification" | "test-success" | "success";
 const DONATION_DRAFT_STORAGE_KEY = "pgp-donation-draft";
+const subscribeToHydration = () => () => {};
+const browserSnapshot = () => true;
+const serverSnapshot = () => false;
 
-declare global {
-  interface Window {
-    Razorpay?: new (options: RazorpayOptions) => { open: () => void };
-  }
-}
-
-function loadRazorpayCheckout() {
-  return new Promise<void>((resolve, reject) => {
-    if (window.Razorpay) return resolve();
-    const existing = document.querySelector<HTMLScriptElement>('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
-    if (existing) {
-      existing.addEventListener("load", () => resolve(), { once: true });
-      existing.addEventListener("error", () => reject(new Error("Unable to load secure checkout.")), { once: true });
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Unable to load secure checkout."));
-    document.body.appendChild(script);
-  });
-}
 
 // --- 1. Translation Data ---
 
@@ -105,8 +69,6 @@ const translations = {
       stepContribution: "Make Donation",
       continue: "Continue →",
       back: "← Back",
-      amountRange: "Transaction amount",
-      maximumPending: "Maximum per-transaction amount: awaiting approval from PGP's authorised team.",
       citizen: "Are you an Indian citizen?",
       yes: "Yes",
       no: "No",
@@ -133,11 +95,6 @@ const translations = {
       receiptTitle: "Donation confirmed",
       receiptNumber: "Receipt number",
       downloadReceipt: "Download Receipt (PDF)",
-      authTitle: "Join or log in before donating",
-      authText: "For verified contribution records and access to your receipt, please join the party or log in to your existing account first.",
-      joinFirst: "Join Us",
-      loginFirst: "Log In",
-      checkingAccount: "Checking your account…",
       successModalTitle: "Thank you for your donation!",
       successModalText: "Your contribution has been confirmed. To download your payment receipt, go to your dashboard.",
       goDashboard: "Go to Dashboard",
@@ -155,8 +112,6 @@ const translations = {
         policies: "Please accept the Terms & Conditions and Refund & Cancellation Policy to continue.",
         required: "Please complete all required fields.",
         phone: "Please enter a valid 10-digit mobile number.",
-        amount: "Donation amount must be a whole number of at least ₹1.",
-        amountMaximum: "The contribution exceeds the approved maximum transaction amount.",
         pincode: "Please enter a valid 6-digit PIN code.",
         pan: "Please enter a valid PAN, for example ABCDE1234F.",
         success: "Thank you! Your donation has been confirmed.",
@@ -207,8 +162,6 @@ const translations = {
       stepContribution: "दान करें",
       continue: "आगे बढ़ें →",
       back: "← पीछे",
-      amountRange: "लेन-देन राशि",
-      maximumPending: "प्रति लेन-देन अधिकतम राशि: PGP की अधिकृत टीम की स्वीकृति लंबित है।",
       citizen: "क्या आप भारतीय नागरिक हैं?",
       yes: "हाँ",
       no: "नहीं",
@@ -235,11 +188,6 @@ const translations = {
       receiptTitle: "दान की पुष्टि हो गई",
       receiptNumber: "रसीद संख्या",
       downloadReceipt: "रसीद PDF डाउनलोड करें",
-      authTitle: "दान करने से पहले जुड़ें या लॉगिन करें",
-      authText: "सत्यापित योगदान रिकॉर्ड और अपनी रसीद प्राप्त करने के लिए पहले पार्टी से जुड़ें या अपने मौजूदा खाते में लॉगिन करें।",
-      joinFirst: "हमसे जुड़ें",
-      loginFirst: "लॉगिन करें",
-      checkingAccount: "आपका खाता जाँचा जा रहा है…",
       successModalTitle: "आपके योगदान के लिए धन्यवाद!",
       successModalText: "आपके योगदान की पुष्टि हो गई है। भुगतान की रसीद डाउनलोड करने के लिए अपने डैशबोर्ड पर जाएँ।",
       goDashboard: "डैशबोर्ड पर जाएँ",
@@ -257,8 +205,6 @@ const translations = {
         policies: "कृपया आगे बढ़ने के लिए नियम और शर्तें तथा रिफंड और रद्दीकरण नीति स्वीकार करें।",
         required: "कृपया सभी आवश्यक जानकारी भरें।",
         phone: "कृपया 10 अंकों का सही मोबाइल नंबर दर्ज करें।",
-        amount: "दान राशि कम से कम ₹1 की पूर्ण संख्या होनी चाहिए।",
-        amountMaximum: "योगदान राशि स्वीकृत अधिकतम लेन-देन सीमा से अधिक है।",
         pincode: "कृपया 6 अंकों का सही पिन कोड दर्ज करें।",
         pan: "कृपया सही पैन कार्ड नंबर दर्ज करें, जैसे ABCDE1234F।",
         success: "धन्यवाद! आपके दान की पुष्टि हो गई है।",
@@ -280,6 +226,10 @@ const DonationPageContent = () => {
   // because global translations file doesn't have form labels yet.
   const { language } = useLanguage();
   const t = translations[language as keyof typeof translations] || translations.en;
+  const payment = useDonationPaymentConfig();
+  const attemptGuard = useDonationAttemptGuard();
+  const paymentAttempt = useRef<DonationPaymentAttempt | null>(null);
+  const submissionInFlight = useRef(false);
 
   const [isDeclared, setIsDeclared] = useState(false);
   const [acceptedPolicies, setAcceptedPolicies] = useState(false);
@@ -290,63 +240,33 @@ const DonationPageContent = () => {
   const [paymentOutcome, setPaymentOutcome] = useState<PaymentOutcome>("idle");
   const [receipt, setReceipt] = useState<DonationReceipt | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authStatus, setAuthStatus] = useState<"checking" | "authenticated" | "guest">("checking");
   const [pendingPaymentId, setPendingPaymentId] = useState("");
   const [selectedFund, setSelectedFund] = useState<FundId>("peoples-green-fund");
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const f = params.get("fund");
-      if (f === "peoples-green-fund" || f === "green-fund" || f === "democracy-fund") {
-        setSelectedFund(f);
-      }
+  const [form, setForm] = useState(EMPTY_DONATION_FORM);
+  const browserReady = useSyncExternalStore(subscribeToHydration, browserSnapshot, serverSnapshot);
+  const [restoredBrowserState, setRestoredBrowserState] = useState(false);
+
+  // Keep server and hydration output identical; restore once before committing
+  // the hydrated form, rather than triggering cascading updates in an effect.
+  if (browserReady && !restoredBrowserState) {
+    setRestoredBrowserState(true);
+    const fund = new URLSearchParams(window.location.search).get("fund");
+    if (fund === "peoples-green-fund" || fund === "green-fund" || fund === "democracy-fund") {
+      setSelectedFund(fund);
     }
-  }, []);
-  const [form, setForm] = useState({
-    citizen: "" as "" | "yes" | "no",
-    fullName: "",
-    phone: "",
-    pan: "",
-    amount: "",
-    address: "",
-    state: "",
-    city: "",
-    pincode: "",
-  });
+    try {
+      setForm(parseDonationFormDraft(window.sessionStorage.getItem(DONATION_DRAFT_STORAGE_KEY)));
+    } catch { /* Storage access can be denied; retain the empty form. */ }
+  }
 
   const setField = (key: keyof typeof form, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const panRequired = Number(form.amount) > 20000 || wantsTaxDocumentation;
 
-  useEffect(() => {
-    let active = true;
-    getAuthHeader({ allowSession: true })
-      .then((header) => {
-        if (active) setAuthStatus(header.Authorization ? "authenticated" : "guest");
-      })
-      .catch(() => {
-        if (active) setAuthStatus("guest");
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    try {
-      const savedDraft = JSON.parse(window.sessionStorage.getItem(DONATION_DRAFT_STORAGE_KEY) || "null") as Partial<typeof form> | null;
-      if (savedDraft) {
-        setForm((current) => ({ ...current, ...savedDraft }));
-      }
-    } catch {
-      window.sessionStorage.removeItem(DONATION_DRAFT_STORAGE_KEY);
-    }
-  }, []);
-
   const goToContributionStep = () => {
+    if (submissionInFlight.current || attemptGuard.blocked || paymentOutcome === "pending-verification") return;
     setSubmitMsg(null);
     setPaymentOutcome("idle");
     const phoneDigits = form.phone.replace(/\D/g, "").slice(-10);
@@ -369,11 +289,6 @@ const DonationPageContent = () => {
       setSubmitMsg({ type: "err", text: t.form.messages.pincode });
       return;
     }
-    if (authStatus !== "authenticated") {
-      window.sessionStorage.setItem(DONATION_DRAFT_STORAGE_KEY, JSON.stringify(form));
-      setShowAuthModal(true);
-      return;
-    }
     setFormStep(2);
     window.requestAnimationFrame(() => {
       document.getElementById("donation-form-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -382,17 +297,21 @@ const DonationPageContent = () => {
 
   useEffect(() => {
     let active = true;
+    const removeSavedReceipt = () => {
+      try { window.localStorage.removeItem(RECEIPT_STORAGE_KEY); } catch {}
+    };
     try {
       const saved = JSON.parse(window.localStorage.getItem(RECEIPT_STORAGE_KEY) || "null") as {
         donationId?: number;
         receiptToken?: string;
       } | null;
       if (!saved?.donationId || !saved.receiptToken) {
-        window.localStorage.removeItem(RECEIPT_STORAGE_KEY);
+        removeSavedReceipt();
         return;
       }
       fetchApi(`donations/${saved.donationId}/receipt`, {
         method: "POST",
+        skipAuth: true,
         body: JSON.stringify({ token: saved.receiptToken }),
         cache: "no-store",
       })
@@ -407,12 +326,12 @@ const DonationPageContent = () => {
           ) {
             setReceipt(candidate as DonationReceipt);
           } else {
-            window.localStorage.removeItem(RECEIPT_STORAGE_KEY);
+            removeSavedReceipt();
           }
         })
-        .catch(() => window.localStorage.removeItem(RECEIPT_STORAGE_KEY));
+        .catch(removeSavedReceipt);
     } catch {
-      window.localStorage.removeItem(RECEIPT_STORAGE_KEY);
+      removeSavedReceipt();
     }
     return () => {
       active = false;
@@ -421,6 +340,12 @@ const DonationPageContent = () => {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submissionInFlight.current || attemptGuard.blocked || paymentOutcome === "pending-verification") return;
+    const attemptConfig = payment.config ? { ...payment.config } : null;
+    if (!payment.canPay || !attemptConfig) {
+      setSubmitMsg({ type: "err", text: donationAmountErrorMessage("unavailable", payment.config, language === "hi") });
+      return;
+    }
     setSubmitMsg(null);
     setPaymentOutcome("idle");
     setPendingPaymentId("");
@@ -445,12 +370,9 @@ const DonationPageContent = () => {
       setSubmitMsg({ type: "err", text: t.form.messages.required });
       return;
     }
-    if (!Number.isSafeInteger(amount) || amount < MIN_DONATION_AMOUNT) {
-      setSubmitMsg({ type: "err", text: t.form.messages.amount });
-      return;
-    }
-    if (MAX_DONATION_AMOUNT !== null && amount > MAX_DONATION_AMOUNT) {
-      setSubmitMsg({ type: "err", text: t.form.messages.amountMaximum });
+    const amountError = validateDonationPaymentAmount(amount, attemptConfig);
+    if (amountError) {
+      setSubmitMsg({ type: "err", text: donationAmountErrorMessage(amountError, payment.config, language === "hi") });
       return;
     }
     if (phoneDigits.length !== 10) {
@@ -466,8 +388,13 @@ const DonationPageContent = () => {
       setSubmitMsg({ type: "err", text: t.form.messages.pan });
       return;
     }
+    submissionInFlight.current = true;
     setSubmitting(true);
+    let checkoutLoaded = false;
+    let orderRequestStarted = false;
+    let attemptKey: string | undefined;
     try {
+      checkoutLoaded = true;
       const donorDetailsPayload = {
         fullName: form.fullName.trim(),
         phone: phoneDigits,
@@ -487,127 +414,41 @@ const DonationPageContent = () => {
         policiesAccepted: acceptedPolicies,
         policyVersion: "2026-10-28",
       };
-      const compatibilityPayload = {
-        ...donorDetailsPayload,
-        isIndianCitizen: true,
-        declarationAccepted: isDeclared,
-        policiesAccepted: acceptedPolicies,
-        policyVersion: "2026-10-28",
-      };
-      const createOrder = (
-        payload: typeof donationPayload | typeof compatibilityPayload,
-        suppressErrorLog = false,
-      ) =>
-        fetchApi("donations/razorpay/order", {
-          method: "POST",
-          body: JSON.stringify(payload),
-          suppressErrorLog,
-        }) as Promise<{
-        donationId: number;
-        orderId: string;
-        keyId: string;
-        amount: number;
-        currency: string;
-      }>;
+      // Retain this key after an uncertain response; a retry must reuse its order.
+      paymentAttempt.current = getDonationPaymentAttempt(donationPayload, paymentAttempt.current);
+      attemptKey = paymentAttempt.current.key;
+      attemptGuard.begin(attemptKey);
+      orderRequestStarted = true;
 
-      let order;
-      try {
-        order = await createOrder(donationPayload, true);
-      } catch (error) {
-        // During a rolling deploy, the previous API may reject the consent fields.
-        // Retry without those fields while keeping the selected fund attached.
-        if (!(error instanceof ApiRequestError) || error.status !== 400) throw error;
-        order = await createOrder(compatibilityPayload);
-      }
-      await loadRazorpayCheckout();
-      if (!window.Razorpay) throw new Error("Unable to load secure checkout.");
-
-      const checkout = new window.Razorpay({
-        key: order.keyId,
-        amount: order.amount,
-        currency: order.currency,
-        name: SITE_DETAILS.legalName,
-        description: "Voluntary political contribution",
-        order_id: order.orderId,
-        prefill: {
-          name: form.fullName.trim(),
-          contact: phoneDigits,
-        },
-        theme: { color: "#04330B" },
-        modal: {
-          ondismiss: () => {
-            setPaymentOutcome("cancelled");
-            setSubmitMsg({ type: "err", text: t.form.messages.cancelled });
-            setSubmitting(false);
-          },
-        },
-        handler: async (payment) => {
-          try {
-            const verification = await fetchApi("donations/razorpay/verify", {
-              method: "POST",
-              body: JSON.stringify({
-                razorpayPaymentId: payment.razorpay_payment_id,
-                razorpayOrderId: payment.razorpay_order_id,
-                razorpaySignature: payment.razorpay_signature,
-              }),
-            }) as Partial<DonationReceipt> & { verified?: boolean; donationId?: number };
-            if (!verification.verified || !Number.isSafeInteger(verification.donationId)) {
-              throw new Error("Payment verification response was incomplete");
-            }
-            const completedReceipt: DonationReceipt = {
-              donationId: Number(verification.donationId),
-              paymentId: verification.paymentId || payment.razorpay_payment_id,
-              orderId: verification.orderId || payment.razorpay_order_id,
-              fullName: verification.fullName || form.fullName.trim(),
-              amount: Number.isFinite(Number(verification.amount)) ? Number(verification.amount) : amount,
-              paidAt: verification.paidAt || new Date().toISOString(),
-              pan: verification.pan || (panRequired ? normalizedPan : undefined),
-              receiptToken: verification.receiptToken,
-            };
-            setReceipt(completedReceipt);
-            if (completedReceipt.receiptToken) {
-              window.localStorage.setItem(
-                RECEIPT_STORAGE_KEY,
-                JSON.stringify({
-                  donationId: completedReceipt.donationId,
-                  receiptToken: completedReceipt.receiptToken,
-                }),
-              );
-            } else {
-              window.localStorage.removeItem(RECEIPT_STORAGE_KEY);
-            }
-            setPaymentOutcome("success");
-            setSubmitMsg(null);
-            setShowSuccessModal(true);
-            window.sessionStorage.removeItem(DONATION_DRAFT_STORAGE_KEY);
-            setForm({
-              citizen: "",
-              fullName: "",
-              phone: "",
-              pan: "",
-              amount: "",
-              address: "",
-              state: "",
-              city: "",
-              pincode: "",
-            });
-            setIsDeclared(false);
-            setAcceptedPolicies(false);
-            setWantsTaxDocumentation(false);
-            setFormStep(1);
-          } catch {
-            setPendingPaymentId(payment.razorpay_payment_id);
-            setPaymentOutcome("pending-verification");
-            setSubmitMsg({ type: "err", text: t.form.messages.pendingVerification });
-          } finally {
-            setSubmitting(false);
-          }
-        },
+      const response = await fetchApi("donations/ccavenue/order", {
+        method: "POST",
+        skipAuth: true,
+        signal: AbortSignal.timeout(15_000),
+        body: JSON.stringify({ ...donationPayload, paymentAttemptKey: attemptKey }),
+        cache: "no-store",
       });
-      checkout.open();
-    } catch {
-      setPaymentOutcome("failed");
-      setSubmitMsg({ type: "err", text: t.form.messages.startFailed });
+      const order = parseCcavenueOrder(response, attemptConfig.environment, attemptKey);
+      attemptGuard.update(attemptKey, { provider: "ccavenue", donationId: order.donationId, orderId: order.orderId });
+      saveCcavenueResultReference(window.sessionStorage, { orderId: order.orderId, token: order.statusToken });
+      setPaymentOutcome("pending-verification");
+      setSubmitMsg({ type: "ok", text: language === "hi" ? "CCAvenue की सुरक्षित भुगतान वेबसाइट पर ले जाया जा रहा है…" : "Opening CCAvenue’s secure payment website…" });
+      submitCcavenueCheckout(order);
+      submissionInFlight.current = false;
+      setSubmitting(false);
+      return;
+    } catch (error) {
+      const safeValidationFailure = orderRequestStarted && error instanceof ApiRequestError && error.status === 400;
+      if (safeValidationFailure && attemptKey) attemptGuard.resolve(attemptKey);
+      const uncertain = checkoutLoaded && !safeValidationFailure;
+      setPaymentOutcome(uncertain ? "pending-verification" : "failed");
+      setSubmitMsg({
+        type: "err",
+        text: uncertain ? paymentInitiationUncertainMessage(language === "hi")
+          : safeValidationFailure && error instanceof Error ? error.message
+            : language === "hi" ? "सुरक्षित भुगतान विंडो लोड नहीं हुई। कोई भुगतान शुरू नहीं हुआ है। कृपया फिर से प्रयास करें।"
+              : "Secure checkout could not load. No payment was initiated. Please try again.",
+      });
+      submissionInFlight.current = false;
       setSubmitting(false);
     }
   };
@@ -673,6 +514,8 @@ const DonationPageContent = () => {
             </div>
 
             <form onSubmit={onSubmit} className="flex flex-col gap-[18px] relative z-10">
+              <DonationPaymentNotice id="donation-payment-status" isHi={language === "hi"} payment={payment} busy={submitting} />
+              <DonationAttemptNotice guard={attemptGuard} isHi={language === "hi"} busy={submitting} />
               <div className="mb-1 flex items-center justify-center gap-3" aria-label={`${t.form.stepDetails}: ${formStep === 1 ? "current" : "complete"}; ${t.form.stepContribution}: ${formStep === 2 ? "current" : "upcoming"}`}>
                 <div className="flex items-center gap-2">
                   <span className={`flex size-9 items-center justify-center rounded-full text-sm font-bold ${formStep >= 1 ? "bg-[#04330B] text-white" : "border border-[#B9D3C4] text-[#587E67]"}`}>
@@ -689,6 +532,8 @@ const DonationPageContent = () => {
 
               {submitMsg ? (
                 <p
+                  role="alert"
+                  aria-live="polite"
                   className={`text-sm font-semibold rounded-[8px] px-3 py-2 ${
                     submitMsg.type === "ok"
                       ? "bg-emerald-50 text-emerald-800"
@@ -702,10 +547,11 @@ const DonationPageContent = () => {
 
               <div className={formStep === 1 ? "contents" : "hidden"}>
               <div className="flex flex-col gap-2">
-                <FormFieldLabel className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">
+                <FormFieldLabel htmlFor="donation-fund" className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">
                   {language === "hi" ? "कोष का चयन करें" : "Select Fund Subdivision"}
                 </FormFieldLabel>
                 <select
+                  id="donation-fund"
                   value={selectedFund}
                   onChange={(e) => setSelectedFund(e.target.value as FundId)}
                   className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-semibold text-[15px] text-[#04330B] bg-white focus:outline-none focus:border-[#04330B]"
@@ -745,22 +591,22 @@ const DonationPageContent = () => {
               </fieldset>
 
               <div className="flex flex-col gap-2">
-                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.name}</FormFieldLabel>
-                <input required type="text" autoComplete="name" value={form.fullName} onChange={(e) => setField("fullName", e.target.value)} placeholder={t.form.name} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
+                <FormFieldLabel htmlFor="donation-name" required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.name}</FormFieldLabel>
+                <input id="donation-name" required type="text" autoComplete="name" value={form.fullName} onChange={(e) => setField("fullName", e.target.value)} placeholder={t.form.name} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
               </div>
 
               <div className="flex flex-col gap-2">
-                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.mobile}</FormFieldLabel>
+                <FormFieldLabel htmlFor="donation-mobile" required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.mobile}</FormFieldLabel>
                 <div className="flex gap-2">
                   <div className="w-[68px] h-[52px] rounded-[8px] border border-[#C5DCCF] flex items-center justify-center font-semibold text-[#587E67] bg-[#F9FBF9]">+91</div>
-                  <input required type="tel" autoComplete="tel-national" value={form.phone} onChange={(e) => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder={t.form.mobileHint} inputMode="numeric" maxLength={10} className="min-w-0 flex-1 h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
+                  <input id="donation-mobile" required type="tel" autoComplete="tel-national" value={form.phone} onChange={(e) => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder={t.form.mobileHint} inputMode="numeric" maxLength={10} className="min-w-0 flex-1 h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
                 </div>
               </div>
               </div>
 
               <div className={formStep === 2 ? "contents" : "hidden"}>
               <div className="flex flex-col gap-2">
-                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.amount}</FormFieldLabel>
+                <FormFieldLabel htmlFor="donation-amount" required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.amount}</FormFieldLabel>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {DONATION_PRESET_AMOUNTS.map((value) => (
                     <button key={value} type="button" onClick={() => setField("amount", String(value))} className={`h-[46px] rounded-[8px] border font-bold transition-colors ${form.amount === String(value) ? "border-[#04330B] bg-[#04330B] text-white" : "border-[#C5DCCF] text-[#04330B] hover:bg-[#F0F7F2]"}`}>
@@ -769,10 +615,7 @@ const DonationPageContent = () => {
                   ))}
                   <button type="button" onClick={() => setField("amount", "")} className={`h-[46px] rounded-[8px] border font-bold transition-colors ${form.amount !== "" && !DONATION_PRESET_AMOUNTS.some((value) => String(value) === form.amount) ? "border-[#04330B] bg-[#04330B] text-white" : "border-[#C5DCCF] text-[#04330B] hover:bg-[#F0F7F2]"}`}>{t.form.other}</button>
                 </div>
-                <input required type="number" min={MIN_DONATION_AMOUNT} max={MAX_DONATION_AMOUNT ?? undefined} step="1" inputMode="numeric" value={form.amount} onChange={(e) => setField("amount", /^\d*$/.test(e.target.value) ? e.target.value : form.amount)} placeholder={t.form.otherAmount} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
-                <p className="text-xs leading-relaxed text-[#587E67]">
-                  <span className="font-bold">{t.form.amountRange}:</span> ₹{MIN_DONATION_AMOUNT.toLocaleString("en-IN")} minimum. {MAX_DONATION_AMOUNT !== null ? `₹${MAX_DONATION_AMOUNT.toLocaleString("en-IN")} maximum.` : t.form.maximumPending}
-                </p>
+                <input id="donation-amount" required type="number" min={payment.config?.limitsConfirmed ? payment.config.minAmount ?? undefined : undefined} max={payment.config?.limitsConfirmed ? payment.config.maxAmount ?? undefined : undefined} step="1" inputMode="numeric" value={form.amount} onChange={(e) => setField("amount", /^\d*$/.test(e.target.value) ? e.target.value : form.amount)} placeholder={t.form.otherAmount} aria-describedby="donation-payment-status" className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
               </div>
 
               <label className="flex items-start gap-3 cursor-pointer">
@@ -782,8 +625,8 @@ const DonationPageContent = () => {
 
               {panRequired ? (
                 <div className="flex flex-col gap-2">
-                  <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.pan}</FormFieldLabel>
-                  <input required type="text" autoCapitalize="characters" value={form.pan} onChange={(e) => setField("pan", e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10))} placeholder={t.form.panHint} maxLength={10} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium uppercase tracking-wide text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
+                  <FormFieldLabel htmlFor="donation-pan" required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.pan}</FormFieldLabel>
+                  <input id="donation-pan" required type="text" autoCapitalize="characters" value={form.pan} onChange={(e) => setField("pan", e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10))} placeholder={t.form.panHint} maxLength={10} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium uppercase tracking-wide text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
                   <p className="text-xs leading-relaxed text-[#587E67]">{t.form.panReason}</p>
                 </div>
               ) : null}
@@ -791,24 +634,24 @@ const DonationPageContent = () => {
 
               <div className={formStep === 1 ? "contents" : "hidden"}>
               <div className="flex flex-col gap-2">
-                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.address}</FormFieldLabel>
-                <textarea required autoComplete="street-address" rows={3} value={form.address} onChange={(e) => setField("address", e.target.value)} placeholder={t.form.address} className="w-full rounded-[8px] border border-[#C5DCCF] px-4 py-3 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B] resize-y" />
+                <FormFieldLabel htmlFor="donation-address" required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.address}</FormFieldLabel>
+                <textarea id="donation-address" required autoComplete="street-address" rows={3} value={form.address} onChange={(e) => setField("address", e.target.value)} placeholder={t.form.address} className="w-full rounded-[8px] border border-[#C5DCCF] px-4 py-3 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B] resize-y" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-2">
-                  <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.state}</FormFieldLabel>
-                  <input required autoComplete="address-level1" type="text" value={form.state} onChange={(e) => setField("state", e.target.value)} placeholder={t.form.state} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
+                  <FormFieldLabel htmlFor="donation-state" required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.state}</FormFieldLabel>
+                  <input id="donation-state" required autoComplete="address-level1" type="text" value={form.state} onChange={(e) => setField("state", e.target.value)} placeholder={t.form.state} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.city}</FormFieldLabel>
-                  <input required autoComplete="address-level2" type="text" value={form.city} onChange={(e) => setField("city", e.target.value)} placeholder={t.form.city} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
+                  <FormFieldLabel htmlFor="donation-city" required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.city}</FormFieldLabel>
+                  <input id="donation-city" required autoComplete="address-level2" type="text" value={form.city} onChange={(e) => setField("city", e.target.value)} placeholder={t.form.city} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
                 </div>
               </div>
 
               <div className="flex flex-col gap-2 sm:max-w-[50%]">
-                <FormFieldLabel required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.pincode}</FormFieldLabel>
-                <input required autoComplete="postal-code" type="text" inputMode="numeric" value={form.pincode} onChange={(e) => setField("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder={t.form.pinHint} maxLength={6} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
+                <FormFieldLabel htmlFor="donation-pincode" required className="font-['Familjen_Grotesk'] font-semibold text-[14px] text-[#04330B]">{t.form.pincode}</FormFieldLabel>
+                <input id="donation-pincode" required autoComplete="postal-code" type="text" inputMode="numeric" value={form.pincode} onChange={(e) => setField("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder={t.form.pinHint} maxLength={6} className="w-full h-[52px] rounded-[8px] border border-[#C5DCCF] px-4 font-medium text-[16px] text-[#04330B] placeholder-[#789080] focus:outline-none focus:border-[#04330B]" />
               </div>
 
               <button
@@ -841,6 +684,7 @@ const DonationPageContent = () => {
               <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
                 <button
                   type="button"
+                  disabled={submitting || attemptGuard.blocked || paymentOutcome === "pending-verification"}
                   onClick={() => {
                     setSubmitMsg(null);
                     setFormStep(1);
@@ -856,11 +700,18 @@ const DonationPageContent = () => {
                   type="submit"
                   className={`
                     h-[60px] rounded-[12px] font-['Familjen_Grotesk'] font-bold text-[18px] text-white transition-all shadow-lg
-                    ${isDeclared && acceptedPolicies && form.citizen === "yes" && paymentOutcome !== "pending-verification" && !submitting ? 'bg-[#04330B] hover:bg-[#064e11] hover:scale-[1.02]' : 'bg-gray-400 cursor-not-allowed'}
+                    ${payment.canPay && !attemptGuard.blocked && isDeclared && acceptedPolicies && form.citizen === "yes" && paymentOutcome !== "pending-verification" && !submitting ? 'bg-[#04330B] hover:bg-[#064e11] hover:scale-[1.02]' : 'bg-gray-400 cursor-not-allowed'}
                   `}
-                  disabled={!isDeclared || !acceptedPolicies || form.citizen !== "yes" || paymentOutcome === "pending-verification" || submitting}
+                  aria-describedby="donation-payment-status"
+                  disabled={!payment.canPay || attemptGuard.blocked || !isDeclared || !acceptedPolicies || form.citizen !== "yes" || paymentOutcome === "pending-verification" || submitting}
                 >
-                  {submitting ? t.form.opening : paymentOutcome === "failed" || paymentOutcome === "cancelled" ? t.form.retry : t.form.submit}
+                  {submitting
+                    ? t.form.opening
+                    : payment.status === "loading"
+                      ? language === "hi" ? "उपलब्धता जाँची जा रही है…" : "Checking availability…"
+                      : !payment.canPay
+                        ? language === "hi" ? "भुगतान अभी उपलब्ध नहीं है" : "Payments unavailable"
+                        : paymentOutcome === "failed" || paymentOutcome === "cancelled" ? t.form.retry : t.form.submit}
                 </button>
               </div>
 
@@ -887,21 +738,6 @@ const DonationPageContent = () => {
 
         </div>
       </section>
-
-      {showAuthModal ? (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/55 p-4 backdrop-blur-sm" role="presentation" onClick={() => setShowAuthModal(false)}>
-          <div className="w-full max-w-[500px] rounded-[22px] bg-white p-7 text-center shadow-2xl sm:p-9" role="dialog" aria-modal="true" aria-labelledby="donation-auth-title" onClick={(event) => event.stopPropagation()}>
-            <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-[#E0F2E6] text-[30px] text-[#04330B]" aria-hidden="true">♡</div>
-            <h2 id="donation-auth-title" className="font-['Familjen_Grotesk'] text-[28px] font-bold leading-tight text-[#04330B]">{t.form.authTitle}</h2>
-            <p className="mx-auto mt-3 max-w-md text-[15px] leading-7 text-[#587E67]">{t.form.authText}</p>
-            <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Link href="/join?next=%2Fdonation" className="flex h-12 items-center justify-center rounded-[10px] bg-[#04330B] px-4 font-bold text-white transition-colors hover:bg-[#064e11]">{t.form.joinFirst}</Link>
-              <Link href="/login?next=%2Fdonation" className="flex h-12 items-center justify-center rounded-[10px] border border-[#04330B] px-4 font-bold text-[#04330B] transition-colors hover:bg-[#EAF7EE]">{t.form.loginFirst}</Link>
-            </div>
-            <button type="button" onClick={() => setShowAuthModal(false)} className="mt-4 text-sm font-bold text-[#587E67] underline underline-offset-4">{t.form.close}</button>
-          </div>
-        </div>
-      ) : null}
 
       {showSuccessModal && receipt ? (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/55 p-4 backdrop-blur-sm" role="presentation" onClick={() => setShowSuccessModal(false)}>

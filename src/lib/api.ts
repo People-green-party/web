@@ -19,7 +19,7 @@ type FetchApiOptions = RequestInit & {
     skipAuth?: boolean;
     /** Client-side TTL cache for GET responses (ms). 0 = disabled. */
     cacheTtlMs?: number;
-    /** Avoid logging an expected compatibility probe; errors are still thrown. */
+    /** Avoid logging a caller-handled failure; errors are still thrown. */
     suppressErrorLog?: boolean;
 };
 
@@ -239,7 +239,9 @@ export async function fetchApi(endpoint: string, options: FetchApiOptions = {}) 
         }
 
         const detailedError = `Network error calling backend. Please check your internet connection.`;
-        console.error(`[Network Error] Failed to reach ${url}:`, error);
+        if (!suppressErrorLog) {
+            console.error(`[Network Error] Failed to reach ${url}:`, error);
+        }
         throw new Error(detailedError);
     }
 }

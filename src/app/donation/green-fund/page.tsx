@@ -11,7 +11,6 @@ import { ApiRequestError, fetchApi } from "../../../lib/api";
 import {
   ArrowLeft,
   TreePine,
-  Compass,
   Leaf,
   BarChart3,
   MapPin,
@@ -24,7 +23,6 @@ import {
   Share2,
   Award,
   Shield,
-  Download,
   Users,
   Clock,
 } from "lucide-react";
@@ -113,9 +111,6 @@ export default function GreenFundPage() {
     storyRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   const scrollToExcuse = () =>
     excuseRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  const scrollToBadge = () =>
-    heroBadgeRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-
   const handleSelectOccasion = (occ: DedicationOccasion) => {
     setSelectedOccasion(occ);
     scrollToSponsor();
@@ -123,8 +118,8 @@ export default function GreenFundPage() {
 
   const handleShareBadge = () => {
     const shareText = isHi
-      ? `मैंने द ग्रेट ग्रीन वॉल मिशन में पौधा प्रायोजित कर कार्बन हीरो बैज अनलॉक किया है! आप भी जुड़ें:`
-      : `I just unlocked my Carbon Hero badge on The Great Green Wall Mission! Sponsor a plant:`;
+      ? `ग्रेट ग्रीन वॉल मिशन के बारे में जानें और पेड़ के प्रायोजन से जुड़ें:`
+      : `Explore the Great Green Wall Mission and learn how to sponsor a plant:`;
     const shareUrl = typeof window !== "undefined" ? window.location.href : "https://peoplesgreen.org/donation/green-fund";
 
     if (navigator.share) {
@@ -158,8 +153,6 @@ export default function GreenFundPage() {
     }
   };
 
-  const currentHeroImg = heroImages[heroImageIndex].src;
-
   return (
     <div className="min-h-screen bg-white text-gray-800 font-sans pt-[70px] lg:pt-[92px]">
       <Navbar />
@@ -175,7 +168,7 @@ export default function GreenFundPage() {
             {isHi ? "सभी कोष देखें" : "Back to Funds"}
           </Link>
           <span className="font-semibold text-[#587E67] hidden sm:inline">
-            {isHi ? "महान हरित दीवार मिशन · अरावली" : "The Great Green Wall Mission · Aravalli"}
+            {isHi ? "ग्रेट ग्रीन वॉल मिशन · अरावली" : "The Great Green Wall Mission · Aravalli"}
           </span>
         </div>
       </div>
@@ -196,7 +189,7 @@ export default function GreenFundPage() {
           {/* Top Pill Badge */}
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[#bef264] text-[#04330b] font-black text-[11px] sm:text-[12px] px-3.5 py-1.5 uppercase tracking-wider mb-5 shadow-md">
             <TreePine size={13} className="text-[#04330b]" />
-            <span>{isHi ? "महान हरित दीवार मिशन" : "GREAT GREEN WALL MISSION"}</span>
+            <span>{isHi ? "ग्रेट ग्रीन वॉल मिशन" : "GREAT GREEN WALL MISSION"}</span>
           </div>
 
           {/* Main Hero Headline */}
@@ -211,14 +204,14 @@ export default function GreenFundPage() {
           {/* Subtext Paragraph */}
           <p className="mt-5 max-w-xl text-[15.5px] sm:text-[17px] leading-relaxed text-white/90 font-medium">
             {isHi
-              ? "अरावली सदियों से खड़ी है। अब उसके आसपास के नाज़ुक इलाकों को हमारी ज़रूरत है। हम अरावली के संवेदनशील भूभाग में हरियाली की एक जीवित दीवार विकसित करने की दिशा में काम कर रहे हैं। सीमेंट से नहीं। देशी पौधों से। उनकी जड़ों से। और उन्हें जीवित रखने वाली लगातार देखभाल से।"
+              ? "अरावली सदियों से खड़ी है। अब उसके आसपास के नाज़ुक इलाकों को हमारी ज़रूरत है। हम अरावली के संवेदनशील भूभाग में हरियाली की एक जीवित दीवार विकसित करने की दिशा में काम कर रहे हैं। सीमेंट से नहीं। देशी पेड़ों से। उनकी जड़ों से। और उन्हें जीवित रखने वाली लगातार देखभाल से।"
               : "The Aravallis have stood for ages. Now the landscapes around them need a little help from us. We're working towards a living green barrier in vulnerable areas around the Aravalli landscape. Not with concrete. With native plants. Living roots. And the care it takes to keep them alive."}
           </p>
 
           {/* Dream Quote */}
           <div className="mt-3.5 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[12px] sm:text-[13.5px] font-semibold text-[#bef264]">
             {isHi
-              ? "पहले चरण का सपना है एक करोड़ पौधे। शुरुआत आपके एक पौधे से भी हो सकती है।"
+              ? "पहले चरण का सपना है एक करोड़ पेड़। शुरुआत आपके एक पेड़ से भी हो सकती है।"
               : "One crore plants is our dream for Phase One. Your one plant can be where it begins."}
           </div>
 
@@ -296,7 +289,7 @@ export default function GreenFundPage() {
                 </p>
                 <p>
                   {isHi
-                    ? "अगले जन्मदिन पर एक पौधा। सालगिरह पर एक नई हरियाली। शादी का तोहफ़ा, जो यादों के साथ बढ़े। त्योहार की खुशियाँ धरती तक पहुँचें।"
+                    ? "अगले जन्मदिन पर एक पेड़। सालगिरह पर एक नई हरियाली। शादी का तोहफ़ा, जो यादों के साथ बढ़े। त्योहार की खुशियाँ धरती तक पहुँचें।"
                     : "Your next birthday comes with a tree. Your anniversary leaves something alive behind. A wedding gift becomes a little patch of green. A festival lights up a home and helps green a landscape."}
                 </p>
               </div>
@@ -307,7 +300,7 @@ export default function GreenFundPage() {
                   onClick={scrollToExcuse}
                   className="h-11 px-7 rounded-full bg-[#0D3820] text-white font-['Familjen_Grotesk'] text-[14.5px] font-bold shadow-md hover:bg-[#072414] hover:scale-[1.02] active:scale-[0.98] transition-all inline-flex items-center gap-2"
                 >
-                  <span>{isHi ? "पौधे का चुनाव करें" : "Find your reason to plant"}</span>
+                  <span>{isHi ? "पेड़ का चुनाव करें" : "Find your reason to plant"}</span>
                   <span>→</span>
                 </button>
               </div>
@@ -416,7 +409,7 @@ export default function GreenFundPage() {
           <div className="mt-10 text-center max-w-xl mx-auto space-y-4">
             <p className="text-[14px] sm:text-[15px] text-[#34523F] font-semibold">
               {isHi
-                ? "अवसर चुनिए। किसी के नाम पौधा समर्पित कीजिए। अपना संदेश लिखिए। और एक खूबसूरत डिजिटल गिफ्ट कार्ड भेजिए।"
+                ? "अवसर चुनिए। किसी के नाम पेड़ समर्पित कीजिए। अपना संदेश लिखिए। और एक खूबसूरत डिजिटल गिफ्ट कार्ड भेजिए।"
                 : "Choose the occasion. Dedicate a plant. Add your message. Send someone a beautiful digital gift card that represents a living contribution."}
             </p>
             <button
@@ -425,7 +418,7 @@ export default function GreenFundPage() {
               className="h-11 px-8 rounded-full bg-[#04330B] text-white font-['Familjen_Grotesk'] text-[14.5px] font-bold shadow-md hover:bg-[#064e11] hover:scale-[1.02] active:scale-[0.98] transition-all inline-flex items-center gap-2"
             >
               <Gift size={16} />
-              <span>{isHi ? "पौधे का उपहार दें" : "GIFT A PLANT"}</span>
+              <span>{isHi ? "पेड़ का उपहार दें" : "GIFT A PLANT"}</span>
               <span>→</span>
             </button>
           </div>
@@ -458,7 +451,7 @@ export default function GreenFundPage() {
               </div>
               <div>
                 <span className="block font-['Familjen_Grotesk'] text-[24px] sm:text-[30px] font-black text-white leading-tight">
-                  {isHi ? "1 करोड़ पौधे" : "1 CRORE PLANTS"}
+                  {isHi ? "1 करोड़ पेड़" : "1 CRORE PLANTS"}
                 </span>
                 <span className="block text-[12px] sm:text-[13px] text-white/80 font-medium">
                   {isHi ? "हमारे पहले चरण का लक्ष्य।" : "Our Phase One ambition."}
@@ -473,7 +466,7 @@ export default function GreenFundPage() {
               </div>
               <div>
                 <span className="block font-['Familjen_Grotesk'] text-[24px] sm:text-[30px] font-black text-white leading-tight">
-                  {isHi ? "₹1,500 प्रति पौधा" : "₹1,500 PER PLANT"}
+                  {isHi ? "₹1,500 प्रति पेड़" : "₹1,500 PER PLANT"}
                 </span>
                 <span className="block text-[12px] sm:text-[13px] text-white/80 font-medium leading-snug">
                   {isHi
@@ -503,7 +496,7 @@ export default function GreenFundPage() {
           <div className="max-w-2xl mx-auto text-[15px] sm:text-[16.5px] text-white/85 font-medium leading-relaxed">
             <p>
               {isHi
-                ? "एक पौधा शुरुआत है। पाँच पौधे एक छोटे-से भूभाग की हरियाली में योगदान दे सकते हैं। सौ पौधे उससे बड़ी बात हैं। एक करोड़ पौधे एक असाधारण सपना है।"
+                ? "एक पेड़ शुरुआत है। पाँच पेड़ एक छोटे-से भूभाग की हरियाली में योगदान दे सकते हैं। सौ पेड़ उससे बड़ी बात हैं। एक करोड़ पेड़ एक असाधारण सपना है।"
                 : "One plant is a beginning. Five plants make a difference to a small patch of land. A hundred plants make a bigger contribution. A crore plants is an extraordinary ambition."}
             </p>
           </div>
@@ -515,7 +508,7 @@ export default function GreenFundPage() {
               onClick={scrollToSponsor}
               className="h-12 px-8 rounded-full bg-[#C3F53C] text-[#04330B] font-['Familjen_Grotesk'] text-[15px] font-black shadow-lg hover:bg-[#b0e82c] transition-all inline-flex items-center gap-2"
             >
-              <span>{isHi ? "पौधों का प्रायोजन करें" : "SPONSOR YOUR PLANTS"}</span>
+              <span>{isHi ? "पेड़ों का प्रायोजन करें" : "SPONSOR YOUR PLANTS"}</span>
               <span>→</span>
             </button>
           </div>
@@ -535,11 +528,11 @@ export default function GreenFundPage() {
                   {isHi ? "सहभागिता" : "SPONSORSHIP"}
                 </span>
                 <h2 className="font-['Familjen_Grotesk'] text-[30px] sm:text-[42px] font-black text-[#04330B] leading-tight">
-                  {isHi ? "हरित दीवार में अपना पौधा जोड़ें" : "Plant Your Part of the Green Wall"}
+                  {isHi ? "हरित दीवार में अपना पेड़ जोड़ें" : "Plant Your Part of the Green Wall"}
                 </h2>
                 <p className="text-[15px] sm:text-[16px] text-[#34523F] leading-relaxed">
                   {isHi
-                    ? "अपने नाम से, या किसी खास व्यक्ति के नाम से, या किसी अवसर पर एक पौधे का प्रायोजन करें और इस ऐतिहासिक मिशन का हिस्सा बनें।"
+                    ? "अपने नाम से, या किसी खास व्यक्ति के नाम से, या किसी अवसर पर एक पेड़ का प्रायोजन करें और इस ऐतिहासिक मिशन का हिस्सा बनें।"
                     : "Sponsor a plant in your name, in honour of someone special, or to mark an occasion, and become part of this historic mission."}
                 </p>
               </div>
@@ -572,7 +565,7 @@ export default function GreenFundPage() {
                     </h3>
                     <p className="text-[13px] sm:text-[13.5px] text-[#557862] leading-relaxed">
                       {isHi
-                        ? "पौधा लगाए जाने के बाद उसका स्थान और देखभाल योजना रिकॉर्ड से जुड़ी रहेगी।"
+                        ? "पेड़ लगाए जाने के बाद उसका स्थान और देखभाल योजना रिकॉर्ड से जुड़ी रहेगी।"
                         : "Location and long-term care plans are systematically linked to your dedication."}
                     </p>
                   </div>
@@ -587,19 +580,23 @@ export default function GreenFundPage() {
                     {isHi ? "पारदर्शिता डैशबोर्ड" : "Public Progress Tracker"}
                   </span>
                   <span className="text-[11px] font-semibold text-[#587E67]">
-                    {isHi ? "सत्यापित डेटा" : "Verified API"}
+                    {progressLoading
+                      ? isHi ? "लोड हो रहा है…" : "Loading…"
+                      : progressError || progressUnavailable
+                        ? isHi ? "अभी उपलब्ध नहीं" : "Currently unavailable"
+                        : isHi ? "नवीनतम उपलब्ध आँकड़े" : "Latest available data"}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
                     {
-                      label: isHi ? "प्रायोजित पौधे" : "Plants Sponsored",
+                      label: isHi ? "प्रायोजित पेड़" : "Plants Sponsored",
                       val: progress?.plantsSponsored ?? null,
                       icon: <TreePine size={15} className="text-[#0D5229]" />,
                     },
                     {
-                      label: isHi ? "लगाए गए पौधे" : "Plants Planted",
+                      label: isHi ? "लगाए गए पेड़" : "Plants Planted",
                       val: progress?.plantsPlanted ?? null,
                       icon: <MapPin size={15} className="text-[#587E67]" />,
                     },
@@ -609,7 +606,7 @@ export default function GreenFundPage() {
                       icon: <Leaf size={15} className="text-[#0D5229]" />,
                     },
                     {
-                      label: isHi ? "रखरखाव की स्थिति" : "Planned Care",
+                      label: isHi ? "रखरखाव की स्थिति" : "Maintenance Progress",
                       val: progress?.maintenanceProgress ?? null,
                       icon: <BarChart3 size={15} className="text-[#587E67]" />,
                     },
@@ -621,18 +618,30 @@ export default function GreenFundPage() {
                       <span className="block text-[10.5px] font-bold text-[#587E67]">
                         {stat.label}
                       </span>
-                      <span className="block font-black text-[#04330B] text-[18px] leading-tight">
+                      <span className={`block font-bold text-[#04330B] leading-tight ${progressLoading || progressError || stat.val === null ? "text-[11px]" : "text-[18px]"}`}>
                         {progressLoading
-                          ? "..."
+                          ? isHi ? "लोड हो रहा है…" : "Loading…"
                           : progressError
-                            ? "—"
+                            ? isHi ? "आँकड़े लोड नहीं हो सके।" : "Unable to load updates."
                             : stat.val === null
-                              ? "—"
+                              ? isHi ? "मिशन की प्रगति के साथ आँकड़े अपडेट होंगे।" : "Data will be updated as the mission progresses."
                               : stat.val.toLocaleString("en-IN")}
                       </span>
                     </div>
                   ))}
                 </div>
+                {(progressError || progressUnavailable) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProgressStatus("loading");
+                      setProgressRetry((retry) => retry + 1);
+                    }}
+                    className="text-xs font-bold text-[#0D5229] underline"
+                  >
+                    {isHi ? "फिर से कोशिश करें" : "Retry loading updates"}
+                  </button>
+                )}
               </div>
             </div>
 
@@ -661,11 +670,11 @@ export default function GreenFundPage() {
                   {isHi ? "रोपण और देखभाल" : "PLANTING & CARE"}
                 </span>
                 <h2 className="font-['Familjen_Grotesk'] text-[30px] sm:text-[42px] font-black text-[#04330B] leading-tight">
-                  {isHi ? "पौधा लगाना तो बस शुरुआत है।" : "Planting is only the beginning."}
+                  {isHi ? "पेड़ लगाना तो बस शुरुआत है।" : "Planting is only the beginning."}
                 </h2>
                 <p className="text-[15px] sm:text-[16px] text-[#34523F] font-normal leading-relaxed pt-1">
                   {isHi
-                    ? "नए लगाए गए पौधे की तस्वीर खींच लेना मंज़िल नहीं है। असली मेहनत उसे जीवित रखना है। इसके लिए सही जगह का चुनाव, स्थानीय परिस्थितियों के अनुकूल देशी प्रजातियाँ, पानी और देखभाल की योजना, और लगातार निगरानी ज़रूरी है।"
+                    ? "नए लगाए गए पेड़ की तस्वीर खींच लेना मंज़िल नहीं है। असली मेहनत उसे जीवित रखना है। इसके लिए सही जगह का चुनाव, स्थानीय परिस्थितियों के अनुकूल देशी प्रजातियाँ, पानी और देखभाल की योजना, और लगातार निगरानी ज़रूरी है।"
                     : "A photograph of a newly planted sapling is not the finish line. The real work is helping it survive. That means selecting suitable land, choosing locally appropriate native species, planning for water and maintenance, and monitoring results."}
                 </p>
               </div>
@@ -677,7 +686,7 @@ export default function GreenFundPage() {
                 </div>
                 <p className="font-['Familjen_Grotesk'] text-[14.5px] sm:text-[16px] font-bold text-[#0D3820] leading-snug">
                   {isHi
-                    ? "हम सिर्फ लगाए गए पौधे नहीं गिनना चाहते। हम चाहते हैं कि जीवित पौधे गिने जाएँ।"
+                    ? "हम सिर्फ लगाए गए पेड़ नहीं गिनना चाहते। हम चाहते हैं कि जीवित पेड़ गिने जाएँ।"
                     : "Let's count more than the plants we put in the ground. Let's count the ones that live."}
                 </p>
               </div>
@@ -696,7 +705,7 @@ export default function GreenFundPage() {
                     num: "02",
                     title: isHi ? "सही प्रजाति" : "Right species",
                     desc: isHi
-                      ? "स्थानीय परिस्थितियों के अनुकूल देशी पौधे।"
+                      ? "स्थानीय परिस्थितियों के अनुकूल देशी पेड़।"
                       : "Locally appropriate native plants.",
                   },
                   {
@@ -710,7 +719,7 @@ export default function GreenFundPage() {
                     num: "04",
                     title: isHi ? "पारदर्शी प्रगति" : "Visible progress",
                     desc: isHi
-                      ? "प्रायोजन रिकॉर्ड, रोपण और जीवित पौधों की निरंतर रिपोर्ट।"
+                      ? "प्रायोजन रिकॉर्ड, रोपण और जीवित पेड़ों की निरंतर रिपोर्ट।"
                       : "Sponsorship records, planting and survival updates as available.",
                   },
                 ].map((card) => (
@@ -769,7 +778,7 @@ export default function GreenFundPage() {
               <div className="space-y-3 text-[14.5px] sm:text-[15.5px] text-white/85 leading-relaxed font-normal">
                 <p>
                   {isHi
-                    ? "न उड़ने की शक्ति चाहिए। न कोई गुप्त पहचान। बस एक छोटा-सा फैसला कि दुनिया का कुछ हिस्सा और हरा होना चाहिए। एक पौधे का प्रायोजन कीजिए और पाइए अपना कार्बन हीरो डिजिटल बैज।"
+                    ? "न उड़ने की शक्ति चाहिए। न कोई गुप्त पहचान। बस एक छोटा-सा फैसला कि दुनिया का कुछ हिस्सा और हरा होना चाहिए। एक पेड़ का प्रायोजन कीजिए और पाइए अपना कार्बन हीरो डिजिटल बैज।"
                     : "No flying. No superpowers. No secret identity. Just one person deciding that a little more of the world should be green. Sponsor a plant and unlock your own Carbon Hero digital badge."}
                 </p>
                 <p>
@@ -808,7 +817,7 @@ export default function GreenFundPage() {
                   ))}
                   <div className="absolute inset-x-2.5 bottom-2.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/25 p-2.5 text-left z-10">
                     <span className="block text-[9px] font-bold uppercase tracking-wider text-[#C3F53C]">
-                      VERIFIED CARBON HERO
+                      {isHi ? "बैज का पूर्वावलोकन" : "BADGE PREVIEW"}
                     </span>
                     <span className="block font-black text-white text-[13px] truncate">
                       {badgeDonorName}
@@ -896,19 +905,19 @@ export default function GreenFundPage() {
 
               <h2 className="font-['Familjen_Grotesk'] text-[26px] sm:text-[36px] font-black text-[#04330B] leading-tight">
                 {isHi
-                  ? "क्या इन पौधों से असली कार्बन क्रेडिट बन सकते हैं?"
+                  ? "क्या इन पेड़ों से असली कार्बन क्रेडिट बन सकते हैं?"
                   : "Could these plants generate real carbon credits?"}
               </h2>
 
               <div className="space-y-3 text-[14.5px] sm:text-[15.5px] leading-relaxed text-[#2D3A31]">
                 <p>
                   {isHi
-                    ? "इस संभावना को भी हम आगे बढ़ाना चाहते हैं। बढ़ते हुए पौधे वातावरण से कार्बन डाइऑक्साइड ग्रहण कर सकते हैं। लेकिन प्रमाणित कार्बन क्रेडिट के लिए पात्र परियोजना, वैज्ञानिक मापन, स्वतंत्र सत्यापन और अधिकृत प्रणाली से क्रेडिट जारी होना आवश्यक है।"
+                    ? "इस संभावना को भी हम आगे बढ़ाना चाहते हैं। बढ़ते हुए पेड़ वातावरण से कार्बन डाइऑक्साइड ग्रहण कर सकते हैं। लेकिन प्रमाणित कार्बन क्रेडिट के लिए पात्र परियोजना, वैज्ञानिक मापन, स्वतंत्र सत्यापन और अधिकृत प्रणाली से क्रेडिट जारी होना आवश्यक है।"
                     : "That's another possibility we want to develop. Growing plants can remove carbon dioxide from the atmosphere. However, recognised carbon credits require eligible projects, measurement, independent verification and formal issuance."}
                 </p>
                 <p>
                   {isHi
-                    ? "हम हरित दीवार के उपयुक्त स्थलों को भविष्य में प्रमाणित कार्बन-क्रेडिट कार्यक्रम के लिए परखना चाहते हैं। अभी पौधे के प्रायोजन पर कार्बन हीरो सम्मान-बैज मिलेगा। प्रमाणित कार्बन क्रेडिट, जहाँ पात्रता संभव हुई, भविष्य का अलग कार्यक्रम होगा।"
+                    ? "हम हरित दीवार के उपयुक्त स्थलों को भविष्य में प्रमाणित कार्बन-क्रेडिट कार्यक्रम के लिए परखना चाहते हैं। अभी पेड़ के प्रायोजन पर कार्बन हीरो सम्मान-बैज मिलेगा। प्रमाणित कार्बन क्रेडिट, जहाँ पात्रता संभव हुई, भविष्य का अलग कार्यक्रम होगा।"
                     : "Our aim is to evaluate suitable Green Wall sites for a verified carbon-credit programme. For now, sponsoring a plant earns a Carbon Hero recognition badge. Verified carbon credits, where eligible, would be a separate future offering."}
                 </p>
               </div>
@@ -972,7 +981,7 @@ export default function GreenFundPage() {
             </p>
             <p>
               {isHi
-                ? "क्या पता, उसकी शुरुआत आपसे हुई हो। महान हरित दीवार एक बड़ा सपना है। लेकिन बड़े सपनों की शुरुआत आम लोगों के छोटे-छोटे खूबसूरत फैसलों से होती है।"
+                ? "क्या पता, उसकी शुरुआत आपसे हुई हो। ग्रेट ग्रीन वॉल एक बड़ा सपना है। लेकिन बड़े सपनों की शुरुआत आम लोगों के छोटे-छोटे खूबसूरत फैसलों से होती है।"
                 : "What if that tree began with you? The Great Green Wall is a big idea. But big ideas begin with ordinary people making one beautiful choice at a time."}
             </p>
             <p className="font-bold text-[#C3F53C] pt-1">
@@ -990,7 +999,7 @@ export default function GreenFundPage() {
             >
               <span>
                 {isHi
-                  ? "महान हरित दीवार में अपना हिस्सा जोड़ें"
+                  ? "ग्रेट ग्रीन वॉल में अपना हिस्सा जोड़ें"
                   : "BUILD YOUR PART OF THE GREAT GREEN WALL"}
               </span>
               <span>→</span>

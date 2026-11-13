@@ -1,22 +1,24 @@
 import type { Metadata } from "next";
-import { Caveat, Familjen_Grotesk } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
 import { LanguageProvider } from "../components/LanguageContext";
 
-const familjenGrotesk = Familjen_Grotesk({
+const familjenGrotesk = localFont({
+  src: "./fonts/FamiljenGrotesk-variable.ttf",
   variable: "--font-familjen-grotesk",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: "400 700",
+  style: "normal",
   display: "swap",
   preload: true,
 });
 
-const caveat = Caveat({
+const caveat = localFont({
+  src: "./fonts/Caveat-variable.ttf",
   variable: "--font-handwritten",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  weight: "400 700",
+  style: "normal",
   display: "swap",
 });
 

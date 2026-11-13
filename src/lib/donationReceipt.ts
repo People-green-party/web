@@ -12,6 +12,11 @@ export type DonationReceipt = {
   paidAt: string;
   pan?: string;
   receiptToken?: string;
+  fund?: "peoples-green-fund" | "green-fund" | "democracy-fund";
+  plantCount?: number;
+  dedicationName?: string;
+  dedicationOccasion?: string;
+  publicConsent?: boolean;
 };
 
 export const RECEIPT_STORAGE_KEY = "pgp-latest-donation-receipt";

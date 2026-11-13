@@ -17,15 +17,5 @@ export const SITE_DETAILS = {
 } as const;
 
 export const DONATION_PRESET_AMOUNTS = [500, 1000, 2000] as const;
-export const MIN_DONATION_AMOUNT = 1;
-
-const configuredMaximum = Number(process.env.NEXT_PUBLIC_DONATION_MAX_AMOUNT);
-
-/**
- * TODO(PGP compliance): Set NEXT_PUBLIC_DONATION_MAX_AMOUNT after the party's
- * authorised team approves the maximum per-transaction contribution amount.
- */
-export const MAX_DONATION_AMOUNT =
-  Number.isSafeInteger(configuredMaximum) && configuredMaximum >= MIN_DONATION_AMOUNT
-    ? configuredMaximum
-    : null;
+// Approved limits come exclusively from the API payment-config response.
+// Preset buttons are suggestions, not an approved minimum or maximum.
